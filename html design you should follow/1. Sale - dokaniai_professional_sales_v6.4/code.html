@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+
+<html class="light" lang="bn"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Bazaar Pro - Modern Sales Interface</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@300;400;500;600;700&amp;family=Plus+Jakarta+Sans:wght@400;600;700;800&amp;family=Inter:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "secondary-fixed-dim": "#9ecaff",
+                        "secondary": "#0061a4",
+                        "surface-bright": "#f7faf6",
+                        "surface-tint": "#046c50",
+                        "secondary-fixed": "#d1e4ff",
+                        "error-container": "#ffdad6",
+                        "tertiary": "#74302a",
+                        "on-secondary": "#ffffff",
+                        "on-error": "#ffffff",
+                        "on-primary-fixed-variant": "#00513b",
+                        "on-tertiary-container": "#ffcac3",
+                        "inverse-surface": "#2d312f",
+                        "tertiary-fixed-dim": "#ffb4aa",
+                        "primary": "#00503a",
+                        "on-background": "#181d1a",
+                        "surface-dim": "#d7dbd7",
+                        "on-tertiary-fixed": "#3c0705",
+                        "tertiary-container": "#91473f",
+                        "surface-container-lowest": "#ffffff",
+                        "surface-container-high": "#e5e9e5",
+                        "on-surface-variant": "#3f4944",
+                        "on-surface": "#181d1a",
+                        "on-primary": "#ffffff",
+                        "outline-variant": "#bec9c2",
+                        "error": "#ba1a1a",
+                        "on-secondary-fixed": "#001d36",
+                        "secondary-container": "#33a0fd",
+                        "inverse-primary": "#83d7b4",
+                        "on-tertiary-fixed-variant": "#75322b",
+                        "primary-container": "#006a4e",
+                        "inverse-on-surface": "#eef2ed",
+                        "surface-container": "#ebefea",
+                        "surface": "#f7faf6",
+                        "surface-container-low": "#f1f5f0",
+                        "on-tertiary": "#ffffff",
+                        "surface-container-highest": "#e0e3df",
+                        "surface-variant": "#e0e3df",
+                        "on-primary-container": "#92e7c3",
+                        "primary-fixed-dim": "#83d7b4",
+                        "on-primary-fixed": "#002116",
+                        "outline": "#6f7a73",
+                        "on-secondary-fixed-variant": "#00497d",
+                        "on-secondary-container": "#00355c",
+                        "primary-fixed": "#9ef4d0",
+                        "tertiary-fixed": "#ffdad5",
+                        "on-error-container": "#93000a",
+                        "background": "#f7faf6"
+                    },
+                    fontFamily: {
+                        "headline": ["Plus Jakarta Sans"],
+                        "body": ["Inter"],
+                        "label": ["Inter"],
+                        "bengali": ["Hind Siliguri"]
+                    },
+                    borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+<style>
+        body { font-family: 'Hind Siliguri', 'Inter', sans-serif; }
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+        }
+        .custom-scrollbar::-webkit-scrollbar { width: 4px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #bec9c2; border-radius: 10px; }
+    </style>
+</head>
+<body class="bg-surface text-on-surface selection:bg-primary-fixed-dim overflow-hidden h-screen flex">
+<!-- SideNavBar (Authority: JSON & Design System) -->
+<aside class="hidden md:flex flex-col h-full w-64 p-4 gap-2 bg-[#f7faf6] border-r border-[#f1f5f0] shrink-0">
+<div class="mb-8 px-2">
+<h1 class="text-2xl font-black text-[#00503a]">Bazaar Pro</h1>
+<p class="text-xs text-on-surface-variant opacity-70">আপনার ডিজিটাল লেজার</p>
+</div>
+<nav class="flex-1 space-y-1">
+<a class="flex items-center gap-3 px-4 py-3 text-[#181d1a] hover:bg-[#f1f5f0] rounded-lg transition-all duration-200" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+<span class="font-medium">ড্যাশবোর্ড</span>
+</a>
+<!-- Active Tab: বিক্রি (Sales) -->
+<a class="flex items-center gap-3 px-4 py-3 bg-[#00503a] text-white rounded-lg shadow-sm transition-all duration-200" href="#">
+<span class="material-symbols-outlined">receipt_long</span>
+<span class="font-medium">বিক্রি</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-[#181d1a] hover:bg-[#f1f5f0] rounded-lg transition-all duration-200" href="#">
+<span class="material-symbols-outlined">menu_book</span>
+<span class="font-medium">বাকি</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-[#181d1a] hover:bg-[#f1f5f0] rounded-lg transition-all duration-200" href="#">
+<span class="material-symbols-outlined">inventory_2</span>
+<span class="font-medium">পণ্য</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-[#181d1a] hover:bg-[#f1f5f0] rounded-lg transition-all duration-200" href="#">
+<span class="material-symbols-outlined">assessment</span>
+<span class="font-medium">রিপোর্ট</span>
+</a>
+</nav>
+<div class="pt-4 mt-4 border-t border-[#f1f5f0]">
+<a class="flex items-center gap-3 px-4 py-3 text-[#181d1a] hover:bg-[#f1f5f0] rounded-lg transition-all duration-200" href="#">
+<span class="material-symbols-outlined">settings</span>
+<span class="font-medium">সেটিংস</span>
+</a>
+</div>
+</aside>
+<!-- Main Content Area -->
+<main class="flex-1 flex flex-col h-screen overflow-hidden">
+<!-- TopAppBar with AI Command Bar -->
+<header class="flex justify-between items-center w-full px-6 py-3 border-b border-[#f1f5f0] bg-white sticky top-0 z-10">
+<div class="flex-1 max-w-2xl flex items-center gap-4">
+<div class="relative flex-1">
+<span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-primary opacity-50">mic</span>
+<input class="w-full pl-12 pr-4 py-3 bg-surface-container-low border-none rounded-xl focus:ring-2 focus:ring-primary-fixed-dim text-on-surface placeholder:text-on-surface-variant/50 transition-all font-medium" placeholder="AI এর সাথে কথা বলুন বা কমান্ড লিখুন..." type="text"/>
+</div>
+</div>
+<div class="flex items-center gap-4 ml-6">
+<button class="p-2 hover:bg-[#f1f5f0] rounded-full transition-colors relative">
+<span class="material-symbols-outlined">notifications</span>
+<span class="absolute top-1.5 right-1.5 w-2 h-2 bg-tertiary rounded-full"></span>
+</button>
+<button class="p-2 hover:bg-[#f1f5f0] rounded-full transition-colors">
+<span class="material-symbols-outlined">account_circle</span>
+</button>
+</div>
+</header>
+<!-- Dynamic Content Body -->
+<div class="flex-1 flex overflow-hidden">
+<!-- Product Selection Section -->
+<section class="flex-1 flex flex-col p-6 overflow-hidden">
+<div class="mb-6 flex flex-col gap-4">
+<div class="flex items-center gap-4">
+<div class="relative flex-1">
+<span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-on-surface-variant">search</span>
+<input class="w-full pl-12 pr-4 py-3 bg-surface-container-lowest border-none rounded-xl shadow-sm focus:ring-2 focus:ring-primary-fixed-dim" placeholder="পণ্য খুঁজুন (চাল, ডাল, তেল...)" type="text"/>
+</div>
+<button class="flex items-center gap-2 px-4 py-3 bg-surface-container-highest rounded-xl text-on-surface font-medium hover:bg-surface-variant transition-colors">
+<span class="material-symbols-outlined">barcode_scanner</span>
+<span>স্ক্যানার</span>
+</button>
+</div>
+<!-- Category Filters -->
+<div class="flex gap-2 overflow-x-auto pb-2 custom-scrollbar no-scrollbar">
+<button class="px-5 py-2 bg-primary text-white rounded-full whitespace-nowrap font-medium text-sm">সবগুলো</button>
+<button class="px-5 py-2 bg-surface-container-high text-on-surface-variant hover:bg-surface-container-highest rounded-full whitespace-nowrap font-medium text-sm transition-colors">চাল</button>
+<button class="px-5 py-2 bg-surface-container-high text-on-surface-variant hover:bg-surface-container-highest rounded-full whitespace-nowrap font-medium text-sm transition-colors">ডাল</button>
+<button class="px-5 py-2 bg-surface-container-high text-on-surface-variant hover:bg-surface-container-highest rounded-full whitespace-nowrap font-medium text-sm transition-colors">তেল</button>
+<button class="px-5 py-2 bg-surface-container-high text-on-surface-variant hover:bg-surface-container-highest rounded-full whitespace-nowrap font-medium text-sm transition-colors">চিনি</button>
+<button class="px-5 py-2 bg-surface-container-high text-on-surface-variant hover:bg-surface-container-highest rounded-full whitespace-nowrap font-medium text-sm transition-colors">মশলা</button>
+<button class="px-5 py-2 bg-surface-container-high text-on-surface-variant hover:bg-surface-container-highest rounded-full whitespace-nowrap font-medium text-sm transition-colors">পাবলিক হাইজিন</button>
+<button class="px-5 py-2 bg-surface-container-high text-on-surface-variant hover:bg-surface-container-highest rounded-full whitespace-nowrap font-medium text-sm transition-colors">বেভারেজ</button>
+</div>
+</div>
+<!-- Product List (High Density) -->
+<div class="flex-1 overflow-y-auto pr-2 custom-scrollbar">
+<div class="grid grid-cols-1 gap-2">
+<!-- Header Row -->
+<div class="grid grid-cols-12 gap-4 px-4 py-2 text-xs font-bold text-on-surface-variant uppercase tracking-wider sticky top-0 bg-surface z-[5]">
+<div class="col-span-6">পণ্যের নাম</div>
+<div class="col-span-2 text-center">ইউনিট</div>
+<div class="col-span-2 text-right">মূল্য</div>
+<div class="col-span-2"></div>
+</div>
+<!-- Product Rows -->
+<!-- Row 1: Low Stock Alert -->
+<div class="grid grid-cols-12 gap-4 items-center bg-surface-container-lowest p-4 rounded-xl hover:bg-surface-container-low transition-all group border-l-4 border-tertiary">
+<div class="col-span-6">
+<p class="font-semibold text-on-surface">মিনিকেট চাল প্রিমিয়াম</p>
+<span class="text-xs text-tertiary font-bold px-2 py-0.5 bg-error-container rounded-full">Low Stock: ৩ কেজি বাকি (FR-STOCK-02)</span>
+</div>
+<div class="col-span-2 text-center text-on-surface-variant">কেজি</div>
+<div class="col-span-2 text-right font-bold text-on-surface">৳ ৬৮.০০</div>
+<div class="col-span-2 flex justify-end">
+<button class="w-10 h-10 flex items-center justify-center bg-primary text-white rounded-xl active:scale-90 transition-transform shadow-sm">
+<span class="material-symbols-outlined">add</span>
+</button>
+</div>
+</div>
+<!-- More Rows -->
+<div class="grid grid-cols-12 gap-4 items-center bg-surface-container-lowest p-4 rounded-xl hover:bg-surface-container-low transition-all group">
+<div class="col-span-6">
+<p class="font-semibold text-on-surface">মসুর ডাল (দেশী)</p>
+<p class="text-xs text-on-surface-variant">স্টক: ১২০ কেজি</p>
+</div>
+<div class="col-span-2 text-center text-on-surface-variant">কেজি</div>
+<div class="col-span-2 text-right font-bold text-on-surface">৳ ১৩৫.০০</div>
+<div class="col-span-2 flex justify-end">
+<button class="w-10 h-10 flex items-center justify-center bg-primary text-white rounded-xl active:scale-90 transition-transform shadow-sm">
+<span class="material-symbols-outlined">add</span>
+</button>
+</div>
+</div>
+<div class="grid grid-cols-12 gap-4 items-center bg-surface-container-lowest p-4 rounded-xl hover:bg-surface-container-low transition-all group">
+<div class="col-span-6">
+<p class="font-semibold text-on-surface">রূপচাঁদা সয়াবিন তেল (৫ লিটার)</p>
+<p class="text-xs text-on-surface-variant">স্টক: ২৫ বোতল</p>
+</div>
+<div class="col-span-2 text-center text-on-surface-variant">বোতল</div>
+<div class="col-span-2 text-right font-bold text-on-surface">৳ ৮৯০.০০</div>
+<div class="col-span-2 flex justify-end">
+<button class="w-10 h-10 flex items-center justify-center bg-primary text-white rounded-xl active:scale-90 transition-transform shadow-sm">
+<span class="material-symbols-outlined">add</span>
+</button>
+</div>
+</div>
+<!-- Repeated for density feel -->
+<div class="grid grid-cols-12 gap-4 items-center bg-surface-container-lowest p-4 rounded-xl hover:bg-surface-container-low transition-all group">
+<div class="col-span-6">
+<p class="font-semibold text-on-surface">ফ্রেশ চিনি</p>
+<p class="text-xs text-on-surface-variant">স্টক: ৫০ কেজি</p>
+</div>
+<div class="col-span-2 text-center text-on-surface-variant">কেজি</div>
+<div class="col-span-2 text-right font-bold text-on-surface">৳ ১৪০.০০</div>
+<div class="col-span-2 flex justify-end">
+<button class="w-10 h-10 flex items-center justify-center bg-primary text-white rounded-xl active:scale-90 transition-transform shadow-sm">
+<span class="material-symbols-outlined">add</span>
+</button>
+</div>
+</div>
+<div class="grid grid-cols-12 gap-4 items-center bg-surface-container-lowest p-4 rounded-xl hover:bg-surface-container-low transition-all group">
+<div class="col-span-6">
+<p class="font-semibold text-on-surface">তীর আটা (২ কেজি)</p>
+<p class="text-xs text-on-surface-variant">স্টক: ৪৫ প্যাকেট</p>
+</div>
+<div class="col-span-2 text-center text-on-surface-variant">প্যাকেট</div>
+<div class="col-span-2 text-right font-bold text-on-surface">৳ ১২৫.০০</div>
+<div class="col-span-2 flex justify-end">
+<button class="w-10 h-10 flex items-center justify-center bg-primary text-white rounded-xl active:scale-90 transition-transform shadow-sm">
+<span class="material-symbols-outlined">add</span>
+</button>
+</div>
+</div>
+<div class="grid grid-cols-12 gap-4 items-center bg-surface-container-lowest p-4 rounded-xl hover:bg-surface-container-low transition-all group border-l-4 border-tertiary">
+<div class="col-span-6">
+<p class="font-semibold text-on-surface">লাক্স সাবান (১৫০ গ্রাম)</p>
+<span class="text-xs text-tertiary font-bold px-2 py-0.5 bg-error-container rounded-full">Low Stock: ৮ পিস বাকি (FR-STOCK-02)</span>
+</div>
+<div class="col-span-2 text-center text-on-surface-variant">পিস</div>
+<div class="col-span-2 text-right font-bold text-on-surface">৳ ৭৫.০০</div>
+<div class="col-span-2 flex justify-end">
+<button class="w-10 h-10 flex items-center justify-center bg-primary text-white rounded-xl active:scale-90 transition-transform shadow-sm">
+<span class="material-symbols-outlined">add</span>
+</button>
+</div>
+</div>
+<!-- Row with long list visual hint -->
+<div class="flex justify-center py-4 opacity-50 italic text-xs">
+                            এবং আরও ২০০+ পণ্য...
+                        </div>
+</div>
+</div>
+</section>
+<!-- Cart Section (Right Column) -->
+<aside class="w-96 glass-panel border-l border-[#f1f5f0] flex flex-col p-6 shadow-2xl relative">
+<div class="flex items-center justify-between mb-6">
+<h2 class="text-xl font-bold text-primary flex items-center gap-2">
+<span class="material-symbols-outlined">shopping_cart</span>
+                        বিক্রয় তালিকা
+                    </h2>
+<button class="text-on-surface-variant hover:text-tertiary transition-colors">
+<span class="material-symbols-outlined">delete_sweep</span>
+</button>
+</div>
+<!-- Added Items List -->
+<div class="flex-1 overflow-y-auto space-y-3 pr-2 mb-6 custom-scrollbar">
+<div class="bg-surface-container-lowest p-3 rounded-xl shadow-sm flex flex-col gap-2">
+<div class="flex justify-between items-start">
+<span class="font-semibold text-on-surface">মিনিকেট চাল প্রিমিয়াম</span>
+<span class="font-bold">৳ ১৩৬.০০</span>
+</div>
+<div class="flex justify-between items-center">
+<span class="text-xs text-on-surface-variant">৳ ৬৮.০০ / কেজি</span>
+<div class="flex items-center gap-3 bg-surface-container-low rounded-lg p-1">
+<button class="w-6 h-6 flex items-center justify-center bg-white rounded shadow-sm text-primary"><span class="material-symbols-outlined text-sm">remove</span></button>
+<span class="font-bold text-sm w-4 text-center">২</span>
+<button class="w-6 h-6 flex items-center justify-center bg-white rounded shadow-sm text-primary"><span class="material-symbols-outlined text-sm">add</span></button>
+</div>
+</div>
+</div>
+<div class="bg-surface-container-lowest p-3 rounded-xl shadow-sm flex flex-col gap-2">
+<div class="flex justify-between items-start">
+<span class="font-semibold text-on-surface">রূপচাঁদা সয়াবিন তেল (৫ লিটার)</span>
+<span class="font-bold">৳ ৮৯০.০০</span>
+</div>
+<div class="flex justify-between items-center">
+<span class="text-xs text-on-surface-variant">৳ ৮৯০.০০ / বোতল</span>
+<div class="flex items-center gap-3 bg-surface-container-low rounded-lg p-1">
+<button class="w-6 h-6 flex items-center justify-center bg-white rounded shadow-sm text-primary"><span class="material-symbols-outlined text-sm">remove</span></button>
+<span class="font-bold text-sm w-4 text-center">১</span>
+<button class="w-6 h-6 flex items-center justify-center bg-white rounded shadow-sm text-primary"><span class="material-symbols-outlined text-sm">add</span></button>
+</div>
+</div>
+</div>
+</div>
+<!-- Discount & Totals -->
+<div class="space-y-4 border-t border-[#f1f5f0] pt-6">
+<!-- Discount Toggles (FR-DISC-01) -->
+<div class="space-y-2">
+<label class="text-xs font-bold text-on-surface-variant uppercase tracking-wide">ডিসকাউন্ট যোগ করুন</label>
+<div class="flex gap-2 p-1 bg-surface-container-high rounded-xl">
+<button class="flex-1 flex items-center justify-center gap-2 py-2 rounded-lg bg-surface-container-lowest shadow-sm text-primary font-bold transition-all">
+<span class="material-symbols-outlined text-sm">payments</span>
+                                ৳
+                            </button>
+<button class="flex-1 flex items-center justify-center gap-2 py-2 rounded-lg text-on-surface-variant font-medium hover:bg-surface-container-lowest/50 transition-all">
+<span class="material-symbols-outlined text-sm">percent</span>
+                                %
+                            </button>
+</div>
+<input class="w-full mt-2 bg-surface-container-low border-none rounded-xl py-2 px-4 focus:ring-1 focus:ring-primary text-center font-bold" placeholder="পরিমাণ লিখুন" type="number"/>
+</div>
+<!-- Summary -->
+<div class="space-y-2 py-4">
+<div class="flex justify-between text-on-surface-variant text-sm">
+<span>সাবটোটাল</span>
+<span class="font-medium">৳ ১০২৬.০০</span>
+</div>
+<div class="flex justify-between text-on-surface-variant text-sm">
+<span>ভ্যাট (০%)</span>
+<span class="font-medium">৳ ০.০০</span>
+</div>
+<div class="flex justify-between items-end pt-2">
+<span class="text-primary font-bold">সর্বমোট প্রদেয়</span>
+<div class="text-right">
+<p class="text-3xl font-black text-primary leading-none">৳ ১০২৬</p>
+<p class="text-xs text-on-surface-variant/70 mt-1">Bengali: ১০২৬ টাকা</p>
+</div>
+</div>
+</div>
+<!-- Primary Final Actions -->
+<div class="grid grid-cols-1 gap-3">
+<button class="w-full bg-primary hover:bg-primary-container text-white py-5 rounded-2xl flex flex-col items-center justify-center shadow-lg active:scale-[0.98] transition-all">
+<span class="text-lg font-bold">নগদ বিক্রি (Cash)</span>
+<span class="text-xs opacity-80">তাত্ক্ষণিক রসিদ প্রিন্ট করুন</span>
+</button>
+<button class="w-full bg-secondary hover:bg-secondary-container text-white py-4 rounded-2xl flex items-center justify-center gap-2 shadow-md active:scale-[0.98] transition-all">
+<span class="material-symbols-outlined">account_balance_wallet</span>
+<span class="font-bold">বাকী বিক্রি (Credit)</span>
+</button>
+</div>
+</div>
+</aside>
+</div>
+<!-- Mobile Navigation Shell (Authority: JSON & Platform Rule) -->
+<nav class="md:hidden fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-4 pb-4 pt-2 bg-white/80 backdrop-blur-xl border-t border-[#f1f5f0] shadow-[0_-4px_12px_rgba(0,0,0,0.05)]">
+<a class="flex flex-col items-center justify-center text-[#181d1a] opacity-60" href="#">
+<span class="material-symbols-outlined">home</span>
+<span class="text-[10px] font-bold">হোম</span>
+</a>
+<a class="flex flex-col items-center justify-center bg-[#00503a] text-white rounded-xl py-2 px-4 scale-110" href="#">
+<span class="material-symbols-outlined">add_shopping_cart</span>
+<span class="text-[10px] font-bold">বিক্রি</span>
+</a>
+<a class="flex flex-col items-center justify-center text-[#181d1a] opacity-60" href="#">
+<span class="material-symbols-outlined">account_balance_wallet</span>
+<span class="text-[10px] font-bold">বাকি</span>
+</a>
+<a class="flex flex-col items-center justify-center text-[#181d1a] opacity-60" href="#">
+<span class="material-symbols-outlined">mic</span>
+<span class="text-[10px] font-bold">AI সাহায্য</span>
+</a>
+</nav>
+</main>
+<!-- Floating AI Trigger (Contextual Suppression Rule: Hide on Sales page per JSON prompt if needed, but requested here) -->
+<div class="fixed bottom-6 right-6 z-40 hidden md:block">
+<button class="w-16 h-16 rounded-full bg-gradient-to-br from-primary to-primary-container shadow-2xl flex items-center justify-center text-white active:scale-90 transition-all hover:rotate-12 group">
+<span class="material-symbols-outlined text-3xl group-hover:scale-110 transition-transform" style="font-variation-settings: 'FILL' 1;">mic</span>
+</button>
+</div>
+</body></html>

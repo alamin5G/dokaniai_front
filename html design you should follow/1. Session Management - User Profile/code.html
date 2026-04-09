@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@300;400;500;600;700&amp;family=Manrope:wght@200;400;600;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "tertiary-fixed-dim": "#ffb4ab",
+                        "tertiary-container": "#6f342e",
+                        "surface-variant": "#e1e3df",
+                        "on-surface": "#191c1a",
+                        "surface-container-lowest": "#ffffff",
+                        "surface-container-highest": "#e1e3df",
+                        "inverse-primary": "#91d4b7",
+                        "on-tertiary": "#ffffff",
+                        "surface-container-low": "#f2f4f0",
+                        "on-surface-variant": "#404944",
+                        "primary": "#003727",
+                        "on-secondary-fixed": "#001d36",
+                        "secondary": "#0061a4",
+                        "tertiary-fixed": "#ffdad6",
+                        "surface": "#f8faf6",
+                        "on-primary": "#ffffff",
+                        "tertiary": "#531e1a",
+                        "on-error": "#ffffff",
+                        "surface-container": "#ecefeb",
+                        "inverse-on-surface": "#eff1ee",
+                        "surface-tint": "#276a52",
+                        "background": "#f8faf6",
+                        "outline-variant": "#bfc9c2",
+                        "secondary-container": "#77b7ff",
+                        "on-secondary-fixed-variant": "#00497d",
+                        "on-primary-fixed": "#002116",
+                        "on-primary-container": "#7fc1a5",
+                        "primary-container": "#00503a",
+                        "on-error-container": "#93000a",
+                        "inverse-surface": "#2e312f",
+                        "surface-container-high": "#e6e9e5",
+                        "surface-dim": "#d8dbd7",
+                        "surface-bright": "#f8faf6",
+                        "on-tertiary-fixed-variant": "#70352f",
+                        "error-container": "#ffdad6",
+                        "secondary-fixed": "#d1e4ff",
+                        "on-secondary-container": "#00477b",
+                        "outline": "#707974",
+                        "error": "#ba1a1a",
+                        "primary-fixed-dim": "#91d4b7",
+                        "on-secondary": "#ffffff",
+                        "on-background": "#191c1a",
+                        "secondary-fixed-dim": "#9fcaff",
+                        "primary-fixed": "#adf1d2",
+                        "on-tertiary-fixed": "#390b08",
+                        "on-tertiary-container": "#f09e95",
+                        "on-primary-fixed-variant": "#02513b"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "1rem",
+                        "lg": "2rem",
+                        "xl": "3rem",
+                        "full": "9999px"
+                    },
+                    "fontFamily": {
+                        "hind-siliguri": ["Hind Siliguri", "sans-serif"],
+                        "headline": ["Manrope", "sans-serif"],
+                        "body": ["Manrope", "sans-serif"],
+                        "label": ["Manrope", "sans-serif"]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        body {
+            font-family: 'Manrope', 'Hind Siliguri', sans-serif;
+        }
+    </style>
+</head>
+<body class="bg-surface text-on-surface">
+<!-- TopNavBar -->
+<header class="bg-[#f8faf6] dark:bg-emerald-950 font-hind-siliguri leading-relaxed docked full-width top-0 sticky z-50">
+<div class="flex justify-between items-center w-full px-6 py-4 max-w-screen-2xl mx-auto">
+<div class="text-2xl font-bold tracking-tight text-[#00503a] dark:text-emerald-500">DokaniAI</div>
+<nav class="hidden md:flex items-center gap-8">
+<a class="text-emerald-800 dark:text-emerald-400 opacity-70 hover:bg-emerald-100 dark:hover:bg-emerald-800 transition-colors px-3 py-1 rounded" href="#">Overview</a>
+<a class="text-[#003727] dark:text-emerald-200 font-semibold border-b-2 border-[#00503a] px-3 py-1" href="#">Security</a>
+<a class="text-emerald-800 dark:text-emerald-400 opacity-70 hover:bg-emerald-100 dark:hover:bg-emerald-800 transition-colors px-3 py-1 rounded" href="#">Devices</a>
+<a class="text-emerald-800 dark:text-emerald-400 opacity-70 hover:bg-emerald-100 dark:hover:bg-emerald-800 transition-colors px-3 py-1 rounded" href="#">Settings</a>
+</nav>
+<div class="flex items-center gap-4">
+<span class="material-symbols-outlined text-[#00503a] dark:text-emerald-400 cursor-pointer p-2 hover:bg-emerald-100 dark:hover:bg-emerald-800 rounded-full transition-colors">help_outline</span>
+<div class="w-10 h-10 rounded-full bg-primary-container flex items-center justify-center text-on-primary-container overflow-hidden">
+<span class="material-symbols-outlined">account_circle</span>
+</div>
+</div>
+</div>
+</header>
+<div class="flex max-w-screen-2xl mx-auto">
+<!-- SideNavBar -->
+<aside class="hidden lg:flex flex-col h-[calc(100vh-80px)] w-64 bg-[#f2f4f0] dark:bg-emerald-900 border-r-0 sticky top-20 font-hind-siliguri text-base">
+<div class="px-6 py-8">
+<div class="flex items-center gap-3 mb-8">
+<img class="w-10 h-10 rounded-full object-cover" data-alt="close-up of a smiling South Asian merchant in a tidy shop environment with soft warm lighting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBXjynGUeYeA7lxjLyLj-gFJi2sQSPMwnFbHB3RvwDvbN3NWUB9DZmrUQ8nA9hhUAMK-iCgOuiV_h1-UffctMoxEzpR-T2K__E5rChHYuFdUwbmyKO1obORxHTxgR1EWiQE5UAtIgAOi6SIMmWGQOV03ezkC7V16AEzmPacPbW9uyrJwcDPxXHYIJ33FK23euYKet3fSE-dFdO-xm8vex41Iwv-vSG3cZhfpF2KS-Hb_WQTNOoQYVvM6RA_fK-F9GzV2R0mW1BW5bT-"/>
+<div>
+<p class="text-sm font-black text-[#00503a] leading-tight">Dokani Ledger</p>
+<p class="text-xs text-emerald-700 dark:text-emerald-400 opacity-80">Verified Merchant</p>
+</div>
+</div>
+<nav class="flex flex-col gap-1">
+<a class="flex items-center gap-3 text-emerald-700 dark:text-emerald-400 py-3 px-6 hover:bg-emerald-50 dark:hover:bg-emerald-800/50 transition-all hover:translate-x-1 duration-200" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+<span>Overview</span>
+</a>
+<a class="flex items-center gap-3 bg-white dark:bg-emerald-800 text-[#00503a] dark:text-emerald-100 rounded-r-full py-3 px-6 shadow-sm" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">shield</span>
+<span>Security</span>
+</a>
+<a class="flex items-center gap-3 text-emerald-700 dark:text-emerald-400 py-3 px-6 hover:bg-emerald-50 dark:hover:bg-emerald-800/50 transition-all hover:translate-x-1 duration-200" href="#">
+<span class="material-symbols-outlined">devices</span>
+<span>Devices</span>
+</a>
+<a class="flex items-center gap-3 text-emerald-700 dark:text-emerald-400 py-3 px-6 hover:bg-emerald-50 dark:hover:bg-emerald-800/50 transition-all hover:translate-x-1 duration-200" href="#">
+<span class="material-symbols-outlined">settings</span>
+<span>Settings</span>
+</a>
+</nav>
+</div>
+</aside>
+<!-- Main Content Area -->
+<main class="flex-1 px-6 md:px-12 py-10 min-h-screen">
+<div class="max-w-4xl">
+<!-- Header Section -->
+<header class="mb-12">
+<h1 class="text-4xl md:text-5xl font-extrabold text-primary mb-2 font-headline tracking-tight">সেশন ম্যানেজমেন্ট</h1>
+<p class="text-lg text-on-surface-variant max-w-2xl font-hind-siliguri leading-relaxed">আপনার অ্যাকাউন্টটি কোন ডিভাইসগুলোতে লগ-ইন করা আছে তা এখান থেকে নিয়ন্ত্রণ করুন। অনিরাপদ মনে হলে যে কোনো ডিভাইস থেকে লগ-আউট করে দিন।</p>
+</header>
+<!-- Session Alert / Global Action -->
+<div class="mb-10 bg-surface-container-low p-8 rounded-lg flex flex-col md:flex-row items-start md:items-center justify-between gap-6 transition-all">
+<div>
+<h3 class="text-xl font-bold text-primary mb-1">নিরাপত্তা সতর্কতা</h3>
+<p class="text-on-surface-variant font-hind-siliguri">সবগুলো ডিভাইস থেকে একসাথেই লগ-আউট হতে নিচের বাটনটি ব্যবহার করুন।</p>
+</div>
+<button class="bg-gradient-to-br from-primary to-primary-container text-on-primary px-8 py-4 rounded-lg font-bold shadow-lg active:scale-95 transition-transform whitespace-nowrap">
+                        Logout all devices
+                    </button>
+</div>
+<!-- Session List (Bento-style Grid) -->
+<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+<!-- Session Card 1 (Current) -->
+<div class="bg-surface-container-lowest p-6 rounded-lg shadow-sm border-l-4 border-primary">
+<div class="flex justify-between items-start mb-6">
+<div class="bg-primary-fixed w-12 h-12 rounded-full flex items-center justify-center">
+<span class="material-symbols-outlined text-primary" style="font-variation-settings: 'FILL' 1;">laptop_mac</span>
+</div>
+<span class="bg-primary-container text-on-primary-container text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider">Current Device</span>
+</div>
+<h4 class="text-xl font-bold text-on-surface mb-2">MacBook Pro M2</h4>
+<div class="space-y-2 mb-8 font-hind-siliguri text-on-surface-variant">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-sm">public</span>
+<span>IP: 103.147.12.89 (Dhaka, Bangladesh)</span>
+</div>
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-sm">schedule</span>
+<span>সক্রিয়: এই মুহূর্তে</span>
+</div>
+</div>
+<div class="pt-4 flex justify-end">
+<button class="text-outline font-semibold opacity-50 cursor-not-allowed">Revoke</button>
+</div>
+</div>
+<!-- Session Card 2 -->
+<div class="bg-surface-container-lowest p-6 rounded-lg shadow-sm hover:translate-y-[-4px] transition-all">
+<div class="flex justify-between items-start mb-6">
+<div class="bg-secondary-fixed w-12 h-12 rounded-full flex items-center justify-center">
+<span class="material-symbols-outlined text-secondary">smartphone</span>
+</div>
+<span class="text-xs text-on-surface-variant opacity-60">Mobile App</span>
+</div>
+<h4 class="text-xl font-bold text-on-surface mb-2">iPhone 15 Pro</h4>
+<div class="space-y-2 mb-8 font-hind-siliguri text-on-surface-variant">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-sm">public</span>
+<span>IP: 103.111.0.45 (Chittagong)</span>
+</div>
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-sm">history</span>
+<span>সর্বশেষ সক্রিয়: ২ ঘণ্টা আগে</span>
+</div>
+</div>
+<div class="pt-4 border-t border-surface-container flex justify-end">
+<button class="text-tertiary font-bold hover:bg-error-container/30 px-4 py-2 rounded-lg transition-colors">Revoke</button>
+</div>
+</div>
+<!-- Session Card 3 -->
+<div class="bg-surface-container-lowest p-6 rounded-lg shadow-sm hover:translate-y-[-4px] transition-all">
+<div class="flex justify-between items-start mb-6">
+<div class="bg-surface-container-highest w-12 h-12 rounded-full flex items-center justify-center">
+<span class="material-symbols-outlined text-outline">devices_other</span>
+</div>
+</div>
+<h4 class="text-xl font-bold text-on-surface mb-2">Chrome on Windows</h4>
+<div class="space-y-2 mb-8 font-hind-siliguri text-on-surface-variant">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-sm">public</span>
+<span>IP: 45.114.22.10 (Sylhet)</span>
+</div>
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-sm">history</span>
+<span>সর্বশেষ সক্রিয়: গতকাল, রাত ১০:৩০</span>
+</div>
+</div>
+<div class="pt-4 border-t border-surface-container flex justify-end">
+<button class="text-tertiary font-bold hover:bg-error-container/30 px-4 py-2 rounded-lg transition-colors">Revoke</button>
+</div>
+</div>
+<!-- Glassmorphism AI Insight Card -->
+<div class="md:col-span-1 bg-surface-variant/60 backdrop-blur-xl p-8 rounded-lg flex flex-col justify-between border border-white/20">
+<div class="flex items-center gap-3 text-secondary-container mb-4">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">auto_awesome</span>
+<span class="font-bold uppercase tracking-tighter text-sm">AI Security Intelligence</span>
+</div>
+<p class="text-on-surface-variant font-hind-siliguri text-lg italic leading-relaxed">
+                            "আপনার অ্যাকাউন্টে অস্বাভাবিক কোনো লগ-ইন লক্ষ্য করা যায়নি। তবুও প্রতি ৩০ দিন অন্তর সেশনগুলো যাচাই করা ভালো।"
+                        </p>
+<div class="mt-6 flex gap-2">
+<span class="w-2 h-2 rounded-full bg-primary-fixed-dim"></span>
+<span class="w-2 h-2 rounded-full bg-primary-fixed-dim/30"></span>
+<span class="w-2 h-2 rounded-full bg-primary-fixed-dim/30"></span>
+</div>
+</div>
+</div>
+<!-- Footer Metadata -->
+<div class="mt-16 text-center text-on-surface-variant font-hind-siliguri opacity-60">
+<p>নিরাপত্তা নিশ্চিত করতে DokaniAI উন্নত এনক্রিপশন ব্যবহার করে।</p>
+<p class="text-xs mt-2">Server Ref: SEC-SYL-9092 • Last Audit: 12 Oct 2023</p>
+</div>
+</div>
+</main>
+</div>
+<!-- Signature FAB: Speak to AI -->
+<button class="fixed bottom-8 right-8 w-20 h-20 rounded-xl bg-gradient-to-br from-secondary to-secondary-container text-on-secondary shadow-xl flex items-center justify-center group active:scale-90 transition-all z-50">
+<span class="material-symbols-outlined text-4xl group-hover:scale-110 transition-transform">mic</span>
+<div class="absolute -top-12 right-0 bg-primary text-on-primary text-xs px-3 py-1 rounded-full opacity-0 group-hover:opacity-100 transition-opacity font-hind-siliguri whitespace-nowrap pointer-events-none">
+            AI কে জিজ্ঞাসা করুন
+        </div>
+</button>
+<!-- Mobile Navigation (Visible only on small screens) -->
+<nav class="md:hidden fixed bottom-0 left-0 right-0 bg-surface-container shadow-2xl flex justify-around items-center p-4 z-40">
+<div class="flex flex-col items-center gap-1 opacity-50">
+<span class="material-symbols-outlined">dashboard</span>
+<span class="text-[10px] font-hind-siliguri">ওভারভিউ</span>
+</div>
+<div class="flex flex-col items-center gap-1 text-primary">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">shield</span>
+<span class="text-[10px] font-hind-siliguri font-bold">সিকিউরিটি</span>
+</div>
+<div class="flex flex-col items-center gap-1 opacity-50">
+<span class="material-symbols-outlined">devices</span>
+<span class="text-[10px] font-hind-siliguri">ডিভাইস</span>
+</div>
+<div class="flex flex-col items-center gap-1 opacity-50">
+<span class="material-symbols-outlined">settings</span>
+<span class="text-[10px] font-hind-siliguri">সেটিংস</span>
+</div>
+</nav>
+</body></html>

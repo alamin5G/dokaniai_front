@@ -1,0 +1,470 @@
+{
+  "version": "2.10",
+  "children": [
+    {
+      "type": "frame",
+      "id": "bi8Au",
+      "x": 0,
+      "y": 0,
+      "name": "Frame",
+      "clip": true,
+      "width": 800,
+      "height": 600,
+      "fill": "#FFFFFF",
+      "layout": "none",
+      "children": [
+        {
+          "type": "rectangle",
+          "id": "tHitH",
+          "x": 0,
+          "y": 0,
+          "fill": {
+            "type": "image",
+            "enabled": true,
+            "url": "C:\\Users\\alami\\Downloads\\stitch_dokaniai_shop_owner_dashboard\\stitch_dokaniai_shop_owner_dashboard\\1. Login\\screen.png",
+            "mode": "fill"
+          },
+          "width": "fill_container(800)",
+          "height": "fill_container(600)"
+        }
+      ]
+    },
+    {
+      "type": "frame",
+      "id": "UmeCJ",
+      "x": 0,
+      "y": 0,
+      "name": "Refined Login",
+      "width": 800,
+      "height": 600,
+      "fill": "$bg",
+      "children": [
+        {
+          "type": "frame",
+          "id": "648J2",
+          "name": "leftPanel",
+          "width": "fill_container",
+          "height": "fill_container",
+          "layout": "vertical",
+          "gap": 24,
+          "padding": [
+            64,
+            40
+          ],
+          "justifyContent": "center",
+          "children": [
+            {
+              "type": "frame",
+              "id": "XKJDh",
+              "name": "logoRow",
+              "gap": 8,
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "icon_font",
+                  "id": "FPlg7",
+                  "width": 24,
+                  "height": 24,
+                  "iconFontName": "library-big",
+                  "iconFontFamily": "lucide",
+                  "fill": "$primary"
+                },
+                {
+                  "type": "text",
+                  "id": "RP0No",
+                  "fill": "$primary",
+                  "content": "DokaniAI",
+                  "fontFamily": "Inter",
+                  "fontSize": 20,
+                  "fontWeight": "700"
+                }
+              ]
+            },
+            {
+              "type": "text",
+              "id": "7a1GK",
+              "fill": "$primary",
+              "textGrowth": "fixed-width",
+              "width": "fill_container",
+              "content": "আপনার ব্যবসার বিশ্বস্ত\nডিজিটাল খাতা",
+              "lineHeight": 1.2,
+              "fontFamily": "Inter",
+              "fontSize": 32,
+              "fontWeight": "700"
+            },
+            {
+              "type": "text",
+              "id": "9kuyN",
+              "fill": "$text-gray",
+              "textGrowth": "fixed-width",
+              "width": "fill_container",
+              "content": "আধুনিক প্রযুক্তির সমন্বয়ে আপনার দোকানের হিসাব রাখুন নিরাপদ এবং সহজভাবে।",
+              "lineHeight": 1.5,
+              "fontFamily": "Inter",
+              "fontSize": 14,
+              "fontWeight": "normal"
+            },
+            {
+              "type": "frame",
+              "id": "vwEyY",
+              "name": "hero",
+              "width": "fill_container",
+              "height": "fill_container",
+              "fill": {
+                "type": "image",
+                "enabled": true,
+                "url": "./images/generated-1775761747284.png",
+                "mode": "fill"
+              },
+              "cornerRadius": 24
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "jk0vd",
+          "name": "rightPanel",
+          "width": "fill_container",
+          "height": "fill_container",
+          "layout": "vertical",
+          "padding": [
+            64,
+            40
+          ],
+          "justifyContent": "center",
+          "alignItems": "center",
+          "children": [
+            {
+              "type": "frame",
+              "id": "0S5f6",
+              "name": "card",
+              "width": 360,
+              "fill": "$white",
+              "cornerRadius": 16,
+              "effect": {
+                "type": "shadow",
+                "shadowType": "outer",
+                "color": "#0000001A",
+                "offset": {
+                  "x": 0,
+                  "y": 10
+                },
+                "blur": 40
+              },
+              "layout": "vertical",
+              "gap": 24,
+              "padding": 32,
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "VH371",
+                  "name": "cardHeader",
+                  "width": "fill_container",
+                  "layout": "vertical",
+                  "gap": 8,
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "aFGGb",
+                      "fill": "$text-dark",
+                      "content": "লগইন করুন",
+                      "fontFamily": "Inter",
+                      "fontSize": 24,
+                      "fontWeight": "700"
+                    },
+                    {
+                      "type": "text",
+                      "id": "pxU3K",
+                      "fill": "$text-gray",
+                      "content": "আপনার লগইন তথ্য দিয়ে প্রবেশ করুন",
+                      "fontFamily": "Inter",
+                      "fontSize": 12,
+                      "fontWeight": "normal"
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "Ayjrd",
+                  "name": "form",
+                  "width": "fill_container",
+                  "layout": "vertical",
+                  "gap": 16,
+                  "children": [
+                    {
+                      "type": "frame",
+                      "id": "4pKAQ",
+                      "name": "inputWrapper1",
+                      "width": "fill_container",
+                      "layout": "vertical",
+                      "gap": 8,
+                      "children": [
+                        {
+                          "type": "text",
+                          "id": "jsDqG",
+                          "fill": "$text-dark",
+                          "content": "মোবাইল নম্বর বা ইমেইল",
+                          "fontFamily": "Inter",
+                          "fontSize": 12,
+                          "fontWeight": "700"
+                        },
+                        {
+                          "type": "frame",
+                          "id": "h6W5g",
+                          "name": "input1",
+                          "width": "fill_container",
+                          "height": 48,
+                          "fill": "$input-bg",
+                          "cornerRadius": 24,
+                          "padding": [
+                            0,
+                            16
+                          ],
+                          "alignItems": "center",
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "PDUTk",
+                              "fill": "$text-gray",
+                              "content": "017XXXXXXXX বা abc@email.com",
+                              "fontFamily": "Inter",
+                              "fontSize": 13,
+                              "fontWeight": "normal"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "mWXFK",
+                      "name": "inputWrapper2",
+                      "width": "fill_container",
+                      "layout": "vertical",
+                      "gap": 8,
+                      "children": [
+                        {
+                          "type": "text",
+                          "id": "vMpFH",
+                          "fill": "$text-dark",
+                          "content": "পাসওয়ার্ড",
+                          "fontFamily": "Inter",
+                          "fontSize": 12,
+                          "fontWeight": "700"
+                        },
+                        {
+                          "type": "frame",
+                          "id": "pXDF7",
+                          "name": "input2",
+                          "width": "fill_container",
+                          "height": 48,
+                          "fill": "$input-bg",
+                          "cornerRadius": 24,
+                          "padding": [
+                            0,
+                            16
+                          ],
+                          "alignItems": "center",
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "mylGH",
+                              "fill": "$text-gray",
+                              "content": "********",
+                              "fontFamily": "Inter",
+                              "fontSize": 13,
+                              "fontWeight": "normal"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "RJylZ",
+                      "name": "forgotRow",
+                      "width": "fill_container",
+                      "justifyContent": "end",
+                      "children": [
+                        {
+                          "type": "text",
+                          "id": "aETYn",
+                          "fill": "$link",
+                          "content": "পাসওয়ার্ড ভুলে গেছেন?",
+                          "fontFamily": "Inter",
+                          "fontSize": 12,
+                          "fontWeight": "600"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "b653i",
+                      "name": "loginBtn",
+                      "width": "fill_container",
+                      "height": 48,
+                      "fill": "$primary",
+                      "cornerRadius": 24,
+                      "gap": 8,
+                      "justifyContent": "center",
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "text",
+                          "id": "DAW6P",
+                          "fill": "$white",
+                          "content": "লগইন করুন",
+                          "fontFamily": "Inter",
+                          "fontSize": 14,
+                          "fontWeight": "600"
+                        },
+                        {
+                          "type": "icon_font",
+                          "id": "kApw7",
+                          "width": 16,
+                          "height": 16,
+                          "iconFontName": "arrow-right",
+                          "iconFontFamily": "lucide",
+                          "fill": "$white"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "LdWyc",
+                      "name": "orRow",
+                      "width": "fill_container",
+                      "gap": 16,
+                      "justifyContent": "center",
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "frame",
+                          "id": "iESxv",
+                          "width": "fill_container",
+                          "height": 1,
+                          "fill": "$input-bg"
+                        },
+                        {
+                          "type": "text",
+                          "id": "olKMI",
+                          "fill": "$text-gray",
+                          "content": "অথবা",
+                          "fontFamily": "Inter",
+                          "fontSize": 12,
+                          "fontWeight": "normal"
+                        },
+                        {
+                          "type": "frame",
+                          "id": "bDJXI",
+                          "width": "fill_container",
+                          "height": 1,
+                          "fill": "$input-bg"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "sy2ba",
+                      "name": "googleBtn",
+                      "width": "fill_container",
+                      "height": 48,
+                      "fill": "$bg",
+                      "cornerRadius": 24,
+                      "stroke": {
+                        "align": "center",
+                        "thickness": 1,
+                        "fill": "$input-bg"
+                      },
+                      "gap": 8,
+                      "justifyContent": "center",
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "icon_font",
+                          "id": "DrybK",
+                          "width": 16,
+                          "height": 16,
+                          "iconFontName": "globe",
+                          "iconFontFamily": "lucide",
+                          "fill": "$primary"
+                        },
+                        {
+                          "type": "text",
+                          "id": "Kp3yR",
+                          "fill": "$text-dark",
+                          "content": "গুগল দিয়ে প্রবেশ করুন",
+                          "fontFamily": "Inter",
+                          "fontSize": 14,
+                          "fontWeight": "600"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "B1Ze7",
+              "name": "footer",
+              "width": "fill_container",
+              "padding": 24,
+              "justifyContent": "center",
+              "children": [
+                {
+                  "type": "text",
+                  "id": "ZkXmM",
+                  "fill": "$text-gray",
+                  "content": "নতুন একাউন্ট খুলতে চান? ",
+                  "fontFamily": "Inter",
+                  "fontSize": 12,
+                  "fontWeight": "normal"
+                },
+                {
+                  "type": "text",
+                  "id": "LlLUd",
+                  "fill": "$link",
+                  "content": "এখানে ক্লিক করুন",
+                  "fontFamily": "Inter",
+                  "fontSize": 12,
+                  "fontWeight": "600"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "variables": {
+    "bg": {
+      "type": "color",
+      "value": "#F9FBFA"
+    },
+    "input-bg": {
+      "type": "color",
+      "value": "#DFE5E1"
+    },
+    "link": {
+      "type": "color",
+      "value": "#1664C0"
+    },
+    "primary": {
+      "type": "color",
+      "value": "#004D36"
+    },
+    "text-dark": {
+      "type": "color",
+      "value": "#1E2A25"
+    },
+    "text-gray": {
+      "type": "color",
+      "value": "#717E79"
+    },
+    "white": {
+      "type": "color",
+      "value": "#FFFFFF"
+    }
+  }
+}

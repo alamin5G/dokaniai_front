@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+
+<html lang="bn"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>ব্যয় ব্যবস্থাপনা - প্রোঅ্যাক্টিভ ভিউ</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@300;400;500;600;700&amp;family=Manrope:wght@300;400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-tertiary-container": "#f09e95",
+                        "on-primary-fixed-variant": "#02513b",
+                        "on-tertiary-fixed-variant": "#70352f",
+                        "on-secondary-fixed-variant": "#00497d",
+                        "tertiary-fixed-dim": "#ffb4ab",
+                        "on-primary": "#ffffff",
+                        "surface-container": "#ecefeb",
+                        "tertiary": "#531e1a",
+                        "surface": "#f8faf6",
+                        "surface-tint": "#276a52",
+                        "on-tertiary-fixed": "#390b08",
+                        "secondary-fixed-dim": "#9fcaff",
+                        "on-secondary-container": "#00477b",
+                        "surface-container-lowest": "#ffffff",
+                        "error": "#ba1a1a",
+                        "tertiary-container": "#6f342e",
+                        "on-primary-container": "#7fc1a5",
+                        "inverse-primary": "#91d4b7",
+                        "surface-container-highest": "#e1e3df",
+                        "inverse-on-surface": "#eff1ee",
+                        "on-tertiary": "#ffffff",
+                        "surface-dim": "#d8dbd7",
+                        "on-error-container": "#93000a",
+                        "on-surface-variant": "#404944",
+                        "secondary": "#0061a4",
+                        "error-container": "#ffdad6",
+                        "tertiary-fixed": "#ffdad6",
+                        "on-error": "#ffffff",
+                        "secondary-container": "#77b7ff",
+                        "secondary-fixed": "#d1e4ff",
+                        "primary-fixed-dim": "#91d4b7",
+                        "surface-variant": "#e1e3df",
+                        "primary-container": "#00503a",
+                        "outline-variant": "#bfc9c2",
+                        "on-background": "#191c1a",
+                        "primary": "#003727",
+                        "on-surface": "#191c1a",
+                        "outline": "#707974",
+                        "inverse-surface": "#2e312f",
+                        "surface-container-low": "#f2f4f0",
+                        "surface-bright": "#f8faf6",
+                        "on-primary-fixed": "#002116",
+                        "primary-fixed": "#adf1d2",
+                        "background": "#f8faf6",
+                        "on-secondary-fixed": "#001d36",
+                        "on-secondary": "#ffffff",
+                        "surface-container-high": "#e6e9e5"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "1rem",
+                        "lg": "2rem",
+                        "xl": "3rem",
+                        "full": "9999px"
+                    },
+                    "fontFamily": {
+                        "headline": ["Manrope", "Hind Siliguri"],
+                        "body": ["Manrope", "Hind Siliguri"],
+                        "label": ["Manrope", "Hind Siliguri"]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        body { font-family: 'Hind Siliguri', 'Manrope', sans-serif; }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .glass-ai {
+            background: rgba(225, 227, 223, 0.6);
+            backdrop-filter: blur(20px);
+        }
+        /* Custom scrollbar for clean look */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #bfc9c2; border-radius: 10px; }
+    </style>
+</head>
+<body class="bg-surface text-on-surface">
+<!-- Desktop Side Navigation -->
+<aside class="h-screen w-64 fixed left-0 top-0 hidden md:flex flex-col bg-surface-container-low py-8">
+<div class="px-6 mb-8">
+<h1 class="text-xl font-black text-primary">সবুজ স্টোর</h1>
+<p class="text-sm text-on-surface-variant font-medium">প্রো মেম্বার</p>
+</div>
+<nav class="flex-1 space-y-1">
+<a class="flex items-center text-on-surface-variant pl-10 py-3 hover:bg-surface-container rounded-l-full transition-all" href="#">
+<span class="material-symbols-outlined mr-3">dashboard</span>
+<span>ড্যাশবোর্ড</span>
+</a>
+<a class="flex items-center text-on-surface-variant pl-10 py-3 hover:bg-surface-container rounded-l-full transition-all" href="#">
+<span class="material-symbols-outlined mr-3">receipt_long</span>
+<span>বিক্রয়</span>
+</a>
+<a class="flex items-center text-on-surface-variant pl-10 py-3 hover:bg-surface-container rounded-l-full transition-all" href="#">
+<span class="material-symbols-outlined mr-3">payments</span>
+<span>ব্যয়</span>
+</a>
+<a class="bg-white text-primary rounded-l-full ml-4 pl-6 py-3 font-bold shadow-sm flex items-center translate-x-1 duration-200" href="#">
+<span class="material-symbols-outlined mr-3">menu_book</span>
+<span>বাকি খাতা</span>
+</a>
+<a class="flex items-center text-on-surface-variant pl-10 py-3 hover:bg-surface-container rounded-l-full transition-all" href="#">
+<span class="material-symbols-outlined mr-3">assessment</span>
+<span>রিপোর্ট</span>
+</a>
+</nav>
+<div class="mt-auto px-6 space-y-4">
+<button class="w-full bg-primary-container text-on-primary-container py-3 rounded-lg font-bold flex items-center justify-center gap-2">
+<span class="material-symbols-outlined">add</span>
+                নতুন এন্ট্রি
+            </button>
+<div class="space-y-1">
+<a class="flex items-center text-on-surface-variant py-2 hover:text-primary" href="#">
+<span class="material-symbols-outlined mr-3">settings</span>
+<span>সেটিংস</span>
+</a>
+<a class="flex items-center text-on-surface-variant py-2 hover:text-primary" href="#">
+<span class="material-symbols-outlined mr-3">help</span>
+<span>সহায়তা</span>
+</a>
+</div>
+</div>
+</aside>
+<!-- Main Content Area -->
+<main class="md:ml-64 min-h-screen pb-24 md:pb-8">
+<!-- Top App Bar with NLP Input -->
+<header class="sticky top-0 z-40 bg-surface/80 backdrop-blur-md px-6 py-4 flex flex-col md:flex-row gap-4 items-center">
+<div class="flex items-center justify-between w-full md:w-auto gap-4">
+<div class="flex items-center gap-4">
+<div class="md:hidden">
+<span class="material-symbols-outlined text-primary text-2xl">menu</span>
+</div>
+<h2 class="text-2xl font-bold text-primary tracking-tight whitespace-nowrap">বাকি খাতা</h2>
+</div>
+</div>
+<!-- NLP Voice/Text Input Bar -->
+<div class="flex-1 w-full max-w-2xl mx-auto">
+<div class="bg-surface-container rounded-full px-5 py-2 flex items-center gap-3 group focus-within:bg-white focus-within:shadow-sm transition-all">
+<span class="material-symbols-outlined text-on-surface-variant">auto_awesome</span>
+<input class="bg-transparent border-none focus:ring-0 text-sm flex-1 placeholder:text-on-surface-variant/60" placeholder="রহিমার বেগম ৫০০ টাকা বাকী নিয়েছে" type="text"/>
+<button class="bg-primary text-white p-1.5 rounded-full flex items-center justify-center hover:bg-primary/90 transition-colors">
+<span class="material-symbols-outlined text-sm">send</span>
+</button>
+</div>
+</div>
+<div class="flex items-center gap-4 ml-auto">
+<div class="hidden lg:flex bg-surface-container rounded-full px-4 py-2 items-center gap-2">
+<span class="material-symbols-outlined text-on-surface-variant text-lg">search</span>
+<input class="bg-transparent border-none focus:ring-0 text-sm w-32 xl:w-48" placeholder="কাস্টমার খুঁজুন..." type="text"/>
+</div>
+<span class="material-symbols-outlined text-on-surface-variant p-2 hover:bg-surface-container rounded-full cursor-pointer">notifications</span>
+<span class="material-symbols-outlined text-on-surface-variant p-2 hover:bg-surface-container rounded-full cursor-pointer">account_circle</span>
+</div>
+</header>
+<div class="px-6 space-y-8 mt-4">
+<!-- Quick Command Bento Grid -->
+<section class="grid grid-cols-1 md:grid-cols-3 gap-6">
+<!-- Total Due Card -->
+<div class="md:col-span-2 bg-surface-container-low p-8 rounded-lg flex flex-col justify-between min-h-[200px]">
+<div class="flex justify-between items-start">
+<div class="space-y-1">
+<p class="text-on-surface-variant font-medium">মোট বকেয়া পরিমাণ</p>
+<!-- Refined typography to prevent breaking -->
+<h3 class="text-4xl lg:text-5xl font-extrabold text-primary tracking-tighter whitespace-nowrap">৳ ৪,৮৫,২০০</h3>
+</div>
+<div class="bg-primary-container/10 p-4 rounded-full">
+<span class="material-symbols-outlined text-primary text-4xl">account_balance_wallet</span>
+</div>
+</div>
+<div class="flex items-center gap-2 text-primary font-bold mt-4">
+<span class="material-symbols-outlined">trending_up</span>
+<span>গত মাসের তুলনায় ১২% বৃদ্ধি</span>
+</div>
+</div>
+<!-- Recovery Card -->
+<div class="bg-surface-container-lowest shadow-sm p-8 rounded-lg flex flex-col justify-between border-t-4 border-primary">
+<div class="space-y-1">
+<p class="text-on-surface-variant font-medium">আজকের সংগ্রহ</p>
+<h3 class="text-4xl font-bold text-secondary tracking-tight">৳ ১২,৫০০</h3>
+</div>
+<div class="mt-6 flex flex-col gap-3">
+<div class="w-full bg-surface-container h-2 rounded-full overflow-hidden">
+<div class="bg-secondary h-full w-[65%]"></div>
+</div>
+<p class="text-xs text-on-surface-variant font-medium">লক্ষ্যের ৬৫% অর্জিত</p>
+</div>
+</div>
+</section>
+<!-- High Alert AI Widget (Glassmorphism) -->
+<section class="glass-ai p-6 rounded-lg relative overflow-hidden">
+<div class="absolute -right-10 -top-10 opacity-10">
+<span class="material-symbols-outlined text-[12rem]">auto_awesome</span>
+</div>
+<div class="relative z-10">
+<div class="flex items-center gap-2 mb-4">
+<span class="material-symbols-outlined text-tertiary">warning</span>
+<h4 class="text-lg font-bold text-tertiary">হাই অ্যালার্ট: দীর্ঘমেয়াদী বকেয়া</h4>
+</div>
+<p class="text-on-surface-variant mb-6 max-w-2xl leading-relaxed">
+                        ১২ জন কাস্টমারের বকেয়া ৩০ দিনের বেশি সময় ধরে পরিশোধিত হয়নি। এদের মধ্যে ৩ জন 'প্রিমিয়াম' কাস্টমার যাদের মোট বকেয়া ৳ ৪৫,০০০। অতিসত্বর যোগাযোগ করার পরামর্শ দেওয়া হচ্ছে।
+                    </p>
+<div class="flex flex-wrap gap-4">
+<button class="bg-primary text-white px-6 py-3 rounded-full font-bold flex items-center gap-2 hover:bg-primary/90 transition-colors">
+<span class="material-symbols-outlined">smart_toy</span>
+                            AI দিয়ে রিমাইন্ডার পাঠান
+                        </button>
+<button class="bg-surface-container-highest text-on-surface px-6 py-3 rounded-full font-bold hover:bg-surface-container transition-colors">
+                            তালিকায় দেখুন
+                        </button>
+</div>
+</div>
+</section>
+<!-- Customer Due List -->
+<section class="space-y-6">
+<div class="flex justify-between items-end">
+<div>
+<h4 class="text-2xl font-bold text-primary">বকেয়া তালিকা</h4>
+<p class="text-on-surface-variant">পেমেন্ট গুরুত্ব অনুযায়ী সাজানো</p>
+</div>
+<div class="flex items-center gap-4">
+<!-- Added View All Customers Button -->
+<button class="text-primary font-bold text-sm px-4 py-2 hover:bg-primary/5 rounded-full transition-colors flex items-center gap-1">
+                            সব কাস্টমার দেখুন
+                            <span class="material-symbols-outlined text-sm">arrow_forward</span>
+</button>
+<div class="flex gap-2">
+<button class="p-2 bg-surface-container rounded-full text-on-surface-variant hover:text-primary transition-colors">
+<span class="material-symbols-outlined">filter_list</span>
+</button>
+<button class="p-2 bg-surface-container rounded-full text-on-surface-variant hover:text-primary transition-colors">
+<span class="material-symbols-outlined">sort</span>
+</button>
+</div>
+</div>
+</div>
+<div class="space-y-4">
+<!-- Priority Item 1 -->
+<div class="bg-surface-container-lowest p-6 rounded-lg flex flex-col md:flex-row justify-between items-start md:items-center gap-6 shadow-sm hover:shadow-md transition-shadow group">
+<div class="flex items-center gap-4 flex-1">
+<div class="w-16 h-16 rounded-full bg-tertiary-container flex items-center justify-center text-white text-xl font-bold shrink-0">
+<img alt="Customer" class="w-full h-full rounded-full object-cover" data-alt="close-up portrait of a middle-aged South Asian shopkeeper with a friendly smile, natural warm lighting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBpr7k8VZNMLnQJ3GplQFiCnMKeGRXoqBkUg0i27DkxiTNJmWExyvw7mU713re0mKQKlCThDYfDCXZ5h05FdAoUT4qqfdZf21PWIV9WS1ugti00IliP7FVgK7znIoKALkxGQnCQJ5licoo4qhuT7-rIeEjdNIB2Wi7L1bJ5oCrSLk-9Aozhw3UJuEIFErxDMfHrJdQNFcKOtM_DNvvVVkd6e-FXr8PNr_F5L-2P1oLtrkO8e4OtX6FD-6OBRYtzzJkmcx8XkfP6w4O6"/>
+</div>
+<div class="space-y-1">
+<div class="flex items-center gap-2">
+<h5 class="text-xl font-bold text-on-surface">করিম উল্লাহ</h5>
+<span class="bg-tertiary text-white text-[10px] px-2 py-0.5 rounded-full font-bold uppercase tracking-wider">অতি জরুরি</span>
+</div>
+<p class="text-on-surface-variant text-sm flex items-center gap-1">
+<span class="material-symbols-outlined text-xs">schedule</span>
+                                    শেষ পেমেন্ট: ৪৫ দিন আগে
+                                </p>
+</div>
+</div>
+<div class="flex flex-col md:items-end flex-1">
+<p class="text-sm text-on-surface-variant font-medium">মোট বকেয়া</p>
+<p class="text-2xl font-black text-tertiary tracking-tight">৳ ১২,৮০০</p>
+</div>
+<div class="flex gap-2 w-full md:w-auto">
+<button class="flex-1 md:flex-none bg-surface-container-highest text-on-surface-variant px-5 py-4 rounded-lg font-bold flex items-center justify-center gap-2 group-hover:bg-primary group-hover:text-white transition-colors">
+<span class="material-symbols-outlined">add_circle</span>
+                                বাকি যোগ
+                            </button>
+<button class="flex-1 md:flex-none bg-primary text-white px-5 py-4 rounded-lg font-bold flex items-center justify-center gap-2 hover:bg-primary/90">
+<span class="material-symbols-outlined" data-weight="fill">payments</span>
+                                পেমেন্ট নিন
+                            </button>
+<!-- WhatsApp Reminder Button -->
+<button class="bg-[#25D366] text-white p-4 rounded-lg flex items-center justify-center hover:shadow-lg hover:scale-105 transition-all" title="WhatsApp Reminder">
+<svg class="w-6 h-6 fill-current" viewbox="0 0 24 24">
+<path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L0 24l6.335-1.662c1.72.937 3.659 1.432 5.628 1.433h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"></path></svg>
+</button>
+</div>
+</div>
+<!-- Priority Item 2 -->
+<div class="bg-surface-container-lowest p-6 rounded-lg flex flex-col md:flex-row justify-between items-start md:items-center gap-6 shadow-sm hover:shadow-md transition-shadow group">
+<div class="flex items-center gap-4 flex-1">
+<div class="w-16 h-16 rounded-full bg-primary-container flex items-center justify-center text-white text-xl font-bold shrink-0">
+<img alt="Customer" class="w-full h-full rounded-full object-cover" data-alt="professional portrait of a young man with glasses and a clean-shaven look, soft daylight background" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBEn0RZA11Ipft3HWyg78isfDEp6UNDn-LOBlczGkIs7X0MD0QXaywAJq7ByXVKOll3jt7J38Z8W7X7ayF8PbWFlrkLEQvIsrqH6pO_A03stzkpZJz5yQfKESJo-G6-hKy5i4zvay7ouGQ5Nw2za6Z1_clNe1EHoGUqXYJ43FRLwYe1uAqLPqiQ8eeHSiehIaSoQJN3ZwMGCgegnFcdtahXTSgD_tZPYTUTD8FX8rxwLbtJOsd7-koFgKmBA1CRC-ViRIIZX3ZFUAB4"/>
+</div>
+<div class="space-y-1">
+<div class="flex items-center gap-2">
+<h5 class="text-xl font-bold text-on-surface">আহমেদ হাসান</h5>
+<span class="bg-secondary text-white text-[10px] px-2 py-0.5 rounded-full font-bold uppercase tracking-wider">নিয়মিত</span>
+</div>
+<p class="text-on-surface-variant text-sm flex items-center gap-1">
+<span class="material-symbols-outlined text-xs">schedule</span>
+                                    শেষ পেমেন্ট: ৮ দিন আগে
+                                </p>
+</div>
+</div>
+<div class="flex flex-col md:items-end flex-1">
+<p class="text-sm text-on-surface-variant font-medium">মোট বকেয়া</p>
+<p class="text-2xl font-black text-primary tracking-tight">৳ ৩,৪৫০</p>
+</div>
+<div class="flex gap-2 w-full md:w-auto">
+<button class="flex-1 md:flex-none bg-surface-container-highest text-on-surface-variant px-5 py-4 rounded-lg font-bold flex items-center justify-center gap-2 group-hover:bg-primary group-hover:text-white transition-colors">
+<span class="material-symbols-outlined">add_circle</span>
+                                বাকি যোগ
+                            </button>
+<button class="flex-1 md:flex-none bg-primary text-white px-5 py-4 rounded-lg font-bold flex items-center justify-center gap-2 hover:bg-primary/90">
+<span class="material-symbols-outlined" data-weight="fill">payments</span>
+                                পেমেন্ট নিন
+                            </button>
+<!-- WhatsApp Reminder Button -->
+<button class="bg-[#25D366] text-white p-4 rounded-lg flex items-center justify-center hover:shadow-lg hover:scale-105 transition-all" title="WhatsApp Reminder">
+<svg class="w-6 h-6 fill-current" viewbox="0 0 24 24">
+<path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L0 24l6.335-1.662c1.72.937 3.659 1.432 5.628 1.433h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"></path></svg>
+</button>
+</div>
+</div>
+<!-- Priority Item 3 -->
+<div class="bg-surface-container-lowest p-6 rounded-lg flex flex-col md:flex-row justify-between items-start md:items-center gap-6 shadow-sm hover:shadow-md transition-shadow group">
+<div class="flex items-center gap-4 flex-1">
+<div class="w-16 h-16 rounded-full bg-secondary-container flex items-center justify-center text-white text-xl font-bold shrink-0">
+<img alt="Customer" class="w-full h-full rounded-full object-cover" data-alt="warm portrait of a smiling older woman with gentle eyes, soft indoor lighting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDZxBk1L52WXHiC7wlH-WWeJqfuZjvhSWsryPkV7PAVjj7XFQMtnFhpEk1J-m8oEGnwB8po9lZCQK0ckIJWw7VUjtRJtThVmEH2RuHCAanbW_UvOn0Dwk5_Ch2yaIsRkFGrzwWQTl9KhxAPNWKwqY0W_zEOl6hnH0VmBvVwe6c_jyg2nyPc5-PFkeOyf7Tf877iSM0HF6ekzRnnTjW7ESkXMjFGeFkG7ZZpHHw98xbZ-8TSFVf6-Hgd_Dcdbu4pT0RdskbXlzfTgcIS"/>
+</div>
+<div class="space-y-1">
+<div class="flex items-center gap-2">
+<h5 class="text-xl font-bold text-on-surface">রহিমা বেগম</h5>
+<span class="bg-outline-variant text-on-surface-variant text-[10px] px-2 py-0.5 rounded-full font-bold uppercase tracking-wider">নতুন</span>
+</div>
+<p class="text-on-surface-variant text-sm flex items-center gap-1">
+<span class="material-symbols-outlined text-xs">schedule</span>
+                                    শেষ পেমেন্ট: কখনও না
+                                </p>
+</div>
+</div>
+<div class="flex flex-col md:items-end flex-1">
+<p class="text-sm text-on-surface-variant font-medium">মোট বকেয়া</p>
+<p class="text-2xl font-black text-primary tracking-tight">৳ ৮৫০</p>
+</div>
+<div class="flex gap-2 w-full md:w-auto">
+<button class="flex-1 md:flex-none bg-surface-container-highest text-on-surface-variant px-5 py-4 rounded-lg font-bold flex items-center justify-center gap-2 group-hover:bg-primary group-hover:text-white transition-colors">
+<span class="material-symbols-outlined">add_circle</span>
+                                বাকি যোগ
+                            </button>
+<button class="flex-1 md:flex-none bg-primary text-white px-5 py-4 rounded-lg font-bold flex items-center justify-center gap-2 hover:bg-primary/90">
+<span class="material-symbols-outlined" data-weight="fill">payments</span>
+                                পেমেন্ট নিন
+                            </button>
+<!-- WhatsApp Reminder Button -->
+<button class="bg-[#25D366] text-white p-4 rounded-lg flex items-center justify-center hover:shadow-lg hover:scale-105 transition-all" title="WhatsApp Reminder">
+<svg class="w-6 h-6 fill-current" viewbox="0 0 24 24">
+<path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L0 24l6.335-1.662c1.72.937 3.659 1.432 5.628 1.433h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"></path></svg>
+</button>
+</div>
+</div>
+</div>
+</section>
+</div>
+</main>
+<!-- Speak to AI FAB -->
+<button class="fixed bottom-24 right-6 md:bottom-8 md:right-8 bg-gradient-to-br from-secondary to-secondary-container text-white w-16 h-16 rounded-xl shadow-lg flex items-center justify-center z-50 hover:scale-110 transition-transform active:scale-95">
+<span class="material-symbols-outlined text-3xl">mic</span>
+</button>
+<!-- Mobile Bottom Navigation -->
+<nav class="fixed bottom-0 left-0 w-full flex justify-around items-center px-4 pb-4 pt-2 md:hidden bg-surface-container-lowest/80 backdrop-blur-xl border-t border-primary/10 z-50 rounded-t-[2rem] shadow-[0_-4px_24px_rgba(0,0,0,0.04)]">
+<div class="flex flex-col items-center justify-center text-on-surface-variant px-4 py-2">
+<span class="material-symbols-outlined">home</span>
+<span class="text-[10px] font-medium">হোম</span>
+</div>
+<div class="flex flex-col items-center justify-center text-on-surface-variant px-4 py-2">
+<span class="material-symbols-outlined">add_shopping_cart</span>
+<span class="text-[10px] font-medium">বিক্রয়</span>
+</div>
+<div class="flex flex-col items-center justify-center bg-primary text-white rounded-2xl px-4 py-2 mb-1">
+<span class="material-symbols-outlined">menu_book</span>
+<span class="text-[10px] font-medium">বাকি</span>
+</div>
+<div class="flex flex-col items-center justify-center text-on-surface-variant px-4 py-2">
+<span class="material-symbols-outlined">wallet</span>
+<span class="text-[10px] font-medium">খাতা</span>
+</div>
+<div class="flex flex-col items-center justify-center text-on-surface-variant px-4 py-2">
+<span class="material-symbols-outlined">bar_chart</span>
+<span class="text-[10px] font-medium">রিপোর্ট</span>
+</div>
+</nav>
+</body></html>

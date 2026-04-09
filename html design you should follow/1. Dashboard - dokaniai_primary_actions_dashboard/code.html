@@ -1,0 +1,402 @@
+<!DOCTYPE html><html lang="bn"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>আমার দোকান - ড্যাশবোর্ড</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@300;400;500;600;700&amp;family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "on-primary-fixed": "#002116",
+                        "inverse-on-surface": "#eef2ed",
+                        "surface-container": "#ebefea",
+                        "on-tertiary-fixed": "#3c0705",
+                        "on-secondary-container": "#00355c",
+                        "on-tertiary": "#ffffff",
+                        "on-primary-fixed-variant": "#00513b",
+                        "on-tertiary-fixed-variant": "#75322b",
+                        "tertiary": "#74302a",
+                        "surface-bright": "#f7faf6",
+                        "background": "#f7faf6",
+                        "on-secondary-fixed-variant": "#00497d",
+                        "on-primary-container": "#92e7c3",
+                        "inverse-surface": "#2d312f",
+                        "secondary-fixed": "#d1e4ff",
+                        "outline-variant": "#bec9c2",
+                        "tertiary-container": "#91473f",
+                        "surface-container-low": "#f1f5f0",
+                        "on-tertiary-container": "#ffcac3",
+                        "on-secondary-fixed": "#001d36",
+                        "inverse-primary": "#83d7b4",
+                        "surface-tint": "#046c50",
+                        "secondary-container": "#33a0fd",
+                        "primary-container": "#006a4e",
+                        "primary": "#00503a",
+                        "on-error-container": "#93000a",
+                        "surface-container-highest": "#e0e3df",
+                        "secondary-fixed-dim": "#9ecaff",
+                        "primary-fixed": "#9ef4d0",
+                        "surface-variant": "#e0e3df",
+                        "surface": "#f7faf6",
+                        "error": "#ba1a1a",
+                        "surface-container-high": "#e5e9e5",
+                        "primary-fixed-dim": "#83d7b4",
+                        "error-container": "#ffdad6",
+                        "tertiary-fixed-dim": "#ffb4aa",
+                        "on-surface-variant": "#3f4944",
+                        "on-error": "#ffffff",
+                        "surface-container-lowest": "#ffffff",
+                        "on-background": "#181d1a",
+                        "surface-dim": "#d7dbd7",
+                        "secondary": "#0061a4",
+                        "outline": "#6f7a73",
+                        "on-secondary": "#ffffff",
+                        "tertiary-fixed": "#ffdad5",
+                        "on-surface": "#181d1a",
+                        "on-primary": "#ffffff"
+                    },
+                    fontFamily: {
+                        "headline": ["Plus Jakarta Sans", "Hind Siliguri"],
+                        "body": ["Hind Siliguri", "Inter"],
+                        "label": ["Hind Siliguri", "Inter"]
+                    },
+                    borderRadius: { "DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px" },
+                },
+            },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            vertical-align: middle;
+        }
+        body { font-family: 'Hind Siliguri', sans-serif; }
+    </style>
+</head>
+<body class="bg-surface text-on-surface">
+<!-- SideNavBar (Authority: JSON) -->
+<aside class="hidden md:flex flex-col h-full py-6 px-4 bg-white dark:bg-emerald-950 h-screen w-64 fixed left-0 top-0 z-50 border-r border-emerald-100/20 dark:border-emerald-800/30 shadow-xl dark:shadow-none font-['Hind_Siliguri'] text-sm tracking-wide">
+<div class="mb-8 px-4">
+<h1 class="text-xl font-black text-[#00503a] dark:text-emerald-300" style="">আমার দোকান</h1>
+<p class="text-xs text-on-surface-variant" style="">প্রিমিয়াম লেজার</p>
+</div>
+<nav class="flex-1 space-y-2">
+<a class="flex items-center gap-3 bg-emerald-50 dark:bg-emerald-900/40 text-[#00503a] dark:text-emerald-300 font-bold rounded-lg px-4 py-3" href="#" style="">
+<span class="material-symbols-outlined" style="">dashboard</span> ড্যাশবোর্ড
+            </a>
+<a class="flex items-center gap-3 text-slate-500 dark:text-emerald-100/60 px-4 py-3 hover:bg-emerald-50/50 transition-colors" href="#" style="">
+<span class="material-symbols-outlined" style="">shopping_cart</span> বিক্রয়
+            </a>
+<a class="flex items-center gap-3 text-slate-500 dark:text-emerald-100/60 px-4 py-3 hover:bg-emerald-50/50 transition-colors" href="#" style="">
+<span class="material-symbols-outlined" style="">payments</span> খরচ
+            </a>
+<a class="flex items-center gap-3 text-slate-500 dark:text-emerald-100/60 px-4 py-3 hover:bg-emerald-50/50 transition-colors" href="#" style="">
+<span class="material-symbols-outlined" style="">menu_book</span> বাকী খাতা
+            </a>
+<a class="flex items-center gap-3 text-slate-500 dark:text-emerald-100/60 px-4 py-3 hover:bg-emerald-50/50 transition-colors" href="#" style="">
+<span class="material-symbols-outlined" style="">inventory_2</span> পণ্য
+            </a>
+<a class="flex items-center gap-3 text-slate-500 dark:text-emerald-100/60 px-4 py-3 hover:bg-emerald-50/50 transition-colors" href="#" style="">
+<span class="material-symbols-outlined" style="">assessment</span> রিপোর্ট
+            </a>
+<a class="flex items-center gap-3 text-slate-500 dark:text-emerald-100/60 px-4 py-3 hover:bg-emerald-50/50 transition-colors" href="#" style="">
+<span class="material-symbols-outlined" style="font-variation-settings: &quot;FILL&quot; 1;">auto_awesome</span> AI সহকারী
+            </a>
+</nav>
+<div class="mt-auto px-4">
+<button class="w-full bg-primary text-on-primary py-3 rounded-xl font-bold flex items-center justify-center gap-2 shadow-lg shadow-primary/20 active:scale-95 transition-transform" style="">
+<span class="material-symbols-outlined" style="">add_circle</span> নতুন এন্ট্রি
+            </button>
+</div>
+</aside>
+<!-- Main Canvas -->
+<main class="md:ml-64 min-h-screen pb-24 md:pb-8">
+<!-- TopAppBar (Authority: JSON) -->
+<header class="flex justify-between items-center w-full px-6 py-3 bg-[#f7faf6] dark:bg-emerald-950 font-['Hind_Siliguri','Plus_Jakarta_Sans'] text-base font-semibold docked full-width top-0 z-40 bg-[#f1f5f0] dark:bg-emerald-900/50 flat no shadows">
+<div class="md:hidden">
+<h1 class="text-2xl font-bold text-[#00503a] dark:text-emerald-300" style="">আমার দোকান</h1>
+</div>
+<div class="hidden md:block">
+<p class="text-on-surface-variant font-medium" style="">ড্যাশবোর্ড / হোম</p>
+</div>
+<div class="flex items-center gap-4">
+<span class="material-symbols-outlined text-[#006A4E] dark:text-emerald-400 p-2 rounded-full hover:bg-emerald-50 transition-colors cursor-pointer" style="">language</span>
+<span class="material-symbols-outlined text-[#006A4E] dark:text-emerald-400 p-2 rounded-full hover:bg-emerald-50 transition-colors cursor-pointer" style="">notifications</span>
+<span class="material-symbols-outlined text-[#006A4E] dark:text-emerald-400 p-2 rounded-full hover:bg-emerald-50 transition-colors cursor-pointer" style="">account_circle</span>
+</div>
+</header>
+<div class="px-6 py-8 max-w-7xl mx-auto space-y-8">
+<!-- Welcome Section -->
+<section class="flex flex-col md:flex-row md:items-end justify-between gap-4">
+<div>
+<h2 class="text-3xl font-bold text-on-surface mb-1" style="">শুভ সকাল, জনাব রহিম! 👋</h2>
+<p class="text-on-surface-variant text-lg" style="">আপনার দোকানের আজকের সারাংশ এখানে দেখুন।</p>
+</div>
+<div class="bg-surface-container-low px-4 py-2 rounded-full flex items-center gap-2 text-primary font-semibold border border-outline-variant/20" style="">
+<span class="material-symbols-outlined" style="font-variation-settings: &quot;FILL&quot; 1;">calendar_today</span>
+                    ১২ অক্টোবর, ২০২৪
+                </div>
+</section>
+<!-- AI Command Bar (High Visibility) -->
+<section class="relative group">
+<div class="absolute -inset-1 bg-gradient-to-r from-primary to-secondary rounded-2xl blur opacity-15 group-hover:opacity-25 transition duration-1000 group-hover:duration-200"></div>
+<div class="relative flex items-center bg-white dark:bg-emerald-900 border border-primary/10 rounded-2xl p-2 shadow-xl">
+<div class="flex-1 flex items-center px-4">
+<span class="material-symbols-outlined text-primary-container mr-3" style="">search</span>
+<input class="w-full bg-transparent border-none focus:ring-0 text-lg py-3 text-on-surface placeholder:text-on-surface-variant/60" placeholder="এখানে বলুন বা লিখুন (যেমন: ৫ কেজি চাল বিক্রি, নতুন বাকী যোগ, বা স্টক কত আছে?)" type="text">
+</div>
+<button class="bg-gradient-to-br from-primary to-primary-container text-on-primary p-4 rounded-xl flex items-center justify-center shadow-lg hover:brightness-110 active:scale-95 transition-all" style="">
+<span class="material-symbols-outlined text-3xl" style="font-variation-settings: &quot;FILL&quot; 1;">mic</span>
+</button>
+</div>
+</section>
+<!-- KPI Cards Bento Grid -->
+<section class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+<div class="bg-surface-container-lowest p-6 rounded-2xl border-b-4 border-primary shadow-sm hover:shadow-md transition-shadow">
+<p class="text-on-surface-variant font-medium mb-2" style="">আজকের বিক্রি</p>
+<h3 class="text-4xl font-black text-primary" style="">৳ ১২,৪৫০</h3>
+<div class="mt-4 flex items-center text-xs font-bold text-primary bg-primary-fixed px-2 py-1 rounded w-fit" style="">
+<span class="material-symbols-outlined text-xs mr-1" style="">trending_up</span> ১২% বৃদ্ধি
+                    </div>
+</div>
+<div class="bg-surface-container-lowest p-6 rounded-2xl border-b-4 border-secondary shadow-sm hover:shadow-md transition-shadow">
+<p class="text-on-surface-variant font-medium mb-2" style="">আজকের লাভ</p>
+<h3 class="text-4xl font-black text-secondary" style="">৳ ২,৮০০</h3>
+<div class="mt-4 flex items-center text-xs font-bold text-secondary bg-secondary-fixed px-2 py-1 rounded w-fit" style="">
+<span class="material-symbols-outlined text-xs mr-1" style="">payments</span> ৫% বেশি
+                    </div>
+</div>
+<div class="bg-surface-container-lowest p-6 rounded-2xl border-b-4 border-tertiary shadow-sm hover:shadow-md transition-shadow">
+<p class="text-on-surface-variant font-medium mb-2" style="">মোট বাকী</p>
+<h3 class="text-4xl font-black text-tertiary" style="">৳ ৪২,৯০০</h3>
+<div class="mt-4 flex items-center text-xs font-bold text-tertiary bg-tertiary-fixed px-2 py-1 rounded w-fit" style="">
+<span class="material-symbols-outlined text-xs mr-1" style="">history_edu</span> ৩ জন গ্রাহক
+                    </div>
+</div>
+<div class="bg-surface-container-lowest p-6 rounded-2xl border-b-4 border-on-surface-variant shadow-sm hover:shadow-md transition-shadow">
+<p class="text-on-surface-variant font-medium mb-2" style="">আজকের খরচ</p>
+<h3 class="text-4xl font-black text-on-surface" style="">৳ ৯৫০</h3>
+<div class="mt-4 flex items-center text-xs font-bold text-on-surface-variant bg-surface-container-highest px-2 py-1 rounded w-fit" style="">
+<span class="material-symbols-outlined text-xs mr-1" style="">shopping_bag</span> ৫টি এন্ট্রি
+                    </div>
+</div>
+</section>
+<!-- Main Content Area: Two Columns -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+<!-- Left Column: Operations -->
+<div class="lg:col-span-8 space-y-8">
+<!-- Quick Actions -->
+<section>
+<h4 class="text-xl font-bold mb-4 flex items-center gap-2" style="">
+<span class="material-symbols-outlined text-primary" style="">bolt</span> দ্রুত কাজ
+                        </h4>
+<div class="space-y-4">
+<div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+<button class="flex flex-col items-center justify-center p-6 bg-primary text-white rounded-2xl hover:brightness-105 active:scale-95 transition-all gap-3 shadow-lg shadow-primary/10" style="">
+<span class="material-symbols-outlined text-4xl" style="">add_shopping_cart</span>
+<span class="font-bold text-lg" style="">নতুন বিক্রয়</span>
+</button>
+<button class="flex flex-col items-center justify-center p-6 bg-secondary text-white rounded-2xl hover:brightness-105 active:scale-95 transition-all gap-3 shadow-lg shadow-secondary/10" style="">
+<span class="material-symbols-outlined text-4xl" style="">post_add</span>
+<span class="font-bold text-lg" style="">পণ্য যোগ</span>
+</button>
+<button class="flex flex-col items-center justify-center p-6 bg-tertiary text-white rounded-2xl hover:brightness-105 active:scale-95 transition-all gap-3 shadow-lg shadow-tertiary/10" style="">
+<span class="material-symbols-outlined text-4xl" style="">history_edu</span>
+<span class="font-bold text-lg" style="">বাকী যোগ</span>
+</button>
+</div>
+<div class="grid grid-cols-2 gap-4">
+<button class="flex items-center justify-center gap-3 py-4 bg-surface-container-high text-on-surface-variant rounded-xl hover:bg-surface-container-highest transition-colors border border-outline-variant/20" style="">
+<span class="material-symbols-outlined" style="">receipt_long</span>
+<span class="font-bold" style="">খরচ লিখুন</span>
+</button>
+<button class="flex items-center justify-center gap-3 py-4 bg-surface-container-high text-on-surface-variant rounded-xl hover:bg-surface-container-highest transition-colors border border-outline-variant/20" style="">
+<span class="material-symbols-outlined" style="">keyboard_return</span>
+<span class="font-bold" style="">ফেরত লিখুন</span>
+</button>
+</div>
+</div>
+</section>
+<!-- Recent Transactions -->
+<section class="bg-surface-container-low rounded-3xl p-6">
+<div class="flex items-center justify-between mb-6">
+<h4 class="text-xl font-bold" style="">সাম্প্রতিক লেনদেন</h4>
+<button class="text-primary font-bold text-sm" style="">সব দেখুন</button>
+</div>
+<div class="space-y-3">
+<!-- Transaction Item -->
+<div class="bg-surface-container-lowest p-4 rounded-xl flex items-center justify-between hover:bg-white transition-colors">
+<div class="flex items-center gap-4">
+<div class="w-12 h-12 bg-emerald-50 text-primary rounded-full flex items-center justify-center">
+<span class="material-symbols-outlined" style="">shopping_cart</span>
+</div>
+<div>
+<p class="font-bold" style="">নগদ বিক্রয় #৩৪৩২</p>
+<p class="text-xs text-on-surface-variant" style="">২ মিনিট আগে • ৫টি পণ্য</p>
+</div>
+</div>
+<div class="text-right">
+<p class="font-bold text-primary" style="">+৳ ৮৫০</p>
+<p class="text-[10px] bg-primary-fixed text-primary px-2 rounded-full inline-block" style="">সফল</p>
+</div>
+</div>
+<!-- Transaction Item -->
+<div class="bg-surface-container-lowest p-4 rounded-xl flex items-center justify-between hover:bg-white transition-colors">
+<div class="flex items-center gap-4">
+<div class="w-12 h-12 bg-tertiary/10 text-tertiary rounded-full flex items-center justify-center">
+<span class="material-symbols-outlined" style="">keyboard_return</span>
+</div>
+<div>
+<p class="font-bold" style="">পণ্য ফেরত - রহিম স্টোর</p>
+<p class="text-xs text-on-surface-variant" style="">১৫ মিনিট আগে</p>
+</div>
+</div>
+<div class="text-right">
+<p class="font-bold text-tertiary" style="">-৳ ১২০</p>
+<p class="text-[10px] bg-tertiary-fixed text-tertiary px-2 rounded-full inline-block" style="">ফেরত</p>
+</div>
+</div>
+<!-- Transaction Item -->
+<div class="bg-surface-container-lowest p-4 rounded-xl flex items-center justify-between hover:bg-white transition-colors">
+<div class="flex items-center gap-4">
+<div class="w-12 h-12 bg-secondary-fixed/30 text-secondary rounded-full flex items-center justify-center">
+<span class="material-symbols-outlined" style="">electric_bolt</span>
+</div>
+<div>
+<p class="font-bold" style="">বিদ্যুৎ বিল পরিশোধ</p>
+<p class="text-xs text-on-surface-variant" style="">১ ঘণ্টা আগে</p>
+</div>
+</div>
+<div class="text-right">
+<p class="font-bold text-on-surface" style="">-৳ ২,৪০০</p>
+<p class="text-[10px] bg-surface-container-highest text-on-surface-variant px-2 rounded-full inline-block" style="">খরচ</p>
+</div>
+</div>
+</div>
+</section>
+</div>
+<!-- Right Column: Alerts & Ledger -->
+<div class="lg:col-span-4 space-y-8">
+<!-- Reorder Widget -->
+<section class="bg-white dark:bg-emerald-950 rounded-3xl p-6 shadow-sm border border-tertiary/10">
+<div class="flex items-center gap-2 mb-6 text-tertiary">
+<span class="material-symbols-outlined" style="font-variation-settings: &quot;FILL&quot; 1;">warning</span>
+<h4 class="text-xl font-bold" style="">স্টক ফুরিয়ে যাচ্ছে</h4>
+</div>
+<div class="space-y-4">
+<div class="flex items-center justify-between p-3 rounded-xl bg-tertiary-fixed/20 border-l-4 border-tertiary">
+<div>
+<p class="font-bold" style="">পিঁয়াজ (দেশি)</p>
+<p class="text-xs text-tertiary font-medium" style="">মাত্র ৩ কেজি বাকি</p>
+</div>
+<button class="p-2 bg-tertiary text-on-tertiary rounded-lg" style="">
+<span class="material-symbols-outlined" style="">add</span>
+</button>
+</div>
+<div class="flex items-center justify-between p-3 rounded-xl bg-tertiary-fixed/20 border-l-4 border-tertiary">
+<div>
+<p class="font-bold" style="">সয়াবিন তেল (৫লি)</p>
+<p class="text-xs text-tertiary font-medium" style="">মাত্র ২ বোতল বাকি</p>
+</div>
+<button class="p-2 bg-tertiary text-on-tertiary rounded-lg" style="">
+<span class="material-symbols-outlined" style="">add</span>
+</button>
+</div>
+</div>
+<button class="w-full mt-6 py-3 border border-dashed border-tertiary text-tertiary rounded-xl font-bold text-sm" style="">ইনভেন্টরি দেখুন</button>
+</section>
+<!-- Due Ledger Summary -->
+<section class="bg-white dark:bg-emerald-950 rounded-3xl p-6 shadow-sm">
+<div class="flex items-center gap-2 mb-6 text-secondary">
+<span class="material-symbols-outlined" style="font-variation-settings: &quot;FILL&quot; 1;">menu_book</span>
+<h4 class="text-xl font-bold" style="">বাকী খাতা (সেরা ৩)</h4>
+</div>
+<div class="space-y-4">
+<!-- Customer Item -->
+<div class="flex items-center justify-between group">
+<div class="flex items-center gap-3">
+<img class="w-10 h-10 rounded-full object-cover" data-alt="close-up portrait of a smiling middle-aged man with dark hair and friendly expression against a neutral background" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBeII4BsEKXhLC3na5NZdnAyqgnchmY1x0E0e7FhMK_fFGChkI3O2axQOQW0wyfnsZsxAH2VEIEJ8FsLaximxPUDNYszZeo7TwZzSmb8qxrfvlxaLzyDcw7GbJe3dxhUkKkC6_QqWJzAZXkaM0iBS2aq5r3gkLOiWn7Vc3kprU_YOFsHlDeS7bu3bnJv4e-nPlVDA0PNRJOMvwP1T4gJK2c5Fr1NVk2UWUqGbWnBPcAg7rRFsvl8rokgRStp2TgNA2pJ2OBCCHvvyM" style="">
+<div>
+<p class="font-bold text-sm" style="">হালিম ভাই</p>
+<p class="text-[10px] text-on-surface-variant" style="">শেষ বাকী: ৫ দিন আগে</p>
+</div>
+</div>
+<div class="flex items-center gap-3">
+<p class="font-bold text-tertiary" style="">৳ ২,৪০০</p>
+<button class="w-8 h-8 bg-green-100 text-green-700 rounded-full flex items-center justify-center hover:bg-green-600 hover:text-white transition-colors" style="">
+<span class="material-symbols-outlined text-sm" style="">chat</span>
+</button>
+</div>
+</div>
+<!-- Customer Item -->
+<div class="flex items-center justify-between group">
+<div class="flex items-center gap-3">
+<img class="w-10 h-10 rounded-full object-cover" data-alt="professional woman portrait with warm smile in casual business attire softly blurred office lighting background" src="https://lh3.googleusercontent.com/aida-public/AB6AXuC0qptcZpr-LaK6-qCIXj_Pxah1IuMeXHDcPKePT1GtyXOVWH3hCsexnqULIvqLXxloUYTFC8N_0CFCkxtLQo9yZAjywA_YvVSuyJVHHoT0kKNu9cEkZYaFyKSbAKUkLcUDHxQ-4z3NrcghmPCh-ynyLYbLoQOattyrjcb6pYsR2wsradFuFIaY_GzrqjeCbzpbYMJPyvZEBYiB6G95EimjtZQz7S1P_eKwvsKuAz0JPE0XY6ASC36mSXBMW72bNcXPyh2TeIHuYfU" style="">
+<div>
+<p class="font-bold text-sm" style="">আফসানা বেগম</p>
+<p class="text-[10px] text-on-surface-variant" style="">শেষ বাকী: ২ দিন আগে</p>
+</div>
+</div>
+<div class="flex items-center gap-3">
+<p class="font-bold text-tertiary" style="">৳ ১,২০০</p>
+<button class="w-8 h-8 bg-green-100 text-green-700 rounded-full flex items-center justify-center hover:bg-green-600 hover:text-white transition-colors" style="">
+<span class="material-symbols-outlined text-sm" style="">chat</span>
+</button>
+</div>
+</div>
+<!-- Customer Item -->
+<div class="flex items-center justify-between group">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-full bg-surface-container-highest flex items-center justify-center text-on-surface-variant font-bold" style="">কে</div>
+<div>
+<p class="font-bold text-sm" style="">কামাল হোসেন</p>
+<p class="text-[10px] text-on-surface-variant" style="">শেষ বাকী: ১০ দিন আগে</p>
+</div>
+</div>
+<div class="flex items-center gap-3">
+<p class="font-bold text-tertiary" style="">৳ ৮৫০</p>
+<button class="w-8 h-8 bg-green-100 text-green-700 rounded-full flex items-center justify-center hover:bg-green-600 hover:text-white transition-colors" style="">
+<span class="material-symbols-outlined text-sm" style="">chat</span>
+</button>
+</div>
+</div>
+</div>
+<button class="w-full mt-6 bg-secondary text-on-secondary py-3 rounded-xl font-bold text-sm shadow-md" style="">সম্পূর্ণ খাতা দেখুন</button>
+</section>
+</div>
+</div>
+</div>
+</main>
+<!-- BottomNavBar (Authority: JSON - Mobile Only) -->
+<nav class="md:hidden fixed bottom-8 left-1/2 -translate-x-1/2 z-50 flex items-center bg-white dark:bg-emerald-800 rounded-full border border-emerald-100/20 p-1 shadow-2xl shadow-emerald-900/20 min-w-[300px] backdrop-blur-md">
+<div class="flex w-full items-center justify-between">
+<!-- Inactive -->
+<a class="flex items-center gap-2 text-[#00503a] dark:text-emerald-100 px-6 py-3 hover:brightness-110 transition-all active:scale-95" href="#" style="">
+<span class="material-symbols-outlined" style="">dashboard</span>
+</a>
+<a class="flex items-center gap-2 text-[#00503a] dark:text-emerald-100 px-6 py-3 hover:brightness-110 transition-all active:scale-95" href="#" style="">
+<span class="material-symbols-outlined" style="">menu_book</span>
+</a>
+<!-- Active AI (Authority: JSON Mapping) -->
+<a class="flex items-center gap-2 bg-gradient-to-r from-[#00503a] to-[#006a4e] text-white rounded-full px-6 py-3 hover:brightness-110 transition-all active:scale-95" href="#" style="">
+<span class="material-symbols-outlined" style="">mic</span>
+<span class="font-['Hind_Siliguri'] font-medium" style="">AI সহকারী</span>
+</a>
+<a class="flex items-center gap-2 text-[#00503a] dark:text-emerald-100 px-6 py-3 hover:brightness-110 transition-all active:scale-95" href="#" style="">
+<span class="material-symbols-outlined" style="">inventory_2</span>
+</a>
+<a class="flex items-center gap-2 text-[#00503a] dark:text-emerald-100 px-6 py-3 hover:brightness-110 transition-all active:scale-95" href="#" style="">
+<span class="material-symbols-outlined" style="">person</span>
+</a>
+</div>
+</nav>
+<!-- Floating Action Button Contextual -->
+<button class="fixed bottom-24 right-6 md:right-8 bg-gradient-to-r from-[#00503a] to-[#006a4e] text-white p-4 rounded-2xl shadow-2xl z-40 md:flex items-center gap-3 hidden hover:scale-105 transition-transform" style="">
+<span class="material-symbols-outlined text-2xl" style="font-variation-settings: &quot;FILL&quot; 1;">auto_awesome</span>
+<span class="font-bold" style=""><br></span>
+</button>
+</body></html>

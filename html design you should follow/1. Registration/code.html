@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+
+<html class="light" lang="bn"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@300;400;500;600;700&amp;family=Manrope:wght@200;400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "surface-container-high": "#e6e9e5",
+                        "primary": "#003727",
+                        "background": "#f8faf6",
+                        "surface-container-low": "#f2f4f0",
+                        "primary-container": "#00503a",
+                        "tertiary": "#531e1a",
+                        "on-primary-fixed": "#002116",
+                        "primary-fixed": "#adf1d2",
+                        "inverse-on-surface": "#eff1ee",
+                        "on-secondary-fixed-variant": "#00497d",
+                        "inverse-primary": "#91d4b7",
+                        "error-container": "#ffdad6",
+                        "surface-container": "#ecefeb",
+                        "on-secondary": "#ffffff",
+                        "on-tertiary-fixed-variant": "#70352f",
+                        "on-primary-fixed-variant": "#02513b",
+                        "surface": "#f8faf6",
+                        "on-error": "#ffffff",
+                        "surface-bright": "#f8faf6",
+                        "outline": "#707974",
+                        "on-secondary-container": "#00477b",
+                        "tertiary-container": "#6f342e",
+                        "error": "#ba1a1a",
+                        "on-primary-container": "#7fc1a5",
+                        "tertiary-fixed": "#ffdad6",
+                        "surface-dim": "#d8dbd7",
+                        "surface-tint": "#276a52",
+                        "on-surface": "#191c1a",
+                        "inverse-surface": "#2e312f",
+                        "surface-container-highest": "#e1e3df",
+                        "secondary-container": "#77b7ff",
+                        "on-background": "#191c1a",
+                        "secondary-fixed": "#d1e4ff",
+                        "on-error-container": "#93000a",
+                        "tertiary-fixed-dim": "#ffb4ab",
+                        "on-tertiary-fixed": "#390b08",
+                        "on-surface-variant": "#404944",
+                        "on-secondary-fixed": "#001d36",
+                        "surface-variant": "#e1e3df",
+                        "on-tertiary": "#ffffff",
+                        "outline-variant": "#bfc9c2",
+                        "surface-container-lowest": "#ffffff",
+                        "secondary": "#0061a4",
+                        "on-tertiary-container": "#f09e95",
+                        "primary-fixed-dim": "#91d4b7",
+                        "on-primary": "#ffffff",
+                        "secondary-fixed-dim": "#9fcaff"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "1rem",
+                        "lg": "2rem",
+                        "xl": "3rem",
+                        "full": "9999px"
+                    },
+                    "fontFamily": {
+                        "headline": ["Manrope", "Hind Siliguri"],
+                        "body": ["Manrope", "Hind Siliguri"],
+                        "label": ["Manrope", "Hind Siliguri"]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        body { font-family: 'Hind Siliguri', 'Manrope', sans-serif; }
+        .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+        .glass-panel {
+            background: rgba(225, 227, 223, 0.6);
+            backdrop-filter: blur(20px);
+        }
+    </style>
+</head>
+<body class="bg-background text-on-surface selection:bg-primary-fixed-dim selection:text-on-primary-fixed">
+<!-- TopNavBar -->
+<header class="w-full top-0 sticky z-50 bg-[#f8faf6] dark:bg-stone-950 font-['Hind_Siliguri','Manrope'] antialiased">
+<div class="flex justify-between items-center px-6 py-4 max-w-screen-xl mx-auto">
+<div class="text-2xl font-bold tracking-tight text-[#00503a] dark:text-emerald-400">
+                DokaniAI
+            </div>
+<div class="flex items-center gap-4">
+<button class="flex items-center gap-2 px-4 py-2 rounded-full text-stone-500 hover:bg-[#ecefeb] transition-colors active:scale-95 duration-150">
+<span class="material-symbols-outlined">language</span>
+<span class="font-medium">বাংলা</span>
+</button>
+<button class="p-2 text-stone-500 hover:bg-[#ecefeb] rounded-full transition-colors active:scale-95 duration-150">
+<span class="material-symbols-outlined" data-icon="help_outline">help_outline</span>
+</button>
+</div>
+</div>
+<div class="bg-[#f2f4f0] dark:bg-stone-900 h-[1px] w-full"></div>
+</header>
+<main class="min-h-[calc(100vh-73px)] flex max-w-screen-xl mx-auto">
+<!-- SideNavBar / Progress Ledger -->
+<aside class="hidden lg:flex flex-col w-72 p-8 gap-8 bg-[#f8faf6] dark:bg-stone-950 border-r-0">
+<div class="space-y-1">
+<h2 class="text-xl font-bold text-primary">New Account</h2>
+<p class="text-stone-500 text-sm">Step 1 of 3</p>
+</div>
+<nav class="flex flex-col gap-3">
+<!-- Identity (Active) -->
+<div class="flex items-center gap-3 bg-emerald-50 dark:bg-emerald-900/20 text-[#00503a] dark:text-emerald-400 rounded-full px-5 py-4 font-bold transition-all">
+<span class="material-symbols-outlined" data-icon="person">person</span>
+<span class="text-sm">Identity</span>
+</div>
+<!-- Verification -->
+<div class="flex items-center gap-3 text-stone-500 px-5 py-4 hover:text-emerald-700 transition-all cursor-default">
+<span class="material-symbols-outlined" data-icon="verified_user">verified_user</span>
+<span class="text-sm">Verification</span>
+</div>
+<!-- Business Setup -->
+<div class="flex items-center gap-3 text-stone-500 px-5 py-4 hover:text-emerald-700 transition-all cursor-default">
+<span class="material-symbols-outlined" data-icon="storefront">storefront</span>
+<span class="text-sm">Business Setup</span>
+</div>
+</nav>
+<div class="mt-auto">
+<div class="p-6 rounded-lg bg-surface-container-low space-y-4">
+<h3 class="font-bold text-primary-container text-sm uppercase tracking-wider">Why DokaniAI?</h3>
+<div class="flex items-start gap-3">
+<span class="material-symbols-outlined text-secondary" style="font-variation-settings: 'FILL' 1;">verified</span>
+<p class="text-xs leading-relaxed text-on-surface-variant font-medium">Secure Ledger: Your financial data is encrypted and backed up in real-time.</p>
+</div>
+<div class="flex items-start gap-3">
+<span class="material-symbols-outlined text-secondary" style="font-variation-settings: 'FILL' 1;">auto_awesome</span>
+<p class="text-xs leading-relaxed text-on-surface-variant font-medium">AI Insights: Get automated sales predictions and stock alerts.</p>
+</div>
+</div>
+</div>
+</aside>
+<!-- Main Form Canvas -->
+<section class="flex-1 p-6 md:p-12 lg:p-16 flex flex-col items-center">
+<div class="w-full max-w-xl">
+<!-- Header Asymmetry -->
+<div class="mb-12">
+<h1 class="text-4xl font-extrabold text-primary mb-4 leading-tight">নতুন অ্যাকাউন্ট তৈরি করুন</h1>
+<p class="text-on-surface-variant text-lg">Create your digital ledger and start growing your business with AI-powered insights.</p>
+</div>
+<!-- Registration Method Switcher -->
+<div class="flex gap-2 p-1.5 bg-surface-container rounded-full mb-10 w-fit">
+<button class="px-6 py-2.5 rounded-full bg-surface-container-lowest text-primary font-bold shadow-sm text-sm">মোবাইল নম্বর</button>
+<button class="px-6 py-2.5 rounded-full text-on-surface-variant font-medium text-sm hover:bg-surface-container-high transition-colors">ইমেইল</button>
+</div>
+<!-- Step 1: Identity Form -->
+<form class="space-y-8">
+<!-- Full Name -->
+<div class="space-y-3">
+<label class="block text-sm font-semibold text-primary ml-1">আপনার পূর্ণ নাম (Full Name)</label>
+<div class="relative group">
+<input class="w-full bg-surface-container-highest border-none rounded-lg px-6 py-4 text-on-surface focus:ring-2 focus:ring-primary-fixed-dim transition-all placeholder:text-outline-variant" placeholder="যেমন: রহিম আহমেদ" type="text"/>
+<span class="absolute right-4 top-1/2 -translate-y-1/2 material-symbols-outlined text-outline-variant">badge</span>
+</div>
+</div>
+<!-- Phone Input -->
+<div class="space-y-3">
+<label class="block text-sm font-semibold text-primary ml-1">মোবাইল নম্বর (Phone Number)</label>
+<div class="flex gap-3">
+<div class="bg-surface-container-highest rounded-lg px-4 py-4 flex items-center gap-2 text-on-surface font-semibold">
+<img class="w-5 h-3.5" data-alt="National flag of Bangladesh with red circle on green field" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCmhs8jegOiQXO9JfjlJMcZ3THLDK0dBATh5bbIHl5Sf_WRoH12zSlTACyKKSYGzY8TQlRDP3U8XW4AlJO3_DL8N1hH3tkgKLISdMkd5b2S4XhZIWsGXWvYEVu9l0JPd9C_7ZUzYSVQo0Mrj-LIEIlw70qWuEmADOCxYV6-95E-T3jkEmsf7MkNdztwD1nOwovvMJESBiUOZaisNCcUHkxv11T2_ESJ68P-e3URfV9ZmzwDJkJHT8kMjgPsmPFiWKL7c1O-cmsNQjH0"/>
+<span>+৮৮০</span>
+</div>
+<div class="relative flex-1">
+<input class="w-full bg-surface-container-highest border-none rounded-lg px-6 py-4 text-on-surface focus:ring-2 focus:ring-primary-fixed-dim transition-all placeholder:text-outline-variant" placeholder="০১XXXXXXXXX" type="tel"/>
+<span class="absolute right-4 top-1/2 -translate-y-1/2 material-symbols-outlined text-outline-variant">call</span>
+</div>
+</div>
+</div>
+<!-- Shop Name -->
+<div class="space-y-3">
+<label class="block text-sm font-semibold text-primary ml-1">দোকানের নাম (Shop Name)</label>
+<div class="relative">
+<input class="w-full bg-surface-container-highest border-none rounded-lg px-6 py-4 text-on-surface focus:ring-2 focus:ring-primary-fixed-dim transition-all placeholder:text-outline-variant" placeholder="যেমন: রহিম জেনারেল স্টোর" type="text"/>
+<span class="absolute right-4 top-1/2 -translate-y-1/2 material-symbols-outlined text-outline-variant">storefront</span>
+</div>
+</div>
+<!-- Terms Checkbox (No borders, using tonal box) -->
+<label class="flex items-start gap-4 p-4 rounded-lg bg-surface-container-low cursor-pointer group">
+<div class="relative flex items-center mt-0.5">
+<input class="peer h-5 w-5 rounded border-none bg-surface-container-highest text-primary focus:ring-offset-0 focus:ring-2 focus:ring-primary-fixed-dim" type="checkbox"/>
+</div>
+<span class="text-sm text-on-surface-variant leading-relaxed">
+                            আমি <a class="text-secondary font-semibold hover:underline" href="#">শর্তাবলী</a> এবং <a class="text-secondary font-semibold hover:underline" href="#">গোপনীয়তা নীতি</a> মেনে নিচ্ছি।
+                        </span>
+</label>
+<!-- Action Buttons -->
+<div class="pt-6 flex flex-col sm:flex-row gap-4">
+<button class="flex-1 bg-gradient-to-br from-primary to-primary-container text-white rounded-lg px-8 py-5 font-bold text-lg shadow-lg active:scale-[0.98] transition-all flex items-center justify-center gap-2" type="submit">
+<span>পরবর্তী ধাপ (Continue)</span>
+<span class="material-symbols-outlined">arrow_forward</span>
+</button>
+</div>
+</form>
+<!-- Footer Text -->
+<div class="mt-12 pt-8 border-t border-outline-variant/15 text-center">
+<p class="text-on-surface-variant">
+                        ইতিমধ্যেই অ্যাকাউন্ট আছে? <a class="text-primary font-bold hover:underline" href="#">লগইন করুন</a>
+</p>
+</div>
+</div>
+</section>
+</main>
+<!-- Speak to AI FAB (Signature Component) -->
+<button class="fixed bottom-8 right-8 w-16 h-16 rounded-xl bg-gradient-to-br from-secondary to-secondary-container text-white shadow-xl flex items-center justify-center group active:scale-90 transition-all z-50">
+<span class="material-symbols-outlined text-3xl" style="font-variation-settings: 'FILL' 1;">mic</span>
+<div class="absolute right-full mr-4 bg-primary-container text-on-primary-container px-4 py-2 rounded-full text-sm font-bold opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none">
+            সহায়তার জন্য বলুন
+        </div>
+</button>
+<!-- Bottom Separation (No borders rule) -->
+<div class="h-24 bg-gradient-to-t from-surface-container-low to-transparent pointer-events-none"></div>
+</body></html>

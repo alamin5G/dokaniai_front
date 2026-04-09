@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+
+<html lang="bn"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@300;400;500;600;700&amp;family=Manrope:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style>
+        body {
+            font-family: 'Hind Siliguri', sans-serif;
+        }
+        .numeral {
+            font-family: 'Manrope', sans-serif;
+        }
+        .glass-card {
+            background: rgba(225, 227, 223, 0.6);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+        }
+    </style>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "on-background": "#191c1a",
+              "surface-container": "#ecefeb",
+              "tertiary-container": "#6f342e",
+              "surface-tint": "#276a52",
+              "error-container": "#ffdad6",
+              "secondary-container": "#77b7ff",
+              "on-tertiary-fixed-variant": "#70352f",
+              "surface-container-highest": "#e1e3df",
+              "on-tertiary": "#ffffff",
+              "tertiary": "#531e1a",
+              "primary": "#003727",
+              "on-secondary": "#ffffff",
+              "primary-fixed": "#adf1d2",
+              "on-primary-container": "#7fc1a5",
+              "surface-container-lowest": "#ffffff",
+              "surface-container-high": "#e6e9e5",
+              "primary-fixed-dim": "#91d4b7",
+              "primary-container": "#00503a",
+              "surface-container-low": "#f2f4f0",
+              "outline": "#707974",
+              "on-error": "#ffffff",
+              "tertiary-fixed": "#ffdad6",
+              "tertiary-fixed-dim": "#ffb4ab",
+              "surface-variant": "#e1e3df",
+              "on-primary-fixed-variant": "#02513b",
+              "secondary-fixed": "#d1e4ff",
+              "on-secondary-fixed": "#001d36",
+              "surface": "#f8faf6",
+              "on-surface": "#191c1a",
+              "on-error-container": "#93000a",
+              "surface-bright": "#f8faf6",
+              "secondary-fixed-dim": "#9fcaff",
+              "on-surface-variant": "#404944",
+              "outline-variant": "#bfc9c2",
+              "on-tertiary-container": "#f09e95",
+              "inverse-primary": "#91d4b7",
+              "on-tertiary-fixed": "#390b08",
+              "secondary": "#0061a4",
+              "on-primary-fixed": "#002116",
+              "background": "#f8faf6",
+              "on-primary": "#ffffff",
+              "inverse-surface": "#2e312f",
+              "on-secondary-fixed-variant": "#00497d",
+              "on-secondary-container": "#00477b",
+              "error": "#ba1a1a",
+              "surface-dim": "#d8dbd7",
+              "inverse-on-surface": "#eff1ee"
+            },
+            fontFamily: {
+              "headline": ["Manrope"],
+              "body": ["Manrope"],
+              "label": ["Manrope"]
+            },
+            borderRadius: {"DEFAULT": "1rem", "lg": "2rem", "xl": "3rem", "full": "9999px"},
+          },
+        },
+      }
+    </script>
+</head>
+<body class="bg-background text-on-background antialiased">
+<!-- Sidebar Navigation -->
+<aside class="h-screen w-72 flex flex-col fixed left-0 top-0 bg-[#f2f4f0] dark:bg-[#1c211e] py-8 gap-4 font-['Hind_Siliguri'] text-lg leading-relaxed z-50">
+<div class="px-6 mb-6">
+<h1 class="text-xl font-black text-[#00503a]">দোকানিAI</h1>
+<p class="text-sm text-on-surface-variant opacity-70">ব্যবসায়িক লেজার</p>
+</div>
+<nav class="flex-1 flex flex-col gap-1">
+<a class="flex items-center gap-4 px-6 py-3 text-[#404943] hover:translate-x-1 transition-transform" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+<span>ড্যাশবোর্ড</span>
+</a>
+<a class="flex items-center gap-4 px-6 py-3 bg-[#ffffff] text-[#00503a] rounded-r-full font-bold shadow-sm" href="#">
+<span class="material-symbols-outlined">payments</span>
+<span>ব্যয়</span>
+</a>
+<a class="flex items-center gap-4 px-6 py-3 text-[#404943] hover:translate-x-1 transition-transform" href="#">
+<span class="material-symbols-outlined">receipt_long</span>
+<span>বাকি</span>
+</a>
+<a class="flex items-center gap-4 px-6 py-3 text-[#404943] hover:translate-x-1 transition-transform" href="#">
+<span class="material-symbols-outlined">sell</span>
+<span>বিক্রয়</span>
+</a>
+<a class="flex items-center gap-4 px-6 py-3 text-[#404943] hover:translate-x-1 transition-transform" href="#">
+<span class="material-symbols-outlined">assessment</span>
+<span>রিপোর্ট</span>
+</a>
+</nav>
+<div class="px-6 mt-auto">
+<button class="w-full py-3 bg-primary text-on-primary rounded-lg font-semibold flex items-center justify-center gap-2 hover:opacity-90 transition-all">
+<span class="material-symbols-outlined text-sm">add</span>
+                নতুন হিসাব যোগ করুন
+            </button>
+<div class="mt-4 pt-4 border-t border-outline-variant/10">
+<a class="flex items-center gap-4 text-[#404943] py-2" href="#">
+<span class="material-symbols-outlined">settings</span>
+<span>সেটিংস</span>
+</a>
+</div>
+</div>
+</aside>
+<!-- Main Content Area -->
+<main class="ml-72 min-h-screen">
+<!-- Top App Bar -->
+<header class="flex items-center w-full px-8 py-4 bg-[#f8faf6] font-['Hind_Siliguri'] text-base font-semibold sticky top-0 z-40 justify-start">
+<div class="flex items-center gap-4">
+<h2 class="text-2xl font-bold text-[#00503a] tracking-tight">ব্যয় ব্যবস্থাপনা</h2>
+</div><div class="flex-1 max-w-2xl mx-8">
+<div class="relative flex items-center bg-surface-container-high rounded-full px-5 py-2 group focus-within:ring-2 focus-within:ring-primary/20 transition-all">
+<span class="material-symbols-outlined text-primary mr-3 select-none" style="font-variation-settings: 'FILL' 1;">auto_awesome</span>
+<input class="bg-transparent border-none focus:ring-0 text-sm w-full font-['Hind_Siliguri'] placeholder:text-on-surface-variant/50" placeholder="এখানে বলুন বা লিখুন (যেমন: দোকান ভাড়া ৫০০০ টাকা দেওয়া হয়েছে)" type="text"/>
+<button class="flex items-center justify-center ml-2 p-1.5 bg-primary text-on-primary rounded-full hover:opacity-90 transition-opacity">
+<span class="material-symbols-outlined text-sm">send</span>
+</button>
+</div>
+</div>
+<div class="flex items-center gap-6">
+<div class="bg-surface-container px-4 py-2 rounded-full flex items-center gap-2">
+<span class="material-symbols-outlined text-on-surface-variant">search</span>
+<input class="bg-transparent border-none focus:ring-0 text-sm" placeholder="হিসাব খুঁজুন..." type="text"/>
+</div>
+<div class="flex gap-3">
+<span class="material-symbols-outlined text-[#404943] hover:bg-[#ecefeb] p-2 rounded-full cursor-pointer transition-colors">notifications</span>
+<span class="material-symbols-outlined text-[#404943] hover:bg-[#ecefeb] p-2 rounded-full cursor-pointer transition-colors">account_circle</span>
+</div>
+</div>
+</header>
+<div class="p-8 space-y-8">
+<!-- Section 1: Visual Hierarchy (Bento Grid Style) -->
+<section class="grid grid-cols-12 gap-6">
+<!-- Main Chart Card -->
+<div class="col-span-12 lg:col-span-8 bg-surface-container-low p-8 rounded-lg relative overflow-hidden">
+<div class="relative z-10">
+<h3 class="text-xl font-bold mb-6">খরচের খাতসমূহ (এই মাস)</h3>
+<!-- Custom Horizontal Visual Bar Chart -->
+<div class="space-y-6">
+<div class="h-12 w-full flex rounded-full overflow-hidden">
+<div class="h-full bg-primary" style="width: 45%;"></div>
+<div class="h-full bg-secondary" style="width: 25%;"></div>
+<div class="h-full bg-primary-fixed-dim" style="width: 15%;"></div>
+<div class="h-full bg-secondary-container" style="width: 15%;"></div>
+</div>
+<!-- Legend -->
+<div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+<div class="flex items-center gap-2">
+<div class="w-3 h-3 rounded-full bg-primary"></div>
+<div class="flex flex-col">
+<span class="text-sm opacity-70">পণ্য কেনা</span>
+<span class="font-bold numeral">৳ ৪৫,৫০০</span>
+</div>
+</div>
+<div class="flex items-center gap-2">
+<div class="w-3 h-3 rounded-full bg-secondary"></div>
+<div class="flex flex-col">
+<span class="text-sm opacity-70">দোকান ভাড়া</span>
+<span class="font-bold numeral">৳ ২৫,০০০</span>
+</div>
+</div>
+<div class="flex items-center gap-2">
+<div class="w-3 h-3 rounded-full bg-primary-fixed-dim"></div>
+<div class="flex flex-col">
+<span class="text-sm opacity-70">ইউটিলিটি</span>
+<span class="font-bold numeral">৳ ১৫,২০০</span>
+</div>
+</div>
+<div class="flex items-center gap-2">
+<div class="w-3 h-3 rounded-full bg-secondary-container"></div>
+<div class="flex flex-col">
+<span class="text-sm opacity-70">অন্যান্য</span>
+<span class="font-bold numeral">৳ ১০,৩০০</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- AI Insights Card -->
+<div class="col-span-12 lg:col-span-4 glass-card p-8 rounded-lg border border-white/20 flex flex-col justify-between">
+<div>
+<div class="flex items-center gap-2 mb-4">
+<span class="material-symbols-outlined text-secondary" style="font-variation-settings: 'FILL' 1;">auto_awesome</span>
+<span class="font-bold text-secondary">AI পরামর্শ</span>
+</div>
+<p class="text-lg leading-relaxed">আপনার গত মাসের তুলনায় <span class="numeral font-bold text-tertiary">১২%</span> ইউটিলিটি খরচ বেড়েছে। রাতে লাইট বন্ধ রাখলে খরচ কমতে পারে।</p>
+</div>
+<div class="mt-6 flex items-center justify-between text-sm text-on-surface-variant">
+<span>বিশ্লেষণ শেষ: আজ, সকাল ১০:৩০</span>
+<span class="material-symbols-outlined cursor-pointer">refresh</span>
+</div>
+</div>
+</section>
+<!-- Section 2: Financial Summary Ticker -->
+<section class="grid grid-cols-1 md:grid-cols-3 gap-6">
+<div class="bg-surface-container-lowest p-6 rounded-lg flex flex-col items-start gap-1">
+<span class="text-sm text-on-surface-variant">মোট খরচ</span>
+<span class="text-3xl font-bold numeral text-primary">৳ ৯৬,০০০</span>
+</div>
+<div class="bg-surface-container-lowest p-6 rounded-lg flex flex-col items-start gap-1">
+<span class="text-sm text-on-surface-variant">বাকি পাওনা</span>
+<span class="text-3xl font-bold numeral text-tertiary">৳ ১২,৪৫০</span>
+</div>
+<div class="bg-surface-container-lowest p-6 rounded-lg flex flex-col items-start gap-1">
+<span class="text-sm text-on-surface-variant">পরিশোধিত</span>
+<span class="text-3xl font-bold numeral text-secondary">৳ ৮৩,৫৫০</span>
+</div>
+</section>
+<!-- Section 3: Ledger List (Divider-less) -->
+<section class="space-y-4">
+<div class="flex justify-between items-end mb-6">
+<h3 class="text-2xl font-bold">লেনদেন ইতিহাস</h3>
+<div class="flex gap-4">
+<button class="bg-surface-container px-4 py-2 rounded-full text-sm font-medium hover:bg-surface-container-high transition-colors">ফিল্টার</button>
+<button class="bg-surface-container px-4 py-2 rounded-full text-sm font-medium hover:bg-surface-container-high transition-colors">ডাউনলোড PDF</button>
+</div>
+</div>
+<div class="space-y-3">
+<!-- Ledger Item 1 -->
+<div class="group flex items-center justify-between p-5 bg-surface-container-lowest rounded-lg hover:bg-surface-container-low transition-all cursor-pointer">
+<div class="flex items-center gap-5">
+<div class="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center text-primary">
+<span class="material-symbols-outlined">shopping_bag</span>
+</div>
+<div class="flex flex-col">
+<span class="font-bold text-lg">মেসার্স রহিম স্টোর</span>
+<span class="text-sm opacity-60">১৫ অক্টোবর, ২০২৪ • পণ্য কেনা</span>
+</div>
+</div>
+<div class="flex items-center gap-12">
+<div class="flex flex-col items-end">
+<span class="text-xs uppercase tracking-wider opacity-50">অবস্থা</span>
+<span class="text-sm font-bold text-primary px-3 py-1 bg-primary/10 rounded-full">পরিশোধিত</span>
+</div>
+<div class="text-right">
+<span class="block text-xl font-bold numeral">৳ ৪,৫০০</span>
+<span class="text-xs opacity-50">বিকাশ পেমেন্ট</span>
+</div>
+</div>
+</div>
+<!-- Ledger Item 2 (Urgency State) -->
+<div class="group flex items-center justify-between p-5 bg-surface-container-lowest rounded-lg hover:bg-surface-container-low transition-all cursor-pointer border-l-4 border-tertiary">
+<div class="flex items-center gap-5">
+<div class="w-12 h-12 rounded-full bg-tertiary/10 flex items-center justify-center text-tertiary">
+<span class="material-symbols-outlined">electric_bolt</span>
+</div>
+<div class="flex flex-col">
+<span class="font-bold text-lg">ডিপিডিসি বিদ্যুৎ বিল</span>
+<span class="text-sm opacity-60">১২ অক্টোবর, ২০২৪ • ইউটিলিটি</span>
+</div>
+</div>
+<div class="flex items-center gap-12">
+<div class="flex flex-col items-end">
+<span class="text-xs uppercase tracking-wider opacity-50">অবস্থা</span>
+<span class="text-sm font-bold text-tertiary px-3 py-1 bg-tertiary/10 rounded-full">বাকি</span>
+</div>
+<div class="text-right">
+<span class="block text-xl font-bold numeral text-tertiary">৳ ৩,২০০</span>
+<span class="text-xs text-tertiary">আজ শেষ দিন</span>
+</div>
+</div>
+</div>
+<!-- Ledger Item 3 -->
+<div class="group flex items-center justify-between p-5 bg-surface-container-lowest rounded-lg hover:bg-surface-container-low transition-all cursor-pointer">
+<div class="flex items-center gap-5">
+<div class="w-12 h-12 rounded-full bg-secondary/10 flex items-center justify-center text-secondary">
+<span class="material-symbols-outlined">home_work</span>
+</div>
+<div class="flex flex-col">
+<span class="font-bold text-lg">দোকান মালিক (ভাড়া)</span>
+<span class="text-sm opacity-60">১০ অক্টোবর, ২০২৪ • ভাড়া</span>
+</div>
+</div>
+<div class="flex items-center gap-12">
+<div class="flex flex-col items-end">
+<span class="text-xs uppercase tracking-wider opacity-50">অবস্থা</span>
+<span class="text-sm font-bold text-primary px-3 py-1 bg-primary/10 rounded-full">পরিশোধিত</span>
+</div>
+<div class="text-right">
+<span class="block text-xl font-bold numeral">৳ ২৫,০০০</span>
+<span class="text-xs opacity-50">ব্যাংক ট্রান্সফার</span>
+</div>
+</div>
+</div>
+<!-- Ledger Item 4 -->
+<div class="group flex items-center justify-between p-5 bg-surface-container-lowest rounded-lg hover:bg-surface-container-low transition-all cursor-pointer border-l-4 border-tertiary-fixed-dim">
+<div class="flex items-center gap-5">
+<div class="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center text-primary">
+<span class="material-symbols-outlined">local_shipping</span>
+</div>
+<div class="flex flex-col">
+<span class="font-bold text-lg">ইউনিলিভার ডেলিভারি</span>
+<span class="text-sm opacity-60">০৮ অক্টোবর, ২০২৪ • লজিস্টিকস</span>
+</div>
+</div>
+<div class="flex items-center gap-12">
+<div class="flex flex-col items-end">
+<span class="text-xs uppercase tracking-wider opacity-50">অবস্থা</span>
+<span class="text-sm font-bold text-tertiary-container px-3 py-1 bg-tertiary-fixed rounded-full">আংশিক</span>
+</div>
+<div class="text-right">
+<span class="block text-xl font-bold numeral">৳ ১২,৮০০</span>
+<span class="text-xs opacity-50">৳ ৫,০০০ বাকি</span>
+</div>
+</div>
+</div>
+</div>
+</section>
+</div>
+<!-- Floating Action Button: Speak to AI -->
+<button class="fixed bottom-8 right-8 w-16 h-16 rounded-xl bg-gradient-to-br from-secondary to-secondary-container text-on-secondary shadow-[0_24px_48px_-12px_rgba(0,97,164,0.3)] flex items-center justify-center group hover:scale-105 transition-all z-50 overflow-hidden">
+<span class="material-symbols-outlined text-3xl z-10" style="font-variation-settings: 'FILL' 1;">mic</span>
+<div class="absolute inset-0 bg-white/10 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+</button>
+</main>
+<!-- Background Decoration (Resilient Ledger Strategy) -->
+<div class="fixed top-0 right-0 -z-10 w-[500px] h-[500px] bg-primary/5 blur-[120px] rounded-full"></div>
+<div class="fixed bottom-0 left-72 -z-10 w-[400px] h-[400px] bg-secondary/5 blur-[100px] rounded-full"></div>
+</body></html>

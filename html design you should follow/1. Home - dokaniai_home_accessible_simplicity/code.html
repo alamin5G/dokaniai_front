@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+
+<html class="light" lang="bn"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@300;400;500;600;700&amp;family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;family=Inter:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "on-tertiary-container": "#ffcac3",
+              "inverse-surface": "#2d312f",
+              "on-primary-fixed-variant": "#00513b",
+              "tertiary-container": "#91473f",
+              "surface-container-lowest": "#ffffff",
+              "surface-container-high": "#e5e9e5",
+              "surface-dim": "#d7dbd7",
+              "on-tertiary-fixed": "#3c0705",
+              "on-background": "#181d1a",
+              "primary": "#00503a",
+              "tertiary-fixed-dim": "#ffb4aa",
+              "surface-tint": "#046c50",
+              "secondary-fixed": "#d1e4ff",
+              "error-container": "#ffdad6",
+              "surface-bright": "#f7faf6",
+              "secondary-fixed-dim": "#9ecaff",
+              "secondary": "#0061a4",
+              "on-error": "#ffffff",
+              "on-secondary": "#ffffff",
+              "tertiary": "#74302a",
+              "on-primary-fixed": "#002116",
+              "primary-fixed-dim": "#83d7b4",
+              "surface-variant": "#e0e3df",
+              "on-primary-container": "#92e7c3",
+              "surface-container-highest": "#e0e3df",
+              "on-tertiary": "#ffffff",
+              "surface-container-low": "#f1f5f0",
+              "on-error-container": "#93000a",
+              "background": "#f7faf6",
+              "tertiary-fixed": "#ffdad5",
+              "primary-fixed": "#9ef4d0",
+              "outline": "#6f7a73",
+              "on-secondary-fixed-variant": "#00497d",
+              "on-secondary-container": "#00355c",
+              "secondary-container": "#33a0fd",
+              "inverse-primary": "#83d7b4",
+              "on-secondary-fixed": "#001d36",
+              "outline-variant": "#bec9c2",
+              "error": "#ba1a1a",
+              "on-primary": "#ffffff",
+              "on-surface": "#181d1a",
+              "on-surface-variant": "#3f4944",
+              "surface": "#f7faf6",
+              "surface-container": "#ebefea",
+              "primary-container": "#006a4e",
+              "inverse-on-surface": "#eef2ed",
+              "on-tertiary-fixed-variant": "#75322b"
+            },
+            fontFamily: {
+              "headline": ["Plus Jakarta Sans", "Hind Siliguri"],
+              "body": ["Inter", "Hind Siliguri"],
+              "label": ["Inter", "Hind Siliguri"]
+            },
+            borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        body { font-family: 'Hind Siliguri', 'Inter', sans-serif; }
+        .glass-ai {
+            background: linear-gradient(135deg, rgba(0, 80, 58, 0.9) 0%, rgba(0, 106, 78, 0.8) 100%);
+            backdrop-filter: blur(20px);
+        }
+    </style>
+</head>
+<body class="bg-background text-on-background selection:bg-primary-fixed">
+<!-- TopNavBar -->
+<nav class="bg-[#f7faf6]/80 dark:bg-[#181d1a]/80 backdrop-blur-md border-b border-black/5 dark:border-white/5 docked full-width top-0 sticky z-50">
+<div class="flex justify-between items-center w-full px-6 py-4 max-w-7xl mx-auto">
+<div class="text-2xl font-black text-[#00503a] dark:text-[#40c4a4] tracking-tight">DokaniAI</div>
+<div class="hidden md:flex gap-8 items-center font-['Hind_Siliguri'] font-semibold text-base">
+<a class="text-[#00503a] dark:text-[#40c4a4] border-b-2 border-[#00503a] pb-1" href="#">Features</a>
+<a class="text-[#5c635e] dark:text-[#adb5af] hover:text-[#00503a] hover:bg-[#f1f5f0] dark:hover:bg-[#252a27] transition-all duration-300" href="#">Pricing</a>
+<a class="text-[#5c635e] dark:text-[#adb5af] hover:text-[#00503a] hover:bg-[#f1f5f0] dark:hover:bg-[#252a27] transition-all duration-300" href="#">About</a>
+</div>
+<button class="bg-primary text-on-primary px-6 py-2.5 rounded-full font-bold active:scale-95 transition-transform">
+                Get Started
+            </button>
+</div>
+</nav>
+<!-- Hero Section -->
+<header class="relative overflow-hidden pt-16 pb-24 px-6">
+<div class="max-w-7xl mx-auto grid lg:grid-cols-2 gap-16 items-center">
+<div class="space-y-8">
+<div class="inline-flex items-center gap-2 px-4 py-2 bg-primary-fixed text-on-primary-fixed rounded-full font-medium text-sm">
+<span class="material-symbols-outlined text-sm" data-icon="auto_awesome">auto_awesome</span>
+                    বাংলাদেশের ক্ষুদ্র ব্যবসার ডিজিটাল সাথী
+                </div>
+<h1 class="text-5xl md:text-7xl font-black text-primary leading-[1.15] tracking-tight">
+                    কাগজের খাতার দিন শেষ, <span class="text-secondary">AI দিয়ে ব্যবসা</span> বড় করুন
+                </h1>
+<p class="text-xl text-on-surface-variant max-w-lg leading-relaxed">
+                    আপনার দোকানের হিসাব রাখা এখন পানির মত সহজ। কোনো টাইপিং ছাড়াই শুধু মুখে কথা বলে আপনার সারাদিনের কেনাবেচা রেকর্ড করুন।
+                </p>
+<div class="flex flex-wrap gap-4 pt-4">
+<button class="px-8 py-4 bg-primary text-on-primary rounded-xl font-bold text-lg flex items-center gap-3 hover:shadow-xl transition-all">
+<span class="material-symbols-outlined" data-icon="rocket_launch">rocket_launch</span>
+                        আজই শুরু করুন
+                    </button>
+<button class="px-8 py-4 bg-surface-container-high text-on-surface rounded-xl font-bold text-lg flex items-center gap-3 hover:bg-surface-dim transition-all">
+<span class="material-symbols-outlined" data-icon="play_circle">play_circle</span>
+                        কিভাবে কাজ করে?
+                    </button>
+</div>
+</div>
+<div class="relative group">
+<div class="absolute -inset-4 bg-primary-container/20 rounded-[2.5rem] blur-3xl group-hover:bg-primary-container/30 transition-colors"></div>
+<div class="relative aspect-square rounded-[2.5rem] overflow-hidden shadow-2xl bg-surface-container-low">
+<img alt="Smiling Bangladeshi shopkeeper in a modern organized grocery store" class="w-full h-full object-cover" data-alt="A friendly Bangladeshi shopkeeper smiling inside his small grocery store, warm golden hour lighting through the window, emerald accents on the shelves" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCp-BK_GEuHvnhBqO1cTU_N9Y9UUjd04LcI5mptEF0CVL4e7SSL1qolKM7_W8st8NZM75XWs6M2POYLfr3kaLVo_eN-P4Rt37p5TqdrJurXVijBW3YgtXgeVSCLI0Mi5R1wmlbMctU9nJzuxzOcbohVCETrfghiqMaaL8BoMzQH6BX8m3Jgu4H_9H8DJGAm2ffyl4VZTMkJutUd_dZ_IlMz1kEF3vjP7LUGxmnYG5VSL371rHNpxDdn2vFPW-aeaascIGshLEXs1FQ"/>
+<!-- Glass AI Overlay -->
+<div class="absolute bottom-6 left-6 right-6 glass-ai p-6 rounded-2xl border border-white/20 shadow-2xl">
+<div class="flex items-center gap-4">
+<div class="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center animate-pulse">
+<span class="material-symbols-outlined text-white" data-icon="mic" style="font-variation-settings: 'FILL' 1;">mic</span>
+</div>
+<div>
+<p class="text-white/80 text-sm font-medium">Listening to AI...</p>
+<p class="text-white font-bold">"আজকে চাল বিক্রি হয়েছে ৫০ কেজি"</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</header>
+<!-- Bento Features Section -->
+<section class="py-24 px-6 bg-surface-container-low">
+<div class="max-w-7xl mx-auto">
+<div class="text-center mb-16 space-y-4">
+<h2 class="text-4xl font-black text-primary">দোকানের সব কাজ এক জায়গায়</h2>
+<p class="text-on-surface-variant max-w-2xl mx-auto">সবচেয়ে আধুনিক টেকনোলজি এখন আপনার হাতের মুঠোয়</p>
+</div>
+<div class="grid md:grid-cols-3 gap-6 h-auto md:h-[600px]">
+<!-- Main Feature Card -->
+<div class="md:col-span-2 bg-surface-container-lowest p-10 rounded-3xl flex flex-col justify-between hover:translate-y-[-4px] transition-transform duration-300">
+<div>
+<div class="w-16 h-16 bg-primary-fixed text-on-primary-fixed rounded-2xl flex items-center justify-center mb-6">
+<span class="material-symbols-outlined text-3xl" data-icon="record_voice_over" style="font-variation-settings: 'FILL' 1;">record_voice_over</span>
+</div>
+<h3 class="text-3xl font-bold mb-4">মুখ দিয়ে বলুন, অটোমেটিক লিখুন</h3>
+<p class="text-lg text-on-surface-variant max-w-md">লেখার ঝামেলা ছাড়াই ভয়েস কমান্ড দিয়ে স্টক আপডেট, বাকি আদায় এবং বিক্রি রেকর্ড করুন মুহূর্তের মধ্যে।</p>
+</div>
+<div class="mt-8 flex gap-2">
+<span class="px-4 py-2 bg-secondary-fixed text-on-secondary-fixed rounded-lg text-sm font-bold">Bangla NLP 2.0</span>
+<span class="px-4 py-2 bg-primary-fixed text-on-primary-fixed rounded-lg text-sm font-bold">Voice-First</span>
+</div>
+</div>
+<!-- Secondary Feature Card -->
+<div class="bg-primary p-10 rounded-3xl text-on-primary flex flex-col justify-end relative overflow-hidden group">
+<span class="material-symbols-outlined absolute top-[-20px] right-[-20px] text-[150px] opacity-10 rotate-12" data-icon="receipt_long">receipt_long</span>
+<h3 class="text-2xl font-bold mb-3">বাকির হিসাব</h3>
+<p class="text-primary-fixed leading-relaxed">কাস্টমারকে অটোমেটিক মেসেজ পাঠিয়ে বাকি আদায়ে সাহায্য করে আমাদের AI স্মার্ট সিস্টেম।</p>
+</div>
+<!-- Bento Row 2 -->
+<div class="bg-surface-container-lowest p-8 rounded-3xl border border-outline-variant/10">
+<div class="w-12 h-12 bg-secondary-container text-on-secondary-container rounded-xl flex items-center justify-center mb-4">
+<span class="material-symbols-outlined" data-icon="inventory_2">inventory_2</span>
+</div>
+<h4 class="text-xl font-bold mb-2">স্টক ম্যানেজমেন্ট</h4>
+<p class="text-on-surface-variant text-sm">পণ্য ফুরিয়ে যাওয়ার আগেই আপনাকে সতর্ক করবে DokaniAI।</p>
+</div>
+<div class="bg-surface-container-lowest p-8 rounded-3xl border border-outline-variant/10">
+<div class="w-12 h-12 bg-tertiary-fixed text-on-tertiary-fixed rounded-xl flex items-center justify-center mb-4">
+<span class="material-symbols-outlined" data-icon="shield_with_heart" style="font-variation-settings: 'FILL' 1;">shield_with_heart</span>
+</div>
+<h4 class="text-xl font-bold mb-2">শতভাগ আমানত</h4>
+<p class="text-on-surface-variant text-sm">আপনার ডাটা থাকবে সম্পূর্ণ সুরক্ষিত এবং এনক্রিপ্টেড।</p>
+</div>
+<div class="bg-surface-container-lowest p-8 rounded-3xl border border-outline-variant/10">
+<div class="w-12 h-12 bg-primary-container text-on-primary-container rounded-xl flex items-center justify-center mb-4">
+<span class="material-symbols-outlined" data-icon="monitoring">monitoring</span>
+</div>
+<h4 class="text-xl font-bold mb-2">বিজনেস রিপোর্ট</h4>
+<p class="text-on-surface-variant text-sm">দৈনিক লাভ-ক্ষতির পূর্ণাঙ্গ হিসাব দেখুন এক ক্লিকে।</p>
+</div>
+</div>
+</div>
+</section>
+<!-- Pricing Section -->
+<section class="py-24 px-6">
+<div class="max-w-7xl mx-auto">
+<div class="text-center mb-20 space-y-4">
+<span class="text-secondary font-bold tracking-widest uppercase text-xs">Pricing Plans</span>
+<h2 class="text-4xl font-black text-primary">আপনার ব্যবসার জন্য সঠিক প্ল্যান</h2>
+<p class="text-on-surface-variant">সাশ্রয়ী মূল্যে পান প্রিমিয়াম সব ফিচার</p>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-4">
+<!-- Trial 1 -->
+<div class="bg-surface-container-low p-6 rounded-2xl flex flex-col justify-between hover:scale-[1.02] transition-transform">
+<div>
+<h4 class="font-bold text-primary mb-1">Free Trial 1</h4>
+<div class="text-2xl font-black mb-4">৳০ <span class="text-sm font-normal text-on-surface-variant">/৬৫ দিন</span></div>
+<ul class="space-y-3 text-sm">
+<li class="flex items-center gap-2"><span class="material-symbols-outlined text-primary text-base" data-icon="check_circle">check_circle</span> মৌলিক সব ফিচার</li>
+<li class="flex items-center gap-2"><span class="material-symbols-outlined text-primary text-base" data-icon="check_circle">check_circle</span> ১টি ডিভাইস কানেক্ট</li>
+</ul>
+</div>
+<button class="mt-8 w-full py-3 bg-surface-container-highest rounded-xl font-bold text-sm">শুরু করুন</button>
+</div>
+<!-- Trial 2 -->
+<div class="bg-surface-container-low p-6 rounded-2xl flex flex-col justify-between hover:scale-[1.02] transition-transform">
+<div>
+<h4 class="font-bold text-primary mb-1">Free Trial 2</h4>
+<div class="text-2xl font-black mb-4">৳০ <span class="text-sm font-normal text-on-surface-variant">/৩৫ দিন</span></div>
+<ul class="space-y-3 text-sm">
+<li class="flex items-center gap-2"><span class="material-symbols-outlined text-primary text-base" data-icon="check_circle">check_circle</span> সুপার ফাস্ট সাপোর্ট</li>
+<li class="flex items-center gap-2"><span class="material-symbols-outlined text-primary text-base" data-icon="check_circle">check_circle</span> ডাটা ব্যাকআপ</li>
+</ul>
+</div>
+<button class="mt-8 w-full py-3 bg-surface-container-highest rounded-xl font-bold text-sm">শুরু করুন</button>
+</div>
+<!-- Basic -->
+<div class="bg-surface-container-lowest p-6 rounded-2xl flex flex-col justify-between border-2 border-primary/10 shadow-lg relative overflow-hidden group">
+<div class="absolute top-0 right-0 bg-primary text-on-primary px-3 py-1 text-[10px] font-bold uppercase tracking-tighter">Popular</div>
+<div>
+<h4 class="font-bold text-primary mb-1">Basic</h4>
+<div class="text-2xl font-black mb-4">৳১৪৯ <span class="text-sm font-normal text-on-surface-variant">/মাস</span></div>
+<ul class="space-y-3 text-sm">
+<li class="flex items-center gap-2"><span class="material-symbols-outlined text-primary text-base" data-icon="check_circle">check_circle</span> আনলিমিটেড এন্ট্রি</li>
+<li class="flex items-center gap-2"><span class="material-symbols-outlined text-primary text-base" data-icon="check_circle">check_circle</span> SMS অ্যালার্ট</li>
+</ul>
+</div>
+<button class="mt-8 w-full py-3 bg-primary text-on-primary rounded-xl font-bold text-sm">সিলেক্ট করুন</button>
+</div>
+<!-- Pro -->
+<div class="bg-primary-container p-6 rounded-2xl flex flex-col justify-between text-on-primary-container">
+<div>
+<h4 class="font-bold mb-1">Pro</h4>
+<div class="text-2xl font-black mb-4">৳৩৯৯ <span class="text-sm font-normal opacity-70">/মাস</span></div>
+<ul class="space-y-3 text-sm">
+<li class="flex items-center gap-2"><span class="material-symbols-outlined text-base" data-icon="check_circle">check_circle</span> AI বিজনেস এনালিটিক্স</li>
+<li class="flex items-center gap-2"><span class="material-symbols-outlined text-base" data-icon="check_circle">check_circle</span> ৫ জন ইউজার</li>
+</ul>
+</div>
+<button class="mt-8 w-full py-3 bg-white text-primary rounded-xl font-bold text-sm">প্রো হন</button>
+</div>
+<!-- Plus -->
+<div class="bg-secondary p-6 rounded-2xl flex flex-col justify-between text-on-secondary shadow-xl">
+<div>
+<h4 class="font-bold mb-1 text-secondary-fixed">Plus</h4>
+<div class="text-2xl font-black mb-4">৳৭৯৯ <span class="text-sm font-normal opacity-70">/মাস</span></div>
+<ul class="space-y-3 text-sm">
+<li class="flex items-center gap-2"><span class="material-symbols-outlined text-base" data-icon="check_circle">check_circle</span> ইনভেন্টরি অটোমেশন</li>
+<li class="flex items-center gap-2"><span class="material-symbols-outlined text-base" data-icon="check_circle">check_circle</span> ২৪/৭ ভিআইপি সাপোর্ট</li>
+</ul>
+</div>
+<button class="mt-8 w-full py-3 bg-secondary-fixed text-on-secondary-fixed rounded-xl font-bold text-sm">প্লাস সাবস্ক্রাইব</button>
+</div>
+</div>
+</div>
+</section>
+<!-- Testimonials Section -->
+<section class="py-24 px-6 bg-surface-container-high/30">
+<div class="max-w-7xl mx-auto">
+<h3 class="text-3xl font-black text-primary text-center mb-16">শপকিপারদের প্রিয় DokaniAI</h3>
+<div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+<!-- Testimonial 1 -->
+<div class="bg-surface-container-lowest p-8 rounded-3xl space-y-4">
+<div class="flex text-secondary mb-4">
+<span class="material-symbols-outlined" data-icon="star" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined" data-icon="star" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined" data-icon="star" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined" data-icon="star" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined" data-icon="star" style="font-variation-settings: 'FILL' 1;">star</span>
+</div>
+<p class="text-lg italic font-medium">"আগে খাতা কলমে হিসাব রাখতে অনেক সময় লাগত, এখন শুধু মুখে বলি আর DokaniAI সব গুছিয়ে রাখে।"</p>
+<div class="flex items-center gap-4 pt-4 border-t border-outline-variant/20">
+<div class="w-12 h-12 rounded-full overflow-hidden">
+<img alt="Local store owner" data-alt="Close up of an elderly Bangladeshi businessman with a white beard smiling warmly in soft sunlight" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDFpbZaGoDB26rUfT8dAX9Fumchby-B3zzJrPwWEo_gvmZs3FnQ2CxSvw1LQenQYUDjBc2LWhBS5K2sk3ImUJ-2MJMHsaZBs9W_4gYHM5Z2YW7Vc7ShmEdCpMrcHwBV0XSjkFiqisePaLozU8gSggc0MKUyErr7iKUfyFYnw3ZnlGa7M0dI7UZXSZz9MaGCvYJjoxfzdmMTYAEf47fUWZYRBpdbo9DCAnnZQR3mP-RwH0T5tOB2bB--Z2OynIk6kf27XQLtF-2I7jI"/>
+</div>
+<div>
+<p class="font-bold text-on-background">আব্দুল জব্বার</p>
+<p class="text-xs text-on-surface-variant">জব্বার স্টোর, ঢাকা</p>
+</div>
+</div>
+</div>
+<!-- Testimonial 2 -->
+<div class="bg-surface-container-lowest p-8 rounded-3xl space-y-4">
+<div class="flex text-secondary mb-4">
+<span class="material-symbols-outlined" data-icon="star" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined" data-icon="star" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined" data-icon="star" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined" data-icon="star" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined" data-icon="star" style="font-variation-settings: 'FILL' 1;">star</span>
+</div>
+<p class="text-lg italic font-medium">"বাকির হিসাবের জন্য আর কাস্টমারকে বলতে হয় না, অটোমেটিক মেসেজ চলে যায়। আমার সময় বাঁচে অনেক।"</p>
+<div class="flex items-center gap-4 pt-4 border-t border-outline-variant/20">
+<div class="w-12 h-12 rounded-full overflow-hidden">
+<img alt="Shop manager" data-alt="Portrait of a young energetic Bangladeshi male shop manager in professional attire, indoor setting with blurred inventory" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBbQdCRjxmSmVGIsOCbBhsvyB3wzcWwBWiQIzp5ndidZFvs6cpmkGY7yhOfYsYw4A1s8O83NfvKE54hqWXw08o0DTzr0PZ9m1K6uzQSvc7X7MmIUvGD9l5yf7yAbVffe4wcSCzWS3zPicKBrhNE-ZKZm2JT-3VIz6_LF614O8mk1SNueHupa9bZClK2m3kcilhvWGRpbOlDdy30n8r2UXxtxcT0s3bJkcY7Rt5Kr7F4Kfa4g4HmxveJ-vc4JNNH6nxqyA2iOEBj-Fc"/>
+</div>
+<div>
+<p class="font-bold text-on-background">রাহুল আহমেদ</p>
+<p class="text-xs text-on-surface-variant">ফ্যাশন পয়েন্ট, সিলেট</p>
+</div>
+</div>
+</div>
+<!-- Testimonial 3 -->
+<div class="bg-surface-container-lowest p-8 rounded-3xl space-y-4">
+<div class="flex text-secondary mb-4">
+<span class="material-symbols-outlined" data-icon="star" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined" data-icon="star" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined" data-icon="star" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined" data-icon="star" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined" data-icon="star" style="font-variation-settings: 'FILL' 1;">star</span>
+</div>
+<p class="text-lg italic font-medium">"অ্যাপটি ব্যবহার করা এত সহজ যে আমার দোকানের কর্মচারীরাও খুব সহজে সব ইনপুট দিতে পারে।"</p>
+<div class="flex items-center gap-4 pt-4 border-t border-outline-variant/20">
+<div class="w-12 h-12 rounded-full overflow-hidden">
+<img alt="Small business owner" data-alt="Middle-aged Bangladeshi woman business owner in colorful traditional clothing, smiling confidently in front of her artisan craft shop" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCHGZbn26NYxMo0c16xCCjN3Plshh13tZU3JbiClBomK1s-P9CgC3oKYlNQ4-zOfksVqvJwZq98ouTXPrjnh6BmMv6q9vB8hLCeAAQBBx_pqGvFPBlONvmtmSVnvtGJqTDWtKvA_zNkVYEja1XaSl3OTty-tuC4Y2iUd__9tL7YIAx1Ytl0tTqEufODUGJ0h197g55lvNfPpbTLMo-JFS4wje1x6Y7YKsjLdf1Xc7hu3Feu9o5bVKgMEunuN76twy1L85gF2bjAdN8"/>
+</div>
+<div>
+<p class="font-bold text-on-background">সুমাইয়া পারভীন</p>
+<p class="text-xs text-on-surface-variant">গৃহিণী সুপার সপ, চট্টগ্রাম</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Floating Action Button (FAB) - Speak to AI -->
+<button class="fixed bottom-8 right-8 w-20 h-20 bg-primary rounded-full shadow-2xl flex items-center justify-center hover:scale-110 active:scale-95 transition-all z-[100] border-4 border-white/20 group">
+<div class="absolute -inset-2 bg-primary/20 rounded-full blur-xl group-hover:bg-primary/40 transition-colors"></div>
+<span class="material-symbols-outlined text-white text-4xl" data-icon="mic" style="font-variation-settings: 'FILL' 1;">mic</span>
+</button>
+<!-- Footer -->
+<footer class="bg-[#f1f5f0] dark:bg-[#111412] full-width mt-20">
+<div class="grid grid-cols-2 md:grid-cols-4 gap-8 px-6 py-12 max-w-7xl mx-auto">
+<div class="col-span-2 md:col-span-1 space-y-4">
+<div class="text-xl font-bold text-[#00503a]">DokaniAI</div>
+<p class="font-['Hind_Siliguri'] text-sm text-[#5c635e]">© 2024 DokaniAI. Empowering Bangladesh's Micro-Shops with Amanat.</p>
+</div>
+<div class="space-y-3">
+<h5 class="font-bold text-primary">Plans</h5>
+<ul class="font-['Hind_Siliguri'] text-sm text-[#5c635e] space-y-2">
+<li><a class="hover:text-[#00503a] hover:translate-x-1 transition-transform inline-block" href="#">Trial 1 (65 Days)</a></li>
+<li><a class="hover:text-[#00503a] hover:translate-x-1 transition-transform inline-block" href="#">Basic (149 BDT)</a></li>
+<li><a class="hover:text-[#00503a] hover:translate-x-1 transition-transform inline-block" href="#">Pro (399 BDT)</a></li>
+</ul>
+</div>
+<div class="space-y-3">
+<h5 class="font-bold text-primary">Resources</h5>
+<ul class="font-['Hind_Siliguri'] text-sm text-[#5c635e] space-y-2">
+<li><a class="hover:text-[#00503a] hover:translate-x-1 transition-transform inline-block" href="#">Privacy Policy</a></li>
+<li><a class="hover:text-[#00503a] hover:translate-x-1 transition-transform inline-block" href="#">PWA Guide</a></li>
+<li><a class="hover:text-[#00503a] hover:translate-x-1 transition-transform inline-block" href="#">Help Center</a></li>
+</ul>
+</div>
+<div class="space-y-3">
+<h5 class="font-bold text-primary">Connect</h5>
+<div class="flex gap-4">
+<span class="material-symbols-outlined text-[#5c635e] cursor-pointer hover:text-primary transition-colors" data-icon="facebook">social_leaderboard</span>
+<span class="material-symbols-outlined text-[#5c635e] cursor-pointer hover:text-primary transition-colors" data-icon="phone_in_talk">phone_in_talk</span>
+<span class="material-symbols-outlined text-[#5c635e] cursor-pointer hover:text-primary transition-colors" data-icon="mail">mail</span>
+</div>
+</div>
+</div>
+</footer>
+</body></html>
