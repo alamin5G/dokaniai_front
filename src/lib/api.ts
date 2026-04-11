@@ -1,5 +1,6 @@
 import axios from 'axios';
 import { useAuthStore } from '@/store/authStore';
+import { getOrCreateClientDeviceId } from '@/lib/device';
 
 const apiClient = axios.create({
   baseURL: process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8081/api/v1',
@@ -13,6 +14,10 @@ apiClient.interceptors.request.use((config) => {
   const { accessToken } = useAuthStore.getState();
   if (accessToken) {
     config.headers.Authorization = `Bearer ${accessToken}`;
+  }
+  const deviceId = getOrCreateClientDeviceId();
+  if (deviceId) {
+    config.headers["X-Device-Id"] = deviceId;
   }
   return config;
 });
@@ -33,6 +38,10 @@ apiClient.interceptors.response.use(
         
         const response = await axios.post(`${apiClient.defaults.baseURL}/auth/refresh`, {
           refreshToken,
+        }, {
+          headers: {
+            "X-Device-Id": getOrCreateClientDeviceId(),
+          },
         });
         
         const { accessToken: newAccess, refreshToken: newRefresh } = response.data.data;

@@ -2,13 +2,17 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
 import apiClient from "@/lib/api";
+import { getApiErrorMessage } from "@/lib/apiError";
 import { AuthLayout } from "@/components/layout/AuthLayout";
 import { FormInput, GradientButton } from "@/components/ui/FormPrimitives";
 import { useAuthStore } from "@/store/authStore";
 
 export default function SetPasswordPage() {
   const router = useRouter();
+  const t = useTranslations("auth.setPassword");
+  const tc = useTranslations("common");
   const clearTokens = useAuthStore((state) => state.clearTokens);
   
   const [password, setPassword] = useState("");
@@ -19,11 +23,11 @@ export default function SetPasswordPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (password !== confirmPassword) {
-      setErrorText("পাসওয়ার্ড দুটি মিলছে না");
+      setErrorText(t("errorMismatch"));
       return;
     }
     if (password.length < 6) {
-      setErrorText("পাসওয়ার্ড অন্তত ৬ অক্ষরের হতে হবে");
+      setErrorText(t("errorTooShort"));
       return;
     }
     
@@ -36,11 +40,10 @@ export default function SetPasswordPage() {
         confirmPassword: confirmPassword
       });
 
-      // Clear the temporary tokens securely since they need to login properly
       clearTokens();
       router.push("/login?passwordSet=true");
-    } catch (error: any) {
-      setErrorText(error.response?.data?.message || "পাসওয়ার্ড সেট করতে সমস্যা হয়েছে");
+    } catch (error: unknown) {
+      setErrorText(getApiErrorMessage(error, t("errorGeneric")));
     } finally {
       setIsLoading(false);
     }
@@ -48,23 +51,23 @@ export default function SetPasswordPage() {
 
   return (
     <AuthLayout 
-      heading="নতুন পাসওয়ার্ড সেট করুন" 
-      subheading="ভবিষ্যতে লগইন করার জন্য একটি পাসওয়ার্ড নির্ধারণ করুন"
+      heading={t("heading")} 
+      subheading={t("subheading")}
     >
       <form onSubmit={handleSubmit} className="space-y-6">
         <FormInput 
-          label="নতুন পাসওয়ার্ড"
+          label={t("newPasswordLabel")}
           type="password"
-          placeholder="আপনার নতুন পাসওয়ার্ড দিন"
+          placeholder={t("newPasswordPlaceholder")}
           icon="lock"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
         />
         
         <FormInput 
-          label="পাসওয়ার্ড নিশ্চিত করুন"
+          label={t("confirmPasswordLabel")}
           type="password"
-          placeholder="আবারও পাসওয়ার্ডটি লিখুন"
+          placeholder={t("confirmPasswordPlaceholder")}
           icon="lock"
           value={confirmPassword}
           onChange={(e) => setConfirmPassword(e.target.value)}
@@ -73,7 +76,7 @@ export default function SetPasswordPage() {
         {errorText && <p className="text-error text-sm font-semibold">{errorText}</p>}
 
         <GradientButton type="submit" loading={isLoading}>
-          <span>সেভ করুন</span>
+          <span>{tc("save")}</span>
           <span className="material-symbols-outlined">save</span>
         </GradientButton>
       </form>

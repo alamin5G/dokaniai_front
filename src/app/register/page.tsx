@@ -3,17 +3,24 @@
 import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
 import apiClient from "@/lib/api";
+import { getApiErrorMessage } from "@/lib/apiError";
+import { setAuthContact } from "@/lib/authFlow";
 import { AuthLayout } from "@/components/layout/AuthLayout";
 import { FormInput, GradientButton } from "@/components/ui/FormPrimitives";
+import { useRedirectIfAuthenticated } from "@/hooks/useAuthRedirect";
 
 export default function RegisterPage() {
   const router = useRouter();
+  const { hydrated, isAuthenticated } = useRedirectIfAuthenticated("/dashboard");
+  const t = useTranslations("auth.register");
+  const tc = useTranslations("common");
   const [tab, setTab] = useState<"phone" | "email">("phone");
   const [fullName, setFullName] = useState("");
   const [phone, setPhone] = useState("");
   const [email, setEmail] = useState("");
-  const [shopName, setShopName] = useState("");
+  const [referralCode, setReferralCode] = useState("");
   const [password, setPassword] = useState("");
   const [agreed, setAgreed] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -22,54 +29,53 @@ export default function RegisterPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!agreed) {
-      setErrorText("অনুগ্রহ করে শর্তাবলীতে সম্মত হোন");
+      setErrorText(t("errorAgree"));
       return;
     }
     setErrorText("");
     setIsLoading(true);
 
     try {
+      const referral = referralCode.trim() || null;
+
       if (tab === "phone") {
-        // Backend DTO exactly matches these keys: phone, name, referralCode (optional)
-        // Note: Password and ShopName are not passed during Phone Registration (password is set after OTP, Shop is created later)
         await apiClient.post("/auth/register/phone", {
           phone,
-          name: fullName
+          name: fullName,
+          referralCode: referral,
         });
-        
-        // Since shopName needs to be created, we might store it in localStorage to complete the flow later
-        if (typeof window !== "undefined") {
-          localStorage.setItem("pendingShopName", shopName);
-        }
       } else {
-        // Email requires password upfront.
         await apiClient.post("/auth/register/email", {
           email,
           phone,
           name: fullName,
-          password
+          password,
+          referralCode: referral,
         });
-        
-        if (typeof window !== "undefined") {
-          localStorage.setItem("pendingShopName", shopName);
-        }
       }
       if (tab === "phone") {
-        router.push(`/verify-otp?contact=${encodeURIComponent(phone)}&method=phone`);
+        setAuthContact(phone, "phone");
+        router.push("/verify-otp");
       } else {
-        router.push("/login?registered=true");
+        setAuthContact(email, "email");
+        router.push("/verify-email");
       }
-    } catch (error: any) {
-      setErrorText(error.response?.data?.message || "একটি ত্রুটি ঘটেছে");
+    } catch (error: unknown) {
+      setErrorText(getApiErrorMessage(error, t("errorGeneric")));
     } finally {
       setIsLoading(false);
     }
   };
 
+  // Wait for hydration, or redirect if authenticated
+  if (!hydrated || isAuthenticated) {
+    return null;
+  }
+
   return (
-    <AuthLayout 
-      heading="নতুন অ্যাকাউন্ট তৈরি করুন" 
-      subheading="আপনার ব্যবসার ডিজিটাল খাতা তৈরি করুন"
+    <AuthLayout
+      heading={t("heading")} 
+      subheading={t("subheading")}
     >
       <div className="flex gap-2 p-1.5 bg-surface-container rounded-full mb-8 w-fit mx-auto md:mx-0">
         <button 
@@ -79,7 +85,7 @@ export default function RegisterPage() {
             tab === "phone" ? "bg-surface-container-lowest text-primary" : "text-on-surface-variant hover:bg-surface-container-high"
           }`}
         >
-          মোবাইল নম্বর
+          {t("phoneTab")}
         </button>
         <button 
           type="button"
@@ -88,15 +94,15 @@ export default function RegisterPage() {
             tab === "email" ? "bg-surface-container-lowest text-primary" : "text-on-surface-variant hover:bg-surface-container-high"
           }`}
         >
-          ইমেইল
+          {t("emailTab")}
         </button>
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-6">
         <FormInput 
-          label="আপনার পূর্ণ নাম"
+          label={t("fullNameLabel")}
           type="text"
-          placeholder="যেমন: রহিম আহমেদ"
+          placeholder={t("fullNamePlaceholder")}
           icon="badge"
           value={fullName}
           onChange={(e) => setFullName(e.target.value)}
@@ -104,10 +110,10 @@ export default function RegisterPage() {
 
         {tab === "phone" ? (
           <FormInput 
-            label="মোবাইল নম্বর"
+            label={t("phoneLabel")}
             type="tel"
             prefixText="+৮৮০"
-            placeholder="০১XXXXXXXXX"
+            placeholder={t("phonePlaceholder")}
             icon="call"
             value={phone}
             onChange={(e) => setPhone(e.target.value)}
@@ -115,17 +121,17 @@ export default function RegisterPage() {
         ) : (
           <>
             <FormInput 
-              label="ইমেইল এড্রেস"
+              label={t("emailLabel")}
               type="email"
-              placeholder="example@email.com"
+              placeholder={t("emailPlaceholder")}
               icon="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
             />
             <FormInput 
-               label="মোবাইল নম্বর"
+               label={t("phoneLabel")}
                type="tel"
-               placeholder="০১XXXXXXXXX"
+               placeholder={t("phonePlaceholder")}
                icon="call"
                value={phone}
                onChange={(e) => setPhone(e.target.value)}
@@ -134,19 +140,19 @@ export default function RegisterPage() {
         )}
 
         <FormInput 
-          label="দোকানের নাম"
+          label={t("referralCodeLabel")}
           type="text"
-          placeholder="যেমন: রহিম জেনারেল স্টোর"
-          icon="storefront"
-          value={shopName}
-          onChange={(e) => setShopName(e.target.value)}
+          placeholder={t("referralCodePlaceholder")}
+          icon="card_giftcard"
+          value={referralCode}
+          onChange={(e) => setReferralCode(e.target.value)}
         />
 
         {tab === "email" && (
           <FormInput 
-            label="পাসওয়ার্ড"
+            label={t("passwordLabel")}
             type="password"
-            placeholder="আপনার পাসওয়ার্ড দিন"
+            placeholder={t("passwordPlaceholder")}
             icon="lock"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
@@ -155,29 +161,32 @@ export default function RegisterPage() {
 
         <label className="flex items-start gap-4 p-4 rounded-[1rem] bg-surface-container-low cursor-pointer group">
           <div className="relative flex items-center mt-0.5">
-            <input 
+            <input
               type="checkbox"
               checked={agreed}
               onChange={(e) => setAgreed(e.target.checked)}
-              className="peer h-5 w-5 rounded border-none bg-surface-container-highest text-primary focus:ring-offset-0 focus:ring-2 focus:ring-primary-fixed-dim cursor-pointer" 
+              className="peer h-5 w-5 rounded border-none bg-surface-container-highest text-primary focus:ring-offset-0 focus:ring-2 focus:ring-primary-fixed-dim cursor-pointer"
             />
           </div>
           <span className="text-sm text-on-surface-variant leading-relaxed select-none">
-            আমি <a className="text-secondary font-semibold hover:underline" href="#">শর্তাবলী</a> এবং <a className="text-secondary font-semibold hover:underline" href="#">গোপনীয়তা নীতি</a> মেনে নিচ্ছি।
+            {t.rich("agreeTerms", {
+              terms: (chunks) => <a className="text-secondary font-semibold hover:underline" href="#">{chunks}</a>,
+              privacy: (chunks) => <a className="text-secondary font-semibold hover:underline" href="#">{chunks}</a>,
+            })}
           </span>
         </label>
 
         {errorText && <p className="text-error text-sm font-semibold">{errorText}</p>}
 
         <GradientButton type="submit" loading={isLoading}>
-          <span>পরবর্তী ধাপ</span>
+          <span>{tc("nextStep")}</span>
           <span className="material-symbols-outlined">arrow_forward</span>
         </GradientButton>
       </form>
 
       <div className="mt-8 pt-8 border-t border-outline-variant/20 text-center">
         <p className="text-on-surface-variant">
-          ইতিমধ্যেই অ্যাকাউন্ট আছে? <Link href="/login" className="text-primary font-bold hover:underline">লগইন করুন</Link>
+          {t("alreadyHaveAccount")} <Link href="/login" className="text-primary font-bold hover:underline">{t("loginHere")}</Link>
         </p>
       </div>
     </AuthLayout>

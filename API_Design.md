@@ -170,7 +170,20 @@ POST /auth/forgot-password
 **Request Body:**
 ```json
 {
-  "phone": "+8801712345678"
+  "phoneOrEmail": "+8801712345678"
+}
+```
+
+**Response (OtpResponse):**
+```json
+{
+  "success": true,
+  "data": {
+    "message": "OTP sent successfully",
+    "destination": "+8801712345678",
+    "expiresInSeconds": 300
+  },
+  "message": "OTP sent successfully"
 }
 ```
 
@@ -181,10 +194,75 @@ POST /auth/reset-password
 **Request Body:**
 ```json
 {
-  "phone": "+8801712345678",
+  "phoneOrEmail": "+8801712345678",
   "otp": "123456",
   "newPassword": "NewSecurePass123!"
 }
+```
+
+### 1.11 Frontend State Persistence Contract (Forgot/Reset Password)
+
+Client apps must persist reset context so users can recover flow after refresh/reload.
+
+**Required client keys**
+- `passwordReset.phoneOrEmail`
+- `passwordReset.otpExpiresAt` (epoch ms, usually now + 300s)
+
+**Optional client key**
+- `passwordReset.lastOtpSentAt` (for resend countdown UX only)
+
+**Recovery rules**
+- On app load, if `otpExpiresAt` is still valid, return user to OTP entry with pre-filled `phoneOrEmail`.
+- If expired, keep identifier, clear OTP input, show expiry message, and require resend.
+- On successful reset, clear all `passwordReset.*` keys.
+
+**Edge cases**
+- Expired OTP: block submit and prompt resend.
+- Resend cooldown: client countdown is advisory; backend 429/cooldown is authoritative.
+- Back navigation: identifier should remain available.
+- Multi-tab: latest reset context wins; show warning if context changes.
+
+**Security notes**
+- Never persist OTP value in storage.
+- Backend remains source of truth for OTP purpose (`PASSWORD_RESET`), expiry, attempt limits, and cooldown.
+
+Reference: `SRSv2.md` -> `17.4 Sequence Diagram` (Password Reset Flow - Frontend State Persistence Contract).
+
+**Frontend state machine (recommended)**
+- `FORGOT_INPUT` -> user submits `phoneOrEmail`
+- `OTP_PENDING` -> OTP sent, timer active until `otpExpiresAt`
+- `OTP_EXPIRED` -> timer finished, submit disabled, resend enabled by policy
+- `RESET_SUCCESS` -> password changed, persistence cleared
+
+**Error handling matrix (must map in UI)**
+
+| API | HTTP | Backend message/code (example) | Frontend action |
+|-----|------|--------------------------------|-----------------|
+| `/auth/forgot-password` | 429 | too many OTP requests / cooldown | keep user on OTP step, show retry countdown from response if available |
+| `/auth/reset-password` | 400 | invalid OTP | show inline OTP error, keep same state |
+| `/auth/reset-password` | 400 | OTP expired | move to `OTP_EXPIRED`, show resend CTA |
+| `/auth/reset-password` | 429 | too many OTP verification failures | lock submit, show retry-after message |
+| `/auth/reset-password` | 200 | success | clear `passwordReset.*`, route to login |
+
+**Minimal client persistence pseudocode**
+```javascript
+// on forgot-password success
+const ttlSeconds = response.data.expiresInSeconds ?? 300;
+localStorage.setItem("passwordReset.phoneOrEmail", phoneOrEmail);
+localStorage.setItem("passwordReset.otpExpiresAt", String(Date.now() + ttlSeconds * 1000));
+localStorage.setItem("passwordReset.lastOtpSentAt", String(Date.now()));
+
+// on app load
+const id = localStorage.getItem("passwordReset.phoneOrEmail");
+const expiresAt = Number(localStorage.getItem("passwordReset.otpExpiresAt") || 0);
+if (id && Date.now() < expiresAt) {
+  routeToOtpReset({ phoneOrEmail: id });
+}
+
+// on reset success
+localStorage.removeItem("passwordReset.phoneOrEmail");
+localStorage.removeItem("passwordReset.otpExpiresAt");
+localStorage.removeItem("passwordReset.lastOtpSentAt");
 ```
 
 ---

@@ -1,0 +1,476 @@
+{
+  "common": {
+    "appName": "DokaniAI",
+    "loading": "Loading...",
+    "or": "OR",
+    "nextStep": "Continue",
+    "save": "Save",
+    "pleaseWait": "Please wait...",
+    "needHelp": "Need help?",
+    "language": "Language",
+    "bengali": "বাংলা",
+    "english": "English"
+  },
+  "auth": {
+    "login": {
+      "heading": "Login",
+      "subheading": "Sign in using your mobile number or email and password",
+      "identifierLabel": "Mobile or Email",
+      "identifierPlaceholder": "017... or email@example.com",
+      "passwordLabel": "Password",
+      "passwordPlaceholder": "Enter your password",
+      "forgotPassword": "Forgot?",
+      "submit": "Login",
+      "errorEmptyFields": "Please enter your ID and password",
+      "errorInvalid": "Invalid login credentials",
+      "newAccount": "Want to create a new account?",
+      "registerHere": "Click here"
+    },
+    "register": {
+      "heading": "Create New Account",
+      "subheading": "Set up your digital business ledger",
+      "phoneTab": "Mobile Number",
+      "emailTab": "Email",
+      "fullNameLabel": "Full Name",
+      "fullNamePlaceholder": "e.g. Rahim Ahmed",
+      "phoneLabel": "Mobile Number",
+      "phonePlaceholder": "01XXXXXXXXX",
+      "emailLabel": "Email Address",
+      "emailPlaceholder": "example@email.com",
+      "referralCodeLabel": "Referral Code (Optional)",
+      "referralCodePlaceholder": "e.g. REF-ABC123",
+      "passwordLabel": "Password",
+      "passwordPlaceholder": "Enter your password",
+      "agreeTerms": "I agree to the <terms>Terms of Service</terms> and <privacy>Privacy Policy</privacy>.",
+      "terms": "Terms of Service",
+      "privacy": "Privacy Policy",
+      "errorAgree": "Please agree to the terms and conditions",
+      "errorGeneric": "An error occurred",
+      "alreadyHaveAccount": "Already have an account?",
+      "loginHere": "Login"
+    },
+    "verifyOtp": {
+      "heading": "OTP Verification",
+      "subheading": "Keep your account secure",
+      "loading": "Loading...",
+      "otpSent": "An OTP has been sent to {contact}.",
+      "otpLabel": "OTP Code",
+      "verify": "Verify",
+      "resendOtp": "Resend OTP",
+      "resendOtpCountdown": "Resend OTP ({countdown}s)",
+      "errorInvalidOtp": "Please enter a valid OTP",
+      "errorVerificationFailed": "OTP verification failed"
+    },
+    "verifyEmail": {
+      "heading": "Email Verification",
+      "subheading": "Confirm your email address",
+      "loading": "Loading...",
+      "codeSent": "A verification code has been sent to {contact}.",
+      "codeLabel": "Verification Code",
+      "verify": "Verify",
+      "resendCode": "Resend Code",
+      "resendCodeCountdown": "Resend Code ({countdown}s)",
+      "errorInvalidCode": "Please enter a valid 6-digit code",
+      "errorVerificationFailed": "Email verification failed",
+      "successMessage": "Email verified successfully! You can now log in."
+    },
+    "setPassword": {
+      "heading": "Set New Password",
+      "subheading": "Set a password for future logins",
+      "newPasswordLabel": "New Password",
+      "newPasswordPlaceholder": "Enter your new password",
+      "confirmPasswordLabel": "Confirm Password",
+      "confirmPasswordPlaceholder": "Re-enter your password",
+      "errorMismatch": "Passwords do not match",
+      "errorTooShort": "Password must be at least 6 characters",
+      "errorGeneric": "Failed to set password"
+    },
+    "forgotPassword": {
+      "heading": "Forgot Password?",
+      "subheading": "Enter your registered mobile number or email. We will send an OTP.",
+      "identifierLabel": "Mobile Number or Email",
+      "identifierPlaceholder": "017... or email@example.com",
+      "sendOtp": "Send OTP",
+      "errorEmpty": "Enter your mobile number or email",
+      "errorSendFailed": "Failed to send OTP",
+      "backToLogin": "Back to Login"
+    },
+    "resetPassword": {
+      "heading": "Reset Password",
+      "subheading": "Verify OTP and set your new password",
+      "loading": "Loading...",
+      "otpSent": "Enter the 6-digit OTP sent to {contact}",
+      "otpLabel": "OTP Code",
+      "newPasswordLabel": "New Password",
+      "newPasswordPlaceholder": "Enter your new password",
+      "confirmPasswordLabel": "Confirm Password",
+      "confirmPasswordPlaceholder": "Re-enter your password",
+      "resetButton": "Reset Password",
+      "errorInvalidOtp": "Please enter a valid OTP",
+      "errorMismatch": "Passwords do not match",
+      "errorTooShort": "Password must be at least 6 characters",
+      "errorResetFailed": "Password reset failed",
+      "resendOtp": "Resend OTP",
+      "resendOtpCountdown": "Resend OTP ({countdown}s)",
+      "otpExpired": "OTP has expired. Please resend code.",
+      "errorNoContext": "Password reset session not found. Please start again."
+    }
+  },
+  "home": {
+    "nav": {
+      "features": "Features",
+      "pricing": "Pricing",
+      "about": "About",
+      "getStarted": "Get Started"
+    },
+    "hero": {
+      "badge": "Digital Companion for Bangladesh's Micro Businesses",
+      "title": "Paper ledgers are over, {highlight}",
+      "titleHighlight": "grow with AI",
+      "description": "Managing your shop's accounts is now as easy as water. Record your daily transactions just by speaking — no typing needed.",
+      "startToday": "Start Today",
+      "howItWorks": "How it works?",
+      "listeningAi": "Listening to AI...",
+      "voiceSample": "50 kg rice sold today"
+    },
+    "features": {
+      "sectionTitle": "All Shop Tasks in One Place",
+      "sectionSubtitle": "The most modern technology now in your hands",
+      "voiceTitle": "Speak It, It Writes Automatically",
+      "voiceDescription": "Update stock, collect dues, and record sales instantly with voice commands — no typing hassle.",
+      "dueTitle": "Due Management",
+      "dueDescription": "Our AI smart system helps collect dues by sending automatic messages to customers.",
+      "stockTitle": "Stock Management",
+      "stockDescription": "DokaniAI alerts you before products run out.",
+      "securityTitle": "100% Secure",
+      "securityDescription": "Your data stays fully secure and encrypted.",
+      "reportsTitle": "Business Reports",
+      "reportsDescription": "View complete daily profit & loss accounts in one click."
+    },
+    "pricing": {
+      "label": "Pricing Plans",
+      "title": "The Right Plan for Your Business",
+      "subtitle": "Get all premium features at affordable prices",
+      "trial1": {
+        "name": "Free Trial 1",
+        "price": "৳0",
+        "period": "/65 days",
+        "feature1": "All basic features",
+        "feature2": "1 device connected",
+        "cta": "Get Started"
+      },
+      "trial2": {
+        "name": "Free Trial 2",
+        "price": "৳0",
+        "period": "/35 days",
+        "feature1": "Super fast support",
+        "feature2": "Data backup",
+        "cta": "Get Started"
+      },
+      "basic": {
+        "name": "Basic",
+        "price": "৳149",
+        "period": "/month",
+        "feature1": "Unlimited entries",
+        "feature2": "SMS alerts",
+        "popular": "Popular",
+        "cta": "Select"
+      },
+      "pro": {
+        "name": "Pro",
+        "price": "৳399",
+        "period": "/month",
+        "feature1": "AI Business Analytics",
+        "feature2": "5 users",
+        "cta": "Go Pro"
+      },
+      "plus": {
+        "name": "Plus",
+        "price": "৳799",
+        "period": "/month",
+        "feature1": "Inventory automation",
+        "feature2": "24/7 VIP support",
+        "cta": "Subscribe Plus"
+      }
+    },
+    "testimonials": {
+      "title": "Shopkeepers Love DokaniAI",
+      "t1": {
+        "quote": "Keeping accounts in notebooks used to take so much time. Now I just speak and DokaniAI organizes everything.",
+        "name": "Abdul Jabbar",
+        "shop": "Jabbar Store, Dhaka"
+      },
+      "t2": {
+        "quote": "No need to remind customers about dues anymore, automatic messages are sent. Saves me a lot of time.",
+        "name": "Rahul Ahmed",
+        "shop": "Fashion Point, Sylhet"
+      },
+      "t3": {
+        "quote": "The app is so easy to use that even my shop employees can input everything effortlessly.",
+        "name": "Sumaiya Parveen",
+        "shop": "Grihini Super Shop, Chittagong"
+      }
+    },
+    "footer": {
+      "copyright": "© 2024 DokaniAI. Empowering Bangladesh's Micro-Shops with Amanat.",
+      "plans": "Plans",
+      "trialPlan": "Trial 1 (65 Days)",
+      "basicPlan": "Basic (149 BDT)",
+      "proPlan": "Pro (399 BDT)",
+      "resources": "Resources",
+      "privacyPolicy": "Privacy Policy",
+      "pwaGuide": "PWA Guide",
+      "helpCenter": "Help Center",
+      "connect": "Connect"
+    }
+  },
+  "authLayout": {
+    "brandTitle": "Your Trusted {highlight}",
+    "brandHighlight": "Digital Ledger",
+    "brandDescription": "Manage your shop's accounts safely and easily with modern technology.",
+    "smartInsight": "Smart Insight",
+    "insightSample": "Your due amount has decreased by 12% compared to last week."
+  },
+  "sessions": {
+    "heading": "Active Sessions",
+    "subheading": "All your active devices and sessions",
+    "countBadge": "{count} active",
+    "logoutAll": "Logout All Devices",
+    "currentDevice": "Current Device",
+    "revoke": "Revoke",
+    "revokeConfirm": "Do you want to revoke this device's session?",
+    "logoutAllConfirm": "Do you want to logout from all devices? You will need to login again.",
+    "lastActive": "Last Active",
+    "ipAddress": "IP Address",
+    "loginMethod": "Login Method",
+    "password": "Password",
+    "otp": "OTP",
+    "google": "Google",
+    "facebook": "Facebook",
+    "errorFetch": "Failed to fetch session information",
+    "errorRevoke": "Failed to revoke session",
+    "errorLogoutAll": "Failed to logout from all devices",
+    "noSessions": "No active sessions",
+    "timeAgo": {
+      "justNow": "Just now",
+      "minutesAgo": "{count} minutes ago",
+      "hoursAgo": "{count} hours ago",
+      "daysAgo": "{count} days ago"
+    },
+    "securityTip": "Security Tip",
+    "securityTipText": "If you see an unfamiliar device, revoke the session immediately and change your password.",
+    "backToDashboard": "Back to Dashboard",
+    "securityAlert": "Security Alert",
+    "securityAlertDesc": "Use the button below to logout from all devices at once.",
+    "aiInsight": "AI Security Intelligence",
+    "aiInsightText": "No unusual logins have been detected on your account. However, it's a good practice to review sessions every 30 days.",
+    "confirm": "Yes",
+    "cancel": "No",
+    "active": "Active"
+  },
+  "business": {
+    "list": {
+      "heading": "My Businesses",
+      "subheading": "Manage your business workspaces",
+      "countBadge": "{count} of {limit}",
+      "createButton": "Create New Business",
+      "emptyTitle": "No Businesses Yet",
+      "emptyDescription": "Create your first business to get started",
+      "active": "Active",
+      "archived": "Archived",
+      "archivedLabel": "Archived",
+      "totalProducts": "{count} products",
+      "totalSales": "{count} sales",
+      "totalDue": "৳{amount} due",
+      "selectBusiness": "Select",
+      "archiveConfirm": "Archive this business?",
+      "archiveDescription": "You can restore archived businesses later.",
+      "deleteConfirm": "Delete this business permanently?",
+      "deleteDescription": "This action cannot be undone. All data will be permanently deleted.",
+      "errorFetch": "Failed to load businesses",
+      "errorCreate": "Failed to create business",
+      "errorArchive": "Failed to archive business",
+      "errorDelete": "Failed to delete business",
+      "limitReached": "Business limit reached. Upgrade your plan to add more."
+    },
+    "form": {
+      "nameLabel": "Business Name",
+      "namePlaceholder": "e.g. Rahim Grocery",
+      "typeLabel": "Business Type",
+      "typePlaceholder": "Select a category",
+      "descriptionLabel": "Description",
+      "descriptionPlaceholder": "Brief description of your business",
+      "currencyLabel": "Currency",
+      "createButton": "Create Business",
+      "updateButton": "Update Business",
+      "errorNameRequired": "Business name is required",
+      "errorTypeRequired": "Please select a business type"
+    },
+    "types": {
+      "grocery": "Grocery",
+      "electronics": "Electronics",
+      "clothing": "Clothing",
+      "pharmacy": "Pharmacy",
+      "restaurant": "Restaurant",
+      "stationery": "Stationery",
+      "hardware": "Hardware",
+      "other": "Other"
+    },
+    "settings": {
+      "heading": "Business Settings",
+      "tabGeneral": "General",
+      "tabProfile": "Profile",
+      "tabLocation": "Location",
+      "currencyLabel": "Currency",
+      "taxEnabledLabel": "Enable Tax",
+      "taxRateLabel": "Tax Rate (%)",
+      "taxNumberLabel": "Tax Number",
+      "invoicePrefixLabel": "Invoice Prefix",
+      "invoiceNotesLabel": "Invoice Notes",
+      "receiptFooterLabel": "Receipt Footer",
+      "lowStockThresholdLabel": "Low Stock Threshold",
+      "lowStockAlertLabel": "Low Stock Alerts",
+      "saveButton": "Save Settings",
+      "errorSave": "Failed to save settings",
+      "successSave": "Settings saved successfully"
+    },
+    "profile": {
+      "descriptionLabel": "Description",
+      "logoUrlLabel": "Logo URL",
+      "coverImageUrlLabel": "Cover Image URL",
+      "contactPersonLabel": "Contact Person",
+      "phoneLabel": "Phone Number",
+      "whatsappLabel": "WhatsApp Number",
+      "emailLabel": "Email",
+      "websiteLabel": "Website",
+      "facebookLabel": "Facebook Page",
+      "saveButton": "Save Profile",
+      "errorSave": "Failed to save profile",
+      "successSave": "Profile saved successfully"
+    },
+    "location": {
+      "addressLabel": "Address",
+      "addressPlaceholder": "Street address",
+      "cityLabel": "City",
+      "cityPlaceholder": "e.g. Dhaka",
+      "districtLabel": "District",
+      "districtPlaceholder": "e.g. Dhaka",
+      "postalCodeLabel": "Postal Code",
+      "countryLabel": "Country",
+      "saveButton": "Save Location",
+      "errorSave": "Failed to save location",
+      "successSave": "Location saved successfully"
+    },
+    "danger": {
+      "heading": "Danger Zone",
+      "archiveButton": "Archive Business",
+      "deleteButton": "Delete Business",
+      "archiveConfirm": "Yes, Archive",
+      "deleteConfirm": "Yes, Delete Permanently",
+      "cancel": "Cancel"
+    }
+  },
+  "dashboard": {
+    "welcome": {
+      "greeting": "Good morning, {name}!",
+      "greetingAfternoon": "Good afternoon, {name}!",
+      "greetingEvening": "Good evening, {name}!",
+      "subtitle": "Here is your shop summary for today.",
+      "dateLabel": "{date}"
+    },
+    "ai": {
+      "placeholder": "Speak or type here...",
+      "micTooltip": "Voice Input"
+    },
+    "kpi": {
+      "todaySales": "Today Sales",
+      "todayProfit": "Today Profit",
+      "totalDue": "Total Due",
+      "todayExpense": "Today Expense",
+      "totalProducts": "Total Products",
+      "totalRevenue": "Total Revenue",
+      "activeCustomers": "Active Customers",
+      "lowStock": "Low Stock Items",
+      "trendUp": "{percent}% increase",
+      "trendDown": "{percent}% decrease",
+      "count": "{count} items"
+    },
+    "quickActions": {
+      "title": "Quick Actions",
+      "newSale": "New Sale",
+      "addProduct": "Add Product",
+      "addDue": "Add Due",
+      "recordExpense": "Record Expense",
+      "recordReturn": "Record Return"
+    },
+    "transactions": {
+      "title": "Recent Transactions",
+      "viewAll": "View All",
+      "success": "Success",
+      "return": "Return",
+      "expense": "Expense",
+      "noTransactions": "No transactions yet"
+    },
+    "lowStock": {
+      "title": "Low Stock Alert",
+      "remaining": "Only {quantity} {unit} left",
+      "viewInventory": "View Inventory"
+    },
+    "dueLedger": {
+      "title": "Due Ledger - Top 3",
+      "lastDue": "Last due: {days} days ago",
+      "viewAll": "View Full Ledger"
+    }
+  },
+  "onboarding": {
+    "progress": "Step {current} of {total}",
+    "skip": "Skip for now",
+    "next": "Continue",
+    "back": "Back",
+    "finish": "Get Started",
+    "welcome": {
+      "title": "Welcome to DokaniAI!",
+      "subtitle": "Your digital business ledger is ready. Let's set it up.",
+      "startButton": "Let's Start"
+    },
+    "businessType": {
+      "title": "What type of business do you run?",
+      "subtitle": "Select the category that best describes your shop"
+    },
+    "businessName": {
+      "title": "Name Your Business",
+      "subtitle": "Enter your shop name to create your first workspace",
+      "successMessage": "Business created successfully!"
+    },
+    "addProducts": {
+      "title": "Add Your Products",
+      "subtitle": "Add a few products to get started, or skip for now",
+      "skipButton": "Skip - I will add later",
+      "addMore": "Add Another",
+      "done": "Done Adding"
+    },
+    "dueSetup": {
+      "title": "Do You Sell on Credit?",
+      "subtitle": "Set up due tracking for your customers",
+      "yesButton": "Yes, Set Up Due Tracking",
+      "noButton": "No, Maybe Later"
+    },
+    "tutorial": {
+      "title": "You are All Set!",
+      "subtitle": "Watch a quick tour or jump right in",
+      "watchTour": "Watch Quick Tour",
+      "goToDashboard": "Go to Dashboard"
+    }
+  },
+  "nav": {
+    "dashboard": "Dashboard",
+    "sales": "Sales",
+    "expenses": "Expenses",
+    "dueLedger": "Due Ledger",
+    "products": "Products",
+    "reports": "Reports",
+    "aiAssistant": "AI Assistant",
+    "settings": "Settings",
+    "newEntry": "New Entry"
+  }
+}

@@ -1,11 +1,26 @@
+"use client";
+
 import { NavBar } from "@/components/home/NavBar";
 import { HeroSection } from "@/components/home/HeroSection";
 import { FeaturesSection } from "@/components/home/FeaturesSection";
 import { PricingSection } from "@/components/home/PricingSection";
 import { TestimonialsSection } from "@/components/home/TestimonialsSection";
 import { Footer } from "@/components/home/Footer";
+import { useRedirectIfAuthenticated } from "@/hooks/useAuthRedirect";
 
 export default function HomePage() {
+  const { hydrated, isAuthenticated } = useRedirectIfAuthenticated("/dashboard");
+
+  // Wait for hydration to avoid flash of wrong content
+  if (!hydrated) {
+    return null;
+  }
+
+  // Don't render landing page for authenticated users
+  if (isAuthenticated) {
+    return null;
+  }
+
   return (
     <div className="min-h-screen bg-background text-on-background font-body selection:bg-primary-fixed overflow-x-hidden">
       <NavBar />

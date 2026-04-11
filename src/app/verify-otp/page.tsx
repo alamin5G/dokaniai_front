@@ -1,16 +1,20 @@
 "use client";
 
 import { useState, useEffect, Suspense } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
 import apiClient from "@/lib/api";
+import { getApiErrorMessage } from "@/lib/apiError";
+import { getClientDeviceContext } from "@/lib/device";
 import { useAuthStore } from "@/store/authStore";
+import { getAuthContact, clearAuthContact, maskContact } from "@/lib/authFlow";
 import { AuthLayout } from "@/components/layout/AuthLayout";
 import { FormInput, GradientButton } from "@/components/ui/FormPrimitives";
 
 function VerifyOtpForm() {
   const router = useRouter();
-  const searchParams = useSearchParams();
-  const contact = searchParams.get("contact") || "";
+  const { contact, method } = getAuthContact();
+  const t = useTranslations("auth.verifyOtp");
   const setTokens = useAuthStore((state) => state.setTokens);
   
   const [otp, setOtp] = useState("");
@@ -27,14 +31,12 @@ function VerifyOtpForm() {
 
   const handleResendOtp = async () => {
     setCountdown(60);
-    // You can also hit your API resend endpoint here
-    // e.g. await apiClient.post("/auth/resend/email-verification", { email: contact })
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (otp.length < 4) {
-      setErrorText("অনুগ্রহ করে সঠিক OTP দিন");
+      setErrorText(t("errorInvalidOtp"));
       return;
     }
     
@@ -42,18 +44,16 @@ function VerifyOtpForm() {
     setIsLoading(true);
 
     try {
-      // In AuthController.java, /auth/verify/phone requires phone, otp, deviceId etc
+      const deviceContext = getClientDeviceContext();
       const response = await apiClient.post("/auth/verify/phone", {
         phone: contact,
         otp,
-        deviceId: "web-client",
-        deviceName: "Web Browser",
-        deviceType: "WEB",
-        userAgent: navigator.userAgent
+        ...deviceContext,
       });
 
       const data = response.data?.data;
       if (data) {
+        clearAuthContact();
         setTokens(data.accessToken, data.refreshToken, data.userId, data.status);
         
         if (data.status === "PASSWORD_SETUP_REQUIRED") {
@@ -62,8 +62,8 @@ function VerifyOtpForm() {
           router.push("/dashboard");
         }
       }
-    } catch (error: any) {
-      setErrorText(error.response?.data?.message || "OTP ভেরিফিকেশন ব্যর্থ হয়েছে");
+    } catch (error: unknown) {
+      setErrorText(getApiErrorMessage(error, t("errorVerificationFailed")));
     } finally {
       setIsLoading(false);
     }
@@ -73,12 +73,12 @@ function VerifyOtpForm() {
     <form onSubmit={handleSubmit} className="space-y-6">
       <div className="text-center mb-6">
         <p className="text-on-surface-variant font-medium">
-          {contact} নম্বরে একটি OTP পাঠানো হয়েছে।
+          {t("otpSent", { contact: maskContact(contact) })}
         </p>
       </div>
 
       <FormInput 
-        label="OTP কোড"
+        label={t("otpLabel")}
         type="text"
         placeholder="----"
         icon="pin"
@@ -89,7 +89,7 @@ function VerifyOtpForm() {
       {errorText && <p className="text-error text-sm font-semibold">{errorText}</p>}
 
       <GradientButton type="submit" loading={isLoading}>
-        <span>ভেরিফাই করুন</span>
+        <span>{t("verify")}</span>
         <span className="material-symbols-outlined">check_circle</span>
       </GradientButton>
 
@@ -100,7 +100,7 @@ function VerifyOtpForm() {
           onClick={handleResendOtp}
           className={`font-bold transition-colors ${countdown > 0 ? "text-on-surface-variant opacity-50 cursor-not-allowed" : "text-primary hover:underline"}`}
         >
-          {countdown > 0 ? `পুনরায় OTP পাঠান (${countdown}s)` : "পুনরায় OTP পাঠান"}
+          {countdown > 0 ? t("resendOtpCountdown", { countdown }) : t("resendOtp")}
         </button>
       </div>
     </form>
@@ -108,12 +108,14 @@ function VerifyOtpForm() {
 }
 
 export default function VerifyOtpPage() {
+  const t = useTranslations("auth.verifyOtp");
+
   return (
     <AuthLayout 
-      heading="OTP ভেরিফিকেশন" 
-      subheading="আপনার অ্যাকাউন্ট নিরাপদ রাখুন"
+      heading={t("heading")} 
+      subheading={t("subheading")}
     >
-      <Suspense fallback={<div className="text-center p-8">Loading...</div>}>
+      <Suspense fallback={<div className="text-center text-on-surface-variant">{t("loading")}</div>}>
         <VerifyOtpForm />
       </Suspense>
     </AuthLayout>

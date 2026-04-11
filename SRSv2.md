@@ -3220,6 +3220,61 @@ Authentication Flow:
 
 8.  API → Frontend: Return JWT access token + refresh token
 
+Password Reset Flow (Frontend State Persistence Contract):
+
+1.  User → Frontend: Open Forgot Password and enter `phoneOrEmail`
+
+2.  Frontend → API: POST `/api/v1/auth/forgot-password`
+
+3.  API → Frontend: Success with OTP TTL (300s)
+
+4.  Frontend: Persist reset context in browser storage:
+    - `passwordReset.phoneOrEmail`
+    - `passwordReset.otpExpiresAt` (epoch ms = now + 300s)
+    - optional: `passwordReset.lastOtpSentAt`
+
+5.  User → Frontend: Enter OTP + new password
+
+6.  Frontend → API: POST `/api/v1/auth/reset-password`
+
+7.  API → Frontend: Reset success; frontend clears all `passwordReset.*` keys
+
+Refresh/Reload Recovery Rules:
+
+-   On app load, if `passwordReset.phoneOrEmail` exists and current time is
+    before `passwordReset.otpExpiresAt`, route user back to OTP reset screen
+    with pre-filled identifier.
+
+-   If expired, keep `phoneOrEmail`, clear OTP inputs, show "OTP expired",
+    and trigger resend action.
+
+-   Resend must update `otpExpiresAt` and respect backend cooldown/rate-limit.
+
+Edge Cases (Mandatory UX Behavior):
+
+-   **Expired OTP**: block submit, show explicit expiry message, allow resend.
+
+-   **Resend Cooldown**: disable resend button countdown on client, but always
+    trust backend 429/cooldown error as source of truth.
+
+-   **Back Navigation**: returning from OTP page must not lose
+    `phoneOrEmail`; re-entering forgot-password should reuse stored value.
+
+-   **Multi-tab**: keep one active reset context per browser; if a new tab
+    starts reset for another identifier, overwrite previous context and show
+    "reset session updated in another tab" warning.
+
+-   **Success Cleanup**: on successful reset, remove persistence keys so stale
+    OTP page cannot be resumed.
+
+Security Notes:
+
+-   Frontend persistence is UX-only; OTP validity, purpose
+    (`PASSWORD_RESET`), cooldown, and attempt limits are enforced in backend.
+
+-   Frontend must never cache OTP value itself; only cache identifier and
+    expiry metadata.
+
 AI Query Flow (with Spring AI Layer):
 
 1.  User → Frontend: Submit Bengali query (text/voice)

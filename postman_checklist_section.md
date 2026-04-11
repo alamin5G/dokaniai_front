@@ -63,6 +63,17 @@ Tick each request after it passes. Grouping/order follows the Postman collection
 - [ ] Forgot Password
 - [ ] Reset Password
 
+#### Auth Reset Regression (persistence + edge behaviors)
+- [ ] Forgot Password returns OTP TTL (`expiresInSeconds`) for valid `phoneOrEmail`
+- [ ] Frontend persists `passwordReset.phoneOrEmail` and `passwordReset.otpExpiresAt`
+- [ ] Reload before expiry restores OTP step with same `phoneOrEmail`
+- [ ] Expired OTP returns expected failure and UI enters resend mode
+- [ ] Repeated forgot-password hits backend cooldown (`429`) and UI shows retry window
+- [ ] Repeated invalid OTP hits verification lock (`429`) and blocks reset temporarily
+- [ ] Successful reset clears `passwordReset.*` persistence keys
+
+Traceability: `API_Design.md` section `1.11`, `SRSv2.md` section `17.4`.
+
 ### User (8)
 - [ ] Get Me
 - [ ] Update Me

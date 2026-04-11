@@ -1,5 +1,8 @@
+"use client";
+
 import React from "react";
-import Image from "next/image";
+import { useTranslations } from "next-intl";
+import { LanguageSwitcher } from "@/components/ui/LanguageSwitcher";
 
 interface AuthLayoutProps {
   children: React.ReactNode;
@@ -8,6 +11,8 @@ interface AuthLayoutProps {
 }
 
 export function AuthLayout({ children, heading, subheading }: AuthLayoutProps) {
+  const t = useTranslations("authLayout");
+
   return (
     <main className="w-full max-w-[1200px] mx-auto grid md:grid-cols-12 items-center gap-8 md:gap-16 pt-8 md:pt-0 min-h-screen relative">
       {/* Left Side: Editorial Branding */}
@@ -20,8 +25,8 @@ export function AuthLayout({ children, heading, subheading }: AuthLayoutProps) {
         </div>
         
         <div className="space-y-4">
-          <h2 className="text-5xl font-bold leading-tight text-primary">আপনার ব্যবসার বিশ্বস্ত <span className="text-secondary">ডিজিটাল খাতা</span></h2>
-          <p className="text-lg text-on-surface-variant font-medium leading-relaxed opacity-80">আধুনিক প্রযুক্তির সমন্বয়ে আপনার দোকানের হিসাব রাখুন নিরাপদ এবং সহজভাবে।</p>
+          <h2 className="text-5xl font-bold leading-tight text-primary">{t("brandTitle", { highlight: t("brandHighlight") })}</h2>
+          <p className="text-lg text-on-surface-variant font-medium leading-relaxed opacity-80">{t("brandDescription")}</p>
         </div>
         
         <div className="relative w-full aspect-square rounded-[1rem] overflow-hidden bg-surface-container shadow-sm">
@@ -32,8 +37,8 @@ export function AuthLayout({ children, heading, subheading }: AuthLayoutProps) {
           />
           <div className="absolute inset-0 bg-gradient-to-t from-primary/40 to-transparent"></div>
           <div className="absolute bottom-6 left-6 right-6 p-6 bg-surface-variant/60 backdrop-blur-md rounded-[1rem]">
-            <p className="text-primary font-semibold text-sm mb-1">স্মার্ট ইনসাইট</p>
-            <p className="text-on-surface font-bold text-lg leading-snug">&quot;গত সপ্তাহের তুলনায় আপনার বাকির পরিমাণ ১২% কমেছে।&quot;</p>
+            <p className="text-primary font-semibold text-sm mb-1">{t("smartInsight")}</p>
+            <p className="text-on-surface font-bold text-lg leading-snug">"{t("insightSample")}"</p>
           </div>
         </div>
       </section>
@@ -46,6 +51,11 @@ export function AuthLayout({ children, heading, subheading }: AuthLayoutProps) {
           <h1 className="text-2xl font-black text-primary">DokaniAI</h1>
         </div>
         
+        {/* Language Switcher */}
+        <div className="flex justify-end">
+          <LanguageSwitcher />
+        </div>
+
         {/* Auth Card */}
         <div className="bg-surface-container-lowest rounded-[2rem] p-8 shadow-sm relative overflow-hidden">
           <div className="mb-8">
@@ -64,7 +74,7 @@ export function AuthLayout({ children, heading, subheading }: AuthLayoutProps) {
       >
         <span className="material-symbols-outlined text-white text-3xl group-hover:rotate-12 transition-transform" data-icon="mic" style={{ fontVariationSettings: "'FILL' 1" }}>mic</span>
         <div className="absolute -top-12 right-0 bg-on-surface text-surface text-xs py-2 px-4 rounded-full whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
-          সাহায্য প্রয়োজন?
+          {t("brandHighlight")}
         </div>
       </button>
     </main>

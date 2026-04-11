@@ -1,22 +1,50 @@
 "use client";
 
-import { useState, useEffect, Suspense } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useState, useEffect, useCallback, Suspense } from "react";
+import { useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
 import apiClient from "@/lib/api";
+import { getApiErrorMessage } from "@/lib/apiError";
+import {
+  getAuthContact,
+  clearAuthContact,
+  maskContact,
+  getResetContext,
+  isOtpExpired,
+  setResetContext,
+  clearResetContext,
+} from "@/lib/authFlow";
 import { AuthLayout } from "@/components/layout/AuthLayout";
 import { FormInput, GradientButton } from "@/components/ui/FormPrimitives";
 
 function ResetPasswordForm() {
   const router = useRouter();
-  const searchParams = useSearchParams();
-  const contact = searchParams.get("contact") || "";
-  
+  const t = useTranslations("auth.resetPassword");
+  const tc = useTranslations("common");
+
+  // --- Reload recovery: read reset context on mount ---
+  const resetCtx = getResetContext();
+  const expiredOnLoad = isOtpExpired();
+
+  // If no context at all, redirect to forgot-password
+  useEffect(() => {
+    if (!resetCtx) {
+      router.replace("/forgot-password");
+    }
+  }, [resetCtx, router]);
+
+  // Derive contact from reset context (preferred) or legacy auth contact
+  const { contact: authContact } = getAuthContact();
+  const contact = resetCtx?.phoneOrEmail || authContact;
+
   const [otp, setOtp] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [errorText, setErrorText] = useState("");
+  const [otpExpired, setOtpExpired] = useState(expiredOnLoad ?? false);
   const [countdown, setCountdown] = useState(60);
+  const [resendLoading, setResendLoading] = useState(false);
 
   useEffect(() => {
     if (countdown > 0) {
@@ -25,27 +53,52 @@ function ResetPasswordForm() {
     }
   }, [countdown]);
 
-  const handleResendOtp = async () => {
-    setCountdown(60);
-    // Trigger /auth/forgot-password again
-    // await apiClient.post("/auth/forgot-password", { phoneOrEmail: contact });
-  };
+  // Auto-detect expiry while the page is open
+  useEffect(() => {
+    const interval = setInterval(() => {
+      const expired = isOtpExpired();
+      if (expired === true && !otpExpired) {
+        setOtpExpired(true);
+        setOtp("");
+      }
+    }, 5000);
+    return () => clearInterval(interval);
+  }, [otpExpired]);
+
+  const handleResendOtp = useCallback(async () => {
+    if (!contact) return;
+    setResendLoading(true);
+    setErrorText("");
+    try {
+      await apiClient.post("/auth/forgot-password", {
+        phoneOrEmail: contact,
+      });
+      setResetContext(contact, Date.now() + 300000);
+      setOtpExpired(false);
+      setOtp("");
+      setCountdown(60);
+    } catch (error: unknown) {
+      setErrorText(getApiErrorMessage(error, t("errorResetFailed")));
+    } finally {
+      setResendLoading(false);
+    }
+  }, [contact, t]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (otp.length < 4) {
-      setErrorText("অনুগ্রহ করে সঠিক OTP দিন");
+      setErrorText(t("errorInvalidOtp"));
       return;
     }
     if (newPassword !== confirmPassword) {
-      setErrorText("পাসওয়ার্ড দুটি মিলছে না");
+      setErrorText(t("errorMismatch"));
       return;
     }
     if (newPassword.length < 6) {
-      setErrorText("পাসওয়ার্ড অন্তত ۶ অক্ষরের হতে হবে");
+      setErrorText(t("errorTooShort"));
       return;
     }
-    
+
     setErrorText("");
     setIsLoading(true);
 
@@ -53,27 +106,44 @@ function ResetPasswordForm() {
       await apiClient.post("/auth/reset-password", {
         phoneOrEmail: contact,
         otp,
-        newPassword
+        newPassword,
       });
 
+      clearAuthContact();
+      clearResetContext();
       router.push("/login?resetSuccess=true");
-    } catch (error: any) {
-      setErrorText(error.response?.data?.message || "পাসওয়ার্ড রিসেট ব্যর্থ হয়েছে");
+    } catch (error: unknown) {
+      setErrorText(getApiErrorMessage(error, t("errorResetFailed")));
     } finally {
       setIsLoading(false);
     }
   };
 
+  // Don't render the form if there's no context (redirect in progress)
+  if (!resetCtx) {
+    return (
+      <div className="text-center text-on-surface-variant">
+        {t("loading")}
+      </div>
+    );
+  }
+
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
       <div className="text-center mb-6">
         <p className="text-on-surface-variant font-medium">
-          {contact} এ পাঠানো ৬-ডিজিটের OTP কোডটি লিখুন
+          {t("otpSent", { contact: maskContact(contact) })}
         </p>
       </div>
 
-      <FormInput 
-        label="OTP কোড"
+      {otpExpired && (
+        <p className="text-error text-sm font-semibold text-center">
+          {t("otpExpired")}
+        </p>
+      )}
+
+      <FormInput
+        label={t("otpLabel")}
         type="text"
         placeholder="----"
         icon="pin"
@@ -81,39 +151,43 @@ function ResetPasswordForm() {
         onChange={(e) => setOtp(e.target.value)}
       />
 
-      <FormInput 
-        label="নতুন পাসওয়ার্ড"
+      <FormInput
+        label={t("newPasswordLabel")}
         type="password"
-        placeholder="আপনার নতুন পাসওয়ার্ড দিন"
+        placeholder={t("newPasswordPlaceholder")}
         icon="lock"
         value={newPassword}
         onChange={(e) => setNewPassword(e.target.value)}
       />
-      
-      <FormInput 
-        label="পাসওয়ার্ড নিশ্চিত করুন"
+
+      <FormInput
+        label={t("confirmPasswordLabel")}
         type="password"
-        placeholder="আবারও পাসওয়ার্ডটি লিখুন"
+        placeholder={t("confirmPasswordPlaceholder")}
         icon="lock"
         value={confirmPassword}
         onChange={(e) => setConfirmPassword(e.target.value)}
       />
 
-      {errorText && <p className="text-error text-sm font-semibold text-center">{errorText}</p>}
+      {errorText && <p className="text-error text-sm font-semibold">{errorText}</p>}
 
       <GradientButton type="submit" loading={isLoading}>
-        <span>পাসওয়ার্ড রিসেট করুন</span>
-        <span className="material-symbols-outlined">restart_alt</span>
+        <span>{t("resetButton")}</span>
+        <span className="material-symbols-outlined">lock_reset</span>
       </GradientButton>
 
       <div className="text-center mt-6">
-        <button 
-          type="button" 
-          disabled={countdown > 0}
+        <button
+          type="button"
+          disabled={countdown > 0 || resendLoading}
           onClick={handleResendOtp}
-          className={`font-bold transition-colors ${countdown > 0 ? "text-on-surface-variant opacity-50 cursor-not-allowed" : "text-primary hover:underline"}`}
+          className={`font-bold transition-colors ${countdown > 0 || resendLoading ? "text-on-surface-variant opacity-50 cursor-not-allowed" : "text-primary hover:underline"}`}
         >
-          {countdown > 0 ? `পুনরায় OTP পাঠান (${countdown}s)` : "পুনরায় OTP পাঠান"}
+          {resendLoading
+            ? tc("pleaseWait")
+            : countdown > 0
+              ? t("resendOtpCountdown", { countdown })
+              : t("resendOtp")}
         </button>
       </div>
     </form>
@@ -121,12 +195,14 @@ function ResetPasswordForm() {
 }
 
 export default function ResetPasswordPage() {
+  const t = useTranslations("auth.resetPassword");
+
   return (
-    <AuthLayout 
-      heading="পাসওয়ার্ড রিসেট করুন" 
-      subheading="OTP যাচাই করুন এবং আপনার নতুন পাসওয়ার্ড সেট করুন"
+    <AuthLayout
+      heading={t("heading")}
+      subheading={t("subheading")}
     >
-      <Suspense fallback={<div className="text-center p-8">Loading...</div>}>
+      <Suspense fallback={<div className="text-center text-on-surface-variant">{t("loading")}</div>}>
         <ResetPasswordForm />
       </Suspense>
     </AuthLayout>

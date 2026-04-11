@@ -1,0 +1,476 @@
+{
+  "common": {
+    "appName": "DokaniAI",
+    "loading": "লোড হচ্ছে...",
+    "or": "অথবা",
+    "nextStep": "পরবর্তী ধাপ",
+    "save": "সেভ করুন",
+    "pleaseWait": "অপেক্ষা করুন...",
+    "needHelp": "সাহায্য প্রয়োজন?",
+    "language": "ভাষা",
+    "bengali": "বাংলা",
+    "english": "English"
+  },
+  "auth": {
+    "login": {
+      "heading": "লগইন করুন",
+      "subheading": "আপনার মোবাইল নম্বর বা ইমেল এবং পাসওয়ার্ড ব্যবহার করে প্রবেশ করুন",
+      "identifierLabel": "মোবাইল বা ইমেইল",
+      "identifierPlaceholder": "017... অথবা email@example.com",
+      "passwordLabel": "পাসওয়ার্ড",
+      "passwordPlaceholder": "আপনার পাসওয়ার্ড দিন",
+      "forgotPassword": "ভুলে গেছেন?",
+      "submit": "লগইন করুন",
+      "errorEmptyFields": "অনুগ্রহ করে আপনার আইডি এবং পাসওয়ার্ড দিন",
+      "errorInvalid": "লগইন তথ্য ভুল হয়েছে",
+      "newAccount": "নতুন অ্যাকাউন্ট খুলতে চান?",
+      "registerHere": "এখানে ক্লিক করুন"
+    },
+    "register": {
+      "heading": "নতুন অ্যাকাউন্ট তৈরি করুন",
+      "subheading": "আপনার ব্যবসার ডিজিটাল খাতা তৈরি করুন",
+      "phoneTab": "মোবাইল নম্বর",
+      "emailTab": "ইমেইল",
+      "fullNameLabel": "আপনার পূর্ণ নাম",
+      "fullNamePlaceholder": "যেমন: রহিম আহমেদ",
+      "phoneLabel": "মোবাইল নম্বর",
+      "phonePlaceholder": "০১XXXXXXXXX",
+      "emailLabel": "ইমেইল এড্রেস",
+      "emailPlaceholder": "example@email.com",
+      "referralCodeLabel": "রেফারেল কোড (ঐচ্ছিক)",
+      "referralCodePlaceholder": "যেমন: REF-ABC123",
+      "passwordLabel": "পাসওয়ার্ড",
+      "passwordPlaceholder": "আপনার পাসওয়ার্ড দিন",
+      "agreeTerms": "আমি <terms>শর্তাবলী</terms> এবং <privacy>গোপনীয়তা নীতি</privacy> মেনে নিচ্ছি।",
+      "terms": "শর্তাবলী",
+      "privacy": "গোপনীয়তা নীতি",
+      "errorAgree": "অনুগ্রহ করে শর্তাবলীতে সম্মত হোন",
+      "errorGeneric": "একটি ত্রুটি ঘটেছে",
+      "alreadyHaveAccount": "ইতিমধ্যেই অ্যাকাউন্ট আছে?",
+      "loginHere": "লগইন করুন"
+    },
+    "verifyOtp": {
+      "heading": "OTP ভেরিফিকেশন",
+      "subheading": "আপনার অ্যাকাউন্ট নিরাপদ রাখুন",
+      "loading": "লোড হচ্ছে...",
+      "otpSent": "{contact} নম্বরে একটি OTP পাঠানো হয়েছে।",
+      "otpLabel": "OTP কোড",
+      "verify": "ভেরিফাই করুন",
+      "resendOtp": "পুনরায় OTP পাঠান",
+      "resendOtpCountdown": "পুনরায় OTP পাঠান ({countdown}s)",
+      "errorInvalidOtp": "অনুগ্রহ করে সঠিক OTP দিন",
+      "errorVerificationFailed": "OTP ভেরিফিকেশন ব্যর্থ হয়েছে"
+    },
+    "verifyEmail": {
+      "heading": "ইমেইল ভেরিফিকেশন",
+      "subheading": "আপনার ইমেইল নিশ্চিত করুন",
+      "loading": "লোড হচ্ছে...",
+      "codeSent": "{contact} এ একটি ভেরিফিকেশন কোড পাঠানো হয়েছে।",
+      "codeLabel": "ভেরিফিকেশন কোড",
+      "verify": "ভেরিফাই করুন",
+      "resendCode": "পুনরায় কোড পাঠান",
+      "resendCodeCountdown": "পুনরায় কোড পাঠান ({countdown}s)",
+      "errorInvalidCode": "অনুগ্রহ করে সঠিক ৬-ডিজিট কোড দিন",
+      "errorVerificationFailed": "ইমেইল ভেরিফিকেশন ব্যর্থ হয়েছে",
+      "successMessage": "ইমেইল সফলভাবে ভেরিফাই হয়েছে! এখন লগইন করুন।"
+    },
+    "setPassword": {
+      "heading": "নতুন পাসওয়ার্ড সেট করুন",
+      "subheading": "ভবিষ্যতে লগইন করার জন্য একটি পাসওয়ার্ড নির্ধারণ করুন",
+      "newPasswordLabel": "নতুন পাসওয়ার্ড",
+      "newPasswordPlaceholder": "আপনার নতুন পাসওয়ার্ড দিন",
+      "confirmPasswordLabel": "পাসওয়ার্ড নিশ্চিত করুন",
+      "confirmPasswordPlaceholder": "আবারও পাসওয়ার্ডটি লিখুন",
+      "errorMismatch": "পাসওয়ার্ড দুটি মিলছে না",
+      "errorTooShort": "পাসওয়ার্ড অন্তত ৬ অক্ষরের হতে হবে",
+      "errorGeneric": "পাসওয়ার্ড সেট করতে সমস্যা হয়েছে"
+    },
+    "forgotPassword": {
+      "heading": "পাসওয়ার্ড ভুলে গেছেন?",
+      "subheading": "আপনার নিবন্ধিত মোবাইল নম্বর বা ইমেইল দিন। আমরা একটি ওটিপি পাঠাবো।",
+      "identifierLabel": "মোবাইল নম্বর বা ইমেইল",
+      "identifierPlaceholder": "017... অথবা email@example.com",
+      "sendOtp": "OTP পাঠান",
+      "errorEmpty": "মোবাইল নম্বর বা ইমেইল দিন",
+      "errorSendFailed": "OTP পাঠাতে সমস্যা হয়েছে",
+      "backToLogin": "লগইন পেজে ফিরে যান"
+    },
+    "resetPassword": {
+      "heading": "পাসওয়ার্ড রিসেট করুন",
+      "subheading": "OTP যাচাই করুন এবং আপনার নতুন পাসওয়ার্ড সেট করুন",
+      "loading": "লোড হচ্ছে...",
+      "otpSent": "{contact} এ পাঠানো ৬-ডিজিটের OTP কোডটি লিখুন",
+      "otpLabel": "OTP কোড",
+      "newPasswordLabel": "নতুন পাসওয়ার্ড",
+      "newPasswordPlaceholder": "আপনার নতুন পাসওয়ার্ড দিন",
+      "confirmPasswordLabel": "পাসওয়ার্ড নিশ্চিত করুন",
+      "confirmPasswordPlaceholder": "আবারও পাসওয়ার্ডটি লিখুন",
+      "resetButton": "পাসওয়ার্ড রিসেট করুন",
+      "errorInvalidOtp": "অনুগ্রহ করে সঠিক OTP দিন",
+      "errorMismatch": "পাসওয়ার্ড দুটি মিলছে না",
+      "errorTooShort": "পাসওয়ার্ড অন্তত ৬ অক্ষরের হতে হবে",
+      "errorResetFailed": "পাসওয়ার্ড রিসেট ব্যর্থ হয়েছে",
+      "resendOtp": "পুনরায় OTP পাঠান",
+      "resendOtpCountdown": "পুনরায় OTP পাঠান ({countdown}s)",
+      "otpExpired": "OTP মেয়াদোত্তীর্ণ হয়েছে। পুনরায় কোড পাঠান।",
+      "errorNoContext": "পাসওয়ার্ড রিসেট সেশন পাওয়া যায়নি। আবার শুরু করুন।"
+    }
+  },
+  "home": {
+    "nav": {
+      "features": "ফিচার",
+      "pricing": "প্রাইসিং",
+      "about": "আমাদের সম্পর্কে",
+      "getStarted": "শুরু করুন"
+    },
+    "hero": {
+      "badge": "বাংলাদেশের ক্ষুদ্র ব্যবসার ডিজিটাল সাথী",
+      "title": "কাগজের খাতার দিন শেষ, {highlight} বড় করুন",
+      "titleHighlight": "AI দিয়ে ব্যবসা",
+      "description": "আপনার দোকানের হিসাব রাখা এখন পানির মত সহজ। কোনো টাইপিং ছাড়াই শুধু মুখে কথা বলে আপনার সারাদিনের কেনাবেচা রেকর্ড করুন।",
+      "startToday": "আজই শুরু করুন",
+      "howItWorks": "কিভাবে কাজ করে?",
+      "listeningAi": "Listening to AI...",
+      "voiceSample": "আজকে চাল বিক্রি হয়েছে ৫০ কেজি"
+    },
+    "features": {
+      "sectionTitle": "দোকানের সব কাজ এক জায়গায়",
+      "sectionSubtitle": "সবচেয়ে আধুনিক টেকনোলজি এখন আপনার হাতের মুঠোয়",
+      "voiceTitle": "মুখ দিয়ে বলুন, অটোমেটিক লিখুন",
+      "voiceDescription": "লেখার ঝামেলা ছাড়াই ভয়েস কমান্ড দিয়ে স্টক আপডেট, বাকি আদায় এবং বিক্রি রেকর্ড করুন মুহূর্তের মধ্যে।",
+      "dueTitle": "বাকির হিসাব",
+      "dueDescription": "কাস্টমারকে অটোমেটিক মেসেজ পাঠিয়ে বাকি আদায়ে সাহায্য করে আমাদের AI স্মার্ট সিস্টেম।",
+      "stockTitle": "স্টক ম্যানেজমেন্ট",
+      "stockDescription": "পণ্য ফুরিয়ে যাওয়ার আগেই আপনাকে সতর্ক করবে DokaniAI।",
+      "securityTitle": "শতভাগ আমানত",
+      "securityDescription": "আপনার ডাটা থাকবে সম্পূর্ণ সুরক্ষিত এবং এনক্রিপ্টেড।",
+      "reportsTitle": "বিজনেস রিপোর্ট",
+      "reportsDescription": "দৈনিক লাভ-ক্ষতির পূর্ণাঙ্গ হিসাব দেখুন এক ক্লিকে।"
+    },
+    "pricing": {
+      "label": "Pricing Plans",
+      "title": "আপনার ব্যবসার জন্য সঠিক প্ল্যান",
+      "subtitle": "সাশ্রয়ী মূল্যে পান প্রিমিয়াম সব ফিচার",
+      "trial1": {
+        "name": "Free Trial 1",
+        "price": "৳০",
+        "period": "/৬৫ দিন",
+        "feature1": "মৌলিক সব ফিচার",
+        "feature2": "১টি ডিভাইস কানেক্ট",
+        "cta": "শুরু করুন"
+      },
+      "trial2": {
+        "name": "Free Trial 2",
+        "price": "৳০",
+        "period": "/৩৫ দিন",
+        "feature1": "সুপার ফাস্ট সাপোর্ট",
+        "feature2": "ডাটা ব্যাকআপ",
+        "cta": "শুরু করুন"
+      },
+      "basic": {
+        "name": "Basic",
+        "price": "৳১৪৯",
+        "period": "/মাস",
+        "feature1": "আনলিমিটেড এন্ট্রি",
+        "feature2": "SMS অ্যালার্ট",
+        "popular": "Popular",
+        "cta": "সিলেক্ট করুন"
+      },
+      "pro": {
+        "name": "Pro",
+        "price": "৳৩৯৯",
+        "period": "/মাস",
+        "feature1": "AI বিজনেস এনালিটিক্স",
+        "feature2": "৫ জন ইউজার",
+        "cta": "প্রো হন"
+      },
+      "plus": {
+        "name": "Plus",
+        "price": "৳৭৯৯",
+        "period": "/মাস",
+        "feature1": "ইনভেন্টরি অটোমেশন",
+        "feature2": "২৪/৭ ভিআইপি সাপোর্ট",
+        "cta": "প্লাস সাবস্ক্রাইব"
+      }
+    },
+    "testimonials": {
+      "title": "শপকিপারদের প্রিয় DokaniAI",
+      "t1": {
+        "quote": "আগে খাতা কলমে হিসাব রাখতে অনেক সময় লাগত, এখন শুধু মুখে বলি আর DokaniAI সব গুছিয়ে রাখে।",
+        "name": "আব্দুল জব্বার",
+        "shop": "জব্বার স্টোর, ঢাকা"
+      },
+      "t2": {
+        "quote": "বাকির হিসাবের জন্য আর কাস্টমারকে বলতে হয় না, অটোমেটিক মেসেজ চলে যায়। আমার সময় বাঁচে অনেক।",
+        "name": "রাহুল আহমেদ",
+        "shop": "ফ্যাশন পয়েন্ট, সিলেট"
+      },
+      "t3": {
+        "quote": "অ্যাপটি ব্যবহার করা এত সহজ যে আমার দোকানের কর্মচারীরাও খুব সহজে সব ইনপুট দিতে পারে।",
+        "name": "সুমাইয়া পারভীন",
+        "shop": "গৃহিণী সুপার সপ, চট্টগ্রাম"
+      }
+    },
+    "footer": {
+      "copyright": "© 2024 DokaniAI. Empowering Bangladesh's Micro-Shops with Amanat.",
+      "plans": "প্ল্যান",
+      "trialPlan": "Trial 1 (65 Days)",
+      "basicPlan": "Basic (149 BDT)",
+      "proPlan": "Pro (399 BDT)",
+      "resources": "রিসোর্স",
+      "privacyPolicy": "গোপনীয়তা নীতি",
+      "pwaGuide": "PWA গাইড",
+      "helpCenter": "সাহায্য কেন্দ্র",
+      "connect": "যোগাযোগ"
+    }
+  },
+  "authLayout": {
+    "brandTitle": "আপনার ব্যবসার বিশ্বস্ত {highlight}",
+    "brandHighlight": "ডিজিটাল খাতা",
+    "brandDescription": "আধুনিক প্রযুক্তির সমন্বয়ে আপনার দোকানের হিসাব রাখুন নিরাপদ এবং সহজভাবে।",
+    "smartInsight": "স্মার্ট ইনসাইট",
+    "insightSample": "গত সপ্তাহের তুলনায় আপনার বাকির পরিমাণ ১২% কমেছে।"
+  },
+  "sessions": {
+    "heading": "সক্রিয় সেশন",
+    "subheading": "আপনার সকল সক্রিয় ডিভাইস ও সেশন",
+    "countBadge": "{count}টি সক্রিয়",
+    "logoutAll": "সব ডিভাইস থেকে লগআউট",
+    "currentDevice": "বর্তমান ডিভাইস",
+    "revoke": "সরিয়ে দিন",
+    "revokeConfirm": "এই ডিভাইসের সেশন সরিয়ে দিতে চান?",
+    "logoutAllConfirm": "সব ডিভাইস থেকে লগআউট করতে চান? আপনাকে আবার লগইন করতে হবে।",
+    "lastActive": "সর্বশেষ সক্রিয়",
+    "ipAddress": "IP অ্যাড্রেস",
+    "loginMethod": "লগইন পদ্ধতি",
+    "password": "পাসওয়ার্ড",
+    "otp": "OTP",
+    "google": "Google",
+    "facebook": "Facebook",
+    "errorFetch": "সেশন তথ্য আনতে সমস্যা হয়েছে",
+    "errorRevoke": "সেশন সরাতে সমস্যা হয়েছে",
+    "errorLogoutAll": "সব ডিভাইস থেকে লগআউট করতে সমস্যা হয়েছে",
+    "noSessions": "কোনো সক্রিয় সেশন নেই",
+    "timeAgo": {
+      "justNow": "এইমাত্র",
+      "minutesAgo": "{count} মিনিট আগে",
+      "hoursAgo": "{count} ঘণ্টা আগে",
+      "daysAgo": "{count} দিন আগে"
+    },
+    "securityTip": "নিরাপত্তা টিপ",
+    "securityTipText": "আপনি যদি কোনো অপরিচিত ডিভাইস দেখতে পান, তাহলে সাথে সাথে সেশন সরিয়ে দিন এবং পাসওয়ার্ড পরিবর্তন করুন।",
+    "backToDashboard": "ড্যাশবোর্ডে ফিরুন",
+    "securityAlert": "নিরাপত্তা সতর্কতা",
+    "securityAlertDesc": "সবগুলো ডিভাইস থেকে একসাথেই লগ-আউট হতে নিচের বাটনটি ব্যবহার করুন।",
+    "aiInsight": "AI নিরাপত্তা বিশ্লেষণ",
+    "aiInsightText": "আপনার অ্যাকাউন্টে অস্বাভাবিক কোনো লগ-ইন লক্ষ্য করা যায়নি। তবুও প্রতি ৩০ দিন অন্তর সেশনগুলো যাচাই করা ভালো।",
+    "confirm": "হ্যাঁ",
+    "cancel": "না",
+    "active": "সক্রিয়"
+  },
+  "business": {
+    "list": {
+      "heading": "আমার ব্যবসাসমূহ",
+      "subheading": "আপনার ব্যবসার ওয়ার্কস্পেস পরিচালনা করুন",
+      "countBadge": "{count} / {limit}",
+      "createButton": "নতুন ব্যবসা তৈরি করুন",
+      "emptyTitle": "এখনো কোনো ব্যবসা নেই",
+      "emptyDescription": "শুরু করতে আপনার প্রথম ব্যবসা তৈরি করুন",
+      "active": "সক্রিয়",
+      "archived": "আর্কাইভ",
+      "archivedLabel": "আর্কাইভকৃত",
+      "totalProducts": "{count}টি পণ্য",
+      "totalSales": "{count}টি বিক্রয়",
+      "totalDue": "৳{amount} বাকি",
+      "selectBusiness": "নির্বাচন করুন",
+      "archiveConfirm": "এই ব্যবসাটি আর্কাইভ করবেন?",
+      "archiveDescription": "আর্কাইভকৃত ব্যবসা পরে পুনরুদ্ধার করা যাবে।",
+      "deleteConfirm": "এই ব্যবসাটি স্থায়ীভাবে মুছে ফেলবেন?",
+      "deleteDescription": "এই কাজটি পূর্বাবস্থায় ফেরানো যাবে না। সমস্ত ডাটা স্থায়ীভাবে মুছে যাবে।",
+      "errorFetch": "ব্যবসার তালিকা লোড করতে ব্যর্থ",
+      "errorCreate": "ব্যবসা তৈরি করতে ব্যর্থ",
+      "errorArchive": "ব্যবসা আর্কাইভ করতে ব্যর্থ",
+      "errorDelete": "ব্যবসা মুছে ফেলতে ব্যর্থ",
+      "limitReached": "ব্যবসার সীমা পৌঁছেছে। আরো যোগ করতে প্ল্যান আপগ্রেড করুন।"
+    },
+    "form": {
+      "nameLabel": "ব্যবসার নাম",
+      "namePlaceholder": "যেমন: রহিম গ্রোসারী",
+      "typeLabel": "ব্যবসার ধরন",
+      "typePlaceholder": "একটি ক্যাটাগরি নির্বাচন করুন",
+      "descriptionLabel": "বিবরণ",
+      "descriptionPlaceholder": "আপনার ব্যবসার সংক্ষিপ্ত বিবরণ",
+      "currencyLabel": "মুদ্রা",
+      "createButton": "ব্যবসা তৈরি করুন",
+      "updateButton": "ব্যবসা আপডেট করুন",
+      "errorNameRequired": "ব্যবসার নাম আবশ্যক",
+      "errorTypeRequired": "ব্যবসার ধরন নির্বাচন করুন"
+    },
+    "types": {
+      "grocery": "মুদি দোকান",
+      "electronics": "ইলেকট্রনিক্স",
+      "clothing": "কাপড়ের দোকান",
+      "pharmacy": "ফার্মেসি",
+      "restaurant": "রেস্টুরেন্ট",
+      "stationery": "স্টেশনারি",
+      "hardware": "হার্ডওয়্যার",
+      "other": "অন্যান্য"
+    },
+    "settings": {
+      "heading": "ব্যবসার সেটিংস",
+      "tabGeneral": "সাধারণ",
+      "tabProfile": "প্রোফাইল",
+      "tabLocation": "অবস্থান",
+      "currencyLabel": "মুদ্রা",
+      "taxEnabledLabel": "ট্যাক্স সক্রিয় করুন",
+      "taxRateLabel": "ট্যাক্স হার (%)",
+      "taxNumberLabel": "ট্যাক্স নম্বর",
+      "invoicePrefixLabel": "ইনভয়েস প্রিফিক্স",
+      "invoiceNotesLabel": "ইনভয়েস নোট",
+      "receiptFooterLabel": "রিসিট ফুটার",
+      "lowStockThresholdLabel": "লো স্টক থ্রেশহোল্ড",
+      "lowStockAlertLabel": "লো স্টক অ্যালার্ট",
+      "saveButton": "সেটিংস সেভ করুন",
+      "errorSave": "সেটিংস সেভ করতে ব্যর্থ",
+      "successSave": "সেটিংস সফলভাবে সেভ হয়েছে"
+    },
+    "profile": {
+      "descriptionLabel": "বিবরণ",
+      "logoUrlLabel": "লোগো URL",
+      "coverImageUrlLabel": "কভার ইমেজ URL",
+      "contactPersonLabel": "যোগাযোগের ব্যক্তি",
+      "phoneLabel": "ফোন নম্বর",
+      "whatsappLabel": "হোয়াটসঅ্যাপ নম্বর",
+      "emailLabel": "ইমেইল",
+      "websiteLabel": "ওয়েবসাইট",
+      "facebookLabel": "ফেসবুক পেজ",
+      "saveButton": "প্রোফাইল সেভ করুন",
+      "errorSave": "প্রোফাইল সেভ করতে ব্যর্থ",
+      "successSave": "প্রোফাইল সফলভাবে সেভ হয়েছে"
+    },
+    "location": {
+      "addressLabel": "ঠিকানা",
+      "addressPlaceholder": "রাস্তার ঠিকানা",
+      "cityLabel": "শহর",
+      "cityPlaceholder": "যেমন: ঢাকা",
+      "districtLabel": "জেলা",
+      "districtPlaceholder": "যেমন: ঢাকা",
+      "postalCodeLabel": "পোস্টাল কোড",
+      "countryLabel": "দেশ",
+      "saveButton": "অবস্থান সেভ করুন",
+      "errorSave": "অবস্থান সেভ করতে ব্যর্থ",
+      "successSave": "অবস্থান সফলভাবে সেভ হয়েছে"
+    },
+    "danger": {
+      "heading": "বিপজ্জনক জোন",
+      "archiveButton": "ব্যবসা আর্কাইভ করুন",
+      "deleteButton": "ব্যবসা মুছে ফেলুন",
+      "archiveConfirm": "হ্যাঁ, আর্কাইভ করুন",
+      "deleteConfirm": "হ্যাঁ, স্থায়ীভাবে মুছুন",
+      "cancel": "বাতিল"
+    }
+  },
+  "dashboard": {
+    "welcome": {
+      "greeting": "সুপ্রভাত, {name}!",
+      "greetingAfternoon": "শুভ দুপুর, {name}!",
+      "greetingEvening": "শুভ সন্ধ্যা, {name}!",
+      "subtitle": "আজকের আপনার দোকানের সারসংক্ষেপ।",
+      "dateLabel": "{date}"
+    },
+    "ai": {
+      "placeholder": "বলুন বা টাইপ করুন...",
+      "micTooltip": "ভয়েস ইনপুট"
+    },
+    "kpi": {
+      "todaySales": "আজকের বিক্রয়",
+      "todayProfit": "আজকের লাভ",
+      "totalDue": "মোট বাকি",
+      "todayExpense": "আজকের খরচ",
+      "totalProducts": "মোট পণ্য",
+      "totalRevenue": "মোট আয়",
+      "activeCustomers": "সক্রিয় ক্রেতা",
+      "lowStock": "লো স্টক পণ্য",
+      "trendUp": "{percent}% বৃদ্ধি",
+      "trendDown": "{percent}% হ্রাস",
+      "count": "{count}টি পণ্য"
+    },
+    "quickActions": {
+      "title": "দ্রুত কাজ",
+      "newSale": "নতুন বিক্রয়",
+      "addProduct": "পণ্য যোগ করুন",
+      "addDue": "বাকি যোগ করুন",
+      "recordExpense": "খরচ রেকর্ড",
+      "recordReturn": "রিটার্ন রেকর্ড"
+    },
+    "transactions": {
+      "title": "সাম্প্রতিক লেনদেন",
+      "viewAll": "সব দেখুন",
+      "success": "সফল",
+      "return": "রিটার্ন",
+      "expense": "খরচ",
+      "noTransactions": "এখনো কোনো লেনদেন নেই"
+    },
+    "lowStock": {
+      "title": "লো স্টক সতর্কতা",
+      "remaining": "মাত্র {quantity} {unit} বাকি",
+      "viewInventory": "ইনভেন্টরি দেখুন"
+    },
+    "dueLedger": {
+      "title": "বাকি খাতা - শীর্ষ ৩",
+      "lastDue": "শেষ বাকি: {days} দিন আগে",
+      "viewAll": "সম্পূর্ণ খাতা দেখুন"
+    }
+  },
+  "onboarding": {
+    "progress": "ধাপ {current} / {total}",
+    "skip": "এখনো স্কিপ করুন",
+    "next": "পরবর্তী",
+    "back": "পেছনে",
+    "finish": "শুরু করুন",
+    "welcome": {
+      "title": "DokaniAI-তে স্বাগতম!",
+      "subtitle": "আপনার ডিজিটাল ব্যবসার খাতা প্রস্তুত। চলুন সেটআপ করি।",
+      "startButton": "শুরু করি"
+    },
+    "businessType": {
+      "title": "আপনার ব্যবসা কোন ধরনের?",
+      "subtitle": "আপনার দোকানের সাথে সবচেয়ে মিলে এমন ক্যাটাগরি নির্বাচন করুন"
+    },
+    "businessName": {
+      "title": "আপনার ব্যবসার নাম দিন",
+      "subtitle": "আপনার দোকানের নাম লিখে প্রথম ওয়ার্কস্পেস তৈরি করুন",
+      "successMessage": "ব্যবসা সফলভাবে তৈরি হয়েছে!"
+    },
+    "addProducts": {
+      "title": "আপনার পণ্য যোগ করুন",
+      "subtitle": "শুরু করতে কয়েকটি পণ্য যোগ করুন, অথবা এখনো স্কিপ করুন",
+      "skipButton": "স্কিপ - পরে যোগ করব",
+      "addMore": "আরো যোগ করুন",
+      "done": "যোগ করা শেষ"
+    },
+    "dueSetup": {
+      "title": "আপনি কি বাকিতে বিক্রি করেন?",
+      "subtitle": "আপনার ক্রেতাদের জন্য বাকি ট্র্যাকিং সেটআপ করুন",
+      "yesButton": "হ্যাঁ, বাকি ট্র্যাকিং সেটআপ করুন",
+      "noButton": "না, পরে দেখব"
+    },
+    "tutorial": {
+      "title": "সব প্রস্তুত!",
+      "subtitle": "একটি দ্রুত ট্যুর দেখুন অথবা সরাসরি শুরু করুন",
+      "watchTour": "দ্রুত ট্যুর দেখুন",
+      "goToDashboard": "ড্যাশবোর্ডে যান"
+    }
+  },
+  "nav": {
+    "dashboard": "ড্যাশবোর্ড",
+    "sales": "বিক্রয়",
+    "expenses": "খরচ",
+    "dueLedger": "বাকি খাতা",
+    "products": "পণ্য",
+    "reports": "রিপোর্ট",
+    "aiAssistant": "AI সহকারী",
+    "settings": "সেটিংস",
+    "newEntry": "নতুন এন্ট্রি"
+  }
+}

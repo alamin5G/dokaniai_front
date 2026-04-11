@@ -1,5 +1,7 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Hind_Siliguri, Manrope } from "next/font/google";
+import { I18nProvider } from "@/i18n/provider";
+import { LocaleUpdater } from "@/components/LocaleUpdater";
 import "./globals.css";
 
 const hindSiliguri = Hind_Siliguri({
@@ -17,8 +19,22 @@ const manrope = Manrope({
 });
 
 export const metadata: Metadata = {
-  title: "DokaniAI - Login",
+  title: "DokaniAI - AI Business Assistant",
   description: "AI Business Assistant for Bangladeshi Micro Shop Keepers",
+  manifest: "/manifest.webmanifest",
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "default",
+    title: "DokaniAI",
+  },
+};
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 1,
+  userScalable: false,
+  themeColor: "#003727",
 };
 
 export default function RootLayout({
@@ -30,10 +46,13 @@ export default function RootLayout({
     <html lang="bn" className="scroll-smooth">
       <head>
         <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL,GRAD,opsz@400,0,0,24&display=swap" rel="stylesheet" />
-        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" />
+        <link rel="apple-touch-icon" href="/icons/icon-192x192.png" />
       </head>
       <body suppressHydrationWarning className={`${hindSiliguri.variable} ${manrope.variable} font-body bg-background text-on-surface min-h-screen antialiased`}>
-        {children}
+        <I18nProvider>
+          <LocaleUpdater />
+          {children}
+        </I18nProvider>
       </body>
     </html>
   );

@@ -294,6 +294,58 @@ Note:
 
 ---
 
+## 9.1 Auth Reset Regression (Frontend Persistence + Backend Enforcement)
+
+Use these existing requests in order:
+- `Auth - Extended / Forgot Password`
+- `Auth - Extended / Reset Password`
+
+Variables to observe during run:
+- `phoneOrEmail`
+- `passwordReset.phoneOrEmail` (frontend state)
+- `passwordReset.otpExpiresAt` (frontend state)
+
+### Case A: Happy path with persistence cleanup
+1. Call `Forgot Password` with valid `phoneOrEmail`.
+2. Verify response has `expiresInSeconds` (usually 300).
+3. In frontend, persist `passwordReset.phoneOrEmail` and `passwordReset.otpExpiresAt`.
+4. Submit valid OTP + new password via `Reset Password`.
+5. Expect `200` and clear all `passwordReset.*` keys.
+
+### Case B: Reload recovery before expiry
+1. Call `Forgot Password` and store state.
+2. Refresh app before timer ends.
+3. Frontend should restore OTP screen using stored `phoneOrEmail`.
+4. Submit valid OTP -> expect success.
+
+### Case C: Expired OTP
+1. Call `Forgot Password`.
+2. Wait past expiry or use an old OTP.
+3. Call `Reset Password`.
+4. Expect `400` (expired/invalid OTP) and frontend state moves to expired/resend mode.
+
+### Case D: Resend cooldown / abuse protection
+1. Trigger `Forgot Password` repeatedly.
+2. Expect `429` when limit is hit.
+3. Frontend must show retry countdown/message; user remains on same flow.
+
+### Case E: OTP failure lock path
+1. Call `Forgot Password` once.
+2. Submit wrong OTP repeatedly in `Reset Password`.
+3. Expect lock behavior (`429` too many OTP verification failures).
+4. Confirm reset is blocked until retry window passes.
+
+### Case F: Identifier channel consistency
+1. Run `Forgot Password` using email identifier.
+2. Complete reset via OTP.
+3. Validate account can login with updated password and verification state is consistent.
+
+Traceability:
+- API contract: `API_Design.md` section `1.11`
+- SRS behavior: `SRSv2.md` section `17.4`
+
+---
+
 ## 10) Swagger Blank Page Quick Check
 
 If `http://localhost:8081/api/swagger-ui/index.html` shows a blank page:
