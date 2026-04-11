@@ -447,7 +447,10 @@
       "subtitle": "Add a few products to get started, or skip for now",
       "skipButton": "Skip - I will add later",
       "addMore": "Add Another",
-      "done": "Done Adding"
+      "done": "Done Adding",
+      "loadSampleData": "Load Sample Data",
+      "productNamePlaceholder": "Product name",
+      "productPricePlaceholder": "Price"
     },
     "dueSetup": {
       "title": "Do You Sell on Credit?",
@@ -459,6 +462,18 @@
       "title": "You are All Set!",
       "subtitle": "Watch a quick tour or jump right in",
       "watchTour": "Watch Quick Tour",
+      "goToDashboard": "Go to Dashboard",
+      "gotIt": "Got it",
+      "feature1Title": "Voice Command",
+      "feature1Desc": "Just speak, it writes automatically. Record everything without typing.",
+      "feature2Title": "Due Ledger",
+      "feature2Desc": "Track customer credits. Automatic reminders.",
+      "feature3Title": "Stock Management",
+      "feature3Desc": "Get alerts before products run out."
+    },
+    "complete": {
+      "title": "Your Business is Ready!",
+      "subtitle": "Your digital ledger setup is complete. Best wishes!",
       "goToDashboard": "Go to Dashboard"
     }
   },

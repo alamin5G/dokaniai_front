@@ -1,122 +1,238 @@
 "use client";
 
-import { useRouter } from "next/navigation";
-import { useAuthStore } from "@/store/authStore";
-import { LanguageSwitcher } from "@/components/ui/LanguageSwitcher";
+import { useEffect } from "react";
+import { useTranslations } from "next-intl";
+import { useBusinessStore } from "@/store/businessStore";
+
+import KpiCard, { KpiCardSkeleton } from "@/components/dashboard/KpiCard";
+import QuickActions from "@/components/dashboard/QuickActions";
+import RecentTransactions from "@/components/dashboard/RecentTransactions";
+import StockAlerts from "@/components/dashboard/StockAlerts";
+import DueLedgerWidget from "@/components/dashboard/DueLedgerWidget";
+import AiCommandBar from "@/components/dashboard/AiCommandBar";
+
+// ---------------------------------------------------------------------------
+// Inline SVG Icons for KPI cards
+// ---------------------------------------------------------------------------
+
+function IconTrendingUp({ className = "w-5 h-5" }: { className?: string }) {
+  return (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      fill="none"
+      viewBox="0 0 24 24"
+      strokeWidth={1.5}
+      stroke="currentColor"
+      className={className}
+    >
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        d="M2.25 18 9 11.25l4.306 4.306a11.95 11.95 0 0 1 5.814-5.518l2.74-1.22m0 0-5.94-2.281m5.94 2.28-2.28 5.941"
+      />
+    </svg>
+  );
+}
+
+function IconHistory({ className = "w-5 h-5" }: { className?: string }) {
+  return (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      fill="none"
+      viewBox="0 0 24 24"
+      strokeWidth={1.5}
+      stroke="currentColor"
+      className={className}
+    >
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"
+      />
+    </svg>
+  );
+}
+
+function IconWallet({ className = "w-5 h-5" }: { className?: string }) {
+  return (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      fill="none"
+      viewBox="0 0 24 24"
+      strokeWidth={1.5}
+      stroke="currentColor"
+      className={className}
+    >
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        d="M2.25 18.75a60.07 60.07 0 0 1 15.797 2.101c.727.198 1.453-.342 1.453-1.096V18.75M3.75 4.5v.75A.75.75 0 0 1 3 6h-.75m0 0v-.375c0-.621.504-1.125 1.125-1.125H20.25M2.25 6v9m18-10.5v.75c0 .414.336.75.75.75h.75m-1.5-1.5h.375c.621 0 1.125.504 1.125 1.125v9.75c0 .621-.504 1.125-1.125 1.125h-.375m1.5-1.5H21a.75.75 0 0 0-.75.75v.75m0 0H3.75m0 0h-.375a1.125 1.125 0 0 1-1.125-1.125V15m1.5 1.5v-.75A.75.75 0 0 0 3 15h-.75M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Zm3 0h.008v.008H18V10.5Zm-12 0h.008v.008H6V10.5Z"
+      />
+    </svg>
+  );
+}
+
+function IconBox({ className = "w-5 h-5" }: { className?: string }) {
+  return (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      fill="none"
+      viewBox="0 0 24 24"
+      strokeWidth={1.5}
+      stroke="currentColor"
+      className={className}
+    >
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        d="m20.25 7.5-.625 10.632a2.25 2.25 0 0 1-2.247 2.118H6.622a2.25 2.25 0 0 1-2.247-2.118L3.75 7.5M10 11.25h4M3.375 7.5h17.25c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125Z"
+      />
+    </svg>
+  );
+}
+
+function IconCalendar({ className = "w-5 h-5" }: { className?: string }) {
+  return (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      fill="none"
+      viewBox="0 0 24 24"
+      strokeWidth={1.5}
+      stroke="currentColor"
+      className={className}
+    >
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 0 1 2.25-2.25h13.5A2.25 2.25 0 0 1 21 7.5v11.25m-18 0A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75m-18 0v-7.5A2.25 2.25 0 0 1 5.25 9h13.5A2.25 2.25 0 0 1 21 11.25v7.5"
+      />
+    </svg>
+  );
+}
+
+// ---------------------------------------------------------------------------
+// Helper: get greeting based on time of day
+// ---------------------------------------------------------------------------
+
+function getGreetingKey(): string {
+  const hour = new Date().getHours();
+  if (hour < 12) return "greeting";
+  if (hour < 17) return "greetingAfternoon";
+  return "greetingEvening";
+}
+
+// ---------------------------------------------------------------------------
+// Dashboard Page
+// ---------------------------------------------------------------------------
 
 export default function DashboardPage() {
-  const router = useRouter();
-  const { accessToken, clearTokens } = useAuthStore();
+  const t = useTranslations("dashboard");
+  const { activeBusiness, activeBusinessId, stats, loadStats, isLoading } =
+    useBusinessStore();
 
-  const handleLogout = () => {
-    clearTokens();
-    router.push("/login");
-  };
+  // Load stats on mount
+  useEffect(() => {
+    if (activeBusinessId) {
+      loadStats(activeBusinessId);
+    }
+  }, [activeBusinessId, loadStats]);
 
-  if (!accessToken) {
-    return null;
-  }
+  const greetingKey = getGreetingKey();
+  const businessName = activeBusiness?.name ?? "";
+
+  // Format today's date
+  const today = new Date();
+  const dateStr = today.toLocaleDateString(undefined, {
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+  });
+
+  // Format number with commas
+  const fmt = (n: number | undefined, prefix = "৳") =>
+    n != null ? `${prefix} ${n.toLocaleString()}` : `${prefix} ০`;
 
   return (
-    <div className="min-h-screen bg-background text-on-surface">
-      {/* Top Bar */}
-      <header className="bg-surface-container border-b border-outline-variant sticky top-0 z-50">
-        <div className="flex justify-between items-center px-6 py-4 max-w-7xl mx-auto">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-primary-container rounded-xl flex items-center justify-center">
-              <span className="material-symbols-outlined text-on-primary-container text-xl">book_2</span>
-            </div>
-            <h1 className="text-xl font-bold text-primary">DokaniAI</h1>
-          </div>
-          <div className="flex items-center gap-3">
-            <LanguageSwitcher />
-            <button
-              onClick={() => router.push("/sessions")}
-              className="flex items-center gap-2 px-4 py-2 rounded-xl text-on-surface-variant hover:bg-surface-container-high transition-colors"
-            >
-              <span className="material-symbols-outlined text-xl">shield</span>
-              <span className="font-medium text-sm hidden sm:inline">Sessions</span>
-            </button>
-            <button
-              onClick={handleLogout}
-              className="flex items-center gap-2 px-4 py-2 rounded-xl text-on-surface-variant hover:bg-surface-container-high transition-colors"
-            >
-              <span className="material-symbols-outlined text-xl">logout</span>
-              <span className="font-medium text-sm hidden sm:inline">Logout</span>
-            </button>
-          </div>
-        </div>
-      </header>
-
-      {/* Main Content */}
-      <main className="max-w-7xl mx-auto px-6 py-8">
-        <div className="mb-8">
-          <h2 className="text-3xl font-bold text-primary mb-2">স্বাগতম! 🎉</h2>
-          <p className="text-on-surface-variant text-lg">আপনার ড্যাশবোর্ড প্রস্তুত। নিচের অ্যাকশনগুলো থেকে শুরু করুন।</p>
-        </div>
-
-        {/* Quick Actions Grid */}
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 mb-12">
-          {[
-            { icon: "add_circle", label: "নতুন বিক্রি", color: "bg-primary-container text-on-primary-container" },
-            { icon: "inventory_2", label: "পণ্য যোগ করুন", color: "bg-secondary-container text-on-secondary-container" },
-            { icon: "receipt_long", label: "বাকির হিসাব", color: "bg-tertiary-fixed text-on-tertiary-fixed" },
-            { icon: "payments", label: "খরচ লিখুন", color: "bg-error-container text-on-error-container" },
-            { icon: "monitoring", label: "রিপোর্ট", color: "bg-surface-container-high text-on-surface" },
-            { icon: "mic", label: "AI সহকারী", color: "bg-primary-fixed text-on-primary-fixed" },
-            { icon: "store", label: "ব্যবসা সেটিংস", color: "bg-surface-container text-on-surface" },
-            { icon: "settings", label: "সেটিংস", color: "bg-surface-container-highest text-on-surface" },
-          ].map((action) => (
-            <button
-              key={action.icon}
-              className="flex flex-col items-center gap-3 p-6 rounded-2xl hover:scale-[1.02] active:scale-[0.98] transition-transform shadow-sm border border-outline-variant/10"
-            >
-              <div className={`w-14 h-14 rounded-2xl flex items-center justify-center ${action.color}`}>
-                <span className="material-symbols-outlined text-2xl">{action.icon}</span>
-              </div>
-              <span className="font-semibold text-sm text-on-surface">{action.label}</span>
-            </button>
-          ))}
-        </div>
-
-        {/* Stats Cards */}
-        <div className="grid md:grid-cols-3 gap-6 mb-12">
-          <div className="bg-surface-container-lowest p-6 rounded-2xl border border-outline-variant/10">
-            <div className="flex items-center gap-3 mb-4">
-              <span className="material-symbols-outlined text-primary text-2xl">trending_up</span>
-              <h3 className="font-bold text-on-surface">আজকের বিক্রি</h3>
-            </div>
-            <p className="text-3xl font-black text-primary">৳০</p>
-            <p className="text-sm text-on-surface-variant mt-1">কোনো বিক্রি হয়নি</p>
-          </div>
-          <div className="bg-surface-container-lowest p-6 rounded-2xl border border-outline-variant/10">
-            <div className="flex items-center gap-3 mb-4">
-              <span className="material-symbols-outlined text-secondary text-2xl">account_balance_wallet</span>
-              <h3 className="font-bold text-on-surface">বাকির পরিমাণ</h3>
-            </div>
-            <p className="text-3xl font-black text-secondary">৳০</p>
-            <p className="text-sm text-on-surface-variant mt-1">কোনো বাকি নেই</p>
-          </div>
-          <div className="bg-surface-container-lowest p-6 rounded-2xl border border-outline-variant/10">
-            <div className="flex items-center gap-3 mb-4">
-              <span className="material-symbols-outlined text-tertiary text-2xl">inventory</span>
-              <h3 className="font-bold text-on-surface">স্টকে পণ্য</h3>
-            </div>
-            <p className="text-3xl font-black text-tertiary">০</p>
-            <p className="text-sm text-on-surface-variant mt-1">পণ্য যোগ করুন</p>
-          </div>
-        </div>
-
-        {/* Placeholder */}
-        <div className="text-center py-12 bg-surface-container-low rounded-2xl">
-          <span className="material-symbols-outlined text-primary text-6xl mb-4 block">construction</span>
-          <h3 className="text-xl font-bold text-on-surface mb-2">ড্যাশবোর্ড তৈরি হচ্ছে</h3>
-          <p className="text-on-surface-variant max-w-md mx-auto">
-            এই পৃষ্ঠাটি শীঘ্রই সম্পূর্ণ কার্যকর ড্যাশবোর্ড হিসেবে আসছে। 
-            বিক্রি, বাকি, রিপোর্ট সব এখান থেকে পরিচালনা করতে পারবেন।
+    <div className="space-y-8">
+      {/* ---- Welcome Section ---- */}
+      <section className="flex flex-col md:flex-row md:items-end justify-between gap-4">
+        <div>
+          <h2 className="text-2xl md:text-3xl font-bold text-on-surface mb-1">
+            {t(`welcome.${greetingKey}`, { name: businessName })} 👋
+          </h2>
+          <p className="text-on-surface-variant text-base md:text-lg">
+            {t("welcome.subtitle")}
           </p>
         </div>
-      </main>
+        <div className="bg-surface-container-low px-4 py-2 rounded-full flex items-center gap-2 text-primary font-semibold">
+          <IconCalendar className="w-5 h-5" />
+          <span className="text-sm">
+            {t("welcome.dateLabel", { date: dateStr })}
+          </span>
+        </div>
+      </section>
+
+      {/* ---- AI Command Bar ---- */}
+      <AiCommandBar />
+
+      {/* ---- KPI Cards ---- */}
+      <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        {isLoading || !stats ? (
+          <>
+            <KpiCardSkeleton />
+            <KpiCardSkeleton />
+            <KpiCardSkeleton />
+            <KpiCardSkeleton />
+          </>
+        ) : (
+          <>
+            <KpiCard
+              title={t("kpi.todaySales")}
+              value={fmt(stats.totalRevenue)}
+              icon={<IconTrendingUp className="w-5 h-5" />}
+              accentColor="text-primary"
+              subtitle={`${stats.totalSales} টি বিক্রয়`}
+            />
+            <KpiCard
+              title={t("kpi.totalDue")}
+              value={fmt(stats.totalDue)}
+              icon={<IconHistory className="w-5 h-5" />}
+              accentColor="text-tertiary"
+              subtitle={`${stats.activeCustomers} জন ক্রেতা`}
+            />
+            <KpiCard
+              title={t("kpi.todayExpense")}
+              value={fmt(undefined)}
+              icon={<IconWallet className="w-5 h-5" />}
+              accentColor="text-on-surface"
+            />
+            <KpiCard
+              title={t("kpi.totalProducts")}
+              value={stats.totalProducts?.toLocaleString() ?? "০"}
+              icon={<IconBox className="w-5 h-5" />}
+              accentColor="text-secondary"
+              subtitle={t("kpi.count", { count: stats.totalProducts ?? 0 })}
+            />
+          </>
+        )}
+      </section>
+
+      {/* ---- Quick Actions ---- */}
+      <QuickActions />
+
+      {/* ---- Main Content: Two Columns ---- */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+        {/* Left Column: Transactions */}
+        <div className="lg:col-span-8 space-y-8">
+          <RecentTransactions />
+        </div>
+
+        {/* Right Column: Stock Alerts + Due Ledger */}
+        <div className="lg:col-span-4 space-y-8">
+          <StockAlerts />
+          <DueLedgerWidget />
+        </div>
+      </div>
     </div>
   );
 }
