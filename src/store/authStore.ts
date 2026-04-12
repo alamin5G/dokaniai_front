@@ -5,8 +5,10 @@ interface AuthState {
   accessToken: string | null;
   refreshToken: string | null;
   userId: string | null;
+  userRole: string | null;
   status: 'UNAUTHENTICATED' | 'AUTHENTICATED' | 'PASSWORD_SETUP_REQUIRED';
   setTokens: (accessToken: string, refreshToken: string, userId: string, status: string) => void;
+  setUserRole: (role: string | null) => void;
   clearTokens: () => void;
 }
 
@@ -16,6 +18,7 @@ export const useAuthStore = create<AuthState>()(
       accessToken: null,
       refreshToken: null,
       userId: null,
+      userRole: null,
       status: 'UNAUTHENTICATED',
       
       setTokens: (accessToken, refreshToken, userId, status) => set({ 
@@ -24,11 +27,16 @@ export const useAuthStore = create<AuthState>()(
         userId, 
         status: status as any
       }),
+
+      setUserRole: (role) => set({
+        userRole: role,
+      }),
       
       clearTokens: () => set({ 
         accessToken: null, 
         refreshToken: null, 
         userId: null, 
+        userRole: null,
         status: 'UNAUTHENTICATED' 
       }),
     }),

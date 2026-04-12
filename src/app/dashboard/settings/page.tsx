@@ -61,6 +61,17 @@ const PAYMENT_CHANNELS: PaymentMethod[] = [
     "MANUAL",
 ];
 
+const PAYMENT_CHANNEL_LABELS: Record<PaymentMethod, { bn: string; en: string }> = {
+    CASH: { bn: "নগদ", en: "Cash" },
+    CREDIT: { bn: "বাকি", en: "Credit" },
+    BKASH: { bn: "বিকাশ", en: "bKash" },
+    NAGAD: { bn: "নগদ (MFS)", en: "Nagad" },
+    ROCKET: { bn: "রকেট", en: "Rocket" },
+    CARD: { bn: "কার্ড", en: "Card" },
+    BANK: { bn: "ব্যাংক", en: "Bank" },
+    MANUAL: { bn: "ম্যানুয়াল", en: "Manual" },
+};
+
 const COUNTRY_OPTIONS = [
     { value: "BD", label: "Bangladesh" },
     { value: "IN", label: "India" },
@@ -261,8 +272,8 @@ function ToggleField({
 
 export default function BusinessSettingsPage() {
     const locale = useLocale();
+    const isBn = locale.startsWith("bn");
     const t = useTranslations("business");
-    const onboardingChannelT = useTranslations("onboarding.dueSetup.channel");
     const router = useRouter();
     const pathname = usePathname();
 
@@ -958,7 +969,7 @@ export default function BusinessSettingsPage() {
                                     >
                                         {PAYMENT_CHANNELS.map((channel) => (
                                             <option key={channel} value={channel}>
-                                                {onboardingChannelT(channel)}
+                                                {isBn ? PAYMENT_CHANNEL_LABELS[channel].bn : PAYMENT_CHANNEL_LABELS[channel].en}
                                             </option>
                                         ))}
                                     </SelectField>

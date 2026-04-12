@@ -1,9 +1,94 @@
 "use client";
 
+import { getAvailablePlans } from "@/lib/subscriptionApi";
+import type { Plan } from "@/types/subscription";
+import Link from "next/link";
 import { useTranslations } from "next-intl";
+import { useEffect, useState } from "react";
+
+function formatPrice(value: number): string {
+  return new Intl.NumberFormat("bn-BD").format(value);
+}
 
 export function PricingSection() {
   const t = useTranslations("home.pricing");
+  const [plans, setPlans] = useState<Plan[]>([]);
+
+  useEffect(() => {
+    let cancelled = false;
+    const loadPlans = async () => {
+      try {
+        const data = await getAvailablePlans();
+        if (cancelled) {
+          return;
+        }
+        setPlans(data.filter((plan) => plan.isActive).sort((a, b) => a.tierLevel - b.tierLevel));
+      } catch {
+        // Keep existing static fallback if API is unavailable.
+      }
+    };
+    void loadPlans();
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  if (plans.length > 0) {
+    return (
+      <section className="py-24 px-6">
+        <div className="max-w-7xl mx-auto">
+          <div className="text-center mb-20 space-y-4">
+            <span className="text-secondary font-bold tracking-widest uppercase text-xs">{t("label")}</span>
+            <h2 className="text-4xl font-black text-primary font-headline">{t("title")}</h2>
+            <p className="text-on-surface-variant text-lg font-medium">{t("subtitle")}</p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-4">
+            {plans.map((plan) => (
+              <div
+                key={plan.id}
+                className={`p-6 rounded-[1.5rem] flex flex-col justify-between shadow-sm transition-transform hover:scale-[1.02] ${
+                  plan.name === "BASIC"
+                    ? "bg-surface-container-lowest border-2 border-primary/20 shadow-xl"
+                    : plan.name === "PLUS"
+                      ? "bg-secondary text-on-secondary shadow-xl"
+                      : plan.name === "PRO"
+                        ? "bg-primary-container text-on-primary-container"
+                        : "bg-surface-container-low"
+                }`}
+              >
+                <div>
+                  <h4 className="font-bold mb-1">{plan.displayNameBn}</h4>
+                  <div className="text-2xl font-black mb-4">
+                    ৳{formatPrice(plan.priceBdt)}{" "}
+                    <span className="text-sm font-normal opacity-75">
+                      /{Math.max(1, Math.round(plan.durationDays / 30))} month
+                    </span>
+                  </div>
+                  <ul className="space-y-3 text-sm font-medium">
+                    <li className="flex items-center gap-2">
+                      <span className="material-symbols-outlined text-base">check_circle</span>
+                      সর্বোচ্চ ব্যবসা: {plan.maxBusinesses}
+                    </li>
+                    <li className="flex items-center gap-2">
+                      <span className="material-symbols-outlined text-base">check_circle</span>
+                      AI/দিন: {plan.aiQueriesPerDay ?? "Unlimited"}
+                    </li>
+                  </ul>
+                </div>
+                <Link
+                  href="/login"
+                  className="mt-8 w-full py-3 bg-primary text-on-primary rounded-xl font-bold text-sm shadow-md hover:shadow-lg active:scale-95 transition-all text-center"
+                >
+                  {t("basic.cta")}
+                </Link>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+    );
+  }
 
   return (
     <section className="py-24 px-6">

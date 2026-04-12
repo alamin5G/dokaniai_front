@@ -19,6 +19,7 @@ import {
   listProducts,
   updateProduct,
 } from "@/lib/productApi";
+import { getAvailablePlans, getCurrentSubscription } from "@/lib/subscriptionApi";
 import { ChangeEvent, FormEvent, useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 const currencyFormatter = new Intl.NumberFormat("bn-BD", {
@@ -155,6 +156,7 @@ export default function ShopProductsWorkspace({ businessId }: { businessId: stri
   const [editorMode, setEditorMode] = useState<EditorMode>("create");
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
   const [form, setForm] = useState<ProductFormState>(initialFormState);
+  const [canBulkImport, setCanBulkImport] = useState(true);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
 
   useEffect(() => {
@@ -199,6 +201,32 @@ export default function ShopProductsWorkspace({ businessId }: { businessId: stri
   useEffect(() => {
     void loadWorkspace();
   }, [loadWorkspace]);
+
+  useEffect(() => {
+    let cancelled = false;
+    const loadImportPermission = async () => {
+      try {
+        const [subscription, plans] = await Promise.all([
+          getCurrentSubscription(),
+          getAvailablePlans(),
+        ]);
+        if (cancelled) {
+          return;
+        }
+        const plan = plans.find((item) => item.id === subscription.planId);
+        const planName = plan?.name?.toUpperCase() ?? "";
+        setCanBulkImport(["PRO", "PLUS", "ENTERPRISE"].includes(planName));
+      } catch {
+        if (!cancelled) {
+          setCanBulkImport(false);
+        }
+      }
+    };
+    void loadImportPermission();
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   const topLowStock = useMemo(() => lowStockProducts.slice(0, 3), [lowStockProducts]);
 
@@ -294,6 +322,14 @@ export default function ShopProductsWorkspace({ businessId }: { businessId: stri
   }
 
   async function handleImport(event: ChangeEvent<HTMLInputElement>) {
+    if (!canBulkImport) {
+      setError("CSV ইমপোর্ট Pro/Plus প্ল্যানে পাওয়া যায়।");
+      if (fileInputRef.current) {
+        fileInputRef.current.value = "";
+      }
+      return;
+    }
+
     const file = event.target.files?.[0];
     if (!file) {
       return;
@@ -338,7 +374,8 @@ export default function ShopProductsWorkspace({ businessId }: { businessId: stri
           <button
             type="button"
             onClick={() => fileInputRef.current?.click()}
-            className="rounded-full bg-surface-container px-5 py-3 text-sm font-semibold text-on-surface transition hover:bg-surface-container-high"
+            disabled={!canBulkImport}
+            className="rounded-full bg-surface-container px-5 py-3 text-sm font-semibold text-on-surface transition hover:bg-surface-container-high disabled:cursor-not-allowed disabled:opacity-50"
           >
             {isImporting ? "ইমপোর্ট হচ্ছে..." : "CSV ইমপোর্ট"}
           </button>
@@ -371,8 +408,15 @@ export default function ShopProductsWorkspace({ businessId }: { businessId: stri
         type="file"
         accept=".csv,text/csv"
         className="hidden"
+        disabled={!canBulkImport}
         onChange={handleImport}
       />
+
+      {!canBulkImport ? (
+        <div className="rounded-[24px] border border-amber-200 bg-amber-50 px-5 py-4 text-sm text-amber-800">
+          CSV bulk import ফিচারটি আপনার বর্তমান প্ল্যানে লক আছে। Pro বা তার উপরের প্ল্যানে আপগ্রেড করুন।
+        </div>
+      ) : null}
 
       <div className="rounded-[28px] bg-gradient-to-r from-primary to-primary-container p-1">
         <div className="flex flex-col gap-3 rounded-[24px] bg-primary px-4 py-4 text-white md:flex-row md:items-center">
