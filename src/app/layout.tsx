@@ -1,7 +1,7 @@
+import { LocaleUpdater } from "@/components/LocaleUpdater";
+import { I18nProvider } from "@/i18n/provider";
 import type { Metadata, Viewport } from "next";
 import { Hind_Siliguri, Manrope } from "next/font/google";
-import { I18nProvider } from "@/i18n/provider";
-import { LocaleUpdater } from "@/components/LocaleUpdater";
 import "./globals.css";
 
 const hindSiliguri = Hind_Siliguri({
@@ -43,7 +43,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="bn" className="scroll-smooth">
+    <html lang="bn" className="scroll-smooth" data-scroll-behavior="smooth" suppressHydrationWarning>
       <head>
         <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL,GRAD,opsz@400,0,0,24&display=swap" rel="stylesheet" />
         <link rel="apple-touch-icon" href="/icons/icon-192x192.png" />

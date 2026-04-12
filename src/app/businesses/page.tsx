@@ -1,13 +1,15 @@
 "use client";
 
-import { useEffect, useState, useCallback } from "react";
-import { useRouter } from "next/navigation";
-import { useTranslations } from "next-intl";
+import { CreateBusinessModal } from "@/components/business/CreateBusinessModal";
+import { LanguageSwitcher } from "@/components/ui/LanguageSwitcher";
+import { formatCurrencyBDT } from "@/lib/localeNumber";
+import { buildShopPath } from "@/lib/shopRouting";
 import { useAuthStore } from "@/store/authStore";
 import { useBusinessStore } from "@/store/businessStore";
 import type { BusinessResponse } from "@/types/business";
-import { CreateBusinessModal } from "@/components/business/CreateBusinessModal";
-import { LanguageSwitcher } from "@/components/ui/LanguageSwitcher";
+import { useLocale, useTranslations } from "next-intl";
+import { useRouter } from "next/navigation";
+import { useCallback, useEffect, useState } from "react";
 
 // ---------------------------------------------------------------------------
 // Inline SVG Icons (HeroIcons style)
@@ -44,6 +46,25 @@ function IconStore({ className = "w-6 h-6" }: { className?: string }) {
         </svg>
     );
 }
+
+const BUSINESS_TYPE_LABEL_KEYS: Record<string, string> = {
+    GROCERY: "grocery",
+    FASHION: "clothing",
+    ELECTRONICS: "electronics",
+    RESTAURANT: "restaurant",
+    PHARMACY: "pharmacy",
+    STATIONERY: "stationery",
+    HARDWARE: "hardware",
+    BAKERY: "bakery",
+    MOBILE_SHOP: "mobileShop",
+    TAILORING: "tailoring",
+    SWEETS_SHOP: "sweetsShop",
+    COSMETICS: "cosmetics",
+    BOOKSHOP: "bookshop",
+    JEWELLERY: "jewellery",
+    PRINTING: "printing",
+    OTHER: "other",
+};
 
 // ---------------------------------------------------------------------------
 // Confirmation Dialog
@@ -136,6 +157,7 @@ function SkeletonRow() {
 
 export default function BusinessesPage() {
     const router = useRouter();
+    const locale = useLocale();
     const t = useTranslations("business");
     const tc = useTranslations("common");
     const { accessToken } = useAuthStore();
@@ -150,6 +172,16 @@ export default function BusinessesPage() {
         archiveBusiness,
         deleteBusiness,
     } = useBusinessStore();
+
+    const renderBusinessType = useCallback(
+        (type?: string | null) => {
+            if (!type) return "";
+            const key = BUSINESS_TYPE_LABEL_KEYS[type];
+            if (key) return t(`types.${key}` as Parameters<typeof t>[0]);
+            return type.replaceAll("_", " ");
+        },
+        [t],
+    );
 
     // Auth guard
     const [authChecked, setAuthChecked] = useState(false);
@@ -208,20 +240,22 @@ export default function BusinessesPage() {
     const handleSelectBusiness = useCallback(
         (business: BusinessResponse) => {
             setActiveBusiness(business);
-            router.push("/dashboard");
+            router.push(buildShopPath(business.id));
         },
         [setActiveBusiness, router]
     );
 
     const handleCreateSuccess = useCallback(() => {
         setCreateModalOpen(false);
-        router.push("/dashboard");
+        const state = useBusinessStore.getState();
+        const nextId = state.activeBusinessId;
+        router.push(nextId ? buildShopPath(nextId) : "/businesses");
     }, [router]);
 
     const handleManage = useCallback(
         (business: BusinessResponse) => {
             setActiveBusiness(business);
-            router.push("/dashboard/settings");
+            router.push(buildShopPath(business.id, "/settings"));
         },
         [setActiveBusiness, router]
     );
@@ -395,7 +429,7 @@ export default function BusinessesPage() {
                                             <div>
                                                 <h3 className="text-lg font-bold text-primary">{business.name}</h3>
                                                 <p className="text-sm text-on-surface-variant font-medium">
-                                                    {business.type ? t(`types.${business.type}` as Parameters<typeof t>[0]) : ""} • {business.slug}
+                                                    {renderBusinessType(business.type)} • {business.slug}
                                                 </p>
                                             </div>
                                         </div>
@@ -406,7 +440,7 @@ export default function BusinessesPage() {
                                             onClick={() => handleSelectBusiness(business)}
                                         >
                                             <p className="text-xl font-extrabold text-on-surface">
-                                                ৳{salesAmount.toLocaleString()}
+                                                {formatCurrencyBDT(salesAmount, locale)}
                                             </p>
                                             <span className="text-xs font-bold text-on-surface-variant flex items-center justify-end gap-1">
                                                 {bizStats ? `${bizStats.totalSales} টি বিক্রয়` : "—"}
@@ -419,7 +453,7 @@ export default function BusinessesPage() {
                                             onClick={() => handleSelectBusiness(business)}
                                         >
                                             <p className={`text-xl font-extrabold ${dueAmount > 0 ? "text-tertiary" : "text-on-surface"}`}>
-                                                ৳{dueAmount.toLocaleString()}
+                                                {formatCurrencyBDT(dueAmount, locale)}
                                             </p>
                                             <span className="text-xs text-outline font-medium">
                                                 {dueAmount === 0

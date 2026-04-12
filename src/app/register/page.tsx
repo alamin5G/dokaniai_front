@@ -13,7 +13,7 @@ import { useState } from "react";
 
 export default function RegisterPage() {
   const router = useRouter();
-  const { hydrated, isAuthenticated } = useRedirectIfAuthenticated("/dashboard");
+  const { hydrated, isAuthenticated } = useRedirectIfAuthenticated();
   const t = useTranslations("auth.register");
   const tc = useTranslations("common");
   const [tab, setTab] = useState<"phone" | "email">("phone");

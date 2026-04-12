@@ -2,10 +2,12 @@
 
 import { FormInput, GradientButton } from "@/components/ui/FormPrimitives";
 import * as businessApi from "@/lib/businessApi";
+import { formatLocalizedNumber, sanitizeNumericInput } from "@/lib/localeNumber";
+import { getSampleProductsByBusinessType } from "@/lib/onboardingSampleProducts";
 import { useAuthStore } from "@/store/authStore";
 import { useBusinessStore } from "@/store/businessStore";
-import type { BusinessCreateRequest } from "@/types/business";
-import { useTranslations } from "next-intl";
+import type { BusinessCreateRequest, PaymentMethod } from "@/types/business";
+import { useLocale, useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 
@@ -14,6 +16,7 @@ import { useCallback, useEffect, useState } from "react";
 // ---------------------------------------------------------------------------
 
 const TOTAL_STEPS = 7;
+const ONBOARDING_DRAFT_KEY = "dokaniai-onboarding-draft";
 
 function isHttpNotFound(error: unknown): boolean {
     if (!error || typeof error !== "object") return false;
@@ -46,6 +49,17 @@ const CURRENCIES = [
     { value: "INR", label: "₹ INR" },
     { value: "EUR", label: "€ EUR" },
     { value: "GBP", label: "£ GBP" },
+];
+
+const PAYMENT_CHANNELS: PaymentMethod[] = [
+    "CASH",
+    "CREDIT",
+    "BKASH",
+    "NAGAD",
+    "ROCKET",
+    "CARD",
+    "BANK",
+    "MANUAL",
 ];
 
 // ---------------------------------------------------------------------------
@@ -117,6 +131,54 @@ function IconBox() {
     );
 }
 
+function IconCake() {
+    return (
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-8 h-8">
+            <path strokeLinecap="round" strokeLinejoin="round" d="M12 8.25v-3m0 0a1.5 1.5 0 0 1 3 0m-3 0a1.5 1.5 0 0 0-3 0m0 3h6m6 6.75H3m18 0v3a2.25 2.25 0 0 1-2.25 2.25H5.25A2.25 2.25 0 0 1 3 18v-3m18 0a4.5 4.5 0 0 0-4.5-4.5h-9A4.5 4.5 0 0 0 3 15" />
+        </svg>
+    );
+}
+
+function IconCandy() {
+    return (
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-8 h-8">
+            <path strokeLinecap="round" strokeLinejoin="round" d="M14.25 9.75 9.75 14.25m8.25-3a4.5 4.5 0 1 1-9 0 4.5 4.5 0 0 1 9 0Zm-12 0a4.5 4.5 0 1 1-9 0 4.5 4.5 0 0 1 9 0ZM6 6l-1.5-1.5M6 18l-1.5 1.5m12-15 1.5-1.5m-1.5 15 1.5 1.5" />
+        </svg>
+    );
+}
+
+function IconSparkles() {
+    return (
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-8 h-8">
+            <path strokeLinecap="round" strokeLinejoin="round" d="M9.813 15.904 9 18.75l-.813-2.846a4.5 4.5 0 0 0-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 0 0 3.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 0 0 3.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 0 0-3.09 3.09ZM18.259 8.715 18 9.75l-.259-1.035a3.375 3.375 0 0 0-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 0 0 2.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 0 0 2.456 2.456L21.75 6l-1.035.259a3.375 3.375 0 0 0-2.456 2.456Z" />
+        </svg>
+    );
+}
+
+function IconBook() {
+    return (
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-8 h-8">
+            <path strokeLinecap="round" strokeLinejoin="round" d="M12 6.042A8.967 8.967 0 0 0 6 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 0 1 6 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 0 1 6-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0 0 18 18a8.967 8.967 0 0 0-6 2.292" />
+        </svg>
+    );
+}
+
+function IconGem() {
+    return (
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-8 h-8">
+            <path strokeLinecap="round" strokeLinejoin="round" d="m6 3 6 18 6-18M3 8.25h18M4.5 3h15l-3 5.25h-9L4.5 3Z" />
+        </svg>
+    );
+}
+
+function IconPrinter() {
+    return (
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-8 h-8">
+            <path strokeLinecap="round" strokeLinejoin="round" d="M6.75 7.5V4.875c0-.621.504-1.125 1.125-1.125h8.25c.621 0 1.125.504 1.125 1.125V7.5m-10.5 9V19.125c0 .621.504 1.125 1.125 1.125h8.25c.621 0 1.125-.504 1.125-1.125V16.5m-12 0h12m-12 0a2.25 2.25 0 0 1-2.25-2.25V10.5A2.25 2.25 0 0 1 6.75 8.25h10.5a2.25 2.25 0 0 1 2.25 2.25v3.75a2.25 2.25 0 0 1-2.25 2.25" />
+        </svg>
+    );
+}
+
 function IconMicrophone() {
     return (
         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-12 h-12">
@@ -174,6 +236,14 @@ const TYPE_ICONS: Record<string, () => React.JSX.Element> = {
     PHARMACY: IconMedicalCross,
     STATIONERY: IconPencil,
     HARDWARE: IconWrench,
+    BAKERY: IconCake,
+    MOBILE_SHOP: IconDevicePhone,
+    TAILORING: IconShirt,
+    SWEETS_SHOP: IconCandy,
+    COSMETICS: IconSparkles,
+    BOOKSHOP: IconBook,
+    JEWELLERY: IconGem,
+    PRINTING: IconPrinter,
     OTHER: IconBox,
 };
 
@@ -183,6 +253,7 @@ const TYPE_ICONS: Record<string, () => React.JSX.Element> = {
 
 export default function OnboardingPage() {
     const router = useRouter();
+    const locale = useLocale();
     const t = useTranslations("onboarding");
     const tc = useTranslations("common");
     const tb = useTranslations("business");
@@ -206,6 +277,24 @@ export default function OnboardingPage() {
     const [isResuming, setIsResuming] = useState(true);
     const [error, setError] = useState("");
 
+    type OnboardingDraft = {
+        currentStep: number;
+        businessData: Partial<BusinessCreateRequest>;
+        createdBusinessId: string | null;
+        quickProducts: Array<{ name: string; price: string }>;
+        customType: string;
+        dueEnabled: boolean;
+        paymentTerms: string;
+        customPaymentTerms: string;
+        taxEnabled: boolean;
+        taxRate: string;
+        taxNumber: string;
+        paymentChannel: "" | PaymentMethod;
+        paymentReceiverNumber: string;
+        aiAssistantEnabled: boolean;
+        tutorialIndex: number;
+    };
+
     // Step 4: Quick products
     const [productName, setProductName] = useState("");
     const [productPrice, setProductPrice] = useState("");
@@ -219,6 +308,13 @@ export default function OnboardingPage() {
     // Step 5: Due setup
     const [dueEnabled, setDueEnabled] = useState(false);
     const [paymentTerms, setPaymentTerms] = useState("30");
+    const [customPaymentTerms, setCustomPaymentTerms] = useState("");
+    const [taxEnabled, setTaxEnabled] = useState(false);
+    const [taxRate, setTaxRate] = useState("");
+    const [taxNumber, setTaxNumber] = useState("");
+    const [paymentChannel, setPaymentChannel] = useState<"" | PaymentMethod>("");
+    const [paymentReceiverNumber, setPaymentReceiverNumber] = useState("");
+    const [aiAssistantEnabled, setAiAssistantEnabled] = useState(true);
 
     // Step 6: Tutorial
     const [tutorialIndex, setTutorialIndex] = useState(0);
@@ -231,6 +327,77 @@ export default function OnboardingPage() {
         const timer = setTimeout(() => setIsHydrated(true), 100);
         return () => clearTimeout(timer);
     }, []);
+
+    useEffect(() => {
+        if (!isHydrated || typeof window === "undefined") return;
+        try {
+            const raw = localStorage.getItem(ONBOARDING_DRAFT_KEY);
+            if (!raw) return;
+            const draft = JSON.parse(raw) as OnboardingDraft;
+            if (draft.currentStep >= 1 && draft.currentStep <= TOTAL_STEPS) {
+                setCurrentStep(draft.currentStep);
+            }
+            setBusinessData(draft.businessData || { currency: "BDT" });
+            setCreatedBusinessId(draft.createdBusinessId || null);
+            setQuickProducts(Array.isArray(draft.quickProducts) ? draft.quickProducts : []);
+            setCustomType(draft.customType || "");
+            setDueEnabled(Boolean(draft.dueEnabled));
+            setPaymentTerms(draft.paymentTerms || "30");
+            setCustomPaymentTerms(draft.customPaymentTerms || "");
+            setTaxEnabled(Boolean(draft.taxEnabled));
+            setTaxRate(draft.taxRate || "");
+            setTaxNumber(draft.taxNumber || "");
+            setPaymentChannel(
+                PAYMENT_CHANNELS.includes(draft.paymentChannel as PaymentMethod)
+                    ? (draft.paymentChannel as PaymentMethod)
+                    : "",
+            );
+            setPaymentReceiverNumber(draft.paymentReceiverNumber || "");
+            setAiAssistantEnabled(draft.aiAssistantEnabled !== false);
+            setTutorialIndex(typeof draft.tutorialIndex === "number" ? draft.tutorialIndex : 0);
+        } catch {
+            // ignore corrupted draft
+        }
+    }, [isHydrated]);
+
+    useEffect(() => {
+        if (!isHydrated || typeof window === "undefined") return;
+        const draft: OnboardingDraft = {
+            currentStep,
+            businessData,
+            createdBusinessId,
+            quickProducts,
+            customType,
+            dueEnabled,
+            paymentTerms,
+            customPaymentTerms,
+            taxEnabled,
+            taxRate,
+            taxNumber,
+            paymentChannel,
+            paymentReceiverNumber,
+            aiAssistantEnabled,
+            tutorialIndex,
+        };
+        localStorage.setItem(ONBOARDING_DRAFT_KEY, JSON.stringify(draft));
+    }, [
+        isHydrated,
+        currentStep,
+        businessData,
+        createdBusinessId,
+        quickProducts,
+        customType,
+        dueEnabled,
+        paymentTerms,
+        customPaymentTerms,
+        taxEnabled,
+        taxRate,
+        taxNumber,
+        paymentChannel,
+        paymentReceiverNumber,
+        aiAssistantEnabled,
+        tutorialIndex,
+    ]);
 
     useEffect(() => {
         if (!isHydrated) return;
@@ -248,7 +415,17 @@ export default function OnboardingPage() {
                 if (cancelled) return;
 
                 const store = useBusinessStore.getState();
-                const bid = store.activeBusinessId;
+                const validActiveBusiness =
+                    store.activeBusinessId &&
+                        store.businesses.some((b) => b.id === store.activeBusinessId && b.status === "ACTIVE")
+                        ? store.activeBusinessId
+                        : null;
+
+                if (!validActiveBusiness && store.activeBusinessId) {
+                    useBusinessStore.getState().clearActiveBusiness();
+                }
+
+                const bid = createdBusinessId || validActiveBusiness;
 
                 if (bid) {
                     try {
@@ -256,14 +433,13 @@ export default function OnboardingPage() {
                         if (cancelled) return;
 
                         if (onboarding.onboardingCompleted) {
-                            router.replace("/dashboard");
+                            router.replace(`/shop/${bid}`);
                             return;
                         }
 
-                        if (onboarding.setupStep > 0) {
-                            setCurrentStep(Math.min(onboarding.setupStep + 1, TOTAL_STEPS));
-                            setCreatedBusinessId(bid);
-                        }
+                        const nextServerStep = Math.min(onboarding.setupStep + 1, TOTAL_STEPS);
+                        setCurrentStep((prev) => Math.max(prev, nextServerStep));
+                        setCreatedBusinessId(bid);
                     } catch (error) {
                         if (!isHttpNotFound(error)) {
                             // Keep expected 404 silent; surface unexpected failures for debugging.
@@ -282,7 +458,7 @@ export default function OnboardingPage() {
             cancelled = true;
         };
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [isHydrated, accessToken]);
+    }, [isHydrated, accessToken, createdBusinessId, loadBusinesses, router]);
 
     // ---------------------------------------------------------------------------
     // Step navigation
@@ -290,7 +466,14 @@ export default function OnboardingPage() {
 
     const advanceStep = useCallback(
         async (nextStep: number) => {
-            const bid = createdBusinessId || activeBusinessId;
+            const store = useBusinessStore.getState();
+            const validActiveBusiness =
+                store.activeBusinessId &&
+                    store.businesses.some((b) => b.id === store.activeBusinessId)
+                    ? store.activeBusinessId
+                    : null;
+
+            const bid = createdBusinessId || validActiveBusiness;
             if (bid && nextStep <= TOTAL_STEPS) {
                 try {
                     await businessApi.updateOnboardingStep(bid, nextStep);
@@ -303,10 +486,6 @@ export default function OnboardingPage() {
         },
         [createdBusinessId, activeBusinessId],
     );
-
-    const handleSkip = useCallback(() => {
-        router.replace("/dashboard");
-    }, [router]);
 
     // Step 1: Welcome → Start
     const handleWelcomeStart = () => advanceStep(2);
@@ -335,7 +514,14 @@ export default function OnboardingPage() {
         setError("");
         setIsLoading(true);
         try {
-            if (!createdBusinessId && !activeBusinessId) {
+            const state = useBusinessStore.getState();
+            const validActiveBusiness =
+                state.activeBusinessId &&
+                    state.businesses.some((b) => b.id === state.activeBusinessId)
+                    ? state.activeBusinessId
+                    : null;
+
+            if (!createdBusinessId && !validActiveBusiness) {
                 const business = await storeCreateBusiness({
                     name: businessData.name.trim(),
                     type: businessData.type || "OTHER",
@@ -365,24 +551,78 @@ export default function OnboardingPage() {
     };
 
     const handleLoadSampleData = async () => {
-        const bid = createdBusinessId || activeBusinessId;
+        const store = useBusinessStore.getState();
+        const validActiveBusiness =
+            store.activeBusinessId &&
+                store.businesses.some((b) => b.id === store.activeBusinessId)
+                ? store.activeBusinessId
+                : null;
+        const bid = createdBusinessId || validActiveBusiness;
+        const products = getSampleProductsByBusinessType(businessData.type);
+        setQuickProducts(products);
+
         if (!bid) {
-            advanceStep(5);
             return;
         }
         setIsLoading(true);
+        setError("");
         try {
             await businessApi.markSampleDataLoaded(bid);
+        } catch {
+            setError(t("addProducts.sampleDataFailed"));
         } finally {
             setIsLoading(false);
         }
-        advanceStep(5);
     };
 
     const handleProductsDone = () => advanceStep(5);
 
-    // Step 5: Due Setup
-    const handleDueNext = () => advanceStep(6);
+    // Step 5: Due Setup + essentials
+    const handleDueNext = async () => {
+        const store = useBusinessStore.getState();
+        const validActiveBusiness =
+            store.activeBusinessId &&
+                store.businesses.some((b) => b.id === store.activeBusinessId)
+                ? store.activeBusinessId
+                : null;
+        const bid = createdBusinessId || validActiveBusiness;
+
+        const parsedTaxRate = taxRate.trim() ? Number(taxRate) : undefined;
+        if (taxEnabled && taxRate.trim() && (parsedTaxRate == null || Number.isNaN(parsedTaxRate))) {
+            setError(t("dueSetup.taxRateInvalid"));
+            return;
+        }
+
+        if (!bid) {
+            await advanceStep(6);
+            return;
+        }
+
+        setIsLoading(true);
+        setError("");
+        try {
+            await businessApi.updateBusinessSettings(bid, {
+                taxEnabled,
+                taxRate: taxEnabled ? parsedTaxRate : undefined,
+                taxNumber: taxEnabled ? (taxNumber.trim() || undefined) : undefined,
+                paymentChannel: paymentChannel || undefined,
+                paymentReceiverNumber: paymentReceiverNumber.trim() || undefined,
+                aiAssistantEnabled,
+            });
+
+            if (paymentReceiverNumber.trim()) {
+                await businessApi.updateBusinessProfile(bid, {
+                    whatsappNumber: paymentReceiverNumber.trim(),
+                });
+            }
+
+            await advanceStep(6);
+        } catch {
+            setError(t("dueSetup.saveFailed"));
+        } finally {
+            setIsLoading(false);
+        }
+    };
 
     // Step 6: Tutorial → Complete
     const handleTutorialGotIt = () => {
@@ -395,16 +635,31 @@ export default function OnboardingPage() {
 
     // Step 7: Complete
     const handleComplete = useCallback(async () => {
-        const bid = createdBusinessId || activeBusinessId;
+        const store = useBusinessStore.getState();
+        const validActiveBusiness =
+            store.activeBusinessId &&
+                store.businesses.some((b) => b.id === store.activeBusinessId)
+                ? store.activeBusinessId
+                : null;
+        const bid = createdBusinessId || validActiveBusiness;
+
+        setIsLoading(true);
+        setError("");
         if (bid) {
             try {
                 await businessApi.completeOnboarding(bid);
             } catch {
-                // Non-critical
+                setError(t("complete.failed"));
+                setIsLoading(false);
+                return;
             }
         }
-        router.replace("/dashboard");
-    }, [createdBusinessId, activeBusinessId, router]);
+        if (typeof window !== "undefined") {
+            localStorage.removeItem(ONBOARDING_DRAFT_KEY);
+        }
+        setIsLoading(false);
+        router.replace(bid ? `/shop/${bid}` : "/businesses");
+    }, [createdBusinessId, router, t]);
 
     // ---------------------------------------------------------------------------
     // Render: Progress Bar
@@ -440,7 +695,6 @@ export default function OnboardingPage() {
         onNext,
         nextDisabled = false,
         nextLabel,
-        showSkip = false,
         loading = false,
     }: {
         showBack?: boolean;
@@ -448,7 +702,6 @@ export default function OnboardingPage() {
         onNext?: () => void;
         nextDisabled?: boolean;
         nextLabel?: string;
-        showSkip?: boolean;
         loading?: boolean;
     }) => (
         <div className="flex items-center justify-between mt-8 gap-3">
@@ -466,16 +719,6 @@ export default function OnboardingPage() {
             )}
 
             <div className="flex items-center gap-3">
-                {showSkip && (
-                    <button
-                        type="button"
-                        onClick={handleSkip}
-                        className="text-on-surface-variant hover:text-on-surface transition-colors px-4 py-3 rounded-xl bg-surface-container text-sm"
-                    >
-                        {t("skip")}
-                    </button>
-                )}
-
                 {onNext && (
                     <div className="min-w-[140px]">
                         <GradientButton
@@ -527,14 +770,6 @@ export default function OnboardingPage() {
                     {t("welcome.startButton")}
                 </GradientButton>
             </div>
-
-            <button
-                type="button"
-                onClick={handleSkip}
-                className="mt-4 text-on-surface-variant hover:text-on-surface transition-colors text-sm underline underline-offset-4"
-            >
-                {t("skip")}
-            </button>
         </div>
     );
 
@@ -732,7 +967,7 @@ export default function OnboardingPage() {
                             type="text"
                             placeholder={t("addProducts.productPricePlaceholder")}
                             value={productPrice}
-                            onChange={(e) => setProductPrice(e.target.value)}
+                            onChange={(e) => setProductPrice(sanitizeNumericInput(e.target.value, { allowDecimal: true, maxIntegerDigits: 10, maxFractionDigits: 2 }))}
                             onKeyDown={(e) => {
                                 if (e.key === "Enter") handleAddProduct();
                             }}
@@ -760,7 +995,7 @@ export default function OnboardingPage() {
                                 <span className="text-on-surface">{p.name}</span>
                                 {p.price && (
                                     <span className="text-on-surface-variant text-sm">
-                                        ৳{p.price}
+                                        ৳{formatLocalizedNumber(p.price, locale, { maximumFractionDigits: 2 })}
                                     </span>
                                 )}
                             </div>
@@ -794,6 +1029,10 @@ export default function OnboardingPage() {
                     </svg>
                     {t("addProducts.loadSampleData")}
                 </button>
+
+                {error && (
+                    <p className="text-sm text-error px-1">{error}</p>
+                )}
             </div>
 
             {renderNavButtons({
@@ -801,7 +1040,6 @@ export default function OnboardingPage() {
                 onBack: () => setCurrentStep(3),
                 onNext: handleProductsDone,
                 nextLabel: quickProducts.length > 0 ? t("addProducts.done") : t("next"),
-                showSkip: true,
                 loading: isLoading,
             })}
         </div>
@@ -854,10 +1092,10 @@ export default function OnboardingPage() {
                 {dueEnabled && (
                     <div className="mt-4 pt-4 border-t-0">
                         <p className="text-sm font-medium text-on-surface-variant mb-3">
-                            Payment Terms
+                            {t("dueSetup.paymentTerms")}
                         </p>
                         <div className="flex gap-2 flex-wrap">
-                            {["7", "15", "30"].map((days) => (
+                            {["7", "15", "30", "60"].map((days) => (
                                 <button
                                     key={days}
                                     type="button"
@@ -870,19 +1108,168 @@ export default function OnboardingPage() {
                                         }
                   `}
                                 >
-                                    {days} {days === "7" ? "days" : days === "15" ? "days" : "days"}
+                                    {days} {t("dueSetup.days")}
                                 </button>
                             ))}
+
+                            <button
+                                type="button"
+                                onClick={() => setPaymentTerms("custom")}
+                                className={`
+                    px-4 py-2 rounded-xl text-sm font-medium transition-all
+                    ${paymentTerms === "custom"
+                                        ? "bg-primary text-on-primary"
+                                        : "bg-surface-container-highest text-on-surface"
+                                    }
+                  `}
+                            >
+                                {t("dueSetup.customTerms")}
+                            </button>
                         </div>
+
+                        {paymentTerms === "custom" && (
+                            <div className="mt-3">
+                                <FormInput
+                                    label={t("dueSetup.customTermsLabel")}
+                                    type="text"
+                                    placeholder={t("dueSetup.customTermsPlaceholder")}
+                                    value={customPaymentTerms}
+                                    onChange={(e) => setCustomPaymentTerms(sanitizeNumericInput(e.target.value, { maxIntegerDigits: 3 }))}
+                                />
+                            </div>
+                        )}
                     </div>
                 )}
             </div>
+
+            <div className="bg-surface-container-low rounded-2xl p-6 mb-4 space-y-4">
+                <div>
+                    <p className="text-on-surface font-semibold">
+                        {t("dueSetup.businessEssentialsTitle")}
+                    </p>
+                    <p className="text-on-surface-variant text-sm mt-1">
+                        {t("dueSetup.businessEssentialsSubtitle")}
+                    </p>
+                </div>
+
+                <div className="flex items-center justify-between">
+                    <div>
+                        <p className="text-on-surface font-medium">
+                            {t("dueSetup.enableTax")}
+                        </p>
+                        <p className="text-on-surface-variant text-xs mt-1">
+                            {t("dueSetup.enableTaxDesc")}
+                        </p>
+                    </div>
+                    <button
+                        type="button"
+                        role="switch"
+                        aria-checked={taxEnabled}
+                        onClick={() => setTaxEnabled(!taxEnabled)}
+                        className={`
+              relative inline-flex h-7 w-12 items-center rounded-full transition-colors
+              ${taxEnabled ? "bg-primary" : "bg-surface-container-highest"}
+            `}
+                    >
+                        <span
+                            className={`
+                inline-block h-5 w-5 rounded-full bg-white transition-transform
+                ${taxEnabled ? "translate-x-6" : "translate-x-1"}
+              `}
+                        />
+                    </button>
+                </div>
+
+                {taxEnabled && (
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        <FormInput
+                            label={t("dueSetup.taxNumber")}
+                            type="text"
+                            placeholder={t("dueSetup.taxNumberPlaceholder")}
+                            value={taxNumber}
+                            onChange={(e) => setTaxNumber(e.target.value)}
+                        />
+                        <FormInput
+                            label={t("dueSetup.taxRate")}
+                            type="text"
+                            placeholder={t("dueSetup.taxRatePlaceholder")}
+                            value={taxRate}
+                            onChange={(e) =>
+                                setTaxRate(
+                                    sanitizeNumericInput(e.target.value, {
+                                        allowDecimal: true,
+                                        maxIntegerDigits: 3,
+                                        maxFractionDigits: 2,
+                                    }),
+                                )
+                            }
+                        />
+                    </div>
+                )}
+
+                <div className="space-y-2">
+                    <label className="block text-sm font-medium text-on-surface-variant">
+                        {t("dueSetup.paymentChannelOptional")}
+                    </label>
+                    <select
+                        value={paymentChannel}
+                        onChange={(e) => setPaymentChannel(e.target.value as "" | PaymentMethod)}
+                        className="w-full pl-4 pr-10 py-3 bg-surface-container-highest rounded-xl text-on-surface appearance-none focus:ring-2 focus:ring-primary-fixed-dim transition-all"
+                    >
+                        <option value="">{t("dueSetup.paymentChannelPlaceholder")}</option>
+                        {PAYMENT_CHANNELS.map((channel) => (
+                            <option key={channel} value={channel}>
+                                {t(`dueSetup.channel.${channel}` as Parameters<typeof t>[0])}
+                            </option>
+                        ))}
+                    </select>
+                </div>
+
+                <FormInput
+                    label={t("dueSetup.paymentReceiverNumberOptional")}
+                    type="text"
+                    placeholder={t("dueSetup.paymentReceiverNumberPlaceholder")}
+                    value={paymentReceiverNumber}
+                    onChange={(e) => setPaymentReceiverNumber(e.target.value)}
+                />
+
+                <div className="flex items-center justify-between">
+                    <div>
+                        <p className="text-on-surface font-medium">
+                            {t("dueSetup.aiAssistantSync")}
+                        </p>
+                        <p className="text-on-surface-variant text-xs mt-1">
+                            {t("dueSetup.aiAssistantSyncDesc")}
+                        </p>
+                    </div>
+                    <button
+                        type="button"
+                        role="switch"
+                        aria-checked={aiAssistantEnabled}
+                        onClick={() => setAiAssistantEnabled(!aiAssistantEnabled)}
+                        className={`
+              relative inline-flex h-7 w-12 items-center rounded-full transition-colors
+              ${aiAssistantEnabled ? "bg-primary" : "bg-surface-container-highest"}
+            `}
+                    >
+                        <span
+                            className={`
+                inline-block h-5 w-5 rounded-full bg-white transition-transform
+                ${aiAssistantEnabled ? "translate-x-6" : "translate-x-1"}
+              `}
+                        />
+                    </button>
+                </div>
+            </div>
+
+            {error && <p className="text-sm text-error px-1">{error}</p>}
 
             {renderNavButtons({
                 showBack: true,
                 onBack: () => setCurrentStep(4),
                 onNext: handleDueNext,
                 nextLabel: t("next"),
+                loading: isLoading,
             })}
         </div>
     );
@@ -970,7 +1357,6 @@ export default function OnboardingPage() {
                     onNext: handleTutorialGotIt,
                     nextLabel:
                         tutorialIndex < 2 ? t("tutorial.gotIt") : t("tutorial.goToDashboard"),
-                    showSkip: tutorialIndex === 0,
                 })}
             </div>
         );

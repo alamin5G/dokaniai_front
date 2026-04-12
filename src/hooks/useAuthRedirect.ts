@@ -1,5 +1,6 @@
 "use client";
 
+import { getPreferredWorkspacePath } from "@/lib/shopRouting";
 import { useEffect, useState } from "react";
 
 const AUTH_STORAGE_KEY = "dokaniai-auth-storage";
@@ -23,19 +24,22 @@ function getAccessTokenRaw(): string | null {
  * Redirect authenticated users away from public pages (home, login, register).
  * Reads directly from localStorage for maximum reliability.
  */
-export function useRedirectIfAuthenticated(redirectTo: string = "/dashboard") {
+export function useRedirectIfAuthenticated(redirectTo?: string) {
   const [checked, setChecked] = useState(false);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
 
   useEffect(() => {
     const token = getAccessTokenRaw();
 
     if (token) {
+      setIsAuthenticated(true);
+      const target = redirectTo ?? getPreferredWorkspacePath();
       // Hard navigation for reliability
-      window.location.replace(redirectTo);
+      window.location.replace(target);
     } else {
       setChecked(true);
     }
   }, [redirectTo]);
 
-  return { hydrated: checked, isAuthenticated: false };
+  return { hydrated: checked, isAuthenticated };
 }

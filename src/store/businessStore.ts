@@ -1,16 +1,16 @@
 'use client';
 
-import { create } from 'zustand';
-import { persist, createJSONStorage } from 'zustand/middleware';
+import * as businessApi from '@/lib/businessApi';
 import type {
   BusinessCreateRequest,
-  BusinessUpdateRequest,
+  BusinessOnboardingResponse,
   BusinessResponse,
   BusinessStatsResponse,
-  BusinessOnboardingResponse,
+  BusinessUpdateRequest,
   OnboardingStatsResponse,
 } from '@/types/business';
-import * as businessApi from '@/lib/businessApi';
+import { create } from 'zustand';
+import { createJSONStorage, persist } from 'zustand/middleware';
 
 // ---------------------------------------------------------------------------
 // State interface
@@ -112,9 +112,16 @@ export const useBusinessStore = create<BusinessState>()(
         set({ isLoading: true });
         try {
           const result = await businessApi.listBusinesses();
+          const state = get();
+          const activeStillExists =
+            state.activeBusinessId != null &&
+            result.businesses.some((b) => b.id === state.activeBusinessId);
+
           set({
             businesses: result.businesses,
             totalCount: result.total,
+            activeBusinessId: activeStillExists ? state.activeBusinessId : null,
+            activeBusiness: activeStillExists ? state.activeBusiness : null,
           });
         } finally {
           set({ isLoading: false });

@@ -6,6 +6,7 @@ import apiClient from "@/lib/api";
 import { getApiErrorMessage } from "@/lib/apiError";
 import { clearAuthContact, getAuthContact, maskContact } from "@/lib/authFlow";
 import { getClientDeviceContext } from "@/lib/device";
+import { getPreferredWorkspacePath } from "@/lib/shopRouting";
 import { useAuthStore } from "@/store/authStore";
 import { useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
@@ -75,7 +76,7 @@ function VerifyOtpForm() {
         if (data.status === "PASSWORD_SETUP_REQUIRED") {
           router.push("/set-password");
         } else {
-          router.push("/dashboard");
+          router.push(getPreferredWorkspacePath());
         }
       }
     } catch (error: unknown) {

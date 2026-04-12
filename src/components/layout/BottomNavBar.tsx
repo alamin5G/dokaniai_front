@@ -1,8 +1,9 @@
 "use client";
 
+import { buildShopPath } from "@/lib/shopRouting";
+import { useTranslations } from "next-intl";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useTranslations } from "next-intl";
 
 // ---------------------------------------------------------------------------
 // Inline SVG Icons (24×24, filled variant for active state)
@@ -89,29 +90,34 @@ function IconBox({ filled = false, className = "w-6 h-6" }: { filled?: boolean; 
 
 interface BottomNavItem {
   key: string;
-  href: string;
+  section: string;
   icon: React.FC<{ filled?: boolean; className?: string }>;
 }
 
 const BOTTOM_NAV_ITEMS: BottomNavItem[] = [
-  { key: "dashboard", href: "/dashboard", icon: IconDashboard },
-  { key: "sales", href: "/dashboard/sales", icon: IconCart },
-  { key: "expenses", href: "/dashboard/expenses", icon: IconExpense },
-  { key: "dueLedger", href: "/dashboard/due-ledger", icon: IconBook },
-  { key: "products", href: "/dashboard/products", icon: IconBox },
+  { key: "dashboard", section: "", icon: IconDashboard },
+  { key: "sales", section: "/sales", icon: IconCart },
+  { key: "expenses", section: "/expenses", icon: IconExpense },
+  { key: "dueLedger", section: "/due-ledger", icon: IconBook },
+  { key: "products", section: "/products", icon: IconBox },
 ];
 
 // ---------------------------------------------------------------------------
 // BottomNavBar component
 // ---------------------------------------------------------------------------
 
-export default function BottomNavBar() {
+interface BottomNavBarProps {
+  businessId?: string;
+}
+
+export default function BottomNavBar({ businessId }: BottomNavBarProps) {
   const t = useTranslations("nav");
   const pathname = usePathname();
+  const rootPath = businessId ? buildShopPath(businessId) : "/businesses";
 
   const isActive = (href: string) => {
-    if (href === "/dashboard") return pathname === "/dashboard";
-    return pathname.startsWith(href);
+    if (href === rootPath) return pathname === href;
+    return pathname === href || pathname.startsWith(`${href}/`);
   };
 
   return (
@@ -121,18 +127,18 @@ export default function BottomNavBar() {
     >
       <div className="flex w-full items-center justify-between">
         {BOTTOM_NAV_ITEMS.map((item) => {
-          const active = isActive(item.href);
+          const href = businessId ? buildShopPath(businessId, item.section) : "/businesses";
+          const active = isActive(href);
           const Icon = item.icon;
 
           return (
             <Link
               key={item.key}
-              href={item.href}
-              className={`flex items-center gap-2 px-5 py-3 rounded-full transition-all active:scale-95 ${
-                active
+              href={href}
+              className={`flex items-center gap-2 px-5 py-3 rounded-full transition-all active:scale-95 ${active
                   ? "bg-primary/10 text-primary"
                   : "text-on-surface-variant hover:bg-surface-container-low"
-              }`}
+                }`}
             >
               <Icon filled={active} className="w-6 h-6" />
               {active && (

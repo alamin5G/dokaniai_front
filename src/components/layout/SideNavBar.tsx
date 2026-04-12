@@ -1,10 +1,10 @@
 "use client";
 
-import { useState, useRef, useEffect } from "react";
+import { buildShopPath } from "@/lib/shopRouting";
+import { useBusinessStore } from "@/store/businessStore";
+import { useTranslations } from "next-intl";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useTranslations } from "next-intl";
-import { useBusinessStore } from "@/store/businessStore";
 
 // ---------------------------------------------------------------------------
 // Inline SVG Icons (HeroIcons outline style, 24×24)
@@ -74,14 +74,6 @@ function IconPlus({ className = "w-5 h-5" }: { className?: string }) {
   );
 }
 
-function IconChevronDown({ className = "w-4 h-4" }: { className?: string }) {
-  return (
-    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className={className}>
-      <path strokeLinecap="round" strokeLinejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5" />
-    </svg>
-  );
-}
-
 function IconUser({ className = "w-5 h-5" }: { className?: string }) {
   return (
     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className={className}>
@@ -96,46 +88,38 @@ function IconUser({ className = "w-5 h-5" }: { className?: string }) {
 
 interface NavItem {
   key: string;
-  href: string;
+  section: string;
   icon: React.FC<{ className?: string }>;
 }
 
 const NAV_ITEMS: NavItem[] = [
-  { key: "dashboard", href: "/dashboard", icon: IconDashboard },
-  { key: "sales", href: "/dashboard/sales", icon: IconCart },
-  { key: "expenses", href: "/dashboard/expenses", icon: IconExpense },
-  { key: "dueLedger", href: "/dashboard/due-ledger", icon: IconBook },
-  { key: "products", href: "/dashboard/products", icon: IconBox },
-  { key: "reports", href: "/dashboard/reports", icon: IconChart },
-  { key: "aiAssistant", href: "/dashboard/ai", icon: IconAI },
+  { key: "dashboard", section: "", icon: IconDashboard },
+  { key: "sales", section: "/sales", icon: IconCart },
+  { key: "expenses", section: "/expenses", icon: IconExpense },
+  { key: "dueLedger", section: "/due-ledger", icon: IconBook },
+  { key: "products", section: "/products", icon: IconBox },
+  { key: "reports", section: "/reports", icon: IconChart },
+  { key: "aiAssistant", section: "/ai", icon: IconAI },
 ];
 
 // ---------------------------------------------------------------------------
 // SideNavBar component
 // ---------------------------------------------------------------------------
 
-export default function SideNavBar() {
+interface SideNavBarProps {
+  businessId?: string;
+}
+
+export default function SideNavBar({ businessId }: SideNavBarProps) {
   const t = useTranslations("nav");
   const pathname = usePathname();
-  const { activeBusiness, businesses, setActiveBusiness } = useBusinessStore();
+  const { activeBusiness } = useBusinessStore();
 
-  const [businessDropdownOpen, setBusinessDropdownOpen] = useState(false);
-  const dropdownRef = useRef<HTMLDivElement>(null);
-
-  // Close dropdown on outside click
-  useEffect(() => {
-    function handleClickOutside(e: MouseEvent) {
-      if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
-        setBusinessDropdownOpen(false);
-      }
-    }
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, []);
+  const rootPath = businessId ? buildShopPath(businessId) : "/businesses";
 
   const isActive = (href: string) => {
-    if (href === "/dashboard") return pathname === "/dashboard";
-    return pathname.startsWith(href);
+    if (href === rootPath) return pathname === href;
+    return pathname === href || pathname.startsWith(`${href}/`);
   };
 
   return (
@@ -148,70 +132,26 @@ export default function SideNavBar() {
         </p>
       </div>
 
-      {/* ---- Business Switcher ---- */}
-      {businesses.length > 1 && (
-        <div className="relative mb-4 px-2" ref={dropdownRef}>
-          <button
-            type="button"
-            onClick={() => setBusinessDropdownOpen((prev) => !prev)}
-            className="w-full flex items-center justify-between gap-2 px-3 py-2.5 rounded-xl bg-surface-container-low text-sm text-on-surface hover:bg-surface-container transition-colors"
-          >
-            <span className="truncate font-medium">
-              {activeBusiness?.name ?? "ব্যবসা নির্বাচন করুন"}
-            </span>
-            <IconChevronDown
-              className={`w-4 h-4 text-on-surface-variant transition-transform ${
-                businessDropdownOpen ? "rotate-180" : ""
-              }`}
-            />
-          </button>
-
-          {businessDropdownOpen && (
-            <div className="absolute top-full left-2 right-2 mt-1 rounded-xl bg-surface-container-lowest py-2 z-50">
-              {businesses
-                .filter((b) => b.status === "ACTIVE")
-                .map((b) => (
-                  <button
-                    key={b.id}
-                    type="button"
-                    onClick={() => {
-                      setActiveBusiness(b);
-                      setBusinessDropdownOpen(false);
-                    }}
-                    className={`w-full text-left px-4 py-2.5 text-sm transition-colors ${
-                      b.id === activeBusiness?.id
-                        ? "bg-primary/10 text-primary font-semibold"
-                        : "text-on-surface hover:bg-surface-container-low"
-                    }`}
-                  >
-                    {b.name}
-                  </button>
-                ))}
-            </div>
-          )}
-        </div>
-      )}
-
       {/* ---- Navigation Items ---- */}
       <nav className="flex-1 space-y-1">
         {NAV_ITEMS.map((item) => {
-          const active = isActive(item.href);
+          const href = businessId ? buildShopPath(businessId, item.section) : "/businesses";
+          const active = isActive(href);
           const Icon = item.icon;
           const isAI = item.key === "aiAssistant";
 
           return (
             <Link
               key={item.key}
-              href={item.href}
-              className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-colors ${
-                active
-                  ? isAI
-                    ? "bg-gradient-to-r from-primary to-primary-container text-on-primary font-bold"
-                    : "bg-primary/10 text-primary font-bold"
-                  : isAI
-                    ? "text-primary hover:bg-primary/5"
-                    : "text-on-surface-variant hover:bg-surface-container-low"
-              }`}
+              href={href}
+              className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-colors ${active
+                ? isAI
+                  ? "bg-gradient-to-r from-primary to-primary-container text-on-primary font-bold"
+                  : "bg-primary/10 text-primary font-bold"
+                : isAI
+                  ? "text-primary hover:bg-primary/5"
+                  : "text-on-surface-variant hover:bg-surface-container-low"
+                }`}
             >
               <Icon className="w-5 h-5 flex-shrink-0" />
               <span className="text-sm">{t(item.key)}</span>
@@ -223,7 +163,7 @@ export default function SideNavBar() {
       {/* ---- New Entry CTA ---- */}
       <div className="mt-auto px-2 mb-4">
         <Link
-          href="/dashboard/sales?action=new"
+          href={businessId ? `${buildShopPath(businessId, "/sales")}?action=new` : "/businesses"}
           className="w-full flex items-center justify-center gap-2 bg-primary text-on-primary py-3 rounded-xl font-bold hover:brightness-105 active:scale-95 transition-all"
         >
           <IconPlus className="w-5 h-5" />

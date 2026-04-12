@@ -341,6 +341,9 @@
       "taxEnabledLabel": "Enable Tax",
       "taxRateLabel": "Tax Rate (%)",
       "taxNumberLabel": "Tax Number",
+      "paymentChannelLabel": "Payment Channel",
+      "paymentReceiverLabel": "Payment Receiver Number",
+      "aiAssistantEnabledLabel": "AI Assistant Enabled",
       "invoicePrefixLabel": "Invoice Prefix",
       "invoiceNotesLabel": "Invoice Notes",
       "receiptFooterLabel": "Receipt Footer",
@@ -495,6 +498,14 @@
       "onboardingStatus": "Onboarding Status",
       "manageBusiness": "Manage Business",
       "addNewBusiness": "Add New Business"
+    },
+    "shop": {
+      "subtitle": "Your per-shop operations dashboard is ready.",
+      "switchBusiness": "Switch Business",
+      "openSettings": "Business Settings",
+      "selectBusiness": "Select a business first",
+      "onboardingPending": "Onboarding is not complete yet",
+      "continueOnboarding": "Continue Onboarding"
     }
   },
   "onboarding": {
@@ -521,11 +532,12 @@
     },
     "addProducts": {
       "title": "Add Your Products",
-      "subtitle": "Add a few products to get started, or skip for now",
+      "subtitle": "Add a few products to get started",
       "skipButton": "Skip - I will add later",
       "addMore": "Add Another",
       "done": "Done Adding",
       "loadSampleData": "Load Sample Data",
+      "sampleDataFailed": "Could not load sample data. Please try again.",
       "productNamePlaceholder": "Product name",
       "productPricePlaceholder": "Price"
     },
@@ -533,7 +545,40 @@
       "title": "Do You Sell on Credit?",
       "subtitle": "Set up due tracking for your customers",
       "yesButton": "Yes, Set Up Due Tracking",
-      "noButton": "No, Maybe Later"
+      "noButton": "No, Maybe Later",
+      "paymentTerms": "Payment Terms",
+      "days": "days",
+      "customTerms": "Custom",
+      "customTermsLabel": "Custom payment term (days)",
+      "customTermsPlaceholder": "e.g. 45",
+      "businessEssentialsTitle": "Business essentials (minimal setup)",
+      "businessEssentialsSubtitle": "Set tax, payment channel, and AI assistant preference now.",
+      "enableTax": "Enable tax profile",
+      "enableTaxDesc": "Useful for invoices and compliance.",
+      "taxNumber": "Tax / BIN number",
+      "taxNumberPlaceholder": "Optional",
+      "taxRate": "Tax rate (%)",
+      "taxRatePlaceholder": "e.g. 5",
+      "paymentChannel": "Preferred payment channel",
+      "paymentChannelOptional": "Preferred payment channel (optional)",
+      "paymentChannelPlaceholder": "Select now or set later",
+      "paymentReceiverNumber": "Payment receiver number",
+      "paymentReceiverNumberOptional": "Payment receiver number (optional)",
+      "paymentReceiverNumberPlaceholder": "e.g. 01XXXXXXXXX",
+      "aiAssistantSync": "Enable AI assistant sync",
+      "aiAssistantSyncDesc": "Use AI hints and quick command support in dashboard.",
+      "taxRateInvalid": "Please enter a valid tax rate.",
+      "saveFailed": "Failed to save due setup essentials. Please try again.",
+      "channel": {
+        "CASH": "Cash",
+        "CREDIT": "Credit",
+        "BKASH": "bKash",
+        "NAGAD": "Nagad",
+        "ROCKET": "Rocket",
+        "CARD": "Card",
+        "BANK": "Bank",
+        "MANUAL": "Manual"
+      }
     },
     "tutorial": {
       "title": "You are All Set!",
@@ -551,7 +596,8 @@
     "complete": {
       "title": "Your Business is Ready!",
       "subtitle": "Your digital ledger setup is complete. Best wishes!",
-      "goToDashboard": "Go to Dashboard"
+      "goToDashboard": "Go to Dashboard",
+      "failed": "Could not complete onboarding right now. Please try again."
     }
   },
   "nav": {

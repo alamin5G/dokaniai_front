@@ -63,6 +63,7 @@ function ErrorState({ message, onRetry }: { message: string; onRetry: () => void
 interface DashboardLayoutProps {
   children: React.ReactNode;
   title?: string;
+  businessId?: string;
 }
 
 // ---------------------------------------------------------------------------
@@ -75,7 +76,7 @@ const LOADING_TIMEOUT = 10_000;
 // DashboardLayout component
 // ---------------------------------------------------------------------------
 
-export default function DashboardLayout({ children, title }: DashboardLayoutProps) {
+export default function DashboardLayout({ children, title, businessId }: DashboardLayoutProps) {
   const router = useRouter();
   const { activeBusiness, activeBusinessId, loadBusinesses, loadBusiness, setActiveBusiness, businesses } = useBusinessStore();
 
@@ -160,7 +161,32 @@ export default function DashboardLayout({ children, title }: DashboardLayoutProp
         }
       }
 
-      // 6. Mark as ready
+      // 6. Shop route guard — explicit /shop/[businessId] context takes precedence.
+      if (businessId) {
+        let targetBusiness = updatedState.businesses.find((b) => b.id === businessId);
+
+        if (!targetBusiness) {
+          try {
+            targetBusiness = await loadBusiness(businessId);
+          } catch {
+            clearTimeout(timeoutId);
+            router.replace("/businesses");
+            return;
+          }
+        }
+
+        if (!targetBusiness || targetBusiness.status !== "ACTIVE") {
+          clearTimeout(timeoutId);
+          router.replace("/businesses");
+          return;
+        }
+
+        if (!updatedState.activeBusiness || updatedState.activeBusiness.id !== businessId) {
+          setActiveBusiness(targetBusiness);
+        }
+      }
+
+      // 7. Mark as ready
       if (mountedRef.current) {
         isReadyRef.current = true;
         setIsReady(true);
@@ -168,7 +194,7 @@ export default function DashboardLayout({ children, title }: DashboardLayoutProp
     } finally {
       clearTimeout(timeoutId);
     }
-  }, [router, loadBusinesses]);
+  }, [router, loadBusinesses, loadBusiness, setActiveBusiness, businessId]);
 
   // -------------------------------------------------------------------------
   // Mount effect — wait for Zustand persist hydration, then run guards.
@@ -222,6 +248,7 @@ export default function DashboardLayout({ children, title }: DashboardLayoutProp
   // -------------------------------------------------------------------------
   useEffect(() => {
     if (!isReady) return;
+    if (businessId) return;
 
     if (!activeBusiness && businesses.length > 0) {
       const firstActive = businesses.find((b) => b.status === "ACTIVE");
@@ -232,15 +259,16 @@ export default function DashboardLayout({ children, title }: DashboardLayoutProp
         router.replace("/businesses");
       }
     }
-  }, [isReady, activeBusiness, businesses, router, setActiveBusiness]);
+  }, [isReady, activeBusiness, businesses, router, setActiveBusiness, businessId]);
 
   // -------------------------------------------------------------------------
   // Background refresh: verify active business still exists on server (endpoint #2)
   // This ensures cached data from localStorage is up-to-date without blocking UI.
   // -------------------------------------------------------------------------
   useEffect(() => {
-    if (isReady && activeBusinessId) {
-      loadBusiness(activeBusinessId).catch(() => {
+    const targetBusinessId = businessId ?? activeBusinessId;
+    if (isReady && targetBusinessId) {
+      loadBusiness(targetBusinessId).catch(() => {
         // If business no longer exists, redirect to business list
         const state = useBusinessStore.getState();
         if (!state.activeBusiness) {
@@ -248,7 +276,7 @@ export default function DashboardLayout({ children, title }: DashboardLayoutProp
         }
       });
     }
-  }, [isReady, activeBusinessId, loadBusiness, router]);
+  }, [isReady, activeBusinessId, loadBusiness, router, businessId]);
 
   // -------------------------------------------------------------------------
   // Render
@@ -260,18 +288,18 @@ export default function DashboardLayout({ children, title }: DashboardLayoutProp
   }
 
   // Show spinner while checking auth/business
-  if (!isReady || !activeBusiness) {
+  if (!isReady || !activeBusiness || (businessId != null && activeBusiness.id !== businessId)) {
     return <Spinner />;
   }
 
   return (
     <>
       {/* Desktop sidebar */}
-      <SideNavBar />
+      <SideNavBar businessId={activeBusinessId ?? businessId} />
 
       {/* Main content area */}
       <main className="md:ml-64 min-h-screen pb-28 md:pb-8">
-        <TopAppBar title={title} />
+        <TopAppBar title={title} businessId={activeBusinessId ?? businessId} />
 
         <div className="px-6 py-8 max-w-7xl mx-auto">
           {children}
@@ -279,7 +307,7 @@ export default function DashboardLayout({ children, title }: DashboardLayoutProp
       </main>
 
       {/* Mobile bottom nav */}
-      <BottomNavBar />
+      <BottomNavBar businessId={activeBusinessId ?? businessId} />
     </>
   );
 }

@@ -1,18 +1,20 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
-import { useTranslations } from "next-intl";
-import { useRouter } from "next/navigation";
-import { useBusinessStore } from "@/store/businessStore";
-import {
-    getBusinessSettings,
-    updateBusinessSettings,
-    getBusinessProfile,
-    updateBusinessProfile,
-    getBusinessLocation,
-    updateBusinessLocation,
-} from "@/lib/businessApi";
 import { FormInput, GradientButton } from "@/components/ui/FormPrimitives";
+import {
+    getBusinessLocation,
+    getBusinessProfile,
+    getBusinessSettings,
+    updateBusinessLocation,
+    updateBusinessProfile,
+    updateBusinessSettings,
+} from "@/lib/businessApi";
+import { formatCurrencyBDT, formatLocalizedNumber } from "@/lib/localeNumber";
+import { useBusinessStore } from "@/store/businessStore";
+import type { PaymentMethod } from "@/types/business";
+import { useLocale, useTranslations } from "next-intl";
+import { usePathname, useRouter } from "next/navigation";
+import { useCallback, useEffect, useState } from "react";
 
 // ---------------------------------------------------------------------------
 // Inline SVG Icons (HeroIcons style)
@@ -62,18 +64,18 @@ type TabType = "general" | "profile" | "location" | "danger";
 
 interface OnboardingStep {
     step: number;
-    titleKey: string;
-    descKey: string;
+    titleKey: Parameters<ReturnType<typeof useTranslations>>[0];
+    descKey: Parameters<ReturnType<typeof useTranslations>>[0];
 }
 
 const ONBOARDING_STEPS: OnboardingStep[] = [
-    { step: 1, titleKey: "settings.stepBusinessIdentity", descKey: "settings.stepBusinessIdentityDesc" },
-    { step: 2, titleKey: "settings.stepTaxConfig", descKey: "settings.stepTaxConfigDesc" },
-    { step: 3, titleKey: "settings.stepSetupProducts", descKey: "settings.stepSetupProductsDesc" },
-    { step: 4, titleKey: "settings.stepAddCustomer", descKey: "settings.stepAddCustomerDesc" },
-    { step: 5, titleKey: "settings.stepBankIntegration", descKey: "settings.stepBankIntegrationDesc" },
-    { step: 6, titleKey: "settings.stepInventoryAlert", descKey: "settings.stepInventoryAlertDesc" },
-    { step: 7, titleKey: "settings.stepAiSync", descKey: "settings.stepAiSyncDesc" },
+    { step: 1, titleKey: "welcome.title", descKey: "welcome.subtitle" },
+    { step: 2, titleKey: "businessType.title", descKey: "businessType.subtitle" },
+    { step: 3, titleKey: "businessName.title", descKey: "businessName.subtitle" },
+    { step: 4, titleKey: "addProducts.title", descKey: "addProducts.subtitle" },
+    { step: 5, titleKey: "dueSetup.title", descKey: "dueSetup.subtitle" },
+    { step: 6, titleKey: "tutorial.title", descKey: "tutorial.subtitle" },
+    { step: 7, titleKey: "complete.title", descKey: "complete.subtitle" },
 ];
 
 // ---------------------------------------------------------------------------
@@ -81,22 +83,22 @@ const ONBOARDING_STEPS: OnboardingStep[] = [
 // ---------------------------------------------------------------------------
 
 const BUSINESS_TYPES = [
-    "grocery",
-    "electronics",
-    "clothing",
-    "pharmacy",
-    "restaurant",
-    "stationery",
-    "hardware",
-    "bakery",
-    "mobileShop",
-    "tailoring",
-    "sweetsShop",
-    "cosmetics",
-    "bookshop",
-    "jewellery",
-    "printing",
-    "other",
+    { value: "GROCERY", labelKey: "grocery" },
+    { value: "FASHION", labelKey: "clothing" },
+    { value: "ELECTRONICS", labelKey: "electronics" },
+    { value: "RESTAURANT", labelKey: "restaurant" },
+    { value: "PHARMACY", labelKey: "pharmacy" },
+    { value: "STATIONERY", labelKey: "stationery" },
+    { value: "HARDWARE", labelKey: "hardware" },
+    { value: "BAKERY", labelKey: "bakery" },
+    { value: "MOBILE_SHOP", labelKey: "mobileShop" },
+    { value: "TAILORING", labelKey: "tailoring" },
+    { value: "SWEETS_SHOP", labelKey: "sweetsShop" },
+    { value: "COSMETICS", labelKey: "cosmetics" },
+    { value: "BOOKSHOP", labelKey: "bookshop" },
+    { value: "JEWELLERY", labelKey: "jewellery" },
+    { value: "PRINTING", labelKey: "printing" },
+    { value: "OTHER", labelKey: "other" },
 ] as const;
 
 const CURRENCIES = [
@@ -106,6 +108,17 @@ const CURRENCIES = [
     { value: "EUR", label: "€ EUR" },
     { value: "GBP", label: "£ GBP" },
 ] as const;
+
+const PAYMENT_CHANNELS: PaymentMethod[] = [
+    "CASH",
+    "CREDIT",
+    "BKASH",
+    "NAGAD",
+    "ROCKET",
+    "CARD",
+    "BANK",
+    "MANUAL",
+];
 
 const TABS: { key: TabType; labelKey: string }[] = [
     { key: "general", labelKey: "settings.tabGeneral" },
@@ -119,8 +132,11 @@ const TABS: { key: TabType; labelKey: string }[] = [
 // ---------------------------------------------------------------------------
 
 export default function BusinessSettingsPage() {
+    const locale = useLocale();
     const t = useTranslations("business");
+    const to = useTranslations("onboarding");
     const router = useRouter();
+    const pathname = usePathname();
     const {
         activeBusinessId,
         activeBusiness,
@@ -149,6 +165,12 @@ export default function BusinessSettingsPage() {
         description: "",
     });
     const [currency, setCurrency] = useState("BDT");
+    const [taxEnabled, setTaxEnabled] = useState(false);
+    const [taxRate, setTaxRate] = useState("");
+    const [taxNumber, setTaxNumber] = useState("");
+    const [paymentChannel, setPaymentChannel] = useState<PaymentMethod>("CASH");
+    const [paymentReceiverNumber, setPaymentReceiverNumber] = useState("");
+    const [aiAssistantEnabled, setAiAssistantEnabled] = useState(true);
     const [generalLoading, setGeneralLoading] = useState(false);
     const [settingsLoaded, setSettingsLoaded] = useState(false);
 
@@ -208,12 +230,24 @@ export default function BusinessSettingsPage() {
         }
     }, [activeBusinessId, loadOnboarding, loadStats]);
 
+    useEffect(() => {
+        if (pathname === "/dashboard/settings" && activeBusinessId) {
+            router.replace(`/shop/${activeBusinessId}/settings`);
+        }
+    }, [pathname, activeBusinessId, router]);
+
     // Load settings (for currency) when General tab is active
     useEffect(() => {
         if (activeBusinessId && activeTab === "general" && !settingsLoaded) {
             getBusinessSettings(activeBusinessId)
                 .then((settings) => {
                     setCurrency(settings.currency || "BDT");
+                    setTaxEnabled(Boolean(settings.taxEnabled));
+                    setTaxRate(settings.taxRate != null ? String(settings.taxRate) : "");
+                    setTaxNumber(settings.taxNumber || "");
+                    setPaymentChannel(settings.paymentChannel || "CASH");
+                    setPaymentReceiverNumber(settings.paymentReceiverNumber || "");
+                    setAiAssistantEnabled(settings.aiAssistantEnabled !== false);
                     setSettingsLoaded(true);
                 })
                 .catch(() => {
@@ -238,6 +272,10 @@ export default function BusinessSettingsPage() {
                         website: profile.website || "",
                         facebookPage: profile.facebookPage || "",
                     });
+                    setGeneralForm((prev) => ({
+                        ...prev,
+                        description: profile.description || prev.description,
+                    }));
                     setProfileLoaded(true);
                 })
                 .catch(() => {
@@ -292,6 +330,11 @@ export default function BusinessSettingsPage() {
     /** General tab: update business name/type/description + currency via settings */
     const handleSaveGeneral = async () => {
         if (!activeBusinessId) return;
+        const parsedTaxRate = taxRate.trim() ? Number(taxRate) : undefined;
+        if (taxEnabled && taxRate.trim() && (parsedTaxRate == null || Number.isNaN(parsedTaxRate))) {
+            showFeedback("error", t("settings.errorSave"));
+            return;
+        }
         setGeneralLoading(true);
         try {
             await updateBusiness(activeBusinessId, {
@@ -299,7 +342,19 @@ export default function BusinessSettingsPage() {
                 type: generalForm.type,
                 description: generalForm.description || undefined,
             });
-            await updateBusinessSettings(activeBusinessId, { currency });
+            await updateBusinessSettings(activeBusinessId, {
+                currency,
+                taxEnabled,
+                taxRate: taxEnabled ? parsedTaxRate : undefined,
+                taxNumber: taxEnabled ? (taxNumber || undefined) : undefined,
+                paymentChannel,
+                paymentReceiverNumber: paymentReceiverNumber || undefined,
+                aiAssistantEnabled,
+            });
+            await updateBusinessProfile(activeBusinessId, {
+                description: generalForm.description || undefined,
+                whatsappNumber: paymentReceiverNumber || undefined,
+            });
             showFeedback("success", t("settings.successSave"));
         } catch {
             showFeedback("error", t("settings.errorSave"));
@@ -543,7 +598,7 @@ export default function BusinessSettingsPage() {
                                         <div className={`pb-4 w-full ${stepDef.step < ONBOARDING_STEPS.length ? "border-b border-outline-variant/15" : ""} ${isPending ? "opacity-60" : ""}`}>
                                             <div className="flex justify-between items-center mb-1">
                                                 <h3 className={`text-lg font-bold leading-none mb-1 ${isComplete ? "text-primary" : "text-on-surface"}`}>
-                                                    {t(stepDef.titleKey as Parameters<typeof t>[0])}
+                                                    {to(stepDef.titleKey)}
                                                 </h3>
                                                 {isCurrent && (
                                                     <button className="text-sm font-bold text-secondary bg-secondary-fixed px-4 py-1 rounded-full">
@@ -552,7 +607,7 @@ export default function BusinessSettingsPage() {
                                                 )}
                                             </div>
                                             <p className="text-on-surface-variant text-sm">
-                                                {t(stepDef.descKey as Parameters<typeof t>[0])}
+                                                {to(stepDef.descKey)}
                                             </p>
                                         </div>
                                     </div>
@@ -601,8 +656,8 @@ export default function BusinessSettingsPage() {
                                     >
                                         <option value="">{t("form.typePlaceholder")}</option>
                                         {BUSINESS_TYPES.map((bt) => (
-                                            <option key={bt} value={bt}>
-                                                {t(`types.${bt}` as Parameters<typeof t>[0])}
+                                            <option key={bt.value} value={bt.value}>
+                                                {t(`types.${bt.labelKey}` as Parameters<typeof t>[0])}
                                             </option>
                                         ))}
                                     </StyledSelect>
@@ -625,6 +680,80 @@ export default function BusinessSettingsPage() {
                                             </option>
                                         ))}
                                     </StyledSelect>
+
+                                    <div className="bg-surface-container-low rounded-xl p-4 space-y-4">
+                                        <div className="flex items-center justify-between">
+                                            <div>
+                                                <p className="text-sm font-semibold text-on-surface">
+                                                    {t("settings.taxEnabledLabel")}
+                                                </p>
+                                            </div>
+                                            <button
+                                                type="button"
+                                                role="switch"
+                                                aria-checked={taxEnabled}
+                                                onClick={() => setTaxEnabled(!taxEnabled)}
+                                                className={`relative inline-flex h-7 w-12 items-center rounded-full transition-colors ${taxEnabled ? "bg-primary" : "bg-surface-container-highest"}`}
+                                            >
+                                                <span
+                                                    className={`inline-block h-5 w-5 rounded-full bg-white transition-transform ${taxEnabled ? "translate-x-6" : "translate-x-1"}`}
+                                                />
+                                            </button>
+                                        </div>
+
+                                        {taxEnabled && (
+                                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                                                <FormInput
+                                                    label={t("settings.taxNumberLabel")}
+                                                    value={taxNumber}
+                                                    onChange={(e) => setTaxNumber(e.target.value)}
+                                                />
+                                                <FormInput
+                                                    label={t("settings.taxRateLabel")}
+                                                    value={taxRate}
+                                                    onChange={(e) => setTaxRate(e.target.value)}
+                                                />
+                                            </div>
+                                        )}
+
+                                        <StyledSelect
+                                            label={t("settings.paymentChannelLabel")}
+                                            value={paymentChannel}
+                                            onChange={(v) => setPaymentChannel(v as PaymentMethod)}
+                                        >
+                                            {PAYMENT_CHANNELS.map((channel) => (
+                                                <option key={channel} value={channel}>
+                                                    {to(`dueSetup.channel.${channel}` as Parameters<typeof to>[0])}
+                                                </option>
+                                            ))}
+                                        </StyledSelect>
+
+                                        <FormInput
+                                            label={t("settings.paymentReceiverLabel")}
+                                            value={paymentReceiverNumber}
+                                            onChange={(e) => setPaymentReceiverNumber(e.target.value)}
+                                            placeholder="01XXXXXXXXX"
+                                        />
+
+                                        <div className="flex items-center justify-between">
+                                            <div>
+                                                <p className="text-sm font-semibold text-on-surface">
+                                                    {t("settings.aiAssistantEnabledLabel")}
+                                                </p>
+                                            </div>
+                                            <button
+                                                type="button"
+                                                role="switch"
+                                                aria-checked={aiAssistantEnabled}
+                                                onClick={() => setAiAssistantEnabled(!aiAssistantEnabled)}
+                                                className={`relative inline-flex h-7 w-12 items-center rounded-full transition-colors ${aiAssistantEnabled ? "bg-primary" : "bg-surface-container-highest"}`}
+                                            >
+                                                <span
+                                                    className={`inline-block h-5 w-5 rounded-full bg-white transition-transform ${aiAssistantEnabled ? "translate-x-6" : "translate-x-1"}`}
+                                                />
+                                            </button>
+                                        </div>
+                                    </div>
                                     <div className="pt-2">
                                         <GradientButton
                                             loading={generalLoading}
@@ -897,7 +1026,7 @@ export default function BusinessSettingsPage() {
                                 </p>
                                 <div className="flex items-baseline gap-2">
                                     <span className="text-5xl font-black text-primary">
-                                        {stats?.totalProducts?.toLocaleString() ?? "0"}
+                                        {formatLocalizedNumber(stats?.totalProducts ?? 0, locale)}
                                     </span>
                                     <span className="text-sm text-on-surface-variant">{t("settings.itemsListed")}</span>
                                 </div>
@@ -908,7 +1037,7 @@ export default function BusinessSettingsPage() {
                                 </p>
                                 <div className="flex items-baseline gap-2">
                                     <span className="text-5xl font-black text-primary">
-                                        ৳{stats?.totalRevenue?.toLocaleString() ?? "0.00"}
+                                        {formatCurrencyBDT(stats?.totalRevenue ?? 0, locale, { maximumFractionDigits: 2 })}
                                     </span>
                                     <span className="text-sm text-on-surface-variant">{t("settings.biggerLedger")}</span>
                                 </div>

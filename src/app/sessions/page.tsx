@@ -1,13 +1,14 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
-import { useRouter } from "next/navigation";
-import { useTranslations } from "next-intl";
-import { useAuthStore } from "@/store/authStore";
 import { LanguageSwitcher } from "@/components/ui/LanguageSwitcher";
 import apiClient from "@/lib/api";
-import { getOrCreateClientDeviceId } from "@/lib/device";
 import { getApiErrorMessage } from "@/lib/apiError";
+import { getOrCreateClientDeviceId } from "@/lib/device";
+import { getPreferredWorkspacePath } from "@/lib/shopRouting";
+import { useAuthStore } from "@/store/authStore";
+import { useTranslations } from "next-intl";
+import { useRouter } from "next/navigation";
+import { useCallback, useEffect, useState } from "react";
 
 /* ------------------------------------------------------------------ */
 /*  Types                                                              */
@@ -266,7 +267,7 @@ export default function SessionsPage() {
         <div className="flex justify-between items-center px-6 py-4 max-w-7xl mx-auto">
           <div
             className="flex items-center gap-3 cursor-pointer"
-            onClick={() => router.push("/dashboard")}
+            onClick={() => router.push(getPreferredWorkspacePath())}
           >
             <div className="w-10 h-10 bg-primary-container rounded-xl flex items-center justify-center">
               <span className="material-symbols-outlined text-on-primary-container text-xl">
@@ -278,7 +279,7 @@ export default function SessionsPage() {
           <div className="flex items-center gap-3">
             <LanguageSwitcher />
             <button
-              onClick={() => router.push("/dashboard")}
+              onClick={() => router.push(getPreferredWorkspacePath())}
               className="flex items-center gap-2 px-4 py-2 rounded-xl text-on-surface-variant hover:bg-surface-container-high transition-colors"
             >
               <span className="material-symbols-outlined text-xl">
@@ -368,31 +369,28 @@ export default function SessionsPage() {
               return (
                 <div
                   key={session.id}
-                  className={`bg-surface-container-lowest p-6 rounded-lg shadow-sm transition-all ${
-                    isCurrentDevice
+                  className={`bg-surface-container-lowest p-6 rounded-lg shadow-sm transition-all ${isCurrentDevice
                       ? "border-l-4 border-primary"
                       : "hover:translate-y-[-4px]"
-                  }`}
+                    }`}
                 >
                   {/* Card Header */}
                   <div className="flex justify-between items-start mb-6">
                     <div
-                      className={`w-12 h-12 rounded-full flex items-center justify-center ${
-                        isCurrentDevice
+                      className={`w-12 h-12 rounded-full flex items-center justify-center ${isCurrentDevice
                           ? "bg-primary-fixed"
                           : session.deviceType === "MOBILE"
                             ? "bg-secondary-fixed"
                             : "bg-surface-container-highest"
-                      }`}
+                        }`}
                     >
                       <span
-                        className={`material-symbols-outlined ${
-                          isCurrentDevice
+                        className={`material-symbols-outlined ${isCurrentDevice
                             ? "text-primary"
                             : session.deviceType === "MOBILE"
                               ? "text-secondary"
                               : "text-outline"
-                        }`}
+                          }`}
                         style={{ fontVariationSettings: isCurrentDevice ? "'FILL' 1" : undefined }}
                       >
                         {getDeviceIcon(session.deviceType)}

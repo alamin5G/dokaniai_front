@@ -1,7 +1,11 @@
 "use client";
 
-import { useTranslations } from "next-intl";
 import { LanguageSwitcher } from "@/components/ui/LanguageSwitcher";
+import { buildShopPath, replaceShopBusinessInPath } from "@/lib/shopRouting";
+import { useBusinessStore } from "@/store/businessStore";
+import { useTranslations } from "next-intl";
+import { usePathname, useRouter } from "next/navigation";
+import { useEffect, useRef, useState } from "react";
 
 // ---------------------------------------------------------------------------
 // Inline SVG Icons
@@ -30,14 +34,50 @@ function IconUser({ className = "w-5 h-5" }: { className?: string }) {
 interface TopAppBarProps {
   /** Breadcrumb or page title shown on desktop */
   title?: string;
+  /** Active business context from route/layout */
+  businessId?: string;
 }
 
 // ---------------------------------------------------------------------------
 // TopAppBar component
 // ---------------------------------------------------------------------------
 
-export default function TopAppBar({ title }: TopAppBarProps) {
+export default function TopAppBar({ title, businessId }: TopAppBarProps) {
+  const router = useRouter();
+  const pathname = usePathname();
   const t = useTranslations("nav");
+  const { activeBusiness, businesses, setActiveBusiness } = useBusinessStore();
+
+  const [isSwitcherOpen, setIsSwitcherOpen] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setIsSwitcherOpen(false);
+      }
+    }
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  const activeBusinesses = businesses.filter((business) => business.status === "ACTIVE");
+  const canSwitchBusiness = Boolean(businessId) && activeBusinesses.length > 1;
+
+  const handleSwitchBusiness = (nextBusinessId: string) => {
+    const nextBusiness = activeBusinesses.find((business) => business.id === nextBusinessId);
+    if (!nextBusiness) return;
+
+    setActiveBusiness(nextBusiness);
+    setIsSwitcherOpen(false);
+
+    const nextPath = pathname.startsWith("/shop/")
+      ? replaceShopBusinessInPath(pathname, nextBusinessId)
+      : buildShopPath(nextBusinessId);
+
+    router.push(nextPath);
+  };
 
   return (
     <header className="sticky top-0 z-40 flex justify-between items-center w-full px-6 py-3 bg-surface-container-low/80 backdrop-blur-md">
@@ -55,6 +95,49 @@ export default function TopAppBar({ title }: TopAppBarProps) {
 
       {/* Right: actions */}
       <div className="flex items-center gap-2">
+        {businessId && (
+          <button
+            type="button"
+            onClick={() => router.push("/businesses")}
+            className="hidden md:inline-flex rounded-full px-3 py-1.5 text-xs font-semibold text-secondary hover:bg-surface-container-high transition-colors"
+          >
+            All Businesses
+          </button>
+        )}
+
+        {canSwitchBusiness && (
+          <div className="relative" ref={dropdownRef}>
+            <button
+              type="button"
+              onClick={() => setIsSwitcherOpen((prev) => !prev)}
+              className="inline-flex items-center gap-1 rounded-full bg-surface-container px-3 py-1.5 text-xs font-semibold text-on-surface hover:bg-surface-container-high transition-colors"
+              aria-expanded={isSwitcherOpen}
+              aria-haspopup="listbox"
+            >
+              <span className="max-w-24 truncate">{activeBusiness?.name ?? "Business"}</span>
+              <span className="material-symbols-outlined text-base">expand_more</span>
+            </button>
+
+            {isSwitcherOpen && (
+              <div className="absolute right-0 mt-2 w-56 rounded-xl bg-surface-container-lowest py-1.5 shadow-xl z-50">
+                {activeBusinesses.map((business) => (
+                  <button
+                    key={business.id}
+                    type="button"
+                    onClick={() => handleSwitchBusiness(business.id)}
+                    className={`w-full px-3 py-2 text-left text-sm transition-colors ${business.id === activeBusiness?.id
+                        ? "text-primary font-semibold bg-primary/10"
+                        : "text-on-surface hover:bg-surface-container"
+                      }`}
+                  >
+                    {business.name}
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
+        )}
+
         <LanguageSwitcher className="!px-2 !py-2" />
 
         <button

@@ -1,24 +1,25 @@
 "use client";
 
-import { useState } from "react";
-import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { useTranslations } from "next-intl";
-import apiClient from "@/lib/api";
-import { getApiErrorMessage } from "@/lib/apiError";
-import { getClientDeviceContext } from "@/lib/device";
-import { useAuthStore } from "@/store/authStore";
 import { AuthLayout } from "@/components/layout/AuthLayout";
 import { FormInput, GradientButton } from "@/components/ui/FormPrimitives";
 import { useRedirectIfAuthenticated } from "@/hooks/useAuthRedirect";
+import apiClient from "@/lib/api";
+import { getApiErrorMessage } from "@/lib/apiError";
+import { getClientDeviceContext } from "@/lib/device";
+import { getPreferredWorkspacePath } from "@/lib/shopRouting";
+import { useAuthStore } from "@/store/authStore";
+import { useTranslations } from "next-intl";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
 
 export default function LoginPage() {
   const router = useRouter();
   const t = useTranslations("auth.login");
   const tc = useTranslations("common");
   const setTokens = useAuthStore((state) => state.setTokens);
-  const { hydrated, isAuthenticated } = useRedirectIfAuthenticated("/dashboard");
-  
+  const { hydrated, isAuthenticated } = useRedirectIfAuthenticated();
+
   const [identifier, setIdentifier] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
@@ -28,12 +29,12 @@ export default function LoginPage() {
   const handleLoginSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setErrorText("");
-    
+
     if (!identifier || !password) {
       setErrorText(t("errorEmptyFields"));
       return;
     }
-    
+
     try {
       setIsLoading(true);
       const deviceContext = getClientDeviceContext();
@@ -42,11 +43,11 @@ export default function LoginPage() {
         password,
         ...deviceContext,
       });
-      
+
       const { accessToken, refreshToken, user, status } = res.data.data;
       setTokens(accessToken, refreshToken, user?.id || "", status);
-      
-      router.push("/dashboard");
+
+      router.push(getPreferredWorkspacePath());
     } catch (error: unknown) {
       setErrorText(getApiErrorMessage(error, t("errorInvalid")));
     } finally {
@@ -60,12 +61,12 @@ export default function LoginPage() {
   }
 
   return (
-    <AuthLayout 
-      heading={t("heading")} 
+    <AuthLayout
+      heading={t("heading")}
       subheading={t("subheading")}
     >
       <form onSubmit={handleLoginSubmit} className="space-y-6">
-        <FormInput 
+        <FormInput
           label={t("identifierLabel")}
           type="text"
           placeholder={t("identifierPlaceholder")}
@@ -104,25 +105,25 @@ export default function LoginPage() {
         </div>
 
         {errorText && <p className="text-error text-sm font-semibold text-center">{errorText}</p>}
-        
+
         <GradientButton loading={isLoading} type="submit">
           <span>{t("submit")}</span>
           <span className="material-symbols-outlined text-xl" data-icon="arrow_forward">arrow_forward</span>
         </GradientButton>
       </form>
-      
+
       <div className="my-8 flex items-center gap-4">
         <div className="h-[1px] flex-grow bg-outline-variant opacity-20"></div>
         <span className="text-on-surface-variant text-xs font-bold uppercase tracking-widest">{tc("or")}</span>
         <div className="h-[1px] flex-grow bg-outline-variant opacity-20"></div>
       </div>
-      
+
       <div className="text-center">
         <p className="text-on-surface-variant font-medium">
-          {t("newAccount")} 
+          {t("newAccount")}
           <Link href="/register" className="text-secondary font-bold hover:underline ml-1">{t("registerHere")}</Link>
         </p>
-      </div>  
+      </div>
     </AuthLayout>
   );
 }

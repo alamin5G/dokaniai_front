@@ -341,6 +341,9 @@
       "taxEnabledLabel": "ট্যাক্স সক্রিয় করুন",
       "taxRateLabel": "ট্যাক্স হার (%)",
       "taxNumberLabel": "ট্যাক্স নম্বর",
+      "paymentChannelLabel": "পেমেন্ট চ্যানেল",
+      "paymentReceiverLabel": "পেমেন্ট গ্রহণের নম্বর",
+      "aiAssistantEnabledLabel": "AI সহকারী সক্রিয়",
       "invoicePrefixLabel": "ইনভয়েস প্রিফিক্স",
       "invoiceNotesLabel": "ইনভয়েস নোট",
       "receiptFooterLabel": "রিসিট ফুটার",
@@ -495,6 +498,14 @@
       "onboardingStatus": "অনবোর্ডিং স্ট্যাটাস",
       "manageBusiness": "ব্যবসা পরিচালনা করুন",
       "addNewBusiness": "নতুন ব্যবসা যোগ করুন"
+    },
+    "shop": {
+      "subtitle": "আপনার দোকানভিত্তিক অপারেশন ড্যাশবোর্ড প্রস্তুত।",
+      "switchBusiness": "ব্যবসা পরিবর্তন",
+      "openSettings": "ব্যবসার সেটিংস",
+      "selectBusiness": "আগে একটি ব্যবসা নির্বাচন করুন",
+      "onboardingPending": "অনবোর্ডিং এখনো সম্পূর্ণ হয়নি",
+      "continueOnboarding": "অনবোর্ডিং চালিয়ে যান"
     }
   },
   "onboarding": {
@@ -521,19 +532,53 @@
     },
     "addProducts": {
       "title": "আপনার পণ্য যোগ করুন",
-      "subtitle": "শুরু করতে কয়েকটি পণ্য যোগ করুন, অথবা এখনো স্কিপ করুন",
+      "subtitle": "শুরু করতে কয়েকটি পণ্য যোগ করুন",
       "skipButton": "স্কিপ - পরে যোগ করব",
       "addMore": "আরো যোগ করুন",
       "done": "যোগ করা শেষ",
       "loadSampleData": "নমুনা ডেটা লোড করুন",
+      "sampleDataFailed": "নমুনা ডেটা লোড করা যায়নি। আবার চেষ্টা করুন।",
       "productNamePlaceholder": "পণ্যের নাম",
       "productPricePlaceholder": "মূল্য"
     },
     "dueSetup": {
       "title": "আপনি কি বাকিতে বিক্রি করেন?",
-      "subtitle": "আপনার ক্রেতাদের জন্য বাকি ট্র্যাকিং সেটআপ করুন",
+      "subtitle": "বাকি ট্র্যাকিংয়ের সাথে ট্যাক্স/পেমেন্ট/AI মিনিমাল সেটআপ করুন",
       "yesButton": "হ্যাঁ, বাকি ট্র্যাকিং সেটআপ করুন",
-      "noButton": "না, পরে দেখব"
+      "noButton": "না, পরে দেখব",
+      "paymentTerms": "পরিশোধের সময়সীমা",
+      "days": "দিন",
+      "customTerms": "কাস্টম",
+      "customTermsLabel": "কাস্টম সময়সীমা (দিন)",
+      "customTermsPlaceholder": "যেমন: 45",
+      "businessEssentialsTitle": "ব্যবসার জরুরি সেটআপ (মিনিমাল)",
+      "businessEssentialsSubtitle": "এখনই ট্যাক্স, পেমেন্ট চ্যানেল এবং AI সহকারী পছন্দ সেট করুন।",
+      "enableTax": "ট্যাক্স প্রোফাইল সক্রিয় করুন",
+      "enableTaxDesc": "ইনভয়েস ও কমপ্লায়েন্সের জন্য উপকারী।",
+      "taxNumber": "ট্যাক্স / BIN নম্বর",
+      "taxNumberPlaceholder": "ঐচ্ছিক",
+      "taxRate": "ট্যাক্স হার (%)",
+      "taxRatePlaceholder": "যেমন: 5",
+      "paymentChannel": "পছন্দের পেমেন্ট চ্যানেল",
+      "paymentChannelOptional": "পছন্দের পেমেন্ট চ্যানেল (ঐচ্ছিক)",
+      "paymentChannelPlaceholder": "এখন নির্বাচন করুন বা পরে সেট করুন",
+      "paymentReceiverNumber": "পেমেন্ট গ্রহণের নম্বর",
+      "paymentReceiverNumberOptional": "পেমেন্ট গ্রহণের নম্বর (ঐচ্ছিক)",
+      "paymentReceiverNumberPlaceholder": "যেমন: 01XXXXXXXXX",
+      "aiAssistantSync": "AI সহকারী সিঙ্ক চালু করুন",
+      "aiAssistantSyncDesc": "ড্যাশবোর্ডে AI ইঙ্গিত ও কুইক কমান্ড ব্যবহার করুন।",
+      "taxRateInvalid": "সঠিক ট্যাক্স হার লিখুন।",
+      "saveFailed": "Due setup essentials সেভ করা যায়নি। আবার চেষ্টা করুন।",
+      "channel": {
+        "CASH": "নগদ",
+        "CREDIT": "ক্রেডিট",
+        "BKASH": "বিকাশ",
+        "NAGAD": "নগদ",
+        "ROCKET": "রকেট",
+        "CARD": "কার্ড",
+        "BANK": "ব্যাংক",
+        "MANUAL": "ম্যানুয়াল"
+      }
     },
     "tutorial": {
       "title": "সব প্রস্তুত!",
@@ -551,7 +596,8 @@
     "complete": {
       "title": "আপনার ব্যবসা প্রস্তুত!",
       "subtitle": "আপনার ডিজিটাল খাতা সেটআপ সম্পন্ন। শুভ কামনা!",
-      "goToDashboard": "ড্যাশবোর্ডে যান"
+      "goToDashboard": "ড্যাশবোর্ডে যান",
+      "failed": "এই মুহূর্তে অনবোর্ডিং সম্পন্ন করা যাচ্ছে না। আবার চেষ্টা করুন।"
     }
   },
   "nav": {

@@ -12,6 +12,17 @@
 /** Mirrors com.dokaniai.enums.BusinessStatus */
 export type BusinessStatus = 'ACTIVE' | 'ARCHIVED' | 'DELETED';
 
+/** Mirrors com.dokaniai.enums.PaymentMethod */
+export type PaymentMethod =
+  | 'CASH'
+  | 'CREDIT'
+  | 'BKASH'
+  | 'NAGAD'
+  | 'ROCKET'
+  | 'CARD'
+  | 'BANK'
+  | 'MANUAL';
+
 // ---------------------------------------------------------------------------
 // Request DTOs
 // ---------------------------------------------------------------------------
@@ -37,6 +48,9 @@ export interface BusinessSettingsRequest {
   taxEnabled?: boolean;
   taxRate?: number;
   taxNumber?: string;
+  paymentChannel?: PaymentMethod;
+  paymentReceiverNumber?: string;
+  aiAssistantEnabled?: boolean;
   invoicePrefix?: string;
   lowStockThreshold?: number;
   lowStockAlertEnabled?: boolean;
@@ -105,8 +119,11 @@ export interface BusinessSettingsResponse {
   breakEnd: string | null;
   operatingDays: number[];
   taxEnabled: boolean;
-  taxRate: number;
-  taxNumber: string;
+  taxRate: number | null;
+  taxNumber: string | null;
+  paymentChannel: PaymentMethod | null;
+  paymentReceiverNumber: string | null;
+  aiAssistantEnabled: boolean;
   invoicePrefix: string;
   invoiceCounter: number;
   invoiceNotes: string;

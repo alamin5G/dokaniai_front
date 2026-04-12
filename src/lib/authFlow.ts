@@ -1,3 +1,5 @@
+import { normalizeLocalizedDigits } from "@/lib/localeNumber";
+
 /**
  * Masks a phone number or email for safe display.
  * Phone: 01581741783 → 015*****783
@@ -5,17 +7,19 @@
  */
 export function maskContact(contact: string): string {
   if (!contact) return "";
-  
+
+  const normalized = normalizeLocalizedDigits(contact);
+
   // Email masking
-  if (contact.includes("@")) {
-    const [local, domain] = contact.split("@");
+  if (normalized.includes("@")) {
+    const [local, domain] = normalized.split("@");
     if (!local || !domain) return "***";
     const visible = local.length <= 2 ? local[0] : local.slice(0, 2);
     return `${visible}***@${domain}`;
   }
-  
+
   // Phone masking: show first 3 and last 3 digits
-  const digits = contact.replace(/\D/g, "");
+  const digits = normalized.replace(/\D/g, "");
   if (digits.length <= 6) return "***";
   return `${digits.slice(0, 3)}*****${digits.slice(-3)}`;
 }
