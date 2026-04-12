@@ -456,7 +456,7 @@ export default function BusinessSettingsPage() {
 
     const statusLabel =
         activeBusiness?.status === "ARCHIVED" ? t("list.archivedLabel") : t("list.active");
-    const invoicePrefixSuggestion = buildInvoicePrefixSuggestion(activeBusiness.name);
+    const invoicePrefixSuggestion = buildInvoicePrefixSuggestion(activeBusiness?.name ?? "");
 
     const handleDayToggle = (day: number) => {
         setHoursForm((current) => {

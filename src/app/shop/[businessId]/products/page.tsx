@@ -1,16 +1,11 @@
-import ShopFeaturePage from "@/components/dashboard/ShopFeaturePage";
+import ShopProductsWorkspace from "@/components/dashboard/ShopProductsWorkspace";
 
 export default async function ShopProductsPage({
-    params,
+  params,
 }: {
-    params: Promise<{ businessId: string }>;
+  params: Promise<{ businessId: string }>;
 }) {
-    const { businessId } = await params;
-    return (
-        <ShopFeaturePage
-            businessId={businessId}
-            title="Products Workspace"
-            description="Manage catalog, pricing, and stock details with this shop as the active business context."
-        />
-    );
+  const { businessId } = await params;
+
+  return <ShopProductsWorkspace businessId={businessId} />;
 }
