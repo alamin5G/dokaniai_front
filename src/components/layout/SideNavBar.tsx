@@ -174,6 +174,15 @@ export default function SideNavBar({ businessId }: SideNavBarProps) {
       {/* ---- User Section ---- */}
       <div className="px-2">
         <Link
+          href="/account/profile"
+          className="mb-1 flex items-center gap-3 px-3 py-2.5 rounded-xl text-on-surface-variant hover:bg-surface-container-low transition-colors"
+        >
+          <div className="w-8 h-8 rounded-full bg-surface-container-high flex items-center justify-center">
+            <IconUser className="w-4 h-4 text-on-surface-variant" />
+          </div>
+          <span className="text-sm font-medium">Profile</span>
+        </Link>
+        <Link
           href="/account/subscription"
           className="mb-1 flex items-center gap-3 px-3 py-2.5 rounded-xl text-on-surface-variant hover:bg-surface-container-low transition-colors"
         >

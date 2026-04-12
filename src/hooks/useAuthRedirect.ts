@@ -20,6 +20,19 @@ function getAccessTokenRaw(): string | null {
   }
 }
 
+function getStoredUserRoleRaw(): string | null {
+  if (typeof window === "undefined") return null;
+  try {
+    const raw = localStorage.getItem(AUTH_STORAGE_KEY);
+    if (!raw) return null;
+    const parsed = JSON.parse(raw);
+    const role = parsed?.state?.userRole;
+    return typeof role === "string" ? role : null;
+  } catch {
+    return null;
+  }
+}
+
 /**
  * Redirect authenticated users away from public pages (home, login, register).
  * Reads directly from localStorage for maximum reliability.
@@ -33,7 +46,8 @@ export function useRedirectIfAuthenticated(redirectTo?: string) {
 
     if (token) {
       setIsAuthenticated(true);
-      const target = redirectTo ?? getPreferredWorkspacePath();
+      const role = getStoredUserRoleRaw();
+      const target = redirectTo ?? (role === "ADMIN" || role === "SUPER_ADMIN" ? "/admin" : getPreferredWorkspacePath());
       // Hard navigation for reliability
       window.location.replace(target);
     } else {

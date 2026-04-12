@@ -18,6 +18,7 @@ export default function LoginPage() {
   const t = useTranslations("auth.login");
   const tc = useTranslations("common");
   const setTokens = useAuthStore((state) => state.setTokens);
+  const setUserRole = useAuthStore((state) => state.setUserRole);
   const { hydrated, isAuthenticated } = useRedirectIfAuthenticated();
 
   const [identifier, setIdentifier] = useState("");
@@ -44,10 +45,28 @@ export default function LoginPage() {
         ...deviceContext,
       });
 
-      const { accessToken, refreshToken, user, status } = res.data.data;
-      setTokens(accessToken, refreshToken, user?.id || "", status);
+      const { accessToken, refreshToken, userId, status } = res.data.data as {
+        accessToken: string;
+        refreshToken: string;
+        userId: string;
+        status: string;
+      };
+      setTokens(accessToken, refreshToken, userId || "", status);
 
-      router.push(getPreferredWorkspacePath());
+      let role: string | null = null;
+      try {
+        const meResponse = await apiClient.get("/users/me");
+        role = meResponse.data?.data?.role ?? null;
+      } catch {
+        role = null;
+      }
+      setUserRole(role);
+
+      if (role === "ADMIN" || role === "SUPER_ADMIN") {
+        router.push("/admin");
+      } else {
+        router.push(getPreferredWorkspacePath());
+      }
     } catch (error: unknown) {
       setErrorText(getApiErrorMessage(error, t("errorInvalid")));
     } finally {
