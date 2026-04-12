@@ -314,6 +314,14 @@
       "restaurant": "রেস্টুরেন্ট",
       "stationery": "স্টেশনারি",
       "hardware": "হার্ডওয়্যার",
+      "bakery": "বেকারি",
+      "mobileShop": "মোবাইল শপ",
+      "tailoring": "টেইলারিং",
+      "sweetsShop": "মিষ্টির দোকান",
+      "cosmetics": "কসমেটিক্স",
+      "bookshop": "বইয়ের দোকান",
+      "jewellery": "গহনার দোকান",
+      "printing": "প্রিন্টিং",
       "other": "অন্যান্য"
     },
     "settings": {
@@ -332,7 +340,36 @@
       "lowStockAlertLabel": "লো স্টক অ্যালার্ট",
       "saveButton": "সেটিংস সেভ করুন",
       "errorSave": "সেটিংস সেভ করতে ব্যর্থ",
-      "successSave": "সেটিংস সফলভাবে সেভ হয়েছে"
+      "successSave": "সেটিংস সফলভাবে সেভ হয়েছে",
+      "onboardingProgress": "অনবোর্ডিং অগ্রগতি",
+      "onboardingSubtitle": "আপনার ডিজিটাল খাতা সেটআপ করতে এই ধাপগুলো সম্পন্ন করুন।",
+      "completeLabel": "সম্পন্ন",
+      "continueStep": "চালিয়ে যান",
+      "businessStats": "ব্যবসার পরিসংখ্যান",
+      "totalProductsLabel": "মোট পণ্য",
+      "itemsListed": "তালিকাভুক্ত পণ্য",
+      "totalSalesMTD": "মোট বিক্রয় (মাসিক)",
+      "biggerLedger": "বড় খাতা আসছে",
+      "inactive": "নিষ্ক্রিয়: এখনো ক্রেতাদের কাছে দৃশ্যমান নয়।",
+      "aiTip": "Dokani AI টিপ",
+      "aiTipText": "যে দোকানদাররা প্রথম ৭ দিনে তাদের পণ্য ইনভেন্টরি সম্পূর্ণ করেন তাদের বিলিং দক্ষতা ৪০% বৃদ্ধি পায়।",
+      "getAiAdvice": "AI পরামর্শ নিন",
+      "security": "নিরাপত্তা মান",
+      "encryptionActive": "এনক্রিপশন সক্রিয়: ২৫৬-বিট AES",
+      "stepBusinessIdentity": "ব্যবসার পরিচয়",
+      "stepBusinessIdentityDesc": "যাচাইকৃত দোকানের নাম, অবস্থান এবং ট্রেড লাইসেন্স।",
+      "stepTaxConfig": "ট্যাক্স কনফিগারেশন",
+      "stepTaxConfigDesc": "VAT/TIN বিবরণ সফলভাবে প্রোফাইলে যোগ হয়েছে।",
+      "stepSetupProducts": "পণ্য সেটআপ",
+      "stepSetupProductsDesc": "ইনভেন্টরি ট্র্যাকিং শুরু করতে আপনার প্রথম ১০টি পণ্য যোগ করুন।",
+      "stepAddCustomer": "ক্রেতা যোগ করুন",
+      "stepAddCustomerDesc": "ক্রেডিট (দেনা-পাওনা) পরিচালনার জন্য আপনার যোগাযোগ তালিকা আমদানি করুন।",
+      "stepBankIntegration": "ব্যাংক ইন্টিগ্রেশন",
+      "stepBankIntegrationDesc": "নিরবচ্ছিন্ন পেমেন্টের জন্য বিকাশ বা ব্যাংক সংযুক্ত করুন।",
+      "stepInventoryAlert": "ইনভেন্টরি সতর্কতা",
+      "stepInventoryAlertDesc": "গুরুত্বপূর্ণ পণ্যের জন্য লো-স্টক থ্রেশহোল্ড সেট করুন।",
+      "stepAiSync": "AI সহকারী সিঙ্ক",
+      "stepAiSyncDesc": "দোকান পরিচালনার জন্য ভয়েস কমান্ড সক্রিয় করুন।"
     },
     "profile": {
       "descriptionLabel": "বিবরণ",
@@ -368,6 +405,23 @@
       "archiveConfirm": "হ্যাঁ, আর্কাইভ করুন",
       "deleteConfirm": "হ্যাঁ, স্থায়ীভাবে মুছুন",
       "cancel": "বাতিল"
+    },
+    "ledger": {
+      "title": "ডিজিটাল খাতা",
+      "subtitle": "একটি কেন্দ্রীয় কমান্ড সেন্টার থেকে আপনার সাম্রাজ্য পরিচালনা করুন।",
+      "exportAll": "সব এক্সপোর্ট করুন",
+      "newBusiness": "নতুন ব্যবসা",
+      "colBusinessIdentity": "ব্যবসার পরিচয়",
+      "colTodaySales": "আজকের বিক্রয়",
+      "colTotalDue": "মোট বাকি",
+      "colActions": "কার্যক্রম",
+      "manage": "পরিচালনা",
+      "quickSwitch": "দ্রুত সুইচ",
+      "archivedSection": "আর্কাইভকৃত ব্যবসা",
+      "restore": "পুনরুদ্ধার",
+      "noData": "এখনো কোনো ডাটা নেই",
+      "paid": "পরিশোধিত",
+      "customers": "{count} জন গ্রাহক"
     }
   },
   "dashboard": {
@@ -420,6 +474,19 @@
       "title": "বাকি খাতা - শীর্ষ ৩",
       "lastDue": "শেষ বাকি: {days} দিন আগে",
       "viewAll": "সম্পূর্ণ খাতা দেখুন"
+    },
+    "workspace": {
+      "title": "ওয়ার্কস্পেস",
+      "subtitle": "আপনার সকল ব্যবসা এক জায়গা থেকে পরিচালনা করুন।",
+      "switchWorkspace": "ওয়ার্কস্পেস পরিবর্তন",
+      "addBusiness": "নতুন ব্যবসা যোগ করুন",
+      "aiInsight": "AI ইনসাইট",
+      "aiInsightText": "আপনার কিছু ব্যবসার অনবোর্ডিং এখনো অসম্পূর্ণ। এখনই সম্পন্ন করুন।",
+      "aiInsightTextDetailed": "আপনার {incomplete}টি ব্যবসার অনবোর্ডিং বাকি আছে। {completed}টি ইতিমধ্যে সম্পন্ন।",
+      "fixNow": "ঠিক করুন",
+      "onboardingStatus": "অনবোর্ডিং স্ট্যাটাস",
+      "manageBusiness": "ব্যবসা পরিচালনা করুন",
+      "addNewBusiness": "নতুন ব্যবসা যোগ করুন"
     }
   },
   "onboarding": {
@@ -435,7 +502,9 @@
     },
     "businessType": {
       "title": "আপনার ব্যবসা কোন ধরনের?",
-      "subtitle": "আপনার দোকানের সাথে সবচেয়ে মিলে এমন ক্যাটাগরি নির্বাচন করুন"
+      "subtitle": "আপনার দোকানের সাথে সবচেয়ে মিলে এমন ক্যাটাগরি নির্বাচন করুন",
+      "customTypeLabel": "কোন ধরনের দোকান?",
+      "customTypePlaceholder": "যেমন: ফুলের দোকান, সাইবার ক্যাফে..."
     },
     "businessName": {
       "title": "আপনার ব্যবসার নাম দিন",

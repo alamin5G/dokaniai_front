@@ -69,6 +69,17 @@ function VerifyEmailForm() {
     }
   };
 
+  // Success state — show BEFORE the !contact check, because clearAuthContact()
+  // already wiped sessionStorage, so contact would be null here
+  if (successText) {
+    return (
+      <div className="text-center space-y-4">
+        <span className="material-symbols-outlined text-primary text-5xl">check_circle</span>
+        <p className="text-primary font-bold text-lg">{successText}</p>
+      </div>
+    );
+  }
+
   // No contact found — redirect to register
   if (!contact || method !== "email") {
     return (
@@ -80,15 +91,6 @@ function VerifyEmailForm() {
         >
           রেজিস্টার পৃষ্ঠায় ফিরুন
         </button>
-      </div>
-    );
-  }
-
-  if (successText) {
-    return (
-      <div className="text-center space-y-4">
-        <span className="material-symbols-outlined text-primary text-5xl">check_circle</span>
-        <p className="text-primary font-bold text-lg">{successText}</p>
       </div>
     );
   }

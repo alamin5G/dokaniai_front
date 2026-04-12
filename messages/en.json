@@ -314,6 +314,14 @@
       "restaurant": "Restaurant",
       "stationery": "Stationery",
       "hardware": "Hardware",
+      "bakery": "Bakery",
+      "mobileShop": "Mobile Shop",
+      "tailoring": "Tailoring",
+      "sweetsShop": "Sweets Shop",
+      "cosmetics": "Cosmetics",
+      "bookshop": "Bookshop",
+      "jewellery": "Jewellery",
+      "printing": "Printing",
       "other": "Other"
     },
     "settings": {
@@ -332,7 +340,36 @@
       "lowStockAlertLabel": "Low Stock Alerts",
       "saveButton": "Save Settings",
       "errorSave": "Failed to save settings",
-      "successSave": "Settings saved successfully"
+      "successSave": "Settings saved successfully",
+      "onboardingProgress": "Onboarding Progress",
+      "onboardingSubtitle": "Complete these steps to set up your digital ledger.",
+      "completeLabel": "Complete",
+      "continueStep": "Continue",
+      "businessStats": "Business Stats",
+      "totalProductsLabel": "Total Products",
+      "itemsListed": "Items listed",
+      "totalSalesMTD": "Total Sales (MTD)",
+      "biggerLedger": "Bigger ledger coming",
+      "inactive": "Inactive: Not visible to customers yet.",
+      "aiTip": "Dokani AI Tip",
+      "aiTipText": "Shopowners who complete their product inventory in the first 7 days see a 40% increase in billing efficiency.",
+      "getAiAdvice": "Get AI Advice",
+      "security": "Security Standard",
+      "encryptionActive": "Encryption active: 256-bit AES",
+      "stepBusinessIdentity": "Business Identity",
+      "stepBusinessIdentityDesc": "Verified shop name, location, and trade license.",
+      "stepTaxConfig": "Tax Configuration",
+      "stepTaxConfigDesc": "VAT/TIN details successfully added to profile.",
+      "stepSetupProducts": "Setup Products",
+      "stepSetupProductsDesc": "Add your first 10 products to begin tracking inventory.",
+      "stepAddCustomer": "Add Customer",
+      "stepAddCustomerDesc": "Import your contact list to manage credit (Dena-Paona).",
+      "stepBankIntegration": "Bank Integration",
+      "stepBankIntegrationDesc": "Connect bKash or Bank for seamless payouts.",
+      "stepInventoryAlert": "Inventory Alert",
+      "stepInventoryAlertDesc": "Set low-stock thresholds for critical items.",
+      "stepAiSync": "AI Assistant Sync",
+      "stepAiSyncDesc": "Enable voice commands for shop management."
     },
     "profile": {
       "descriptionLabel": "Description",
@@ -368,6 +405,23 @@
       "archiveConfirm": "Yes, Archive",
       "deleteConfirm": "Yes, Delete Permanently",
       "cancel": "Cancel"
+    },
+    "ledger": {
+      "title": "Digital Ledger",
+      "subtitle": "Manage your empire from one central command center.",
+      "exportAll": "Export All",
+      "newBusiness": "New Business",
+      "colBusinessIdentity": "Business Identity",
+      "colTodaySales": "Today's Sales",
+      "colTotalDue": "Total Due",
+      "colActions": "Actions",
+      "manage": "Manage",
+      "quickSwitch": "Quick Switch",
+      "archivedSection": "ARCHIVED BUSINESSES",
+      "restore": "Restore",
+      "noData": "No data yet",
+      "paid": "Paid",
+      "customers": "{count} customers"
     }
   },
   "dashboard": {
@@ -420,6 +474,19 @@
       "title": "Due Ledger - Top 3",
       "lastDue": "Last due: {days} days ago",
       "viewAll": "View Full Ledger"
+    },
+    "workspace": {
+      "title": "Workspace",
+      "subtitle": "Manage all your businesses from one place.",
+      "switchWorkspace": "Switch Workspace",
+      "addBusiness": "Add New Business",
+      "aiInsight": "AI Insight",
+      "aiInsightText": "Some of your businesses have incomplete onboarding. Complete now.",
+      "aiInsightTextDetailed": "{incomplete} of your businesses need onboarding completion. {completed} already completed.",
+      "fixNow": "Fix Now",
+      "onboardingStatus": "Onboarding Status",
+      "manageBusiness": "Manage Business",
+      "addNewBusiness": "Add New Business"
     }
   },
   "onboarding": {
@@ -435,7 +502,9 @@
     },
     "businessType": {
       "title": "What type of business do you run?",
-      "subtitle": "Select the category that best describes your shop"
+      "subtitle": "Select the category that best describes your shop",
+      "customTypeLabel": "What type of shop?",
+      "customTypePlaceholder": "e.g. Flower Shop, Cyber Cafe..."
     },
     "businessName": {
       "title": "Name Your Business",

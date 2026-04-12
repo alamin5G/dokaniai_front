@@ -188,3 +188,11 @@ export interface OnboardingStatsResponse {
   completed: number;
   incomplete: number;
 }
+
+/** Response shape for GET /businesses/onboarding/my-status */
+export interface OnboardingMyStatusResponse {
+  hasBusinesses: boolean;
+  hasActiveBusinesses: boolean;
+  hasCompletedOnboarding: boolean;
+  incompleteBusinessId: string | null;
+}

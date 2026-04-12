@@ -9,17 +9,18 @@
 import apiClient from '@/lib/api';
 import type {
   BusinessCreateRequest,
-  BusinessUpdateRequest,
-  BusinessSettingsRequest,
-  BusinessProfileRequest,
-  BusinessLocationRequest,
-  BusinessResponse,
   BusinessListResponse,
-  BusinessStatsResponse,
-  BusinessSettingsResponse,
-  BusinessProfileResponse,
+  BusinessLocationRequest,
   BusinessLocationResponse,
   BusinessOnboardingResponse,
+  BusinessProfileRequest,
+  BusinessProfileResponse,
+  BusinessResponse,
+  BusinessSettingsRequest,
+  BusinessSettingsResponse,
+  BusinessStatsResponse,
+  BusinessUpdateRequest,
+  OnboardingMyStatusResponse,
   OnboardingStatsResponse,
 } from '@/types/business';
 
@@ -205,6 +206,14 @@ export async function listIncompleteOnboarding(
 export async function getOnboardingStats(): Promise<OnboardingStatsResponse> {
   const response = await apiClient.get<ApiSuccess<OnboardingStatsResponse>>(
     '/businesses/onboarding/stats',
+  );
+  return unwrap(response);
+}
+
+/** GET /businesses/onboarding/my-status */
+export async function getMyOnboardingStatus(): Promise<OnboardingMyStatusResponse> {
+  const response = await apiClient.get<ApiSuccess<OnboardingMyStatusResponse>>(
+    '/businesses/onboarding/my-status',
   );
   return unwrap(response);
 }

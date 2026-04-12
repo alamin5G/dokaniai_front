@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+
+<html class="light" lang="bn"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@300;400;500;600;700&amp;family=Manrope:wght@200;300;400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "surface-variant": "#e1e3df",
+                    "primary-container": "#00503a",
+                    "on-secondary-fixed-variant": "#00497d",
+                    "on-error-container": "#93000a",
+                    "error": "#ba1a1a",
+                    "secondary-container": "#77b7ff",
+                    "on-primary-container": "#7fc1a5",
+                    "on-tertiary-fixed": "#390b08",
+                    "surface-container-high": "#e6e9e5",
+                    "error-container": "#ffdad6",
+                    "secondary-fixed": "#d1e4ff",
+                    "primary": "#003727",
+                    "inverse-on-surface": "#eff1ee",
+                    "primary-fixed-dim": "#91d4b7",
+                    "on-secondary": "#ffffff",
+                    "outline-variant": "#bfc9c2",
+                    "surface": "#f8faf6",
+                    "on-secondary-fixed": "#001d36",
+                    "tertiary-fixed-dim": "#ffb4ab",
+                    "on-primary": "#ffffff",
+                    "surface-container-lowest": "#ffffff",
+                    "on-primary-fixed-variant": "#02513b",
+                    "on-error": "#ffffff",
+                    "on-tertiary-fixed-variant": "#70352f",
+                    "primary-fixed": "#adf1d2",
+                    "on-surface-variant": "#404944",
+                    "on-secondary-container": "#00477b",
+                    "secondary": "#0061a4",
+                    "surface-tint": "#276a52",
+                    "secondary-fixed-dim": "#9fcaff",
+                    "tertiary-container": "#6f342e",
+                    "on-tertiary": "#ffffff",
+                    "outline": "#707974",
+                    "inverse-primary": "#91d4b7",
+                    "surface-dim": "#d8dbd7",
+                    "on-primary-fixed": "#002116",
+                    "on-background": "#191c1a",
+                    "inverse-surface": "#2e312f",
+                    "surface-container-low": "#f2f4f0",
+                    "background": "#f8faf6",
+                    "tertiary-fixed": "#ffdad6",
+                    "surface-container-highest": "#e1e3df",
+                    "surface-container": "#ecefeb",
+                    "tertiary": "#531e1a",
+                    "surface-bright": "#f8faf6",
+                    "on-tertiary-container": "#f09e95",
+                    "on-surface": "#191c1a"
+            },
+            "borderRadius": {
+                    "DEFAULT": "1rem",
+                    "lg": "2rem",
+                    "xl": "3rem",
+                    "full": "9999px"
+            },
+            "fontFamily": {
+                    "headline": ["Manrope", "Hind Siliguri"],
+                    "body": ["Manrope", "Hind Siliguri"],
+                    "label": ["Manrope", "Hind Siliguri"]
+            }
+          },
+        }
+      }
+    </script>
+<style>
+        body { font-family: 'Hind Siliguri', 'Manrope', sans-serif; }
+        .glass-nav {
+            background: rgba(242, 244, 240, 0.7);
+            backdrop-filter: blur(20px);
+        }
+        .ledger-gradient {
+            background: linear-gradient(135deg, #003727 0%, #00503a 100%);
+        }
+        .ai-fab-gradient {
+            background: linear-gradient(135deg, #0061a4 0%, #77b7ff 100%);
+        }
+    </style>
+</head>
+<body class="bg-surface text-on-surface antialiased">
+<!-- SideNavBar (Authority Source: JSON) -->
+<aside class="h-screen w-64 fixed left-0 top-0 flex flex-col glass-nav py-6 z-50">
+<div class="px-6 mb-8">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 ledger-gradient rounded-DEFAULT flex items-center justify-center text-white">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">account_balance</span>
+</div>
+<div>
+<h2 class="text-lg font-black text-[#003727] leading-none">My Shop</h2>
+<p class="text-xs text-on-surface-variant">Dhaka Workspace</p>
+</div>
+</div>
+</div>
+<nav class="flex-1 space-y-1">
+<!-- Mapping JSON labels & icons -->
+<a class="flex items-center gap-4 bg-white text-[#00503a] font-semibold rounded-r-full py-3 px-6 shadow-sm transition-all" href="#">
+<span class="material-symbols-outlined" data-icon="dashboard">dashboard</span>
+<span>Dashboard</span>
+</a>
+<a class="flex items-center gap-4 text-[#191c1a] hover:bg-white/50 py-3 px-6 transition-all" href="#">
+<span class="material-symbols-outlined" data-icon="inventory_2">inventory_2</span>
+<span>Inventory</span>
+</a>
+<a class="flex items-center gap-4 text-[#191c1a] hover:bg-white/50 py-3 px-6 transition-all" href="#">
+<span class="material-symbols-outlined" data-icon="payments">payments</span>
+<span>Sales</span>
+</a>
+<a class="flex items-center gap-4 text-[#191c1a] hover:bg-white/50 py-3 px-6 transition-all" href="#">
+<span class="material-symbols-outlined" data-icon="group">group</span>
+<span>Customers</span>
+</a>
+<a class="flex items-center gap-4 text-[#191c1a] hover:bg-white/50 py-3 px-6 transition-all" href="#">
+<span class="material-symbols-outlined" data-icon="analytics">analytics</span>
+<span>Reports</span>
+</a>
+</nav>
+<div class="mt-auto px-4">
+<button class="w-full ai-fab-gradient text-white py-3 px-6 rounded-lg flex items-center justify-center gap-2 font-bold shadow-lg hover:opacity-90 transition-opacity">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">auto_awesome</span>
+<span>Speak to AI</span>
+</button>
+<div class="mt-6 space-y-1">
+<a class="flex items-center gap-4 text-[#191c1a] hover:bg-white/50 py-2 px-6 transition-all text-sm" href="#">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+<span>Settings</span>
+</a>
+<a class="flex items-center gap-4 text-[#191c1a] hover:bg-white/50 py-2 px-6 transition-all text-sm" href="#">
+<span class="material-symbols-outlined" data-icon="contact_support">contact_support</span>
+<span>Support</span>
+</a>
+</div>
+</div>
+</aside>
+<!-- Main Content Canvas -->
+<main class="ml-64 min-h-screen">
+<!-- TopAppBar (Authority Source: JSON) -->
+<header class="w-full top-0 sticky bg-[#f8faf6] flex justify-between items-center px-8 py-4 z-40">
+<div class="flex items-center gap-8">
+<h1 class="text-xl font-bold tracking-tight text-[#00503a]">DokaniAI</h1>
+<div class="relative">
+<div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+<span class="material-symbols-outlined text-outline text-sm">search</span>
+</div>
+<input class="block w-80 bg-surface-container-low border-none rounded-lg pl-10 text-sm focus:ring-2 focus:ring-primary-fixed-dim" placeholder="Search businesses, ledgers, or transactions..." type="text"/>
+</div>
+</div>
+<div class="flex items-center gap-4">
+<button class="p-2 text-on-surface-variant hover:bg-[#f2f4f0] rounded-full transition-colors">
+<span class="material-symbols-outlined">notifications</span>
+</button>
+<button class="p-2 text-on-surface-variant hover:bg-[#f2f4f0] rounded-full transition-colors">
+<span class="material-symbols-outlined">help_outline</span>
+</button>
+<div class="h-10 w-10 rounded-full bg-surface-container overflow-hidden">
+<img alt="Shop Owner Profile" data-alt="Close up portrait of a professional Bengali shop owner smiling confidently in a modern retail setting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuARpqCGYAmiFoLetTPn2vbJOEpqVaYIoZfXwrHajkv7Gi9EFEdmfnUidaHen9poimwKYFU1r2KOydman-m3MW0udARts3d37pT16_8ENDxTnWZbbTciUquEIPaNRUTz91iQnHm2F-yabLCox6CVSfVZ1OGt1YgG2v8HXqA4fVmHxbQA3XMp8myM_Z7FqrHTSOZ_m3S7Fcfv1fA1Wb8pQ6f47qfEw3tbkgnWnaj3QF27O0pGLW86NVHWs3StZZEpL_pL9YB1t04OfAsK"/>
+</div>
+</div>
+</header>
+<!-- Content Body -->
+<div class="p-8 space-y-10">
+<!-- Header Section -->
+<section class="flex justify-between items-end">
+<div>
+<h2 class="text-4xl font-extrabold tracking-tight text-on-surface mb-2">Digital Ledger</h2>
+<p class="text-on-surface-variant font-medium">Manage your empire from one central command center.</p>
+</div>
+<div class="flex gap-3">
+<button class="px-6 py-3 bg-surface-container-high text-primary font-bold rounded-lg hover:bg-surface-variant transition-colors">
+                        Export All
+                    </button>
+<button class="px-6 py-3 ledger-gradient text-white font-bold rounded-lg shadow-md hover:opacity-90 transition-opacity flex items-center gap-2">
+<span class="material-symbols-outlined">add</span>
+                        New Business
+                    </button>
+</div>
+</section>
+<!-- Active Businesses List (The Living Ledger) -->
+<section class="space-y-4">
+<div class="grid grid-cols-12 px-6 text-sm font-bold text-outline uppercase tracking-widest">
+<div class="col-span-5">Business Identity</div>
+<div class="col-span-2 text-right">Today's Sales</div>
+<div class="col-span-2 text-right">Total Due</div>
+<div class="col-span-3 text-right">Actions</div>
+</div>
+<div class="space-y-3">
+<!-- Business Row 1 -->
+<div class="grid grid-cols-12 items-center bg-surface-container-lowest p-6 rounded-DEFAULT shadow-sm hover:translate-x-1 transition-transform cursor-pointer group">
+<div class="col-span-5 flex items-center gap-4">
+<div class="w-14 h-14 rounded-lg overflow-hidden bg-primary-container/10">
+<img class="w-full h-full object-cover" data-alt="High quality close up of colorful spices and lentils in burlap sacks at a traditional grocery store" src="https://lh3.googleusercontent.com/aida-public/AB6AXuA0WF2QIgTh07U7lLtsdH07hDR74qUXQ9wrh7v8N6QYBE1ne_0iD7WTTHvNR7EBk-8M0yqn1CydZUIAf4bkO7uEv-sBYkVqKKT0eEJqHMsZ--FfsUiZ1YwkeguDEyghKKDD43WF6H9bVSxkxXwjiWxWykPZbfdk5OM0NhkR2rtbVn6uut1mUODm4IPQAQPdbAFdocbYZTQM9SIv-qmHf5-9mwN_aEXigTpgUAdZAGUuGIuft9GbSmvfBYkAn5KUsSV-CFpW0bxFOOLl"/>
+</div>
+<div>
+<h3 class="text-lg font-bold text-primary">মায়ের দোয়া জেনারেল স্টোর</h3>
+<p class="text-sm text-on-surface-variant font-medium">Retail • Mirpur-10, Dhaka</p>
+</div>
+</div>
+<div class="col-span-2 text-right">
+<p class="text-xl font-extrabold text-on-surface">৳১২,৪৫০</p>
+<span class="text-xs text-primary font-bold">↑ ১৪%</span>
+</div>
+<div class="col-span-2 text-right">
+<p class="text-xl font-extrabold text-tertiary">৳৪,২০০</p>
+<span class="text-xs text-outline font-medium">৩ জন গ্রাহক</span>
+</div>
+<div class="col-span-3 flex justify-end gap-2">
+<button class="px-4 py-2 bg-secondary/10 text-secondary font-bold rounded-lg hover:bg-secondary/20 transition-colors">Manage</button>
+<button class="px-4 py-2 ledger-gradient text-white font-bold rounded-lg shadow-sm group-hover:scale-105 transition-transform">Quick Switch</button>
+</div>
+</div>
+<!-- Business Row 2 -->
+<div class="grid grid-cols-12 items-center bg-surface-container-lowest p-6 rounded-DEFAULT shadow-sm hover:translate-x-1 transition-transform cursor-pointer group">
+<div class="col-span-5 flex items-center gap-4">
+<div class="w-14 h-14 rounded-lg overflow-hidden bg-primary-container/10">
+<img class="w-full h-full object-cover" data-alt="Interior of a modern boutique clothing store with elegant lighting and organized garment racks" src="https://lh3.googleusercontent.com/aida-public/AB6AXuB4UQqbg4Mmpr3UUNlKTSaNcvVDCLJku5TD_5Sv5xzqhfud-CaBQ_wEvX7NrpDT31h3pOWbM3gcERZzQayphVI2MtEz3XgecoP3AySlIBQczFsOqCAL_6bFqE0Xtd1lg5RWqoMs3eL3XyzBGReFkRYoGrEn0_7KoddQvujYmrg79hBtiWDEmYjey_6sq8pkXCstgZqRDhITDdTCHEliRUP-GemnwQEaQWb_ijhcZmQBDSiJbTNq8Zo_iZ6tDz8k4CBCFQ219RnqWHtN"/>
+</div>
+<div>
+<h3 class="text-lg font-bold text-primary">এলিগেন্ট ফ্যাশন হাউস</h3>
+<p class="text-sm text-on-surface-variant font-medium">Apparel • Banani, Dhaka</p>
+</div>
+</div>
+<div class="col-span-2 text-right">
+<p class="text-xl font-extrabold text-on-surface">৳৪৫,৮০০</p>
+<span class="text-xs text-primary font-bold">↑ ২.৫%</span>
+</div>
+<div class="col-span-2 text-right">
+<p class="text-xl font-extrabold text-on-surface">৳০</p>
+<span class="text-xs text-primary font-bold">পরিশোধিত</span>
+</div>
+<div class="col-span-3 flex justify-end gap-2">
+<button class="px-4 py-2 bg-secondary/10 text-secondary font-bold rounded-lg hover:bg-secondary/20 transition-colors">Manage</button>
+<button class="px-4 py-2 ledger-gradient text-white font-bold rounded-lg shadow-sm group-hover:scale-105 transition-transform">Quick Switch</button>
+</div>
+</div>
+<!-- Business Row 3 -->
+<div class="grid grid-cols-12 items-center bg-surface-container-lowest p-6 rounded-DEFAULT shadow-sm hover:translate-x-1 transition-transform cursor-pointer group">
+<div class="col-span-5 flex items-center gap-4">
+<div class="w-14 h-14 rounded-lg overflow-hidden bg-primary-container/10">
+<img class="w-full h-full object-cover" data-alt="Detail of a digital cash register and payment terminal in a busy bakery with warm lighting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBXnK7ttRMvPCDcndpTOVUg9ue4qMYuXhTwN6tc1mHugCu8Qf_h2CYiSadTKJkIMgRapH4ArTUIrDEb4d_4_UXAaWDnJGA11bNwkoWwOzib6O27YJFYGGFgWKkqeE0ANTdc6PsgTfkZ3Tu9IhlAU_z2wzICLFjQAvaIswC8yHUFHZLr7sex6RooFSbyLdSlXT9lzDEOx6hkEi4IYVxr7TZWsPvKq6vXTptGGx7yao9eIZ24JZjrndxeDETgozImgkYB-W9Db5AJagF3"/>
+</div>
+<div>
+<h3 class="text-lg font-bold text-primary">নিউ ঢাকা রেস্টুরেন্ট</h3>
+<p class="text-sm text-on-surface-variant font-medium">Food &amp; Bev • Dhanmondi</p>
+</div>
+</div>
+<div class="col-span-2 text-right">
+<p class="text-xl font-extrabold text-on-surface">৳৮,৯০০</p>
+<span class="text-xs text-tertiary font-bold">↓ ৩%</span>
+</div>
+<div class="col-span-2 text-right">
+<p class="text-xl font-extrabold text-tertiary">৳১২,৬৫০</p>
+<span class="text-xs text-outline font-medium">১২ জন গ্রাহক</span>
+</div>
+<div class="col-span-3 flex justify-end gap-2">
+<button class="px-4 py-2 bg-secondary/10 text-secondary font-bold rounded-lg hover:bg-secondary/20 transition-colors">Manage</button>
+<button class="px-4 py-2 ledger-gradient text-white font-bold rounded-lg shadow-sm group-hover:scale-105 transition-transform">Quick Switch</button>
+</div>
+</div>
+</div>
+</section>
+<!-- Archived Businesses Section (FR-BUS-03) -->
+<section class="pt-8">
+<div class="flex items-center gap-4 mb-6">
+<div class="h-px flex-1 bg-surface-container-high"></div>
+<h3 class="text-sm font-bold text-outline-variant flex items-center gap-2">
+<span class="material-symbols-outlined text-lg">archive</span>
+                        ARCHIVED BUSINESSES
+                    </h3>
+<div class="h-px flex-1 bg-surface-container-high"></div>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+<div class="bg-surface-container-low p-4 rounded-lg flex items-center justify-between opacity-60 grayscale hover:grayscale-0 hover:opacity-100 transition-all cursor-pointer">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded bg-outline-variant flex items-center justify-center text-white">
+<span class="material-symbols-outlined">storefront</span>
+</div>
+<div>
+<h4 class="font-bold text-on-surface">স্মৃতি ফার্মেসি (পুরানো)</h4>
+<p class="text-xs text-on-surface-variant">Archived on 12 Jan, 2024</p>
+</div>
+</div>
+<button class="text-primary font-bold text-sm">Restore</button>
+</div>
+<div class="bg-surface-container-low p-4 rounded-lg flex items-center justify-between opacity-60 grayscale hover:grayscale-0 hover:opacity-100 transition-all cursor-pointer">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded bg-outline-variant flex items-center justify-center text-white">
+<span class="material-symbols-outlined">hardware</span>
+</div>
+<div>
+<h4 class="font-bold text-on-surface">করিম হার্ডওয়্যার</h4>
+<p class="text-xs text-on-surface-variant">Archived on 05 Nov, 2023</p>
+</div>
+</div>
+<button class="text-primary font-bold text-sm">Restore</button>
+</div>
+</div>
+</section>
+</div>
+<!-- Floating Action Button: AI Assistant -->
+<button class="fixed bottom-8 right-8 w-16 h-16 ai-fab-gradient rounded-xl shadow-2xl flex items-center justify-center text-white z-50 hover:scale-110 active:scale-95 transition-all">
+<span class="material-symbols-outlined text-3xl" style="font-variation-settings: 'FILL' 1;">auto_awesome</span>
+<div class="absolute -top-2 -left-2 bg-tertiary text-white text-[10px] px-2 py-0.5 rounded-full font-bold shadow-sm">AI Active</div>
+</button>
+</main>
+<!-- Visual separation using tonal shift (No borders) -->
+<div class="fixed inset-0 pointer-events-none border-0 ring-0 outline-none"></div>
+</body></html>

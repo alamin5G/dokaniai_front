@@ -1,19 +1,25 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
-import { useRouter } from "next/navigation";
-import { useTranslations } from "next-intl";
-import { useAuthStore } from "@/store/authStore";
-import { useBusinessStore } from "@/store/businessStore";
 import { FormInput, GradientButton } from "@/components/ui/FormPrimitives";
 import * as businessApi from "@/lib/businessApi";
+import { useAuthStore } from "@/store/authStore";
+import { useBusinessStore } from "@/store/businessStore";
 import type { BusinessCreateRequest } from "@/types/business";
+import { useTranslations } from "next-intl";
+import { useRouter } from "next/navigation";
+import { useCallback, useEffect, useState } from "react";
 
 // ---------------------------------------------------------------------------
 // Constants
 // ---------------------------------------------------------------------------
 
 const TOTAL_STEPS = 7;
+
+function isHttpNotFound(error: unknown): boolean {
+    if (!error || typeof error !== "object") return false;
+    const candidate = error as { response?: { status?: number } };
+    return candidate.response?.status === 404;
+}
 
 const BUSINESS_TYPES = [
     { value: "GROCERY", labelKey: "grocery" },
@@ -23,6 +29,14 @@ const BUSINESS_TYPES = [
     { value: "PHARMACY", labelKey: "pharmacy" },
     { value: "STATIONERY", labelKey: "stationery" },
     { value: "HARDWARE", labelKey: "hardware" },
+    { value: "BAKERY", labelKey: "bakery" },
+    { value: "MOBILE_SHOP", labelKey: "mobileShop" },
+    { value: "TAILORING", labelKey: "tailoring" },
+    { value: "SWEETS_SHOP", labelKey: "sweetsShop" },
+    { value: "COSMETICS", labelKey: "cosmetics" },
+    { value: "BOOKSHOP", labelKey: "bookshop" },
+    { value: "JEWELLERY", labelKey: "jewellery" },
+    { value: "PRINTING", labelKey: "printing" },
     { value: "OTHER", labelKey: "other" },
 ] as const;
 
@@ -30,6 +44,8 @@ const CURRENCIES = [
     { value: "BDT", label: "৳ BDT" },
     { value: "USD", label: "$ USD" },
     { value: "INR", label: "₹ INR" },
+    { value: "EUR", label: "€ EUR" },
+    { value: "GBP", label: "£ GBP" },
 ];
 
 // ---------------------------------------------------------------------------
@@ -197,6 +213,9 @@ export default function OnboardingPage() {
         Array<{ name: string; price: string }>
     >([]);
 
+    // Step 2: Custom type (when "OTHER" is selected)
+    const [customType, setCustomType] = useState("");
+
     // Step 5: Due setup
     const [dueEnabled, setDueEnabled] = useState(false);
     const [paymentTerms, setPaymentTerms] = useState("30");
@@ -245,8 +264,11 @@ export default function OnboardingPage() {
                             setCurrentStep(Math.min(onboarding.setupStep + 1, TOTAL_STEPS));
                             setCreatedBusinessId(bid);
                         }
-                    } catch {
-                        // Onboarding endpoint may 404 for brand-new businesses — that's fine
+                    } catch (error) {
+                        if (!isHttpNotFound(error)) {
+                            // Keep expected 404 silent; surface unexpected failures for debugging.
+                            console.error("Failed to resume onboarding state", error);
+                        }
                     }
                 }
             } finally {
@@ -292,10 +314,15 @@ export default function OnboardingPage() {
     // Step 2: Business Type → Select & Next
     const handleTypeSelect = (type: string) => {
         setBusinessData((prev) => ({ ...prev, type }));
+        if (type !== "OTHER") setCustomType("");
     };
 
     const handleTypeNext = () => {
         if (!businessData.type) return;
+        // If "OTHER" selected, use custom type name as the business type
+        if (businessData.type === "OTHER" && customType.trim()) {
+            setBusinessData((prev) => ({ ...prev, type: customType.trim().toUpperCase() }));
+        }
         advanceStep(3);
     };
 
@@ -560,11 +587,24 @@ export default function OnboardingPage() {
                 })}
             </div>
 
+            {/* Custom type input when "OTHER" is selected */}
+            {businessData.type === "OTHER" && (
+                <div className="mt-4">
+                    <FormInput
+                        label={t("businessType.customTypeLabel")}
+                        type="text"
+                        placeholder={t("businessType.customTypePlaceholder")}
+                        value={customType}
+                        onChange={(e) => setCustomType(e.target.value)}
+                    />
+                </div>
+            )}
+
             {renderNavButtons({
                 showBack: true,
                 onBack: () => setCurrentStep(1),
                 onNext: handleTypeNext,
-                nextDisabled: !businessData.type,
+                nextDisabled: !businessData.type || (businessData.type === "OTHER" && !customType.trim()),
                 nextLabel: t("next"),
             })}
         </div>

@@ -20,6 +20,14 @@ const BUSINESS_TYPES = [
     "restaurant",
     "stationery",
     "hardware",
+    "bakery",
+    "mobileShop",
+    "tailoring",
+    "sweetsShop",
+    "cosmetics",
+    "bookshop",
+    "jewellery",
+    "printing",
     "other",
 ] as const;
 
