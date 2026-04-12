@@ -1,86 +1,27 @@
 "use client";
 
+import type { ReactNode } from "react";
+import { useEffect, useState } from "react";
+
 import { FormInput, GradientButton } from "@/components/ui/FormPrimitives";
 import {
+    getBusiness,
     getBusinessLocation,
     getBusinessProfile,
     getBusinessSettings,
     updateBusinessLocation,
+    updateBusinessOperatingHours,
     updateBusinessProfile,
     updateBusinessSettings,
 } from "@/lib/businessApi";
-import { formatCurrencyBDT, formatLocalizedNumber } from "@/lib/localeNumber";
+import { formatLocalizedNumber, sanitizeNumericInput } from "@/lib/localeNumber";
 import { useBusinessStore } from "@/store/businessStore";
 import type { PaymentMethod } from "@/types/business";
 import { useLocale, useTranslations } from "next-intl";
 import { usePathname, useRouter } from "next/navigation";
-import { useCallback, useEffect, useState } from "react";
 
-// ---------------------------------------------------------------------------
-// Inline SVG Icons (HeroIcons style)
-// ---------------------------------------------------------------------------
-
-function IconCheck({ className = "w-5 h-5" }: { className?: string }) {
-    return (
-        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className={className}>
-            <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" />
-        </svg>
-    );
-}
-
-function IconSparkles({ className = "w-5 h-5" }: { className?: string }) {
-    return (
-        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className={className}>
-            <path strokeLinecap="round" strokeLinejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09zM18.259 8.715L18 9.75l-.259-1.035a3.375 3.375 0 00-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 002.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 002.455 2.456L21.75 6l-1.036.259a3.375 3.375 0 00-2.455 2.456zM16.894 20.567L16.5 21.75l-.394-1.183a2.25 2.25 0 00-1.423-1.423L13.5 18.75l1.183-.394a2.25 2.25 0 001.423-1.423l.394-1.183.394 1.183a2.25 2.25 0 001.423 1.423l1.183.394-1.183.394a2.25 2.25 0 00-1.423 1.423z" />
-        </svg>
-    );
-}
-
-function IconShield({ className = "w-5 h-5" }: { className?: string }) {
-    return (
-        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className={className}>
-            <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75m-3-7.036A11.959 11.959 0 013.598 6 11.99 11.99 0 003 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285z" />
-        </svg>
-    );
-}
-
-function IconMoreVert({ className = "w-5 h-5" }: { className?: string }) {
-    return (
-        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className={className}>
-            <path strokeLinecap="round" strokeLinejoin="round" d="M12 6.75a.75.75 0 110-1.5.75.75 0 010 1.5zM12 12.75a.75.75 0 110-1.5.75.75 0 010 1.5zM12 18.75a.75.75 0 110-1.5.75.75 0 010 1.5z" />
-        </svg>
-    );
-}
-
-// ---------------------------------------------------------------------------
-// Types
-// ---------------------------------------------------------------------------
-
-type TabType = "general" | "profile" | "location" | "danger";
-
-// ---------------------------------------------------------------------------
-// Onboarding step definition
-// ---------------------------------------------------------------------------
-
-interface OnboardingStep {
-    step: number;
-    titleKey: Parameters<ReturnType<typeof useTranslations>>[0];
-    descKey: Parameters<ReturnType<typeof useTranslations>>[0];
-}
-
-const ONBOARDING_STEPS: OnboardingStep[] = [
-    { step: 1, titleKey: "welcome.title", descKey: "welcome.subtitle" },
-    { step: 2, titleKey: "businessType.title", descKey: "businessType.subtitle" },
-    { step: 3, titleKey: "businessName.title", descKey: "businessName.subtitle" },
-    { step: 4, titleKey: "addProducts.title", descKey: "addProducts.subtitle" },
-    { step: 5, titleKey: "dueSetup.title", descKey: "dueSetup.subtitle" },
-    { step: 6, titleKey: "tutorial.title", descKey: "tutorial.subtitle" },
-    { step: 7, titleKey: "complete.title", descKey: "complete.subtitle" },
-];
-
-// ---------------------------------------------------------------------------
-// Constants
-// ---------------------------------------------------------------------------
+type TabKey = "general" | "profile" | "location" | "danger";
+type Feedback = { type: "success" | "error"; message: string } | null;
 
 const BUSINESS_TYPES = [
     { value: "GROCERY", labelKey: "grocery" },
@@ -103,10 +44,10 @@ const BUSINESS_TYPES = [
 
 const CURRENCIES = [
     { value: "BDT", label: "৳ BDT" },
-    { value: "INR", label: "₹ INR" },
     { value: "USD", label: "$ USD" },
-    { value: "EUR", label: "€ EUR" },
-    { value: "GBP", label: "£ GBP" },
+    { value: "EUR", label: "EUR" },
+    { value: "GBP", label: "GBP" },
+    { value: "INR", label: "INR" },
 ] as const;
 
 const PAYMENT_CHANNELS: PaymentMethod[] = [
@@ -120,63 +61,254 @@ const PAYMENT_CHANNELS: PaymentMethod[] = [
     "MANUAL",
 ];
 
-const TABS: { key: TabType; labelKey: string }[] = [
-    { key: "general", labelKey: "settings.tabGeneral" },
-    { key: "profile", labelKey: "settings.tabProfile" },
-    { key: "location", labelKey: "settings.tabLocation" },
-    { key: "danger", labelKey: "danger.heading" },
+const COUNTRY_OPTIONS = [
+    { value: "BD", label: "Bangladesh" },
+    { value: "IN", label: "India" },
+    { value: "US", label: "United States" },
+    { value: "GB", label: "United Kingdom" },
+] as const;
+
+const TIMEZONE_OPTIONS = [
+    "Asia/Dhaka",
+    "Asia/Kolkata",
+    "Asia/Dubai",
+    "Asia/Singapore",
+    "UTC",
+] as const;
+
+const DAY_LABELS = {
+    en: ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"],
+    bn: ["রবি", "সোম", "মঙ্গল", "বুধ", "বৃহস্পতি", "শুক্র", "শনি"],
+} as const;
+
+const TAB_ITEMS: { key: TabKey; titleKey: string; descriptionKey: string }[] = [
+    { key: "general", titleKey: "settings.tabGeneral", descriptionKey: "settings.tabGeneralDesc" },
+    { key: "profile", titleKey: "settings.tabProfile", descriptionKey: "settings.tabProfileDesc" },
+    { key: "location", titleKey: "settings.tabLocation", descriptionKey: "settings.tabLocationDesc" },
+    { key: "danger", titleKey: "danger.heading", descriptionKey: "danger.description" },
 ];
 
-// ---------------------------------------------------------------------------
-// Component
-// ---------------------------------------------------------------------------
+function normalizeBusinessTypeValue(value: string | null | undefined): string {
+    if (!value) {
+        return "OTHER";
+    }
+
+    const normalized = value.trim()
+        .replace(/([a-z])([A-Z])/g, "$1_$2")
+        .replace(/[^A-Za-z0-9]+/g, "_")
+        .replace(/_+/g, "_")
+        .replace(/^_|_$/g, "")
+        .toUpperCase();
+
+    return normalized || "OTHER";
+}
+
+function humanizeBusinessType(value: string | null | undefined): string {
+    if (!value) {
+        return "";
+    }
+
+    return value
+        .trim()
+        .replace(/_/g, " ")
+        .toLowerCase()
+        .replace(/\b\w/g, (char) => char.toUpperCase());
+}
+
+function buildInvoicePrefixSuggestion(name: string): string {
+    const letters = name
+        .trim()
+        .split(/\s+/)
+        .map((part) => part.replace(/[^A-Za-z0-9]/g, ""))
+        .filter(Boolean)
+        .slice(0, 3)
+        .map((part) => part.slice(0, 2).toUpperCase())
+        .join("");
+
+    return letters || "INV";
+}
+
+function resolveBusinessTypeState(value: string | null | undefined) {
+    const normalized = normalizeBusinessTypeValue(value);
+    const known = BUSINESS_TYPES.find((item) => item.value === normalized);
+
+    if (known) {
+        return { selectedType: known.value, customType: "" };
+    }
+
+    return {
+        selectedType: "OTHER",
+        customType: humanizeBusinessType(value),
+    };
+}
+
+function SectionCard({
+    title,
+    description,
+    children,
+}: {
+    title: string;
+    description?: string;
+    children: ReactNode;
+}) {
+    return (
+        <section className="rounded-[1.75rem] border border-outline-variant/30 bg-surface p-5 shadow-sm">
+            <div className="mb-5">
+                <h2 className="text-lg font-semibold text-on-surface">{title}</h2>
+                {description ? (
+                    <p className="mt-1 text-sm text-on-surface-variant">{description}</p>
+                ) : null}
+            </div>
+            <div className="space-y-5">{children}</div>
+        </section>
+    );
+}
+
+function SelectField({
+    label,
+    value,
+    onChange,
+    children,
+}: {
+    label: string;
+    value: string;
+    onChange: (value: string) => void;
+    children: ReactNode;
+}) {
+    return (
+        <div className="space-y-2">
+            <label className="block text-sm font-bold text-primary ml-1">{label}</label>
+            <div className="relative">
+                <select
+                    value={value}
+                    onChange={(event) => onChange(event.target.value)}
+                    className="w-full appearance-none rounded-[1rem] bg-surface-container-highest px-5 py-4 text-base text-on-surface outline-none ring-0 transition focus:ring-2 focus:ring-primary-fixed-dim"
+                >
+                    {children}
+                </select>
+                <span className="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 text-on-surface-variant">
+                    ▾
+                </span>
+            </div>
+        </div>
+    );
+}
+
+function TextAreaField({
+    label,
+    value,
+    onChange,
+    placeholder,
+    rows = 4,
+}: {
+    label: string;
+    value: string;
+    onChange: (value: string) => void;
+    placeholder?: string;
+    rows?: number;
+}) {
+    return (
+        <div className="space-y-2">
+            <label className="block text-sm font-bold text-primary ml-1">{label}</label>
+            <textarea
+                value={value}
+                onChange={(event) => onChange(event.target.value)}
+                placeholder={placeholder}
+                rows={rows}
+                className="w-full rounded-[1rem] bg-surface-container-highest px-5 py-4 text-base text-on-surface outline-none transition placeholder:text-outline-variant focus:ring-2 focus:ring-primary-fixed-dim"
+            />
+        </div>
+    );
+}
+
+function ToggleField({
+    label,
+    description,
+    checked,
+    onChange,
+}: {
+    label: string;
+    description?: string;
+    checked: boolean;
+    onChange: (value: boolean) => void;
+}) {
+    return (
+        <button
+            type="button"
+            onClick={() => onChange(!checked)}
+            className="flex w-full items-start justify-between gap-4 rounded-[1rem] border border-outline-variant/30 bg-surface-container-high px-4 py-4 text-left"
+        >
+            <div>
+                <p className="font-semibold text-on-surface">{label}</p>
+                {description ? (
+                    <p className="mt-1 text-sm text-on-surface-variant">{description}</p>
+                ) : null}
+            </div>
+            <span
+                className={`mt-1 inline-flex h-7 w-12 rounded-full p-1 transition ${
+                    checked ? "bg-primary" : "bg-outline-variant"
+                }`}
+            >
+                <span
+                    className={`h-5 w-5 rounded-full bg-white transition ${
+                        checked ? "translate-x-5" : "translate-x-0"
+                    }`}
+                />
+            </span>
+        </button>
+    );
+}
 
 export default function BusinessSettingsPage() {
     const locale = useLocale();
     const t = useTranslations("business");
-    const to = useTranslations("onboarding");
+    const onboardingChannelT = useTranslations("onboarding.dueSetup.channel");
     const router = useRouter();
     const pathname = usePathname();
+
     const {
         activeBusinessId,
         activeBusiness,
+        setActiveBusiness,
         updateBusiness,
         archiveBusiness,
-        deleteBusiness,
-        loadOnboarding,
-        onboardingData,
-        stats,
-        loadStats,
     } = useBusinessStore();
 
-    // ---- Tab state ----
-    const [activeTab, setActiveTab] = useState<TabType>("general");
+    const routeBusinessId = pathname.startsWith("/shop/") ? pathname.split("/")[2] ?? null : null;
+    const businessId = routeBusinessId ?? activeBusinessId;
+    const weekdayLabels = locale.startsWith("bn") ? DAY_LABELS.bn : DAY_LABELS.en;
 
-    // ---- Feedback state ----
-    const [feedback, setFeedback] = useState<{
-        type: "success" | "error";
-        message: string;
-    } | null>(null);
+    const [pageLoading, setPageLoading] = useState(true);
+    const [activeTab, setActiveTab] = useState<TabKey>("general");
+    const [feedback, setFeedback] = useState<Feedback>(null);
 
-    // ---- General tab state ----
     const [generalForm, setGeneralForm] = useState({
         name: "",
-        type: "",
+        selectedType: "OTHER",
+        customType: "",
         description: "",
     });
-    const [currency, setCurrency] = useState("BDT");
-    const [taxEnabled, setTaxEnabled] = useState(false);
-    const [taxRate, setTaxRate] = useState("");
-    const [taxNumber, setTaxNumber] = useState("");
-    const [paymentChannel, setPaymentChannel] = useState<PaymentMethod>("CASH");
-    const [paymentReceiverNumber, setPaymentReceiverNumber] = useState("");
-    const [aiAssistantEnabled, setAiAssistantEnabled] = useState(true);
-    const [generalLoading, setGeneralLoading] = useState(false);
-    const [settingsLoaded, setSettingsLoaded] = useState(false);
-
-    // ---- Profile tab state ----
+    const [settingsForm, setSettingsForm] = useState({
+        currency: "BDT",
+        taxEnabled: false,
+        taxRate: "",
+        taxNumber: "",
+        paymentChannel: "CASH" as PaymentMethod,
+        paymentReceiverNumber: "",
+        aiAssistantEnabled: true,
+        invoicePrefix: "INV",
+        invoiceNotes: "",
+        receiptFooter: "",
+        lowStockThreshold: "10",
+        lowStockAlertEnabled: true,
+    });
+    const [hoursForm, setHoursForm] = useState({
+        is24Hours: true,
+        operatingHoursStart: "",
+        operatingHoursEnd: "",
+        operatingDays: [0, 1, 2, 3, 4, 5, 6] as number[],
+    });
     const [profileForm, setProfileForm] = useState({
-        description: "",
         logoUrl: "",
         coverImageUrl: "",
         contactPerson: "",
@@ -186,978 +318,1074 @@ export default function BusinessSettingsPage() {
         website: "",
         facebookPage: "",
     });
-    const [profileLoading, setProfileLoading] = useState(false);
-    const [profileLoaded, setProfileLoaded] = useState(false);
-
-    // ---- Location tab state ----
     const [locationForm, setLocationForm] = useState({
         address: "",
         city: "",
         district: "",
         postalCode: "",
-        country: "Bangladesh",
+        country: "BD",
+        latitude: "",
+        longitude: "",
+        timezone: "Asia/Dhaka",
     });
-    const [locationLoading, setLocationLoading] = useState(false);
-    const [locationLoaded, setLocationLoaded] = useState(false);
 
-    // ---- Danger zone state ----
-    const [confirmDialog, setConfirmDialog] = useState<
-        "archive" | "delete" | null
-    >(null);
-    const [confirmText, setConfirmText] = useState("");
-    const [dangerLoading, setDangerLoading] = useState(false);
+    const [generalSaving, setGeneralSaving] = useState(false);
+    const [profileSaving, setProfileSaving] = useState(false);
+    const [locationSaving, setLocationSaving] = useState(false);
+    const [dangerSaving, setDangerSaving] = useState(false);
+    const [archiveName, setArchiveName] = useState("");
 
-    // ---------------------------------------------------------------------------
-    // Effects — Initialize forms & load data on tab change
-    // ---------------------------------------------------------------------------
-
-    // Populate general form from activeBusiness
-    useEffect(() => {
-        if (activeBusiness) {
-            setGeneralForm({
-                name: activeBusiness.name || "",
-                type: activeBusiness.type || "",
-                description: "",
-            });
-        }
-    }, [activeBusiness]);
-
-    // Load onboarding data
-    useEffect(() => {
-        if (activeBusinessId) {
-            loadOnboarding(activeBusinessId);
-            loadStats(activeBusinessId);
-        }
-    }, [activeBusinessId, loadOnboarding, loadStats]);
+    const showFeedback = (type: "success" | "error", message: string) => {
+        setFeedback({ type, message });
+        window.setTimeout(() => {
+            setFeedback((current) => (current?.message === message ? null : current));
+        }, 4000);
+    };
 
     useEffect(() => {
         if (pathname === "/dashboard/settings" && activeBusinessId) {
             router.replace(`/shop/${activeBusinessId}/settings`);
         }
-    }, [pathname, activeBusinessId, router]);
+    }, [activeBusinessId, pathname, router]);
 
-    // Load settings (for currency) when General tab is active
     useEffect(() => {
-        if (activeBusinessId && activeTab === "general" && !settingsLoaded) {
-            getBusinessSettings(activeBusinessId)
-                .then((settings) => {
-                    setCurrency(settings.currency || "BDT");
-                    setTaxEnabled(Boolean(settings.taxEnabled));
-                    setTaxRate(settings.taxRate != null ? String(settings.taxRate) : "");
-                    setTaxNumber(settings.taxNumber || "");
-                    setPaymentChannel(settings.paymentChannel || "CASH");
-                    setPaymentReceiverNumber(settings.paymentReceiverNumber || "");
-                    setAiAssistantEnabled(settings.aiAssistantEnabled !== false);
-                    setSettingsLoaded(true);
-                })
-                .catch(() => {
-                    /* silently fail — currency defaults to BDT */
-                });
-        }
-    }, [activeBusinessId, activeTab, settingsLoaded]);
-
-    // Load profile data when Profile tab is first visited
-    useEffect(() => {
-        if (activeBusinessId && activeTab === "profile" && !profileLoaded) {
-            getBusinessProfile(activeBusinessId)
-                .then((profile) => {
-                    setProfileForm({
-                        description: profile.description || "",
-                        logoUrl: profile.logoUrl || "",
-                        coverImageUrl: profile.coverImageUrl || "",
-                        contactPerson: profile.contactPerson || "",
-                        phone: profile.phone || "",
-                        whatsappNumber: profile.whatsappNumber || "",
-                        email: profile.email || "",
-                        website: profile.website || "",
-                        facebookPage: profile.facebookPage || "",
-                    });
-                    setGeneralForm((prev) => ({
-                        ...prev,
-                        description: profile.description || prev.description,
-                    }));
-                    setProfileLoaded(true);
-                })
-                .catch(() => {
-                    /* silently fail */
-                });
-        }
-    }, [activeBusinessId, activeTab, profileLoaded]);
-
-    // Load location data when Location tab is first visited
-    useEffect(() => {
-        if (activeBusinessId && activeTab === "location" && !locationLoaded) {
-            getBusinessLocation(activeBusinessId)
-                .then((location) => {
-                    setLocationForm({
-                        address: location.address || "",
-                        city: location.city || "",
-                        district: location.district || "",
-                        postalCode: location.postalCode || "",
-                        country: location.country || "Bangladesh",
-                    });
-                    setLocationLoaded(true);
-                })
-                .catch(() => {
-                    /* silently fail */
-                });
-        }
-    }, [activeBusinessId, activeTab, locationLoaded]);
-
-    // ---------------------------------------------------------------------------
-    // Helpers
-    // ---------------------------------------------------------------------------
-
-    const showFeedback = useCallback(
-        (type: "success" | "error", message: string) => {
-            setFeedback({ type, message });
-            setTimeout(() => setFeedback(null), 4000);
-        },
-        [],
-    );
-
-    // Calculate onboarding percentage from step data
-    const currentStep = onboardingData?.setupStep ?? 0;
-    const totalSteps = ONBOARDING_STEPS.length;
-    const onboardingPercent = onboardingData?.onboardingCompleted
-        ? 100
-        : Math.round((currentStep / totalSteps) * 100);
-
-    // ---------------------------------------------------------------------------
-    // Save handlers
-    // ---------------------------------------------------------------------------
-
-    /** General tab: update business name/type/description + currency via settings */
-    const handleSaveGeneral = async () => {
-        if (!activeBusinessId) return;
-        const parsedTaxRate = taxRate.trim() ? Number(taxRate) : undefined;
-        if (taxEnabled && taxRate.trim() && (parsedTaxRate == null || Number.isNaN(parsedTaxRate))) {
-            showFeedback("error", t("settings.errorSave"));
+        if (!businessId) {
+            setPageLoading(false);
             return;
         }
-        setGeneralLoading(true);
+
+        let cancelled = false;
+
+        const loadPage = async () => {
+            setPageLoading(true);
+
+            try {
+                const [business, settings, profile, location] = await Promise.all([
+                    getBusiness(businessId),
+                    getBusinessSettings(businessId),
+                    getBusinessProfile(businessId),
+                    getBusinessLocation(businessId),
+                ]);
+
+                if (cancelled) {
+                    return;
+                }
+
+                setActiveBusiness(business);
+
+                const typeState = resolveBusinessTypeState(business.type);
+                setGeneralForm({
+                    name: business.name ?? "",
+                    selectedType: typeState.selectedType,
+                    customType: typeState.customType,
+                    description: profile.description ?? "",
+                });
+
+                setSettingsForm({
+                    currency: settings.currency ?? "BDT",
+                    taxEnabled: Boolean(settings.taxEnabled),
+                    taxRate: settings.taxRate != null ? String(settings.taxRate) : "",
+                    taxNumber: settings.taxNumber ?? "",
+                    paymentChannel: settings.paymentChannel ?? "CASH",
+                    paymentReceiverNumber: settings.paymentReceiverNumber ?? "",
+                    aiAssistantEnabled: settings.aiAssistantEnabled !== false,
+                    invoicePrefix: settings.invoicePrefix ?? "INV",
+                    invoiceNotes: settings.invoiceNotes ?? "",
+                    receiptFooter: settings.receiptFooter ?? "",
+                    lowStockThreshold:
+                        settings.lowStockThreshold != null
+                            ? String(settings.lowStockThreshold)
+                            : "10",
+                    lowStockAlertEnabled: settings.lowStockAlertEnabled !== false,
+                });
+
+                setHoursForm({
+                    is24Hours: settings.is24Hours !== false,
+                    operatingHoursStart: settings.operatingHoursStart ?? "",
+                    operatingHoursEnd: settings.operatingHoursEnd ?? "",
+                    operatingDays: settings.operatingDays?.length
+                        ? [...settings.operatingDays].sort((a, b) => a - b)
+                        : [0, 1, 2, 3, 4, 5, 6],
+                });
+
+                setProfileForm({
+                    logoUrl: profile.logoUrl ?? "",
+                    coverImageUrl: profile.coverImageUrl ?? "",
+                    contactPerson: profile.contactPerson ?? "",
+                    phone: profile.phone ?? "",
+                    whatsappNumber: profile.whatsappNumber ?? "",
+                    email: profile.email ?? "",
+                    website: profile.website ?? "",
+                    facebookPage: profile.facebookPage ?? "",
+                });
+
+                setLocationForm({
+                    address: location.address ?? "",
+                    city: location.city ?? "",
+                    district: location.district ?? "",
+                    postalCode: location.postalCode ?? "",
+                    country: location.country ?? "BD",
+                    latitude: location.latitude != null ? String(location.latitude) : "",
+                    longitude: location.longitude != null ? String(location.longitude) : "",
+                    timezone: location.timezone ?? "Asia/Dhaka",
+                });
+
+                setArchiveName("");
+            } catch {
+                if (!cancelled) {
+                    showFeedback("error", t("settings.loadError"));
+                }
+            } finally {
+                if (!cancelled) {
+                    setPageLoading(false);
+                }
+            }
+        };
+
+        void loadPage();
+
+        return () => {
+            cancelled = true;
+        };
+    }, [businessId, setActiveBusiness, t]);
+
+    const businessTypeLabel =
+        generalForm.selectedType === "OTHER" && generalForm.customType.trim()
+            ? generalForm.customType.trim()
+            : t(`types.${BUSINESS_TYPES.find((item) => item.value === generalForm.selectedType)?.labelKey ?? "other"}`);
+
+    const statusLabel =
+        activeBusiness?.status === "ARCHIVED" ? t("list.archivedLabel") : t("list.active");
+    const invoicePrefixSuggestion = buildInvoicePrefixSuggestion(activeBusiness.name);
+
+    const handleDayToggle = (day: number) => {
+        setHoursForm((current) => {
+            const nextDays = current.operatingDays.includes(day)
+                ? current.operatingDays.filter((item) => item !== day)
+                : [...current.operatingDays, day].sort((a, b) => a - b);
+
+            return {
+                ...current,
+                operatingDays: nextDays,
+            };
+        });
+    };
+
+    const handleSaveGeneral = async () => {
+        if (!businessId) {
+            return;
+        }
+
+        const trimmedName = generalForm.name.trim();
+        const typeValue =
+            generalForm.selectedType === "OTHER"
+                ? generalForm.customType.trim()
+                : generalForm.selectedType;
+
+        if (!trimmedName) {
+            showFeedback("error", t("form.errorNameRequired"));
+            return;
+        }
+
+        if (!typeValue) {
+            showFeedback("error", t("form.errorTypeRequired"));
+            return;
+        }
+
+        if (!hoursForm.is24Hours) {
+            if (!hoursForm.operatingHoursStart || !hoursForm.operatingHoursEnd) {
+                showFeedback("error", t("settings.invalidHours"));
+                return;
+            }
+
+            if (hoursForm.operatingDays.length === 0) {
+                showFeedback("error", t("settings.invalidOperatingDays"));
+                return;
+            }
+        }
+
+        const parsedTaxRate = settingsForm.taxRate.trim()
+            ? Number(settingsForm.taxRate)
+            : undefined;
+        const parsedLowStockThreshold = settingsForm.lowStockThreshold.trim()
+            ? Number(settingsForm.lowStockThreshold)
+            : undefined;
+
+        if (
+            settingsForm.taxRate.trim() &&
+            (parsedTaxRate == null || Number.isNaN(parsedTaxRate))
+        ) {
+            showFeedback("error", t("settings.invalidTaxRate"));
+            return;
+        }
+
+        if (
+            settingsForm.lowStockThreshold.trim() &&
+            (parsedLowStockThreshold == null || Number.isNaN(parsedLowStockThreshold))
+        ) {
+            showFeedback("error", t("settings.invalidLowStockThreshold"));
+            return;
+        }
+
+        setGeneralSaving(true);
+
         try {
-            await updateBusiness(activeBusinessId, {
-                name: generalForm.name,
-                type: generalForm.type,
-                description: generalForm.description || undefined,
+            await updateBusiness(businessId, {
+                name: trimmedName,
+                type: typeValue,
+                description: generalForm.description.trim() || undefined,
             });
-            await updateBusinessSettings(activeBusinessId, {
-                currency,
-                taxEnabled,
-                taxRate: taxEnabled ? parsedTaxRate : undefined,
-                taxNumber: taxEnabled ? (taxNumber || undefined) : undefined,
-                paymentChannel,
-                paymentReceiverNumber: paymentReceiverNumber || undefined,
-                aiAssistantEnabled,
-            });
-            await updateBusinessProfile(activeBusinessId, {
-                description: generalForm.description || undefined,
-                whatsappNumber: paymentReceiverNumber || undefined,
-            });
+
+            await Promise.all([
+                updateBusinessSettings(businessId, {
+                    currency: settingsForm.currency,
+                    taxEnabled: settingsForm.taxEnabled,
+                    taxRate: settingsForm.taxEnabled ? parsedTaxRate : undefined,
+                    taxNumber: settingsForm.taxEnabled
+                        ? settingsForm.taxNumber.trim() || undefined
+                        : undefined,
+                    paymentChannel: settingsForm.paymentChannel,
+                    paymentReceiverNumber:
+                        settingsForm.paymentReceiverNumber.trim() || undefined,
+                    aiAssistantEnabled: settingsForm.aiAssistantEnabled,
+                    invoicePrefix: settingsForm.invoicePrefix.trim() || undefined,
+                    invoiceNotes: settingsForm.invoiceNotes.trim() || undefined,
+                    receiptFooter: settingsForm.receiptFooter.trim() || undefined,
+                    lowStockThreshold: parsedLowStockThreshold,
+                    lowStockAlertEnabled: settingsForm.lowStockAlertEnabled,
+                }),
+                updateBusinessOperatingHours(businessId, {
+                    is24Hours: hoursForm.is24Hours,
+                    operatingHoursStart: hoursForm.is24Hours
+                        ? undefined
+                        : hoursForm.operatingHoursStart,
+                    operatingHoursEnd: hoursForm.is24Hours
+                        ? undefined
+                        : hoursForm.operatingHoursEnd,
+                    operatingDays: hoursForm.is24Hours
+                        ? [0, 1, 2, 3, 4, 5, 6]
+                        : hoursForm.operatingDays,
+                }),
+                updateBusinessProfile(businessId, {
+                    description: generalForm.description.trim() || undefined,
+                }),
+            ]);
+
+            const refreshedBusiness = await getBusiness(businessId);
+            setActiveBusiness(refreshedBusiness);
+
+            const typeState = resolveBusinessTypeState(refreshedBusiness.type);
+            setGeneralForm((current) => ({
+                ...current,
+                name: refreshedBusiness.name ?? current.name,
+                selectedType: typeState.selectedType,
+                customType: typeState.customType,
+            }));
+
             showFeedback("success", t("settings.successSave"));
         } catch {
             showFeedback("error", t("settings.errorSave"));
         } finally {
-            setGeneralLoading(false);
+            setGeneralSaving(false);
         }
     };
 
-    /** Profile tab */
     const handleSaveProfile = async () => {
-        if (!activeBusinessId) return;
-        setProfileLoading(true);
+        if (!businessId) {
+            return;
+        }
+
+        setProfileSaving(true);
+
         try {
-            await updateBusinessProfile(activeBusinessId, {
-                description: profileForm.description || undefined,
-                logoUrl: profileForm.logoUrl || undefined,
-                coverImageUrl: profileForm.coverImageUrl || undefined,
-                contactPerson: profileForm.contactPerson || undefined,
-                phone: profileForm.phone || undefined,
-                whatsappNumber: profileForm.whatsappNumber || undefined,
-                email: profileForm.email || undefined,
-                website: profileForm.website || undefined,
-                facebookPage: profileForm.facebookPage || undefined,
+            await updateBusinessProfile(businessId, {
+                logoUrl: profileForm.logoUrl.trim() || undefined,
+                coverImageUrl: profileForm.coverImageUrl.trim() || undefined,
+                contactPerson: profileForm.contactPerson.trim() || undefined,
+                phone: profileForm.phone.trim() || undefined,
+                whatsappNumber: profileForm.whatsappNumber.trim() || undefined,
+                email: profileForm.email.trim() || undefined,
+                website: profileForm.website.trim() || undefined,
+                facebookPage: profileForm.facebookPage.trim() || undefined,
             });
             showFeedback("success", t("profile.successSave"));
         } catch {
             showFeedback("error", t("profile.errorSave"));
         } finally {
-            setProfileLoading(false);
+            setProfileSaving(false);
         }
     };
 
-    /** Location tab */
     const handleSaveLocation = async () => {
-        if (!activeBusinessId) return;
-        setLocationLoading(true);
+        if (!businessId) {
+            return;
+        }
+
+        const parsedLatitude = locationForm.latitude.trim()
+            ? Number(locationForm.latitude)
+            : undefined;
+        const parsedLongitude = locationForm.longitude.trim()
+            ? Number(locationForm.longitude)
+            : undefined;
+
+        if (
+            locationForm.latitude.trim() &&
+            (parsedLatitude == null || Number.isNaN(parsedLatitude))
+        ) {
+            showFeedback("error", t("location.invalidLatitude"));
+            return;
+        }
+
+        if (
+            locationForm.longitude.trim() &&
+            (parsedLongitude == null || Number.isNaN(parsedLongitude))
+        ) {
+            showFeedback("error", t("location.invalidLongitude"));
+            return;
+        }
+
+        setLocationSaving(true);
+
         try {
-            await updateBusinessLocation(activeBusinessId, {
-                address: locationForm.address || undefined,
-                city: locationForm.city || undefined,
-                district: locationForm.district || undefined,
-                postalCode: locationForm.postalCode || undefined,
-                country: locationForm.country || undefined,
+            await updateBusinessLocation(businessId, {
+                address: locationForm.address.trim() || undefined,
+                city: locationForm.city.trim() || undefined,
+                district: locationForm.district.trim() || undefined,
+                postalCode: locationForm.postalCode.trim() || undefined,
+                country: locationForm.country,
+                latitude: parsedLatitude,
+                longitude: parsedLongitude,
+                timezone: locationForm.timezone,
             });
             showFeedback("success", t("location.successSave"));
         } catch {
             showFeedback("error", t("location.errorSave"));
         } finally {
-            setLocationLoading(false);
+            setLocationSaving(false);
         }
     };
 
-    /** Archive business */
     const handleArchive = async () => {
-        if (!activeBusinessId) return;
-        setDangerLoading(true);
+        if (!businessId || !activeBusiness) {
+            return;
+        }
+
+        if (archiveName.trim() !== activeBusiness.name) {
+            showFeedback("error", t("danger.nameMismatch"));
+            return;
+        }
+
+        setDangerSaving(true);
+
         try {
-            await archiveBusiness(activeBusinessId);
+            await archiveBusiness(businessId);
             router.push("/businesses");
         } catch {
-            showFeedback("error", t("settings.errorSave"));
-            setDangerLoading(false);
+            showFeedback("error", t("list.errorArchive"));
+            setDangerSaving(false);
         }
     };
 
-    /** Delete business */
-    const handleDelete = async () => {
-        if (!activeBusinessId) return;
-        setDangerLoading(true);
-        try {
-            await deleteBusiness(activeBusinessId);
-            router.push("/businesses");
-        } catch {
-            showFeedback("error", t("settings.errorSave"));
-            setDangerLoading(false);
-        }
-    };
-
-    // ---------------------------------------------------------------------------
-    // Guard — no active business
-    // ---------------------------------------------------------------------------
-
-    if (!activeBusinessId || !activeBusiness) {
+    if (pageLoading) {
         return (
-            <div className="flex items-center justify-center min-h-[60vh]">
-                <p className="text-on-surface-variant text-lg">
-                    {t("settings.heading")}
-                </p>
+            <div className="flex min-h-[55vh] items-center justify-center">
+                <p className="text-lg text-on-surface-variant">{t("settings.heading")}...</p>
             </div>
         );
     }
 
-    // ---------------------------------------------------------------------------
-    // Render helpers
-    // ---------------------------------------------------------------------------
-
-    /** Styled select wrapper — no native appearance */
-    const StyledSelect = ({
-        value,
-        onChange,
-        label,
-        children,
-    }: {
-        value: string;
-        onChange: (v: string) => void;
-        label: string;
-        children: React.ReactNode;
-    }) => (
-        <div className="space-y-2">
-            <label className="block text-sm font-bold text-primary ml-1">
-                {label}
-            </label>
-            <div className="relative">
-                <select
-                    value={value}
-                    onChange={(e) => onChange(e.target.value)}
-                    className="w-full appearance-none pl-6 pr-12 py-4 bg-surface-container-highest rounded-[1rem] text-lg text-on-surface transition-all focus:ring-2 focus:ring-primary-fixed-dim cursor-pointer"
-                >
-                    {children}
-                </select>
-                <span className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-on-surface-variant">
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-5 h-5">
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
-                    </svg>
-                </span>
+    if (!businessId || !activeBusiness) {
+        return (
+            <div className="flex min-h-[55vh] items-center justify-center">
+                <div className="max-w-md rounded-[1.75rem] border border-outline-variant/30 bg-surface p-8 text-center">
+                    <h1 className="text-2xl font-semibold text-on-surface">{t("settings.heading")}</h1>
+                    <p className="mt-3 text-on-surface-variant">{t("settings.noBusinessSelected")}</p>
+                </div>
             </div>
-        </div>
-    );
-
-    /** Styled textarea */
-    const StyledTextarea = ({
-        value,
-        onChange,
-        label,
-        placeholder,
-        rows = 4,
-    }: {
-        value: string;
-        onChange: (v: string) => void;
-        label: string;
-        placeholder?: string;
-        rows?: number;
-    }) => (
-        <div className="space-y-2">
-            <label className="block text-sm font-bold text-primary ml-1">
-                {label}
-            </label>
-            <textarea
-                value={value}
-                onChange={(e) => onChange(e.target.value)}
-                placeholder={placeholder}
-                rows={rows}
-                className="w-full pl-6 pr-6 py-4 bg-surface-container-highest rounded-[1rem] text-lg text-on-surface transition-all placeholder:text-outline-variant focus:ring-2 focus:ring-primary-fixed-dim resize-y"
-            />
-        </div>
-    );
-
-    // ---------------------------------------------------------------------------
-    // Render
-    // ---------------------------------------------------------------------------
+        );
+    }
 
     return (
         <div className="space-y-6">
-            {/* ---- Editorial Header ---- */}
-            <section className="mb-8">
-                <span className="text-secondary font-semibold tracking-widest uppercase text-xs mb-2 block">
+            <section className="overflow-hidden rounded-[2rem] bg-[linear-gradient(135deg,#003727_0%,#00503a_55%,#17734d_100%)] p-6 text-white shadow-lg">
+                <p className="text-xs font-semibold uppercase tracking-[0.35em] text-white/70">
                     {t("settings.heading")}
-                </span>
-                <h1 className="text-4xl md:text-5xl font-extrabold text-primary mb-2 leading-tight">
-                    {activeBusiness.name}
-                </h1>
-                <p className="text-lg text-on-surface-variant max-w-2xl">
-                    Manage your business identity, tax profiles, and follow the growth ledger to unlock AI insights.
                 </p>
+                <div className="mt-3 flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
+                    <div>
+                        <h1 className="text-3xl font-semibold tracking-tight">{activeBusiness.name}</h1>
+                    </div>
+                    <div className="flex flex-wrap gap-2">
+                        <span className="rounded-full bg-white/14 px-4 py-2 text-sm">
+                            {businessTypeLabel}
+                        </span>
+                        <span className="rounded-full bg-white/14 px-4 py-2 text-sm">
+                            {statusLabel}
+                        </span>
+                        <span className="rounded-full bg-white/14 px-4 py-2 text-sm">
+                            /{activeBusiness.slug}
+                        </span>
+                    </div>
+                </div>
+                <div className="mt-5 grid gap-3 md:grid-cols-3">
+                    <div className="rounded-[1.25rem] bg-white/10 p-4">
+                        <p className="text-xs uppercase tracking-[0.24em] text-white/60">
+                            {t("settings.summaryBusinessType")}
+                        </p>
+                        <p className="mt-2 text-xl font-semibold">{businessTypeLabel}</p>
+                    </div>
+                    <div className="rounded-[1.25rem] bg-white/10 p-4">
+                        <p className="text-xs uppercase tracking-[0.24em] text-white/60">
+                            {t("settings.summaryCurrency")}
+                        </p>
+                        <p className="mt-2 text-xl font-semibold">{settingsForm.currency}</p>
+                    </div>
+                    <div className="rounded-[1.25rem] bg-white/10 p-4">
+                        <p className="text-xs uppercase tracking-[0.24em] text-white/60">
+                            {t("settings.summarySchedule")}
+                        </p>
+                        <p className="mt-2 text-xl font-semibold">
+                            {hoursForm.is24Hours
+                                ? t("settings.alwaysOpen")
+                                : `${hoursForm.operatingHoursStart || "--:--"} - ${hoursForm.operatingHoursEnd || "--:--"}`}
+                        </p>
+                    </div>
+                </div>
             </section>
 
-            {/* ---- Feedback banner ---- */}
-            {feedback && (
-                <div
-                    className={`rounded-xl px-5 py-3 text-sm font-semibold transition-all ${feedback.type === "success"
-                        ? "bg-primary-fixed text-on-primary-fixed"
-                        : "bg-error/10 text-error"
-                        }`}
-                >
-                    {feedback.message}
-                </div>
-            )}
-
-            {/* ---- Asymmetric Grid ---- */}
-            <div className="grid grid-cols-1 lg:grid-cols-[1.2fr_0.8fr] gap-8">
-                {/* ============================================================ */}
-                {/* LEFT: Settings Tabs + Onboarding */}
-                {/* ============================================================ */}
-                <div className="space-y-8">
-                    {/* ---- Onboarding Progress ---- */}
-                    <div className="bg-surface-container-low p-8 md:p-10 rounded-lg">
-                        <div className="flex justify-between items-end mb-8">
-                            <div>
-                                <h2 className="text-2xl font-bold text-primary mb-1">
-                                    {t("settings.onboardingProgress")}
-                                </h2>
-                                <p className="text-on-surface-variant">
-                                    {t("settings.onboardingSubtitle")}
-                                </p>
-                            </div>
-                            <div className="text-right">
-                                <span className="text-4xl font-black text-secondary">
-                                    {onboardingPercent}%
-                                </span>
-                                <p className="text-xs font-bold uppercase tracking-tighter text-outline">
-                                    {t("settings.completeLabel")}
-                                </p>
-                            </div>
-                        </div>
-
-                        {/* Step Checklist */}
-                        <div className="space-y-4">
-                            {ONBOARDING_STEPS.map((stepDef) => {
-                                const isComplete = stepDef.step < currentStep || onboardingData?.onboardingCompleted;
-                                const isCurrent = stepDef.step === currentStep && !onboardingData?.onboardingCompleted;
-                                const isPending = stepDef.step > currentStep && !onboardingData?.onboardingCompleted;
-
-                                return (
-                                    <div key={stepDef.step} className="flex items-start gap-4 group">
-                                        {/* Step indicator */}
-                                        {isComplete ? (
-                                            <div className="w-10 h-10 rounded-full bg-primary flex items-center justify-center text-white shrink-0 mt-1">
-                                                <IconCheck className="w-5 h-5" />
-                                            </div>
-                                        ) : isCurrent ? (
-                                            <div className="w-10 h-10 rounded-full bg-secondary text-white flex items-center justify-center shrink-0 mt-1 shadow-lg shadow-secondary/20">
-                                                <span className="text-sm font-bold">{String(stepDef.step).padStart(2, "0")}</span>
-                                            </div>
-                                        ) : (
-                                            <div className="w-10 h-10 rounded-full bg-surface-container-highest text-outline flex items-center justify-center shrink-0 mt-1">
-                                                <span className="text-sm font-bold">{String(stepDef.step).padStart(2, "0")}</span>
-                                            </div>
-                                        )}
-
-                                        {/* Step content */}
-                                        <div className={`pb-4 w-full ${stepDef.step < ONBOARDING_STEPS.length ? "border-b border-outline-variant/15" : ""} ${isPending ? "opacity-60" : ""}`}>
-                                            <div className="flex justify-between items-center mb-1">
-                                                <h3 className={`text-lg font-bold leading-none mb-1 ${isComplete ? "text-primary" : "text-on-surface"}`}>
-                                                    {to(stepDef.titleKey)}
-                                                </h3>
-                                                {isCurrent && (
-                                                    <button className="text-sm font-bold text-secondary bg-secondary-fixed px-4 py-1 rounded-full">
-                                                        {t("settings.continueStep")}
-                                                    </button>
-                                                )}
-                                            </div>
-                                            <p className="text-on-surface-variant text-sm">
-                                                {to(stepDef.descKey)}
-                                            </p>
-                                        </div>
-                                    </div>
-                                );
-                            })}
-                        </div>
-                    </div>
-
-                    {/* ---- Settings Tabs ---- */}
-                    <div>
-                        {/* Tab bar */}
-                        <div className="bg-surface-container-low rounded-xl p-1.5 flex gap-1 overflow-x-auto mb-6">
-                            {TABS.map((tab) => (
-                                <button
-                                    key={tab.key}
-                                    onClick={() => setActiveTab(tab.key)}
-                                    className={`px-4 py-2.5 rounded-lg text-sm font-semibold whitespace-nowrap transition-all ${activeTab === tab.key
-                                        ? "bg-surface-container-lowest text-primary shadow-sm"
-                                        : "text-on-surface-variant hover:text-on-surface"
-                                        }`}
+            <div className="grid gap-6 xl:grid-cols-[260px_minmax(0,1fr)]">
+                <aside className="rounded-[1.75rem] border border-outline-variant/30 bg-surface p-3 shadow-sm">
+                    <div className="space-y-2">
+                        {TAB_ITEMS.map((tab) => (
+                            <button
+                                key={tab.key}
+                                type="button"
+                                onClick={() => setActiveTab(tab.key)}
+                                className={`w-full rounded-[1.25rem] px-4 py-4 text-left transition ${
+                                    activeTab === tab.key
+                                        ? "bg-primary text-white shadow-md"
+                                        : "bg-transparent text-on-surface hover:bg-surface-container-high"
+                                }`}
+                            >
+                                <p className="font-semibold">{t(tab.titleKey)}</p>
+                                <p
+                                    className={`mt-1 text-sm ${
+                                        activeTab === tab.key
+                                            ? "text-white/80"
+                                            : "text-on-surface-variant"
+                                    }`}
                                 >
-                                    {t(tab.labelKey as Parameters<typeof t>[0])}
-                                </button>
-                            ))}
-                        </div>
+                                    {t(tab.descriptionKey)}
+                                </p>
+                            </button>
+                        ))}
+                    </div>
+                </aside>
 
-                        {/* Tab content */}
-                        <div className="bg-surface-container-lowest rounded-2xl p-6">
-                            {/* GENERAL TAB */}
-                            {activeTab === "general" && (
-                                <div className="space-y-5">
+                <div className="space-y-6">
+                    {feedback ? (
+                        <div
+                            className={`rounded-[1.25rem] border px-4 py-3 text-sm font-medium ${
+                                feedback.type === "success"
+                                    ? "border-emerald-200 bg-emerald-50 text-emerald-800"
+                                    : "border-rose-200 bg-rose-50 text-rose-800"
+                            }`}
+                        >
+                            {feedback.message}
+                        </div>
+                    ) : null}
+
+                    {activeTab === "general" ? (
+                        <>
+                            <SectionCard
+                                title={t("settings.identityTitle")}
+                            >
+                                <div className="grid gap-4 lg:grid-cols-2">
                                     <FormInput
                                         label={t("form.nameLabel")}
                                         value={generalForm.name}
-                                        onChange={(e) =>
-                                            setGeneralForm((prev) => ({ ...prev, name: e.target.value }))
+                                        onChange={(event) =>
+                                            setGeneralForm((current) => ({
+                                                ...current,
+                                                name: event.target.value,
+                                            }))
                                         }
                                         placeholder={t("form.namePlaceholder")}
                                     />
-                                    <StyledSelect
+                                    <SelectField
                                         label={t("form.typeLabel")}
-                                        value={generalForm.type}
-                                        onChange={(v) =>
-                                            setGeneralForm((prev) => ({ ...prev, type: v }))
+                                        value={generalForm.selectedType}
+                                        onChange={(value) =>
+                                            setGeneralForm((current) => ({
+                                                ...current,
+                                                selectedType: value,
+                                                customType: value === "OTHER" ? current.customType : "",
+                                            }))
                                         }
                                     >
-                                        <option value="">{t("form.typePlaceholder")}</option>
-                                        {BUSINESS_TYPES.map((bt) => (
-                                            <option key={bt.value} value={bt.value}>
-                                                {t(`types.${bt.labelKey}` as Parameters<typeof t>[0])}
+                                        {BUSINESS_TYPES.map((type) => (
+                                            <option key={type.value} value={type.value}>
+                                                {t(`types.${type.labelKey}`)}
                                             </option>
                                         ))}
-                                    </StyledSelect>
-                                    <StyledTextarea
-                                        label={t("form.descriptionLabel")}
-                                        value={generalForm.description}
-                                        onChange={(v) =>
-                                            setGeneralForm((prev) => ({ ...prev, description: v }))
+                                    </SelectField>
+                                </div>
+                                {generalForm.selectedType === "OTHER" ? (
+                                    <FormInput
+                                        label={t("settings.customTypeLabel")}
+                                        value={generalForm.customType}
+                                        onChange={(event) =>
+                                            setGeneralForm((current) => ({
+                                                ...current,
+                                                customType: event.target.value,
+                                            }))
                                         }
-                                        placeholder={t("form.descriptionPlaceholder")}
+                                        placeholder={t("settings.customTypePlaceholder")}
                                     />
-                                    <StyledSelect
+                                ) : null}
+                                <TextAreaField
+                                    label={t("form.descriptionLabel")}
+                                    value={generalForm.description}
+                                    onChange={(value) =>
+                                        setGeneralForm((current) => ({
+                                            ...current,
+                                            description: value,
+                                        }))
+                                    }
+                                    placeholder={t("form.descriptionPlaceholder")}
+                                    rows={5}
+                                />
+                            </SectionCard>
+
+                            <SectionCard
+                                title={t("settings.hoursTitle")}
+                            >
+                                <ToggleField
+                                    label={t("settings.is24HoursLabel")}
+                                    description={t("settings.is24HoursDescription")}
+                                    checked={hoursForm.is24Hours}
+                                    onChange={(value) =>
+                                        setHoursForm((current) => ({
+                                            ...current,
+                                            is24Hours: value,
+                                        }))
+                                    }
+                                />
+                                {!hoursForm.is24Hours ? (
+                                    <>
+                                        <div className="grid gap-4 md:grid-cols-2">
+                                            <FormInput
+                                                label={t("settings.operatingHoursStartLabel")}
+                                                type="time"
+                                                value={hoursForm.operatingHoursStart}
+                                                onChange={(event) =>
+                                                    setHoursForm((current) => ({
+                                                        ...current,
+                                                        operatingHoursStart: event.target.value,
+                                                    }))
+                                                }
+                                            />
+                                            <FormInput
+                                                label={t("settings.operatingHoursEndLabel")}
+                                                type="time"
+                                                value={hoursForm.operatingHoursEnd}
+                                                onChange={(event) =>
+                                                    setHoursForm((current) => ({
+                                                        ...current,
+                                                        operatingHoursEnd: event.target.value,
+                                                    }))
+                                                }
+                                            />
+                                        </div>
+                                        <div className="space-y-2">
+                                            <label className="block text-sm font-bold text-primary ml-1">
+                                                {t("settings.operatingDaysLabel")}
+                                            </label>
+                                            <div className="flex flex-wrap gap-2">
+                                                {weekdayLabels.map((label, index) => {
+                                                    const selected = hoursForm.operatingDays.includes(index);
+
+                                                    return (
+                                                        <button
+                                                            key={label}
+                                                            type="button"
+                                                            onClick={() => handleDayToggle(index)}
+                                                            className={`rounded-full px-4 py-2 text-sm font-semibold transition ${
+                                                                selected
+                                                                    ? "bg-primary text-white"
+                                                                    : "bg-surface-container-high text-on-surface"
+                                                            }`}
+                                                        >
+                                                            {label}
+                                                        </button>
+                                                    );
+                                                })}
+                                            </div>
+                                        </div>
+                                    </>
+                                ) : null}
+                            </SectionCard>
+
+                            <SectionCard
+                                title={t("settings.commerceTitle")}
+                            >
+                                <div className="grid gap-4 lg:grid-cols-2">
+                                    <SelectField
                                         label={t("settings.currencyLabel")}
-                                        value={currency}
-                                        onChange={setCurrency}
+                                        value={settingsForm.currency}
+                                        onChange={(value) =>
+                                            setSettingsForm((current) => ({
+                                                ...current,
+                                                currency: value,
+                                            }))
+                                        }
                                     >
-                                        {CURRENCIES.map((c) => (
-                                            <option key={c.value} value={c.value}>
-                                                {c.label}
+                                        {CURRENCIES.map((currency) => (
+                                            <option key={currency.value} value={currency.value}>
+                                                {currency.label}
                                             </option>
                                         ))}
-                                    </StyledSelect>
-
-                                    <div className="bg-surface-container-low rounded-xl p-4 space-y-4">
-                                        <div className="flex items-center justify-between">
-                                            <div>
-                                                <p className="text-sm font-semibold text-on-surface">
-                                                    {t("settings.taxEnabledLabel")}
-                                                </p>
-                                            </div>
-                                            <button
-                                                type="button"
-                                                role="switch"
-                                                aria-checked={taxEnabled}
-                                                onClick={() => setTaxEnabled(!taxEnabled)}
-                                                className={`relative inline-flex h-7 w-12 items-center rounded-full transition-colors ${taxEnabled ? "bg-primary" : "bg-surface-container-highest"}`}
-                                            >
-                                                <span
-                                                    className={`inline-block h-5 w-5 rounded-full bg-white transition-transform ${taxEnabled ? "translate-x-6" : "translate-x-1"}`}
-                                                />
-                                            </button>
-                                        </div>
-
-                                        {taxEnabled && (
-                                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                                                <FormInput
-                                                    label={t("settings.taxNumberLabel")}
-                                                    value={taxNumber}
-                                                    onChange={(e) => setTaxNumber(e.target.value)}
-                                                />
-                                                <FormInput
-                                                    label={t("settings.taxRateLabel")}
-                                                    value={taxRate}
-                                                    onChange={(e) => setTaxRate(e.target.value)}
-                                                />
-                                            </div>
-                                        )}
-
-                                        <StyledSelect
-                                            label={t("settings.paymentChannelLabel")}
-                                            value={paymentChannel}
-                                            onChange={(v) => setPaymentChannel(v as PaymentMethod)}
-                                        >
-                                            {PAYMENT_CHANNELS.map((channel) => (
-                                                <option key={channel} value={channel}>
-                                                    {to(`dueSetup.channel.${channel}` as Parameters<typeof to>[0])}
-                                                </option>
-                                            ))}
-                                        </StyledSelect>
-
+                                    </SelectField>
+                                    <SelectField
+                                        label={t("settings.paymentChannelLabel")}
+                                        value={settingsForm.paymentChannel}
+                                        onChange={(value) =>
+                                            setSettingsForm((current) => ({
+                                                ...current,
+                                                paymentChannel: value as PaymentMethod,
+                                            }))
+                                        }
+                                    >
+                                        {PAYMENT_CHANNELS.map((channel) => (
+                                            <option key={channel} value={channel}>
+                                                {onboardingChannelT(channel)}
+                                            </option>
+                                        ))}
+                                    </SelectField>
+                                    <FormInput
+                                        label={t("settings.paymentReceiverLabel")}
+                                        value={settingsForm.paymentReceiverNumber}
+                                        onChange={(event) =>
+                                            setSettingsForm((current) => ({
+                                                ...current,
+                                                paymentReceiverNumber: event.target.value,
+                                            }))
+                                        }
+                                        placeholder="01XXXXXXXXX"
+                                    />
+                                    <FormInput
+                                        label={t("settings.invoicePrefixLabel")}
+                                        value={settingsForm.invoicePrefix}
+                                        onChange={(event) =>
+                                            setSettingsForm((current) => ({
+                                                ...current,
+                                                invoicePrefix: event.target.value.toUpperCase(),
+                                            }))
+                                        }
+                                        maxLength={10}
+                                        placeholder={invoicePrefixSuggestion}
+                                    />
+                                </div>
+                                <p className="text-sm text-on-surface-variant">
+                                    {t("settings.invoicePrefixHint", {
+                                        suggestion: invoicePrefixSuggestion,
+                                    })}
+                                </p>
+                                <ToggleField
+                                    label={t("settings.taxEnabledLabel")}
+                                    checked={settingsForm.taxEnabled}
+                                    onChange={(value) =>
+                                        setSettingsForm((current) => ({
+                                            ...current,
+                                            taxEnabled: value,
+                                        }))
+                                    }
+                                />
+                                {settingsForm.taxEnabled ? (
+                                    <div className="grid gap-4 lg:grid-cols-2">
                                         <FormInput
-                                            label={t("settings.paymentReceiverLabel")}
-                                            value={paymentReceiverNumber}
-                                            onChange={(e) => setPaymentReceiverNumber(e.target.value)}
-                                            placeholder="01XXXXXXXXX"
+                                            label={t("settings.taxRateLabel")}
+                                            value={settingsForm.taxRate}
+                                            onChange={(event) =>
+                                                setSettingsForm((current) => ({
+                                                    ...current,
+                                                    taxRate: sanitizeNumericInput(event.target.value, {
+                                                        allowDecimal: true,
+                                                        maxIntegerDigits: 3,
+                                                        maxFractionDigits: 2,
+                                                    }),
+                                                }))
+                                            }
+                                            placeholder="5"
                                         />
-
-                                        <div className="flex items-center justify-between">
-                                            <div>
-                                                <p className="text-sm font-semibold text-on-surface">
-                                                    {t("settings.aiAssistantEnabledLabel")}
-                                                </p>
-                                            </div>
-                                            <button
-                                                type="button"
-                                                role="switch"
-                                                aria-checked={aiAssistantEnabled}
-                                                onClick={() => setAiAssistantEnabled(!aiAssistantEnabled)}
-                                                className={`relative inline-flex h-7 w-12 items-center rounded-full transition-colors ${aiAssistantEnabled ? "bg-primary" : "bg-surface-container-highest"}`}
-                                            >
-                                                <span
-                                                    className={`inline-block h-5 w-5 rounded-full bg-white transition-transform ${aiAssistantEnabled ? "translate-x-6" : "translate-x-1"}`}
-                                                />
-                                            </button>
-                                        </div>
+                                        <FormInput
+                                            label={t("settings.taxNumberLabel")}
+                                            value={settingsForm.taxNumber}
+                                            onChange={(event) =>
+                                                setSettingsForm((current) => ({
+                                                    ...current,
+                                                    taxNumber: event.target.value,
+                                                }))
+                                            }
+                                        />
                                     </div>
-                                    <div className="pt-2">
-                                        <GradientButton
-                                            loading={generalLoading}
-                                            onClick={handleSaveGeneral}
-                                            className="!w-auto !px-8"
-                                        >
-                                            {t("settings.saveButton")}
-                                        </GradientButton>
+                                ) : null}
+                                <ToggleField
+                                    label={t("settings.aiAssistantEnabledLabel")}
+                                    checked={settingsForm.aiAssistantEnabled}
+                                    onChange={(value) =>
+                                        setSettingsForm((current) => ({
+                                            ...current,
+                                            aiAssistantEnabled: value,
+                                        }))
+                                    }
+                                />
+                            </SectionCard>
+
+                            <SectionCard
+                                title={t("settings.inventoryTitle")}
+                            >
+                                <div className="grid gap-4 lg:grid-cols-2">
+                                    <FormInput
+                                        label={t("settings.lowStockThresholdLabel")}
+                                        value={settingsForm.lowStockThreshold}
+                                        onChange={(event) =>
+                                            setSettingsForm((current) => ({
+                                                ...current,
+                                                lowStockThreshold: sanitizeNumericInput(event.target.value, {
+                                                    maxIntegerDigits: 4,
+                                                }),
+                                            }))
+                                        }
+                                    />
+                                    <div className="rounded-[1rem] border border-dashed border-outline-variant/40 bg-surface-container-high px-4 py-4">
+                                        <p className="text-sm font-semibold text-on-surface">
+                                            {t("settings.previewLabel")}
+                                        </p>
+                                        <p className="mt-2 text-sm text-on-surface-variant">
+                                            {t("settings.previewText", {
+                                                threshold: formatLocalizedNumber(
+                                                    settingsForm.lowStockThreshold || 0,
+                                                    locale,
+                                                ),
+                                            })}
+                                        </p>
                                     </div>
                                 </div>
-                            )}
+                                <ToggleField
+                                    label={t("settings.lowStockAlertLabel")}
+                                    checked={settingsForm.lowStockAlertEnabled}
+                                    onChange={(value) =>
+                                        setSettingsForm((current) => ({
+                                            ...current,
+                                            lowStockAlertEnabled: value,
+                                        }))
+                                    }
+                                />
+                                <TextAreaField
+                                    label={t("settings.invoiceNotesLabel")}
+                                    value={settingsForm.invoiceNotes}
+                                    onChange={(value) =>
+                                        setSettingsForm((current) => ({
+                                            ...current,
+                                            invoiceNotes: value,
+                                        }))
+                                    }
+                                    rows={3}
+                                />
+                                <TextAreaField
+                                    label={t("settings.receiptFooterLabel")}
+                                    value={settingsForm.receiptFooter}
+                                    onChange={(value) =>
+                                        setSettingsForm((current) => ({
+                                            ...current,
+                                            receiptFooter: value,
+                                        }))
+                                    }
+                                    rows={3}
+                                />
+                            </SectionCard>
 
-                            {/* PROFILE TAB */}
-                            {activeTab === "profile" && (
-                                <div className="space-y-5">
-                                    <StyledTextarea
-                                        label={t("profile.descriptionLabel")}
-                                        value={profileForm.description}
-                                        onChange={(v) =>
-                                            setProfileForm((prev) => ({ ...prev, description: v }))
-                                        }
-                                        rows={3}
-                                    />
+                            <GradientButton loading={generalSaving} onClick={handleSaveGeneral}>
+                                {t("settings.saveButton")}
+                            </GradientButton>
+                        </>
+                    ) : null}
+
+                    {activeTab === "profile" ? (
+                        <>
+                            <SectionCard
+                                title={t("profile.brandTitle")}
+                            >
+                                <div className="grid gap-4 lg:grid-cols-2">
                                     <FormInput
                                         label={t("profile.logoUrlLabel")}
                                         value={profileForm.logoUrl}
-                                        onChange={(e) =>
-                                            setProfileForm((prev) => ({
-                                                ...prev,
-                                                logoUrl: e.target.value,
+                                        onChange={(event) =>
+                                            setProfileForm((current) => ({
+                                                ...current,
+                                                logoUrl: event.target.value,
                                             }))
                                         }
-                                        icon="image"
+                                        placeholder="https://"
                                     />
                                     <FormInput
                                         label={t("profile.coverImageUrlLabel")}
                                         value={profileForm.coverImageUrl}
-                                        onChange={(e) =>
-                                            setProfileForm((prev) => ({
-                                                ...prev,
-                                                coverImageUrl: e.target.value,
+                                        onChange={(event) =>
+                                            setProfileForm((current) => ({
+                                                ...current,
+                                                coverImageUrl: event.target.value,
                                             }))
                                         }
-                                        icon="panorama"
+                                        placeholder="https://"
                                     />
+                                </div>
+                            </SectionCard>
+
+                            <SectionCard
+                                title={t("profile.contactTitle")}
+                            >
+                                <div className="grid gap-4 lg:grid-cols-2">
                                     <FormInput
                                         label={t("profile.contactPersonLabel")}
                                         value={profileForm.contactPerson}
-                                        onChange={(e) =>
-                                            setProfileForm((prev) => ({
-                                                ...prev,
-                                                contactPerson: e.target.value,
+                                        onChange={(event) =>
+                                            setProfileForm((current) => ({
+                                                ...current,
+                                                contactPerson: event.target.value,
                                             }))
                                         }
-                                        icon="person"
                                     />
                                     <FormInput
                                         label={t("profile.phoneLabel")}
                                         value={profileForm.phone}
-                                        onChange={(e) =>
-                                            setProfileForm((prev) => ({
-                                                ...prev,
-                                                phone: e.target.value,
+                                        onChange={(event) =>
+                                            setProfileForm((current) => ({
+                                                ...current,
+                                                phone: event.target.value,
                                             }))
                                         }
-                                        icon="phone"
-                                        type="tel"
                                     />
                                     <FormInput
                                         label={t("profile.whatsappLabel")}
                                         value={profileForm.whatsappNumber}
-                                        onChange={(e) =>
-                                            setProfileForm((prev) => ({
-                                                ...prev,
-                                                whatsappNumber: e.target.value,
+                                        onChange={(event) =>
+                                            setProfileForm((current) => ({
+                                                ...current,
+                                                whatsappNumber: event.target.value,
                                             }))
                                         }
-                                        icon="chat"
-                                        type="tel"
                                     />
                                     <FormInput
                                         label={t("profile.emailLabel")}
                                         value={profileForm.email}
-                                        onChange={(e) =>
-                                            setProfileForm((prev) => ({
-                                                ...prev,
-                                                email: e.target.value,
+                                        onChange={(event) =>
+                                            setProfileForm((current) => ({
+                                                ...current,
+                                                email: event.target.value,
                                             }))
                                         }
-                                        icon="mail"
-                                        type="email"
                                     />
+                                </div>
+                            </SectionCard>
+
+                            <SectionCard
+                                title={t("profile.onlineTitle")}
+                            >
+                                <div className="grid gap-4 lg:grid-cols-2">
                                     <FormInput
                                         label={t("profile.websiteLabel")}
                                         value={profileForm.website}
-                                        onChange={(e) =>
-                                            setProfileForm((prev) => ({
-                                                ...prev,
-                                                website: e.target.value,
+                                        onChange={(event) =>
+                                            setProfileForm((current) => ({
+                                                ...current,
+                                                website: event.target.value,
                                             }))
                                         }
-                                        icon="language"
+                                        placeholder="https://"
                                     />
                                     <FormInput
                                         label={t("profile.facebookLabel")}
                                         value={profileForm.facebookPage}
-                                        onChange={(e) =>
-                                            setProfileForm((prev) => ({
-                                                ...prev,
-                                                facebookPage: e.target.value,
+                                        onChange={(event) =>
+                                            setProfileForm((current) => ({
+                                                ...current,
+                                                facebookPage: event.target.value,
                                             }))
                                         }
-                                        icon="group"
                                     />
-                                    <div className="pt-2">
-                                        <GradientButton
-                                            loading={profileLoading}
-                                            onClick={handleSaveProfile}
-                                            className="!w-auto !px-8"
-                                        >
-                                            {t("profile.saveButton")}
-                                        </GradientButton>
-                                    </div>
                                 </div>
-                            )}
+                            </SectionCard>
 
-                            {/* LOCATION TAB */}
-                            {activeTab === "location" && (
-                                <div className="space-y-5">
-                                    <StyledTextarea
-                                        label={t("location.addressLabel")}
-                                        value={locationForm.address}
-                                        onChange={(v) =>
-                                            setLocationForm((prev) => ({ ...prev, address: v }))
-                                        }
-                                        placeholder={t("location.addressPlaceholder")}
-                                        rows={3}
-                                    />
+                            <GradientButton loading={profileSaving} onClick={handleSaveProfile}>
+                                {t("profile.saveButton")}
+                            </GradientButton>
+                        </>
+                    ) : null}
+
+                    {activeTab === "location" ? (
+                        <>
+                            <SectionCard
+                                title={t("location.addressTitle")}
+                            >
+                                <TextAreaField
+                                    label={t("location.addressLabel")}
+                                    value={locationForm.address}
+                                    onChange={(value) =>
+                                        setLocationForm((current) => ({
+                                            ...current,
+                                            address: value,
+                                        }))
+                                    }
+                                    placeholder={t("location.addressPlaceholder")}
+                                    rows={4}
+                                />
+                                <div className="grid gap-4 lg:grid-cols-2">
                                     <FormInput
                                         label={t("location.cityLabel")}
                                         value={locationForm.city}
-                                        onChange={(e) =>
-                                            setLocationForm((prev) => ({ ...prev, city: e.target.value }))
+                                        onChange={(event) =>
+                                            setLocationForm((current) => ({
+                                                ...current,
+                                                city: event.target.value,
+                                            }))
                                         }
                                         placeholder={t("location.cityPlaceholder")}
-                                        icon="location_city"
                                     />
                                     <FormInput
                                         label={t("location.districtLabel")}
                                         value={locationForm.district}
-                                        onChange={(e) =>
-                                            setLocationForm((prev) => ({
-                                                ...prev,
-                                                district: e.target.value,
+                                        onChange={(event) =>
+                                            setLocationForm((current) => ({
+                                                ...current,
+                                                district: event.target.value,
                                             }))
                                         }
                                         placeholder={t("location.districtPlaceholder")}
-                                        icon="map"
                                     />
                                     <FormInput
                                         label={t("location.postalCodeLabel")}
                                         value={locationForm.postalCode}
-                                        onChange={(e) =>
-                                            setLocationForm((prev) => ({
-                                                ...prev,
-                                                postalCode: e.target.value,
+                                        onChange={(event) =>
+                                            setLocationForm((current) => ({
+                                                ...current,
+                                                postalCode: event.target.value,
                                             }))
                                         }
-                                        icon="markunread_mailbox"
                                     />
-                                    <StyledSelect
+                                    <SelectField
                                         label={t("location.countryLabel")}
                                         value={locationForm.country}
-                                        onChange={(v) =>
-                                            setLocationForm((prev) => ({ ...prev, country: v }))
+                                        onChange={(value) =>
+                                            setLocationForm((current) => ({
+                                                ...current,
+                                                country: value,
+                                            }))
                                         }
                                     >
-                                        <option value="Bangladesh">Bangladesh</option>
-                                        <option value="India">India</option>
-                                        <option value="Pakistan">Pakistan</option>
-                                        <option value="Nepal">Nepal</option>
-                                        <option value="Sri Lanka">Sri Lanka</option>
-                                    </StyledSelect>
-                                    <div className="pt-2">
-                                        <GradientButton
-                                            loading={locationLoading}
-                                            onClick={handleSaveLocation}
-                                            className="!w-auto !px-8"
-                                        >
-                                            {t("location.saveButton")}
-                                        </GradientButton>
-                                    </div>
+                                        {COUNTRY_OPTIONS.map((country) => (
+                                            <option key={country.value} value={country.value}>
+                                                {country.label}
+                                            </option>
+                                        ))}
+                                    </SelectField>
                                 </div>
-                            )}
+                            </SectionCard>
 
-                            {/* DANGER ZONE TAB */}
-                            {activeTab === "danger" && (
-                                <div className="space-y-6">
-                                    {/* Archive section */}
-                                    <div className="bg-error/5 rounded-2xl p-6 space-y-4">
-                                        <div className="flex items-start gap-3">
-                                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6 text-error mt-0.5">
-                                                <path strokeLinecap="round" strokeLinejoin="round" d="M20.25 7.5l-.625 10.632a2.25 2.25 0 01-2.247 2.118H6.622a2.25 2.25 0 01-2.247-2.118L3.75 7.5m8.25 3v6.75m0 0l-3-3m3 3l3-3M3.375 7.5h17.25c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125z" />
-                                            </svg>
-                                            <div className="flex-1">
-                                                <h3 className="text-title-md font-bold text-error">
-                                                    {t("danger.archiveButton")}
-                                                </h3>
-                                                <p className="text-body-sm text-on-surface-variant mt-1">
-                                                    {t("danger.archiveButton")} — {activeBusiness.name}
-                                                </p>
-                                            </div>
-                                            <button
-                                                onClick={() => {
-                                                    setConfirmDialog("archive");
-                                                    setConfirmText("");
-                                                }}
-                                                className="px-5 py-2.5 rounded-xl bg-surface-container text-tertiary font-bold text-sm hover:bg-surface-container-high transition-colors"
-                                            >
-                                                {t("danger.archiveButton")}
-                                            </button>
-                                        </div>
-                                    </div>
-
-                                    {/* Delete section */}
-                                    <div className="bg-error/5 rounded-2xl p-6 space-y-4">
-                                        <div className="flex items-start gap-3">
-                                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6 text-error mt-0.5">
-                                                <path strokeLinecap="round" strokeLinejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0" />
-                                            </svg>
-                                            <div className="flex-1">
-                                                <h3 className="text-title-md font-bold text-error">
-                                                    {t("danger.deleteButton")}
-                                                </h3>
-                                                <p className="text-body-sm text-on-surface-variant mt-1">
-                                                    {activeBusiness.name}
-                                                </p>
-                                            </div>
-                                            <button
-                                                onClick={() => {
-                                                    setConfirmDialog("delete");
-                                                    setConfirmText("");
-                                                }}
-                                                className="px-5 py-2.5 rounded-xl bg-error text-on-error font-bold text-sm hover:bg-error/90 transition-colors"
-                                            >
-                                                {t("danger.deleteButton")}
-                                            </button>
-                                        </div>
-                                    </div>
+                            <SectionCard
+                                title={t("location.mapTitle")}
+                            >
+                                <div className="grid gap-4 lg:grid-cols-2">
+                                    <FormInput
+                                        label={t("location.latitudeLabel")}
+                                        value={locationForm.latitude}
+                                        onChange={(event) =>
+                                            setLocationForm((current) => ({
+                                                ...current,
+                                                latitude: sanitizeNumericInput(event.target.value, {
+                                                    allowDecimal: true,
+                                                    allowNegative: true,
+                                                    maxIntegerDigits: 3,
+                                                    maxFractionDigits: 8,
+                                                }),
+                                            }))
+                                        }
+                                        placeholder="23.810331"
+                                    />
+                                    <FormInput
+                                        label={t("location.longitudeLabel")}
+                                        value={locationForm.longitude}
+                                        onChange={(event) =>
+                                            setLocationForm((current) => ({
+                                                ...current,
+                                                longitude: sanitizeNumericInput(event.target.value, {
+                                                    allowDecimal: true,
+                                                    allowNegative: true,
+                                                    maxIntegerDigits: 3,
+                                                    maxFractionDigits: 8,
+                                                }),
+                                            }))
+                                        }
+                                        placeholder="90.412521"
+                                    />
                                 </div>
-                            )}
-                        </div>
-                    </div>
-                </div>
+                                <SelectField
+                                    label={t("location.timezoneLabel")}
+                                    value={locationForm.timezone}
+                                    onChange={(value) =>
+                                        setLocationForm((current) => ({
+                                            ...current,
+                                            timezone: value,
+                                        }))
+                                    }
+                                >
+                                    {TIMEZONE_OPTIONS.map((timezone) => (
+                                        <option key={timezone} value={timezone}>
+                                            {timezone}
+                                        </option>
+                                    ))}
+                                </SelectField>
+                            </SectionCard>
 
-                {/* ============================================================ */}
-                {/* RIGHT: Stats & AI Insights */}
-                {/* ============================================================ */}
-                <aside className="space-y-8">
-                    {/* Business Stats Card */}
-                    <div className="bg-surface-container-lowest p-8 rounded-lg">
-                        <div className="flex justify-between items-start mb-10">
-                            <h3 className="text-xl font-bold text-primary">{t("settings.businessStats")}</h3>
-                            <IconMoreVert className="w-5 h-5 text-outline" />
-                        </div>
-                        <div className="space-y-8">
-                            <div>
-                                <p className="text-xs uppercase font-bold tracking-widest text-outline mb-1">
-                                    {t("settings.totalProductsLabel")}
-                                </p>
-                                <div className="flex items-baseline gap-2">
-                                    <span className="text-5xl font-black text-primary">
-                                        {formatLocalizedNumber(stats?.totalProducts ?? 0, locale)}
-                                    </span>
-                                    <span className="text-sm text-on-surface-variant">{t("settings.itemsListed")}</span>
-                                </div>
-                            </div>
-                            <div>
-                                <p className="text-xs uppercase font-bold tracking-widest text-outline mb-1">
-                                    {t("settings.totalSalesMTD")}
-                                </p>
-                                <div className="flex items-baseline gap-2">
-                                    <span className="text-5xl font-black text-primary">
-                                        {formatCurrencyBDT(stats?.totalRevenue ?? 0, locale, { maximumFractionDigits: 2 })}
-                                    </span>
-                                    <span className="text-sm text-on-surface-variant">{t("settings.biggerLedger")}</span>
-                                </div>
-                            </div>
-                        </div>
-                        <div className="mt-10 pt-6 border-t border-outline-variant/15">
-                            <div className="flex items-center gap-3">
-                                <div className="w-2 h-2 rounded-full bg-error" />
-                                <p className="text-sm font-medium">{t("settings.inactive")}</p>
-                            </div>
-                        </div>
-                    </div>
+                            <GradientButton loading={locationSaving} onClick={handleSaveLocation}>
+                                {t("location.saveButton")}
+                            </GradientButton>
+                        </>
+                    ) : null}
 
-                    {/* AI Insights Glass Card */}
-                    <div
-                        className="p-8 rounded-lg"
-                        style={{ background: "rgba(225, 227, 223, 0.6)", backdropFilter: "blur(20px)" }}
-                    >
-                        <div className="flex items-center gap-3 mb-6">
-                            <IconSparkles className="w-5 h-5 text-secondary" />
-                            <h3 className="text-lg font-bold text-on-surface-variant">{t("settings.aiTip")}</h3>
-                        </div>
-                        <p className="text-on-surface font-medium leading-relaxed italic">
-                            &ldquo;{t("settings.aiTipText")}&rdquo;
-                        </p>
-                        <button
-                            className="mt-6 w-full py-3 text-white font-bold rounded-lg hover:opacity-90 transition-opacity"
-                            style={{ background: "linear-gradient(135deg, #003727 0%, #00503a 100%)" }}
+                    {activeTab === "danger" ? (
+                        <SectionCard
+                            title={t("danger.heading")}
                         >
-                            {t("settings.getAiAdvice")}
-                        </button>
-                    </div>
-
-                    {/* Security Tonal Card */}
-                    <div className="bg-surface-container p-6 rounded-lg">
-                        <div className="flex items-center gap-4">
-                            <IconShield className="w-6 h-6 text-primary-container" />
-                            <div>
-                                <h4 className="font-bold text-primary">{t("settings.security")}</h4>
-                                <p className="text-xs text-on-surface-variant">{t("settings.encryptionActive")}</p>
+                            <div className="rounded-[1.25rem] border border-rose-200 bg-rose-50 px-4 py-4">
+                                <p className="text-base font-semibold text-rose-900">
+                                    {t("danger.archiveButton")}
+                                </p>
+                                <p className="mt-2 text-sm text-rose-800">
+                                    {t("list.archiveDescription")}
+                                </p>
+                                <div className="mt-4">
+                                    <FormInput
+                                        label={t("danger.confirmNameLabel")}
+                                        value={archiveName}
+                                        onChange={(event) => setArchiveName(event.target.value)}
+                                        placeholder={activeBusiness.name}
+                                    />
+                                </div>
+                                <button
+                                    type="button"
+                                    onClick={handleArchive}
+                                    disabled={dangerSaving || archiveName.trim() !== activeBusiness.name}
+                                    className="mt-4 inline-flex rounded-full bg-rose-700 px-5 py-3 text-sm font-semibold text-white transition disabled:cursor-not-allowed disabled:opacity-50"
+                                >
+                                    {dangerSaving ? t("danger.archiveConfirm") : t("danger.archiveButton")}
+                                </button>
                             </div>
-                        </div>
-                    </div>
-                </aside>
-            </div>
-
-            {/* ================================================================== */}
-            {/* CONFIRMATION DIALOG (overlay modal) */}
-            {/* ================================================================== */}
-            {confirmDialog && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center bg-on-surface/40 backdrop-blur-sm p-4">
-                    <div className="bg-surface-container-lowest rounded-2xl p-6 w-full max-w-md space-y-5">
-                        <div className="flex items-center gap-3">
-                            <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                fill="none"
-                                viewBox="0 0 24 24"
-                                strokeWidth={1.5}
-                                stroke="currentColor"
-                                className={`w-8 h-8 ${confirmDialog === "delete" ? "text-error" : "text-tertiary"}`}
-                            >
-                                {confirmDialog === "delete" ? (
-                                    <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" />
-                                ) : (
-                                    <path strokeLinecap="round" strokeLinejoin="round" d="M20.25 7.5l-.625 10.632a2.25 2.25 0 01-2.247 2.118H6.622a2.25 2.25 0 01-2.247-2.118L3.75 7.5m8.25 3v6.75m0 0l-3-3m3 3l3-3M3.375 7.5h17.25c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125z" />
-                                )}
-                            </svg>
-                            <h2 className="text-title-lg font-bold text-on-surface">
-                                {confirmDialog === "archive"
-                                    ? t("danger.archiveButton")
-                                    : t("danger.deleteButton")}
-                            </h2>
-                        </div>
-
-                        <p className="text-body-md text-on-surface-variant">
-                            {confirmDialog === "archive"
-                                ? `Archive "${activeBusiness.name}"? You can restore it later.`
-                                : `Permanently delete "${activeBusiness.name}"? This cannot be undone.`}
-                        </p>
-
-                        {/* Type business name to confirm */}
-                        <div className="space-y-2">
-                            <label className="block text-sm font-bold text-primary ml-1">
-                                Type &ldquo;{activeBusiness.name}&rdquo; to confirm
-                            </label>
-                            <input
-                                type="text"
-                                value={confirmText}
-                                onChange={(e) => setConfirmText(e.target.value)}
-                                className="w-full pl-6 pr-6 py-4 bg-surface-container-highest rounded-[1rem] text-lg text-on-surface transition-all focus:ring-2 focus:ring-primary-fixed-dim"
-                                placeholder={activeBusiness.name}
-                            />
-                        </div>
-
-                        {/* Dialog actions */}
-                        <div className="flex gap-3 pt-2">
-                            <button
-                                onClick={() => setConfirmDialog(null)}
-                                className="flex-1 py-3 rounded-xl bg-surface-container text-on-surface font-bold text-sm hover:bg-surface-container-high transition-colors"
-                            >
-                                {t("danger.cancel")}
-                            </button>
-                            <button
-                                onClick={confirmDialog === "archive" ? handleArchive : handleDelete}
-                                disabled={confirmText !== activeBusiness.name || dangerLoading}
-                                className={`flex-1 py-3 rounded-xl font-bold text-sm transition-colors disabled:opacity-40 ${confirmDialog === "delete"
-                                    ? "bg-error text-on-error hover:bg-error/90"
-                                    : "bg-tertiary text-on-tertiary hover:bg-tertiary/90"
-                                    }`}
-                            >
-                                {dangerLoading
-                                    ? "..."
-                                    : confirmDialog === "archive"
-                                        ? t("danger.archiveConfirm")
-                                        : t("danger.deleteConfirm")}
-                            </button>
-                        </div>
-                    </div>
+                        </SectionCard>
+                    ) : null}
                 </div>
-            )}
+            </div>
         </div>
     );
 }

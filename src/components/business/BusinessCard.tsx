@@ -17,6 +17,16 @@ const TYPE_KEY_MAP: Record<string, string> = {
     restaurant: "restaurant",
     stationery: "stationery",
     hardware: "hardware",
+    bakery: "bakery",
+    mobileshop: "mobileShop",
+    mobile_shop: "mobileShop",
+    tailoring: "tailoring",
+    sweetsshop: "sweetsShop",
+    sweets_shop: "sweetsShop",
+    cosmetics: "cosmetics",
+    bookshop: "bookshop",
+    jewellery: "jewellery",
+    printing: "printing",
     other: "other",
 };
 

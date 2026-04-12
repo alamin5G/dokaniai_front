@@ -1,10 +1,8 @@
 "use client";
 
-import { CreateBusinessModal } from "@/components/business/CreateBusinessModal";
 import { LanguageSwitcher } from "@/components/ui/LanguageSwitcher";
 import { formatCurrencyBDT } from "@/lib/localeNumber";
 import { buildShopPath } from "@/lib/shopRouting";
-import { useAuthStore } from "@/store/authStore";
 import { useBusinessStore } from "@/store/businessStore";
 import type { BusinessResponse } from "@/types/business";
 import { useLocale, useTranslations } from "next-intl";
@@ -65,6 +63,20 @@ const BUSINESS_TYPE_LABEL_KEYS: Record<string, string> = {
     PRINTING: "printing",
     OTHER: "other",
 };
+
+const AUTH_STORAGE_KEY = "dokaniai-auth-storage";
+
+function getAccessTokenRaw(): string | null {
+    if (typeof window === "undefined") return null;
+    try {
+        const raw = localStorage.getItem(AUTH_STORAGE_KEY);
+        if (!raw) return null;
+        const parsed = JSON.parse(raw);
+        return parsed?.state?.accessToken || null;
+    } catch {
+        return null;
+    }
+}
 
 // ---------------------------------------------------------------------------
 // Confirmation Dialog
@@ -160,10 +172,9 @@ export default function BusinessesPage() {
     const locale = useLocale();
     const t = useTranslations("business");
     const tc = useTranslations("common");
-    const { accessToken } = useAuthStore();
+    const hasToken = getAccessTokenRaw() != null;
     const {
         businesses,
-        activeBusinessId,
         businessStatsMap,
         isLoading,
         loadBusinesses,
@@ -183,23 +194,18 @@ export default function BusinessesPage() {
         [t],
     );
 
-    // Auth guard
-    const [authChecked, setAuthChecked] = useState(false);
-
     useEffect(() => {
-        if (!accessToken) {
+        if (!hasToken) {
             router.replace("/login");
-        } else {
-            setAuthChecked(true);
         }
-    }, [accessToken, router]);
+    }, [hasToken, router]);
 
     // Load businesses on mount
     useEffect(() => {
-        if (authChecked) {
+        if (hasToken) {
             loadBusinesses();
         }
-    }, [authChecked, loadBusinesses]);
+    }, [hasToken, loadBusinesses]);
 
     // Load per-business stats when businesses are loaded
     useEffect(() => {
@@ -210,9 +216,6 @@ export default function BusinessesPage() {
             loadBusinessStatsMap(activeIds);
         }
     }, [businesses, loadBusinessStatsMap]);
-
-    // Modal state
-    const [createModalOpen, setCreateModalOpen] = useState(false);
 
     // Confirmation dialog state
     const [confirmDialog, setConfirmDialog] = useState<{
@@ -244,13 +247,6 @@ export default function BusinessesPage() {
         },
         [setActiveBusiness, router]
     );
-
-    const handleCreateSuccess = useCallback(() => {
-        setCreateModalOpen(false);
-        const state = useBusinessStore.getState();
-        const nextId = state.activeBusinessId;
-        router.push(nextId ? buildShopPath(nextId) : "/businesses");
-    }, [router]);
 
     const handleManage = useCallback(
         (business: BusinessResponse) => {
@@ -317,7 +313,7 @@ export default function BusinessesPage() {
 
     // ---- Render ----
 
-    if (!authChecked) {
+    if (!hasToken) {
         return null;
     }
 
@@ -352,7 +348,7 @@ export default function BusinessesPage() {
                         </button>
                         <button
                             type="button"
-                            onClick={() => setCreateModalOpen(true)}
+                            onClick={() => router.push("/onboarding?mode=new")}
                             className="px-6 py-3 text-white font-bold rounded-lg hover:opacity-90 transition-opacity flex items-center gap-2"
                             style={{ background: "linear-gradient(135deg, #003727 0%, #00503a 100%)" }}
                         >
@@ -395,7 +391,7 @@ export default function BusinessesPage() {
                             </p>
                             <button
                                 type="button"
-                                onClick={() => setCreateModalOpen(true)}
+                                onClick={() => router.push("/onboarding?mode=new")}
                                 className="inline-flex items-center gap-2 rounded-xl px-8 py-4 font-bold text-white transition-colors active:scale-[0.98]"
                                 style={{ background: "linear-gradient(135deg, #003727 0%, #00503a 100%)" }}
                             >
@@ -466,6 +462,12 @@ export default function BusinessesPage() {
                                         {/* Actions */}
                                         <div className="md:col-span-3 flex justify-end gap-2">
                                             <button
+                                                onClick={(e) => { e.stopPropagation(); handleArchive(business); }}
+                                                className="px-4 py-2 bg-surface-container-high text-on-surface font-bold rounded-lg hover:bg-surface-container-highest transition-colors"
+                                            >
+                                                {t("list.archived")}
+                                            </button>
+                                            <button
                                                 onClick={(e) => { e.stopPropagation(); handleManage(business); }}
                                                 className="px-4 py-2 bg-secondary/10 text-secondary font-bold rounded-lg hover:bg-secondary/20 transition-colors"
                                             >
@@ -522,6 +524,12 @@ export default function BusinessesPage() {
                                     >
                                         {t("ledger.restore")}
                                     </button>
+                                    <button
+                                        onClick={() => handleDelete(business)}
+                                        className="text-error font-bold text-sm"
+                                    >
+                                        {t("danger.deleteButton")}
+                                    </button>
                                 </div>
                             ))}
                         </div>
@@ -539,13 +547,6 @@ export default function BusinessesPage() {
                     AI Active
                 </div>
             </button>
-
-            {/* Create Business Modal */}
-            <CreateBusinessModal
-                open={createModalOpen}
-                onClose={() => setCreateModalOpen(false)}
-                onSuccess={handleCreateSuccess}
-            />
 
             {/* Confirmation Dialog */}
             <ConfirmDialog

@@ -13,6 +13,7 @@ import type {
   BusinessLocationRequest,
   BusinessLocationResponse,
   BusinessOnboardingResponse,
+  OperatingHoursRequest,
   BusinessProfileRequest,
   BusinessProfileResponse,
   BusinessResponse,
@@ -115,6 +116,14 @@ export async function updateBusinessSettings(
   data: BusinessSettingsRequest,
 ): Promise<void> {
   await apiClient.put(`/businesses/${businessId}/settings`, data);
+}
+
+/** PUT /businesses/{businessId}/operating-hours */
+export async function updateBusinessOperatingHours(
+  businessId: string,
+  data: OperatingHoursRequest,
+): Promise<void> {
+  await apiClient.put(`/businesses/${businessId}/operating-hours`, data);
 }
 
 // ---------------------------------------------------------------------------

@@ -8,8 +8,8 @@ import { useAuthStore } from "@/store/authStore";
 import { useBusinessStore } from "@/store/businessStore";
 import type { BusinessCreateRequest, PaymentMethod } from "@/types/business";
 import { useLocale, useTranslations } from "next-intl";
-import { useRouter } from "next/navigation";
-import { useCallback, useEffect, useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
+import { Suspense, useCallback, useEffect, useState } from "react";
 
 // ---------------------------------------------------------------------------
 // Constants
@@ -17,6 +17,7 @@ import { useCallback, useEffect, useState } from "react";
 
 const TOTAL_STEPS = 7;
 const ONBOARDING_DRAFT_KEY = "dokaniai-onboarding-draft";
+const DEFAULT_BUSINESS_DATA: Partial<BusinessCreateRequest> = { currency: "BDT" };
 
 function isHttpNotFound(error: unknown): boolean {
     if (!error || typeof error !== "object") return false;
@@ -251,30 +252,30 @@ const TYPE_ICONS: Record<string, () => React.JSX.Element> = {
 // Main Component
 // ---------------------------------------------------------------------------
 
-export default function OnboardingPage() {
+function OnboardingPageContent() {
     const router = useRouter();
+    const searchParams = useSearchParams();
     const locale = useLocale();
     const t = useTranslations("onboarding");
     const tc = useTranslations("common");
     const tb = useTranslations("business");
+    const forceNewBusiness = searchParams.get("mode") === "new";
 
     // Auth
     const accessToken = useAuthStore((s) => s.accessToken);
 
     // Business store
-    const activeBusinessId = useBusinessStore((s) => s.activeBusinessId);
     const loadBusinesses = useBusinessStore((s) => s.loadBusinesses);
     const storeCreateBusiness = useBusinessStore((s) => s.createBusiness);
 
     // Wizard state
     const [currentStep, setCurrentStep] = useState(1);
-    const [businessData, setBusinessData] = useState<Partial<BusinessCreateRequest>>({
-        currency: "BDT",
-    });
+    const [businessData, setBusinessData] = useState<Partial<BusinessCreateRequest>>(DEFAULT_BUSINESS_DATA);
     const [createdBusinessId, setCreatedBusinessId] = useState<string | null>(null);
     const [isLoading, setIsLoading] = useState(false);
     const [isHydrated, setIsHydrated] = useState(false);
     const [isResuming, setIsResuming] = useState(true);
+    const [newFlowInitialized, setNewFlowInitialized] = useState(false);
     const [error, setError] = useState("");
 
     type OnboardingDraft = {
@@ -337,7 +338,7 @@ export default function OnboardingPage() {
             if (draft.currentStep >= 1 && draft.currentStep <= TOTAL_STEPS) {
                 setCurrentStep(draft.currentStep);
             }
-            setBusinessData(draft.businessData || { currency: "BDT" });
+            setBusinessData(draft.businessData || DEFAULT_BUSINESS_DATA);
             setCreatedBusinessId(draft.createdBusinessId || null);
             setQuickProducts(Array.isArray(draft.quickProducts) ? draft.quickProducts : []);
             setCustomType(draft.customType || "");
@@ -359,6 +360,39 @@ export default function OnboardingPage() {
             // ignore corrupted draft
         }
     }, [isHydrated]);
+
+    useEffect(() => {
+        if (!isHydrated || !forceNewBusiness || newFlowInitialized) return;
+        if (typeof window !== "undefined") {
+            localStorage.removeItem(ONBOARDING_DRAFT_KEY);
+        }
+        setCurrentStep(2);
+        setBusinessData(DEFAULT_BUSINESS_DATA);
+        setCreatedBusinessId(null);
+        setQuickProducts([]);
+        setCustomType("");
+        setDueEnabled(false);
+        setPaymentTerms("30");
+        setCustomPaymentTerms("");
+        setTaxEnabled(false);
+        setTaxRate("");
+        setTaxNumber("");
+        setPaymentChannel("");
+        setPaymentReceiverNumber("");
+        setAiAssistantEnabled(true);
+        setTutorialIndex(0);
+        setError("");
+        setNewFlowInitialized(true);
+    }, [forceNewBusiness, isHydrated, newFlowInitialized]);
+
+    const getExistingBusinessId = useCallback(() => {
+        if (forceNewBusiness) return null;
+        const store = useBusinessStore.getState();
+        return store.activeBusinessId &&
+            store.businesses.some((b) => b.id === store.activeBusinessId && b.status === "ACTIVE")
+            ? store.activeBusinessId
+            : null;
+    }, [forceNewBusiness]);
 
     useEffect(() => {
         if (!isHydrated || typeof window === "undefined") return;
@@ -411,13 +445,18 @@ export default function OnboardingPage() {
 
         const resume = async () => {
             try {
+                if (forceNewBusiness && !createdBusinessId) {
+                    return;
+                }
+
                 await loadBusinesses();
                 if (cancelled) return;
 
                 const store = useBusinessStore.getState();
-                const validActiveBusiness =
-                    store.activeBusinessId &&
-                        store.businesses.some((b) => b.id === store.activeBusinessId && b.status === "ACTIVE")
+                const validActiveBusiness = forceNewBusiness
+                    ? null
+                    : store.activeBusinessId &&
+                      store.businesses.some((b) => b.id === store.activeBusinessId && b.status === "ACTIVE")
                         ? store.activeBusinessId
                         : null;
 
@@ -457,8 +496,7 @@ export default function OnboardingPage() {
         return () => {
             cancelled = true;
         };
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [isHydrated, accessToken, createdBusinessId, loadBusinesses, router]);
+    }, [forceNewBusiness, isHydrated, accessToken, createdBusinessId, loadBusinesses, router]);
 
     // ---------------------------------------------------------------------------
     // Step navigation
@@ -466,14 +504,7 @@ export default function OnboardingPage() {
 
     const advanceStep = useCallback(
         async (nextStep: number) => {
-            const store = useBusinessStore.getState();
-            const validActiveBusiness =
-                store.activeBusinessId &&
-                    store.businesses.some((b) => b.id === store.activeBusinessId)
-                    ? store.activeBusinessId
-                    : null;
-
-            const bid = createdBusinessId || validActiveBusiness;
+            const bid = createdBusinessId || getExistingBusinessId();
             if (bid && nextStep <= TOTAL_STEPS) {
                 try {
                     await businessApi.updateOnboardingStep(bid, nextStep);
@@ -484,7 +515,7 @@ export default function OnboardingPage() {
             setCurrentStep(nextStep);
             setError("");
         },
-        [createdBusinessId, activeBusinessId],
+        [createdBusinessId, getExistingBusinessId],
     );
 
     // Step 1: Welcome → Start
@@ -514,14 +545,9 @@ export default function OnboardingPage() {
         setError("");
         setIsLoading(true);
         try {
-            const state = useBusinessStore.getState();
-            const validActiveBusiness =
-                state.activeBusinessId &&
-                    state.businesses.some((b) => b.id === state.activeBusinessId)
-                    ? state.activeBusinessId
-                    : null;
+            const existingBusinessId = getExistingBusinessId();
 
-            if (!createdBusinessId && !validActiveBusiness) {
+            if (!createdBusinessId && !existingBusinessId) {
                 const business = await storeCreateBusiness({
                     name: businessData.name.trim(),
                     type: businessData.type || "OTHER",
@@ -551,13 +577,7 @@ export default function OnboardingPage() {
     };
 
     const handleLoadSampleData = async () => {
-        const store = useBusinessStore.getState();
-        const validActiveBusiness =
-            store.activeBusinessId &&
-                store.businesses.some((b) => b.id === store.activeBusinessId)
-                ? store.activeBusinessId
-                : null;
-        const bid = createdBusinessId || validActiveBusiness;
+        const bid = createdBusinessId || getExistingBusinessId();
         const products = getSampleProductsByBusinessType(businessData.type);
         setQuickProducts(products);
 
@@ -579,13 +599,7 @@ export default function OnboardingPage() {
 
     // Step 5: Due Setup + essentials
     const handleDueNext = async () => {
-        const store = useBusinessStore.getState();
-        const validActiveBusiness =
-            store.activeBusinessId &&
-                store.businesses.some((b) => b.id === store.activeBusinessId)
-                ? store.activeBusinessId
-                : null;
-        const bid = createdBusinessId || validActiveBusiness;
+        const bid = createdBusinessId || getExistingBusinessId();
 
         const parsedTaxRate = taxRate.trim() ? Number(taxRate) : undefined;
         if (taxEnabled && taxRate.trim() && (parsedTaxRate == null || Number.isNaN(parsedTaxRate))) {
@@ -635,13 +649,7 @@ export default function OnboardingPage() {
 
     // Step 7: Complete
     const handleComplete = useCallback(async () => {
-        const store = useBusinessStore.getState();
-        const validActiveBusiness =
-            store.activeBusinessId &&
-                store.businesses.some((b) => b.id === store.activeBusinessId)
-                ? store.activeBusinessId
-                : null;
-        const bid = createdBusinessId || validActiveBusiness;
+        const bid = createdBusinessId || getExistingBusinessId();
 
         setIsLoading(true);
         setError("");
@@ -659,7 +667,7 @@ export default function OnboardingPage() {
         }
         setIsLoading(false);
         router.replace(bid ? `/shop/${bid}` : "/businesses");
-    }, [createdBusinessId, router, t]);
+    }, [createdBusinessId, getExistingBusinessId, router, t]);
 
     // ---------------------------------------------------------------------------
     // Render: Progress Bar
@@ -1426,5 +1434,13 @@ export default function OnboardingPage() {
                 </div>
             </main>
         </div>
+    );
+}
+
+export default function OnboardingPage() {
+    return (
+        <Suspense fallback={<div className="min-h-screen bg-background" />}>
+            <OnboardingPageContent />
+        </Suspense>
     );
 }

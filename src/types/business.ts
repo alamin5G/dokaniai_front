@@ -52,8 +52,17 @@ export interface BusinessSettingsRequest {
   paymentReceiverNumber?: string;
   aiAssistantEnabled?: boolean;
   invoicePrefix?: string;
+  invoiceNotes?: string;
+  receiptFooter?: string;
   lowStockThreshold?: number;
   lowStockAlertEnabled?: boolean;
+}
+
+export interface OperatingHoursRequest {
+  operatingHoursStart?: string;
+  operatingHoursEnd?: string;
+  is24Hours: boolean;
+  operatingDays: number[];
 }
 
 /** Mirrors BusinessProfileRequest.java */
@@ -78,6 +87,7 @@ export interface BusinessLocationRequest {
   country?: string;
   latitude?: number;
   longitude?: number;
+  timezone?: string;
 }
 
 // ---------------------------------------------------------------------------
@@ -153,14 +163,14 @@ export interface BusinessProfileResponse {
 /** Mirrors BusinessLocationResponse.java */
 export interface BusinessLocationResponse {
   businessId: string;
-  address: string;
-  city: string;
-  district: string;
-  postalCode: string;
-  country: string;
-  latitude: number;
-  longitude: number;
-  timezone: string;
+  address: string | null;
+  city: string | null;
+  district: string | null;
+  postalCode: string | null;
+  country: string | null;
+  latitude: number | null;
+  longitude: number | null;
+  timezone: string | null;
 }
 
 /** Mirrors BusinessOnboardingResponse.java */
