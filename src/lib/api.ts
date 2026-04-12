@@ -3,6 +3,20 @@ import { useAuthStore } from '@/store/authStore';
 import { useLanguageStore } from '@/store/languageStore';
 import axios from 'axios';
 
+const PUBLIC_AUTH_FREE_ROUTES = new Set([
+  '/',
+  '/login',
+  '/register',
+  '/forgot-password',
+  '/verify-email',
+  '/reset-password',
+  '/set-password',
+]);
+
+function shouldSkipLoginRedirect(pathname: string): boolean {
+  return PUBLIC_AUTH_FREE_ROUTES.has(pathname);
+}
+
 function getPreferredLocale(): string {
   const storeLocale = useLanguageStore.getState().locale;
   if (storeLocale === 'bn' || storeLocale === 'en') {
@@ -77,7 +91,7 @@ apiClient.interceptors.response.use(
 
       } catch (refreshError) {
         useAuthStore.getState().clearTokens();
-        if (typeof window !== 'undefined' && !window.location.pathname.startsWith('/login')) {
+        if (typeof window !== 'undefined' && !shouldSkipLoginRedirect(window.location.pathname)) {
           window.location.href = '/login';
         }
         return Promise.reject(refreshError);
