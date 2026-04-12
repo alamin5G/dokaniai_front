@@ -1,18 +1,23 @@
 "use client";
 
-import { NextIntlClientProvider } from "next-intl";
 import { useLanguageStore } from "@/store/languageStore";
+import { NextIntlClientProvider } from "next-intl";
 import bn from "../../messages/bn.json";
 import en from "../../messages/en.json";
 
 const messagesMap: Record<string, Record<string, any>> = { bn, en };
+const DEFAULT_TIME_ZONE = "Asia/Dhaka";
 
 export function I18nProvider({ children }: { children: React.ReactNode }) {
   const locale = useLanguageStore((s) => s.locale);
   const messages = messagesMap[locale] || messagesMap.bn;
 
   return (
-    <NextIntlClientProvider locale={locale} messages={messages}>
+    <NextIntlClientProvider
+      locale={locale}
+      messages={messages}
+      timeZone={DEFAULT_TIME_ZONE}
+    >
       {children}
     </NextIntlClientProvider>
   );

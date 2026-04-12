@@ -31,6 +31,7 @@
       "subheading": "Set up your digital business ledger",
       "phoneTab": "Mobile Number",
       "emailTab": "Email",
+      "phonePrefix": "+88",
       "fullNameLabel": "Full Name",
       "fullNamePlaceholder": "e.g. Rahim Ahmed",
       "phoneLabel": "Mobile Number",
@@ -58,6 +59,10 @@
       "verify": "Verify",
       "resendOtp": "Resend OTP",
       "resendOtpCountdown": "Resend OTP ({countdown}s)",
+      "resendSuccess": "A new OTP has been sent.",
+      "errorResendFailed": "Failed to resend OTP",
+      "errorNoContact": "Verification session not found. Please register again.",
+      "backToRegister": "Back to Register",
       "errorInvalidOtp": "Please enter a valid OTP",
       "errorVerificationFailed": "OTP verification failed"
     },
@@ -70,6 +75,9 @@
       "verify": "Verify",
       "resendCode": "Resend Code",
       "resendCodeCountdown": "Resend Code ({countdown}s)",
+      "resendSuccess": "A new verification code has been sent.",
+      "errorResendFailed": "Failed to resend verification code",
+      "backToRegister": "Back to Register",
       "errorInvalidCode": "Please enter a valid 6-digit code",
       "errorVerificationFailed": "Email verification failed",
       "successMessage": "Email verified successfully! You can now log in."
@@ -82,7 +90,7 @@
       "confirmPasswordLabel": "Confirm Password",
       "confirmPasswordPlaceholder": "Re-enter your password",
       "errorMismatch": "Passwords do not match",
-      "errorTooShort": "Password must be at least 6 characters",
+      "errorLength": "Password must be between 8 and 16 characters",
       "errorGeneric": "Failed to set password"
     },
     "forgotPassword": {

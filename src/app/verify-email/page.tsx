@@ -1,13 +1,13 @@
 "use client";
 
-import { useState, useEffect, Suspense } from "react";
-import { useRouter } from "next/navigation";
-import { useTranslations } from "next-intl";
-import apiClient from "@/lib/api";
-import { getApiErrorMessage } from "@/lib/apiError";
-import { getAuthContact, clearAuthContact, maskContact } from "@/lib/authFlow";
 import { AuthLayout } from "@/components/layout/AuthLayout";
 import { FormInput, GradientButton } from "@/components/ui/FormPrimitives";
+import apiClient from "@/lib/api";
+import { getApiErrorMessage } from "@/lib/apiError";
+import { clearAuthContact, getAuthContact, maskContact } from "@/lib/authFlow";
+import { useTranslations } from "next-intl";
+import { useRouter } from "next/navigation";
+import { Suspense, useEffect, useState } from "react";
 
 function VerifyEmailForm() {
   const router = useRouter();
@@ -18,6 +18,7 @@ function VerifyEmailForm() {
   const [isLoading, setIsLoading] = useState(false);
   const [errorText, setErrorText] = useState("");
   const [successText, setSuccessText] = useState("");
+  const [resendText, setResendText] = useState("");
   const [countdown, setCountdown] = useState(60);
 
   useEffect(() => {
@@ -29,13 +30,16 @@ function VerifyEmailForm() {
 
   const handleResendCode = async () => {
     if (!contact) return;
-    setCountdown(60);
+    setErrorText("");
+    setResendText("");
     try {
       await apiClient.post("/auth/resend/email-verification", {
         email: contact,
       });
-    } catch {
-      // Silently ignore resend errors
+      setCountdown(60);
+      setResendText(t("resendSuccess"));
+    } catch (error: unknown) {
+      setErrorText(getApiErrorMessage(error, t("errorResendFailed")));
     }
   };
 
@@ -89,7 +93,7 @@ function VerifyEmailForm() {
           onClick={() => router.push("/register")}
           className="text-primary font-bold hover:underline"
         >
-          রেজিস্টার পৃষ্ঠায় ফিরুন
+          {t("backToRegister")}
         </button>
       </div>
     );
@@ -113,6 +117,7 @@ function VerifyEmailForm() {
       />
 
       {errorText && <p className="text-error text-sm font-semibold">{errorText}</p>}
+      {resendText && <p className="text-primary text-sm font-semibold">{resendText}</p>}
 
       <GradientButton type="submit" loading={isLoading}>
         <span>{t("verify")}</span>

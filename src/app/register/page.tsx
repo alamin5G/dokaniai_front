@@ -1,15 +1,15 @@
 "use client";
 
-import { useState } from "react";
-import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { useTranslations } from "next-intl";
-import apiClient from "@/lib/api";
-import { getApiErrorMessage } from "@/lib/apiError";
-import { setAuthContact } from "@/lib/authFlow";
 import { AuthLayout } from "@/components/layout/AuthLayout";
 import { FormInput, GradientButton } from "@/components/ui/FormPrimitives";
 import { useRedirectIfAuthenticated } from "@/hooks/useAuthRedirect";
+import apiClient from "@/lib/api";
+import { getApiErrorMessage } from "@/lib/apiError";
+import { setAuthContact } from "@/lib/authFlow";
+import { useTranslations } from "next-intl";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
 
 export default function RegisterPage() {
   const router = useRouter();
@@ -74,32 +74,30 @@ export default function RegisterPage() {
 
   return (
     <AuthLayout
-      heading={t("heading")} 
+      heading={t("heading")}
       subheading={t("subheading")}
     >
       <div className="flex gap-2 p-1.5 bg-surface-container rounded-full mb-8 w-fit mx-auto md:mx-0">
-        <button 
+        <button
           type="button"
           onClick={() => setTab("phone")}
-          className={`px-6 py-2.5 rounded-full font-bold shadow-sm text-sm transition-colors ${
-            tab === "phone" ? "bg-surface-container-lowest text-primary" : "text-on-surface-variant hover:bg-surface-container-high"
-          }`}
+          className={`px-6 py-2.5 rounded-full font-bold shadow-sm text-sm transition-colors ${tab === "phone" ? "bg-surface-container-lowest text-primary" : "text-on-surface-variant hover:bg-surface-container-high"
+            }`}
         >
           {t("phoneTab")}
         </button>
-        <button 
+        <button
           type="button"
           onClick={() => setTab("email")}
-          className={`px-6 py-2.5 rounded-full font-bold shadow-sm text-sm transition-colors ${
-            tab === "email" ? "bg-surface-container-lowest text-primary" : "text-on-surface-variant hover:bg-surface-container-high"
-          }`}
+          className={`px-6 py-2.5 rounded-full font-bold shadow-sm text-sm transition-colors ${tab === "email" ? "bg-surface-container-lowest text-primary" : "text-on-surface-variant hover:bg-surface-container-high"
+            }`}
         >
           {t("emailTab")}
         </button>
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-6">
-        <FormInput 
+        <FormInput
           label={t("fullNameLabel")}
           type="text"
           placeholder={t("fullNamePlaceholder")}
@@ -109,10 +107,10 @@ export default function RegisterPage() {
         />
 
         {tab === "phone" ? (
-          <FormInput 
+          <FormInput
             label={t("phoneLabel")}
             type="tel"
-            prefixText="+৮৮০"
+            prefixText={t("phonePrefix")}
             placeholder={t("phonePlaceholder")}
             icon="call"
             value={phone}
@@ -120,7 +118,7 @@ export default function RegisterPage() {
           />
         ) : (
           <>
-            <FormInput 
+            <FormInput
               label={t("emailLabel")}
               type="email"
               placeholder={t("emailPlaceholder")}
@@ -128,18 +126,18 @@ export default function RegisterPage() {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
             />
-            <FormInput 
-               label={t("phoneLabel")}
-               type="tel"
-               placeholder={t("phonePlaceholder")}
-               icon="call"
-               value={phone}
-               onChange={(e) => setPhone(e.target.value)}
-             />
+            <FormInput
+              label={t("phoneLabel")}
+              type="tel"
+              placeholder={t("phonePlaceholder")}
+              icon="call"
+              value={phone}
+              onChange={(e) => setPhone(e.target.value)}
+            />
           </>
         )}
 
-        <FormInput 
+        <FormInput
           label={t("referralCodeLabel")}
           type="text"
           placeholder={t("referralCodePlaceholder")}
@@ -149,7 +147,7 @@ export default function RegisterPage() {
         />
 
         {tab === "email" && (
-          <FormInput 
+          <FormInput
             label={t("passwordLabel")}
             type="password"
             placeholder={t("passwordPlaceholder")}

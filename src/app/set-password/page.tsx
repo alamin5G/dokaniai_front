@@ -1,20 +1,20 @@
 "use client";
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
-import { useTranslations } from "next-intl";
-import apiClient from "@/lib/api";
-import { getApiErrorMessage } from "@/lib/apiError";
 import { AuthLayout } from "@/components/layout/AuthLayout";
 import { FormInput, GradientButton } from "@/components/ui/FormPrimitives";
+import apiClient from "@/lib/api";
+import { getApiErrorMessage } from "@/lib/apiError";
 import { useAuthStore } from "@/store/authStore";
+import { useTranslations } from "next-intl";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
 
 export default function SetPasswordPage() {
   const router = useRouter();
   const t = useTranslations("auth.setPassword");
   const tc = useTranslations("common");
   const clearTokens = useAuthStore((state) => state.clearTokens);
-  
+
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -26,11 +26,11 @@ export default function SetPasswordPage() {
       setErrorText(t("errorMismatch"));
       return;
     }
-    if (password.length < 6) {
-      setErrorText(t("errorTooShort"));
+    if (password.length < 8 || password.length > 16) {
+      setErrorText(t("errorLength"));
       return;
     }
-    
+
     setErrorText("");
     setIsLoading(true);
 
@@ -50,12 +50,12 @@ export default function SetPasswordPage() {
   };
 
   return (
-    <AuthLayout 
-      heading={t("heading")} 
+    <AuthLayout
+      heading={t("heading")}
       subheading={t("subheading")}
     >
       <form onSubmit={handleSubmit} className="space-y-6">
-        <FormInput 
+        <FormInput
           label={t("newPasswordLabel")}
           type="password"
           placeholder={t("newPasswordPlaceholder")}
@@ -63,8 +63,8 @@ export default function SetPasswordPage() {
           value={password}
           onChange={(e) => setPassword(e.target.value)}
         />
-        
-        <FormInput 
+
+        <FormInput
           label={t("confirmPasswordLabel")}
           type="password"
           placeholder={t("confirmPasswordPlaceholder")}

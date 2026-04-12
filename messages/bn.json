@@ -31,6 +31,7 @@
       "subheading": "আপনার ব্যবসার ডিজিটাল খাতা তৈরি করুন",
       "phoneTab": "মোবাইল নম্বর",
       "emailTab": "ইমেইল",
+      "phonePrefix": "+৮৮",
       "fullNameLabel": "আপনার পূর্ণ নাম",
       "fullNamePlaceholder": "যেমন: রহিম আহমেদ",
       "phoneLabel": "মোবাইল নম্বর",
@@ -58,6 +59,10 @@
       "verify": "ভেরিফাই করুন",
       "resendOtp": "পুনরায় OTP পাঠান",
       "resendOtpCountdown": "পুনরায় OTP পাঠান ({countdown}s)",
+      "resendSuccess": "নতুন OTP পাঠানো হয়েছে।",
+      "errorResendFailed": "OTP পুনরায় পাঠাতে সমস্যা হয়েছে",
+      "errorNoContact": "ভেরিফিকেশন সেশন পাওয়া যায়নি। আবার রেজিস্টার করুন।",
+      "backToRegister": "রেজিস্টার পৃষ্ঠায় ফিরুন",
       "errorInvalidOtp": "অনুগ্রহ করে সঠিক OTP দিন",
       "errorVerificationFailed": "OTP ভেরিফিকেশন ব্যর্থ হয়েছে"
     },
@@ -70,6 +75,9 @@
       "verify": "ভেরিফাই করুন",
       "resendCode": "পুনরায় কোড পাঠান",
       "resendCodeCountdown": "পুনরায় কোড পাঠান ({countdown}s)",
+      "resendSuccess": "নতুন ভেরিফিকেশন কোড পাঠানো হয়েছে।",
+      "errorResendFailed": "ভেরিফিকেশন কোড পুনরায় পাঠাতে সমস্যা হয়েছে",
+      "backToRegister": "রেজিস্টার পৃষ্ঠায় ফিরুন",
       "errorInvalidCode": "অনুগ্রহ করে সঠিক ৬-ডিজিট কোড দিন",
       "errorVerificationFailed": "ইমেইল ভেরিফিকেশন ব্যর্থ হয়েছে",
       "successMessage": "ইমেইল সফলভাবে ভেরিফাই হয়েছে! এখন লগইন করুন।"
@@ -82,7 +90,7 @@
       "confirmPasswordLabel": "পাসওয়ার্ড নিশ্চিত করুন",
       "confirmPasswordPlaceholder": "আবারও পাসওয়ার্ডটি লিখুন",
       "errorMismatch": "পাসওয়ার্ড দুটি মিলছে না",
-      "errorTooShort": "পাসওয়ার্ড অন্তত ৬ অক্ষরের হতে হবে",
+      "errorLength": "পাসওয়ার্ড ৮ থেকে ১৬ অক্ষরের মধ্যে হতে হবে",
       "errorGeneric": "পাসওয়ার্ড সেট করতে সমস্যা হয়েছে"
     },
     "forgotPassword": {
