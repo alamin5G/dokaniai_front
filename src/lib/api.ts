@@ -48,7 +48,18 @@ const apiClient = axios.create({
 
 // Request interceptor to attach token
 apiClient.interceptors.request.use((config) => {
-  const { accessToken } = useAuthStore.getState();
+  let { accessToken } = useAuthStore.getState();
+
+  if (!accessToken && typeof window !== 'undefined') {
+    try {
+      const raw = localStorage.getItem('dokaniai-auth-storage');
+      if (raw) {
+        const parsed = JSON.parse(raw);
+        accessToken = parsed?.state?.accessToken || null;
+      }
+    } catch { /* ignore */ }
+  }
+
   if (accessToken) {
     config.headers.Authorization = `Bearer ${accessToken}`;
   }

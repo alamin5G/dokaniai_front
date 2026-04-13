@@ -65,7 +65,7 @@ export function HeroSection() {
                 </div>
                 <div>
                   <p className="text-white/80 text-sm font-medium">{t("listeningAi")}</p>
-                  <p className="text-white font-bold">"{t("voiceSample")}"</p>
+                  <p className="text-white font-bold">&ldquo;{t("voiceSample")}&rdquo;</p>
                 </div>
               </div>
             </div>

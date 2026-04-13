@@ -649,5 +649,91 @@
     "subscription": "Subscription",
     "settings": "Settings",
     "newEntry": "New Entry"
+  },
+  "userProfile": {
+    "profile": "Profile",
+    "subscription": "Subscription",
+    "sessions": "Sessions",
+    "logout": "Logout",
+    "logoutConfirm": "Are you sure you want to logout?",
+    "yes": "Yes",
+    "no": "No",
+    "loading": "..."
+  },
+  "pricingPage": {
+    "title": "Simple, Transparent Pricing",
+    "subtitle": "Choose the plan that fits your business. Start free, upgrade anytime.",
+    "enterprise": {
+      "name": "Enterprise",
+      "price": "Custom",
+      "period": "/year",
+      "feature1": "Unlimited everything",
+      "feature2": "Dedicated support & SLA",
+      "cta": "Contact Us"
+    },
+    "backToHome": "Back to Home"
+  },
+  "subscription": {
+    "pricing": {
+      "currentPlan": "Current Plan",
+      "upgrade": "Upgrade",
+      "downgrade": "Downgrade",
+      "getStarted": "Get Started",
+      "free": "Free",
+      "month": "month",
+      "maxBusinesses": "Max businesses",
+      "aiPerDay": "AI/day",
+      "unlimited": "Unlimited",
+      "unavailable": "Plans are currently unavailable. Please try again later.",
+      "contactUs": "Contact Us"
+    },
+    "upgrade": {
+      "title": "Subscription Upgrade",
+      "subtitle": "Choose a plan, apply coupon, and continue to payment.",
+      "loading": "Loading plan data...",
+      "planSelection": "Plan selection",
+      "currentPlan": "Current plan",
+      "couponLabel": "Coupon code",
+      "couponPlaceholder": "e.g. EID25",
+      "applyCoupon": "Apply coupon",
+      "couponApplied": "Coupon applied.",
+      "payable": "Payable amount",
+      "paymentChannel": "Payment channel",
+      "continueToPayment": "Continue to payment",
+      "errors": {
+        "loadFailed": "Could not load subscription data.",
+        "enterCoupon": "Enter a coupon code.",
+        "couponFailed": "Coupon apply failed.",
+        "paymentInitFailed": "Could not initialize payment."
+      }
+    },
+    "payment": {
+      "title": "Payment Status",
+      "subtitle": "Track your subscription payment status here.",
+      "intentId": "Intent ID",
+      "currentStatus": "Current status",
+      "trxLabel": "TrxID",
+      "trxPlaceholder": "Enter TrxID",
+      "submitTrx": "Submit TrxID",
+      "resubmit": "Resubmit",
+      "trxSubmitted": "TrxID submitted.",
+      "resubmitted": "Payment resubmitted.",
+      "backToSubscription": "Back to subscription",
+      "finishLater": "Finish later",
+      "status": {
+        "loading": "Loading",
+        "completed": "Completed",
+        "manualReview": "Manual review",
+        "failed": "Failed",
+        "expired": "Expired",
+        "pending": "Pending"
+      },
+      "errors": {
+        "statusFetchFailed": "Could not fetch payment status.",
+        "enterTrx": "Enter TrxID.",
+        "trxSubmitFailed": "TrxID submit failed.",
+        "resubmitFailed": "Resubmit failed."
+      }
+    }
   }
 }

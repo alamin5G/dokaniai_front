@@ -15,7 +15,9 @@ declare global {
   }
 }
 
-declare const self: any;
+declare const self: WorkerGlobalScope & {
+  __SW_MANIFEST: (PrecacheEntry | string)[] | undefined;
+};
 
 // SRS §7.6.2: POST requests - Queue in IndexedDB, replay when online
 const bgSyncPlugin = new BackgroundSyncPlugin("dokaniai-post-queue", {

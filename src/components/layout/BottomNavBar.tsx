@@ -1,9 +1,10 @@
 "use client";
 
-import { buildShopPath } from "@/lib/shopRouting";
+import { buildShopPath, replaceShopBusinessInPath } from "@/lib/shopRouting";
+import { useBusinessStore } from "@/store/businessStore";
 import { useTranslations } from "next-intl";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 
 // ---------------------------------------------------------------------------
 // Inline SVG Icons (24×24, filled variant for active state)
@@ -111,9 +112,26 @@ interface BottomNavBarProps {
 }
 
 export default function BottomNavBar({ businessId }: BottomNavBarProps) {
+  const router = useRouter();
   const t = useTranslations("nav");
   const pathname = usePathname();
+  const { activeBusiness, businesses, setActiveBusiness } = useBusinessStore();
   const rootPath = businessId ? buildShopPath(businessId) : "/businesses";
+
+  const activeBusinesses = businesses.filter((business) => business.status === "ACTIVE");
+  const canSwitchBusiness = Boolean(businessId) && activeBusinesses.length > 1;
+
+  const handleSwitchBusiness = (nextBusinessId: string) => {
+    const nextBusiness = activeBusinesses.find((business) => business.id === nextBusinessId);
+    if (!nextBusiness) return;
+
+    setActiveBusiness(nextBusiness);
+    const nextPath = pathname.startsWith("/shop/")
+      ? replaceShopBusinessInPath(pathname, nextBusinessId)
+      : buildShopPath(nextBusinessId);
+
+    router.push(nextPath);
+  };
 
   const isActive = (href: string) => {
     if (href === rootPath) return pathname === href;
@@ -121,35 +139,58 @@ export default function BottomNavBar({ businessId }: BottomNavBarProps) {
   };
 
   return (
-    <nav
-      className="md:hidden fixed bottom-4 left-1/2 -translate-x-1/2 z-50 flex items-center bg-surface-container-lowest rounded-full p-1.5 min-w-[300px] max-w-[90vw] backdrop-blur-md"
-      style={{ paddingBottom: "max(0.375rem, env(safe-area-inset-bottom))" }}
-    >
-      <div className="flex w-full items-center justify-between">
-        {BOTTOM_NAV_ITEMS.map((item) => {
-          const href = businessId ? buildShopPath(businessId, item.section) : "/businesses";
-          const active = isActive(href);
-          const Icon = item.icon;
-
-          return (
-            <Link
-              key={item.key}
-              href={href}
-              className={`flex items-center gap-2 px-5 py-3 rounded-full transition-all active:scale-95 ${active
-                  ? "bg-primary/10 text-primary"
-                  : "text-on-surface-variant hover:bg-surface-container-low"
-                }`}
+    <div className="md:hidden fixed bottom-4 left-1/2 -translate-x-1/2 z-50 min-w-[300px] max-w-[92vw] space-y-2">
+      {canSwitchBusiness ? (
+        <div className="rounded-full bg-surface-container-lowest px-3 py-2 shadow-sm backdrop-blur-md">
+          <label className="sr-only" htmlFor="mobile-business-switcher">Switch business</label>
+          <div className="flex items-center gap-2 text-xs text-on-surface-variant">
+            <span className="material-symbols-outlined text-base">storefront</span>
+            <select
+              id="mobile-business-switcher"
+              value={activeBusiness?.id ?? businessId}
+              onChange={(event) => handleSwitchBusiness(event.target.value)}
+              className="w-full bg-transparent font-semibold text-on-surface outline-none"
             >
-              <Icon filled={active} className="w-6 h-6" />
-              {active && (
-                <span className="text-xs font-semibold whitespace-nowrap">
-                  {t(item.key)}
-                </span>
-              )}
-            </Link>
-          );
-        })}
-      </div>
-    </nav>
+              {activeBusinesses.map((business) => (
+                <option key={business.id} value={business.id}>
+                  {business.name}
+                </option>
+              ))}
+            </select>
+          </div>
+        </div>
+      ) : null}
+
+      <nav
+        className="flex items-center bg-surface-container-lowest rounded-full p-1.5 backdrop-blur-md"
+        style={{ paddingBottom: "max(0.375rem, env(safe-area-inset-bottom))" }}
+      >
+        <div className="flex w-full items-center justify-between">
+          {BOTTOM_NAV_ITEMS.map((item) => {
+            const href = businessId ? buildShopPath(businessId, item.section) : "/businesses";
+            const active = isActive(href);
+            const Icon = item.icon;
+
+            return (
+              <Link
+                key={item.key}
+                href={href}
+                className={`flex items-center gap-2 px-5 py-3 rounded-full transition-all active:scale-95 ${active
+                    ? "bg-primary/10 text-primary"
+                    : "text-on-surface-variant hover:bg-surface-container-low"
+                  }`}
+              >
+                <Icon filled={active} className="w-6 h-6" />
+                {active && (
+                  <span className="text-xs font-semibold whitespace-nowrap">
+                    {t(item.key)}
+                  </span>
+                )}
+              </Link>
+            );
+          })}
+        </div>
+      </nav>
+    </div>
   );
 }

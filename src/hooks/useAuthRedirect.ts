@@ -1,7 +1,8 @@
 "use client";
 
+import { consumeRedirectAfterLogin } from "@/lib/authFlow";
 import { getPreferredWorkspacePath } from "@/lib/shopRouting";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 
 const AUTH_STORAGE_KEY = "dokaniai-auth-storage";
 
@@ -38,22 +39,19 @@ function getStoredUserRoleRaw(): string | null {
  * Reads directly from localStorage for maximum reliability.
  */
 export function useRedirectIfAuthenticated(redirectTo?: string) {
-  const [checked, setChecked] = useState(false);
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const isClient = typeof window !== "undefined";
+  const token = isClient ? getAccessTokenRaw() : null;
+  const isAuthenticated = token != null;
 
   useEffect(() => {
-    const token = getAccessTokenRaw();
-
     if (token) {
-      setIsAuthenticated(true);
       const role = getStoredUserRoleRaw();
-      const target = redirectTo ?? (role === "ADMIN" || role === "SUPER_ADMIN" ? "/admin" : getPreferredWorkspacePath());
+      const pendingRedirect = role === "ADMIN" || role === "SUPER_ADMIN" ? null : consumeRedirectAfterLogin();
+      const target = pendingRedirect ?? redirectTo ?? (role === "ADMIN" || role === "SUPER_ADMIN" ? "/admin" : getPreferredWorkspacePath());
       // Hard navigation for reliability
       window.location.replace(target);
-    } else {
-      setChecked(true);
     }
-  }, [redirectTo]);
+  }, [redirectTo, token]);
 
-  return { hydrated: checked, isAuthenticated };
+  return { hydrated: isClient, isAuthenticated };
 }

@@ -649,5 +649,91 @@
     "subscription": "সাবস্ক্রিপশন",
     "settings": "সেটিংস",
     "newEntry": "নতুন এন্ট্রি"
+  },
+  "userProfile": {
+    "profile": "প্রোফাইল",
+    "subscription": "সাবস্ক্রিপশন",
+    "sessions": "সেশন",
+    "logout": "লগআউট",
+    "logoutConfirm": "আপনি কি লগআউট করতে চান?",
+    "yes": "হ্যাঁ",
+    "no": "না",
+    "loading": "..."
+  },
+  "pricingPage": {
+    "title": "সহজ ও স্বচ্ছ মূল্য",
+    "subtitle": "আপনার ব্যবসার জন্য উপযুক্ত প্ল্যান বেছে নিন। ফ্রিতে শুরু করুন, যেকোনো সময় আপগ্রেড করুন।",
+    "enterprise": {
+      "name": "এন্টারপ্রাইজ",
+      "price": "কাস্টম",
+      "period": "/বছর",
+      "feature1": "আনলিমিটেড সবকিছু",
+      "feature2": "ডেডিকেটেড সাপোর্ট ও SLA",
+      "cta": "যোগাযোগ করুন"
+    },
+    "backToHome": "হোমপেজে ফিরুন"
+  },
+  "subscription": {
+    "pricing": {
+      "currentPlan": "চলমান প্ল্যান",
+      "upgrade": "আপগ্রেড",
+      "downgrade": "ডাউনগ্রেড",
+      "getStarted": "শুরু করুন",
+      "free": "ফ্রি",
+      "month": "মাস",
+      "maxBusinesses": "সর্বোচ্চ ব্যবসা",
+      "aiPerDay": "AI/দিন",
+      "unlimited": "আনলিমিটেড",
+      "unavailable": "প্ল্যান লোড করা যায়নি। পরে আবার চেষ্টা করুন।",
+      "contactUs": "যোগাযোগ করুন"
+    },
+    "upgrade": {
+      "title": "সাবস্ক্রিপশন আপগ্রেড",
+      "subtitle": "প্ল্যান বাছাই করুন, কুপন প্রয়োগ করুন এবং পেমেন্টে এগিয়ে যান।",
+      "loading": "প্ল্যান তথ্য লোড হচ্ছে...",
+      "planSelection": "প্ল্যান নির্বাচন",
+      "currentPlan": "বর্তমান প্ল্যান",
+      "couponLabel": "কুপন কোড",
+      "couponPlaceholder": "যেমন: EID25",
+      "applyCoupon": "কুপন প্রয়োগ",
+      "couponApplied": "কুপন প্রয়োগ হয়েছে।",
+      "payable": "পরিশোধযোগ্য মূল্য",
+      "paymentChannel": "পেমেন্ট চ্যানেল",
+      "continueToPayment": "পেমেন্টে এগিয়ে যান",
+      "errors": {
+        "loadFailed": "সাবস্ক্রিপশন তথ্য লোড করা যায়নি।",
+        "enterCoupon": "কুপন কোড দিন।",
+        "couponFailed": "কুপন প্রয়োগ করা যায়নি।",
+        "paymentInitFailed": "পেমেন্ট শুরু করা যায়নি।"
+      }
+    },
+    "payment": {
+      "title": "পেমেন্ট স্ট্যাটাস",
+      "subtitle": "আপনার সাবস্ক্রিপশন পেমেন্টের অবস্থা এখানে দেখা যাবে।",
+      "intentId": "ইনটেন্ট আইডি",
+      "currentStatus": "বর্তমান স্ট্যাটাস",
+      "trxLabel": "TrxID",
+      "trxPlaceholder": "TrxID লিখুন",
+      "submitTrx": "TrxID জমা দিন",
+      "resubmit": "রিসাবমিট",
+      "trxSubmitted": "TrxID জমা হয়েছে।",
+      "resubmitted": "পেমেন্ট পুনরায় চালু হয়েছে।",
+      "backToSubscription": "সাবস্ক্রিপশনে ফিরে যান",
+      "finishLater": "পরে সম্পন্ন করব",
+      "status": {
+        "loading": "লোড হচ্ছে",
+        "completed": "সম্পন্ন",
+        "manualReview": "ম্যানুয়াল রিভিউ",
+        "failed": "ব্যর্থ",
+        "expired": "মেয়াদোত্তীর্ণ",
+        "pending": "চলমান"
+      },
+      "errors": {
+        "statusFetchFailed": "স্ট্যাটাস আনা যায়নি।",
+        "enterTrx": "TrxID দিন।",
+        "trxSubmitFailed": "TrxID জমা ব্যর্থ।",
+        "resubmitFailed": "পুনরায় সাবমিট ব্যর্থ।"
+      }
+    }
   }
 }

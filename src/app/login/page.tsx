@@ -5,6 +5,7 @@ import { FormInput, GradientButton } from "@/components/ui/FormPrimitives";
 import { useRedirectIfAuthenticated } from "@/hooks/useAuthRedirect";
 import apiClient from "@/lib/api";
 import { getApiErrorMessage } from "@/lib/apiError";
+import { consumeRedirectAfterLogin } from "@/lib/authFlow";
 import { getClientDeviceContext } from "@/lib/device";
 import { getPreferredWorkspacePath } from "@/lib/shopRouting";
 import { useAuthStore } from "@/store/authStore";
@@ -65,7 +66,8 @@ export default function LoginPage() {
       if (role === "ADMIN" || role === "SUPER_ADMIN") {
         router.push("/admin");
       } else {
-        router.push(getPreferredWorkspacePath());
+        const pendingRedirect = consumeRedirectAfterLogin();
+        router.push(pendingRedirect ?? getPreferredWorkspacePath());
       }
     } catch (error: unknown) {
       setErrorText(getApiErrorMessage(error, t("errorInvalid")));

@@ -38,7 +38,7 @@ export function AuthLayout({ children, heading, subheading }: AuthLayoutProps) {
           <div className="absolute inset-0 bg-gradient-to-t from-primary/40 to-transparent"></div>
           <div className="absolute bottom-6 left-6 right-6 p-6 bg-surface-variant/60 backdrop-blur-md rounded-[1rem]">
             <p className="text-primary font-semibold text-sm mb-1">{t("smartInsight")}</p>
-            <p className="text-on-surface font-bold text-lg leading-snug">"{t("insightSample")}"</p>
+            <p className="text-on-surface font-bold text-lg leading-snug">&ldquo;{t("insightSample")}&rdquo;</p>
           </div>
         </div>
       </section>

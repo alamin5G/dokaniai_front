@@ -13,7 +13,7 @@ export function NavBar() {
         <div className="text-2xl font-black text-primary tracking-tight">DokaniAI</div>
         <div className="hidden md:flex gap-8 items-center font-semibold text-base">
           <Link className="text-primary border-b-2 border-primary pb-1" href="#">{t("features")}</Link>
-          <Link className="text-on-surface-variant hover:text-primary hover:bg-surface-container-low transition-all duration-300 px-3 py-1 rounded" href="#">{t("pricing")}</Link>
+          <Link className="text-on-surface-variant hover:text-primary hover:bg-surface-container-low transition-all duration-300 px-3 py-1 rounded" href="/pricing">{t("pricing")}</Link>
           <Link className="text-on-surface-variant hover:text-primary hover:bg-surface-container-low transition-all duration-300 px-3 py-1 rounded" href="#">{t("about")}</Link>
         </div>
         <div className="flex items-center gap-3">

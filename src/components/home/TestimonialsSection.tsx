@@ -21,7 +21,7 @@ export function TestimonialsSection() {
               <span className="material-symbols-outlined text-xl" data-icon="star" style={{ fontVariationSettings: "'FILL' 1" }}>star</span>
             </div>
             <p className="text-lg italic font-medium text-on-surface leading-relaxed">
-              "{t("t1.quote")}"
+              &ldquo;{t("t1.quote")}&rdquo;
             </p>
             <div className="flex items-center gap-4 pt-6 border-t border-outline-variant/10">
               <div className="w-12 h-12 rounded-full overflow-hidden bg-surface-variant flex-shrink-0">
@@ -48,7 +48,7 @@ export function TestimonialsSection() {
               <span className="material-symbols-outlined text-xl" data-icon="star" style={{ fontVariationSettings: "'FILL' 1" }}>star</span>
             </div>
             <p className="text-lg italic font-medium text-on-surface leading-relaxed">
-              "{t("t2.quote")}"
+              &ldquo;{t("t2.quote")}&rdquo;
             </p>
             <div className="flex items-center gap-4 pt-6 border-t border-outline-variant/10">
               <div className="w-12 h-12 rounded-full overflow-hidden bg-surface-variant flex-shrink-0">
@@ -75,7 +75,7 @@ export function TestimonialsSection() {
               <span className="material-symbols-outlined text-xl" data-icon="star" style={{ fontVariationSettings: "'FILL' 1" }}>star</span>
             </div>
             <p className="text-lg italic font-medium text-on-surface leading-relaxed">
-              "{t("t3.quote")}"
+              &ldquo;{t("t3.quote")}&rdquo;
             </p>
             <div className="flex items-center gap-4 pt-6 border-t border-outline-variant/10">
               <div className="w-12 h-12 rounded-full overflow-hidden bg-surface-variant flex-shrink-0">

@@ -34,6 +34,8 @@ export interface Plan {
   features: Record<string, boolean> | null;
   isTrial: boolean;
   isActive: boolean;
+  highlight?: boolean;
+  badge?: string | null;
 }
 
 export interface Subscription {

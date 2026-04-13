@@ -5,7 +5,8 @@ import { NextIntlClientProvider } from "next-intl";
 import bn from "../../messages/bn.json";
 import en from "../../messages/en.json";
 
-const messagesMap: Record<string, Record<string, any>> = { bn, en };
+type Messages = typeof en;
+const messagesMap: Record<string, Messages> = { bn, en };
 const DEFAULT_TIME_ZONE = "Asia/Dhaka";
 
 export function I18nProvider({ children }: { children: React.ReactNode }) {

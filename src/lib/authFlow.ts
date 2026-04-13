@@ -96,3 +96,56 @@ export function clearResetContext(): void {
   if (typeof window === "undefined") return;
   sessionStorage.removeItem(RESET_CONTEXT_KEY);
 }
+
+// --- Subscription upgrade resume helpers ---
+
+const PENDING_UPGRADE_PLAN_KEY = "pending_upgrade_plan";
+const REDIRECT_AFTER_LOGIN_KEY = "redirect_after_login";
+
+function isSafeInternalPath(path: string): boolean {
+  return path.startsWith("/") && !path.startsWith("//");
+}
+
+export function setPendingUpgradePlan(planId: string): void {
+  if (typeof window === "undefined") return;
+  sessionStorage.setItem(PENDING_UPGRADE_PLAN_KEY, planId);
+}
+
+export function getPendingUpgradePlan(): string | null {
+  if (typeof window === "undefined") return null;
+  return sessionStorage.getItem(PENDING_UPGRADE_PLAN_KEY);
+}
+
+export function clearPendingUpgradePlan(): void {
+  if (typeof window === "undefined") return;
+  sessionStorage.removeItem(PENDING_UPGRADE_PLAN_KEY);
+}
+
+export function setRedirectAfterLogin(path: string): void {
+  if (typeof window === "undefined" || !isSafeInternalPath(path)) return;
+  sessionStorage.setItem(REDIRECT_AFTER_LOGIN_KEY, path);
+}
+
+export function consumeRedirectAfterLogin(): string | null {
+  if (typeof window === "undefined") return null;
+
+  const redirectPath = sessionStorage.getItem(REDIRECT_AFTER_LOGIN_KEY);
+  if (redirectPath) {
+    sessionStorage.removeItem(REDIRECT_AFTER_LOGIN_KEY);
+    if (isSafeInternalPath(redirectPath)) {
+      return redirectPath;
+    }
+  }
+
+  const pendingPlanId = getPendingUpgradePlan();
+  if (!pendingPlanId) {
+    return null;
+  }
+
+  return `/subscription/upgrade?plan=${encodeURIComponent(pendingPlanId)}`;
+}
+
+export function rememberPendingUpgrade(planId: string): void {
+  setPendingUpgradePlan(planId);
+  setRedirectAfterLogin(`/subscription/upgrade?plan=${encodeURIComponent(planId)}`);
+}

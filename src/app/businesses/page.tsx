@@ -1,6 +1,7 @@
 "use client";
 
 import { LanguageSwitcher } from "@/components/ui/LanguageSwitcher";
+import UserProfileSection from "@/components/ui/UserProfileSection";
 import { formatCurrencyBDT } from "@/lib/localeNumber";
 import { buildShopPath } from "@/lib/shopRouting";
 import { useBusinessStore } from "@/store/businessStore";
@@ -323,7 +324,10 @@ export default function BusinessesPage() {
             <header className="sticky top-0 z-30 bg-surface-container-low">
                 <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4">
                     <h1 className="text-xl font-bold tracking-tight text-primary">{tc("appName")}</h1>
-                    <LanguageSwitcher />
+                    <div className="flex items-center gap-2">
+                        <LanguageSwitcher />
+                        <UserProfileSection variant="header" />
+                    </div>
                 </div>
             </header>
 

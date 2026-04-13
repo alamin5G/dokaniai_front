@@ -1,6 +1,7 @@
 "use client";
 
 import { LanguageSwitcher } from "@/components/ui/LanguageSwitcher";
+import UserProfileSection from "@/components/ui/UserProfileSection";
 import { buildShopPath, replaceShopBusinessInPath } from "@/lib/shopRouting";
 import { useBusinessStore } from "@/store/businessStore";
 import { useTranslations } from "next-intl";
@@ -148,13 +149,7 @@ export default function TopAppBar({ title, businessId }: TopAppBarProps) {
           <IconBell className="w-5 h-5" />
         </button>
 
-        <button
-          type="button"
-          className="p-2 rounded-full text-primary-container hover:bg-surface-container-high transition-colors"
-          aria-label="Account"
-        >
-          <IconUser className="w-5 h-5" />
-        </button>
+        <UserProfileSection variant="compact" />
       </div>
     </header>
   );
