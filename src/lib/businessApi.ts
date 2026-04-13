@@ -23,6 +23,7 @@ import type {
   BusinessUpdateRequest,
   OnboardingMyStatusResponse,
   OnboardingStatsResponse,
+  BusinessTypeOptionResponse,
 } from '@/types/business';
 
 // ---------------------------------------------------------------------------
@@ -224,5 +225,11 @@ export async function getMyOnboardingStatus(): Promise<OnboardingMyStatusRespons
   const response = await apiClient.get<ApiSuccess<OnboardingMyStatusResponse>>(
     '/businesses/onboarding/my-status',
   );
+  return unwrap(response);
+}
+
+/** GET /businesses/types/options */
+export async function listBusinessTypeOptions(): Promise<BusinessTypeOptionResponse[]> {
+  const response = await apiClient.get<ApiSuccess<BusinessTypeOptionResponse[]>>('/businesses/types/options');
   return unwrap(response);
 }

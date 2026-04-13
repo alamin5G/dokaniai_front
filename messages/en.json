@@ -599,7 +599,10 @@
       "title": "What type of business do you run?",
       "subtitle": "Select the category that best describes your shop",
       "customTypeLabel": "What type of shop?",
-      "customTypePlaceholder": "e.g. Flower Shop, Cyber Cafe..."
+      "customTypePlaceholder": "e.g. Flower Shop, Cyber Cafe...",
+      "categoryPreviewTitle": "Suggested starter categories",
+      "categoryPreviewLoading": "Loading categories...",
+      "categoryPreviewEmpty": "No category suggestions found for this type yet."
     },
     "businessName": {
       "title": "Name Your Business",

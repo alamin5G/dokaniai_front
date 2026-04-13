@@ -2,11 +2,14 @@
 
 import { FormInput, GradientButton } from "@/components/ui/FormPrimitives";
 import * as businessApi from "@/lib/businessApi";
+import { getCategoriesByBusinessType } from "@/lib/categoryApi";
 import { formatLocalizedNumber, sanitizeNumericInput } from "@/lib/localeNumber";
 import { getSampleProductsByBusinessType } from "@/lib/onboardingSampleProducts";
+import { getFallbackCategoryPreview } from "@/lib/onboardingFallbackCategories";
 import { useAuthStore } from "@/store/authStore";
 import { useBusinessStore } from "@/store/businessStore";
-import type { BusinessCreateRequest, PaymentMethod } from "@/types/business";
+import type { CategoryResponse } from "@/types/category";
+import type { BusinessCreateRequest, BusinessTypeOptionResponse, PaymentMethod } from "@/types/business";
 import { useLocale, useTranslations } from "next-intl";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Suspense, useCallback, useEffect, useState } from "react";
@@ -25,7 +28,14 @@ function isHttpNotFound(error: unknown): boolean {
     return candidate.response?.status === 404;
 }
 
-const BUSINESS_TYPES = [
+type OnboardingBusinessTypeOption = {
+    value: string;
+    labelKey?: string;
+    displayNameEn?: string;
+    displayNameBn?: string;
+};
+
+const BUSINESS_TYPES: OnboardingBusinessTypeOption[] = [
     { value: "GROCERY", labelKey: "grocery" },
     { value: "FASHION", labelKey: "clothing" },
     { value: "ELECTRONICS", labelKey: "electronics" },
@@ -43,6 +53,10 @@ const BUSINESS_TYPES = [
     { value: "PRINTING", labelKey: "printing" },
     { value: "OTHER", labelKey: "other" },
 ] as const;
+
+const BUSINESS_TYPE_LABEL_KEYS: Record<string, string> = Object.fromEntries(
+    BUSINESS_TYPES.map((item) => [item.value, item.labelKey ?? "other"]),
+);
 
 const CURRENCIES = [
     { value: "BDT", label: "৳ BDT" },
@@ -305,6 +319,9 @@ function OnboardingPageContent() {
 
     // Step 2: Custom type (when "OTHER" is selected)
     const [customType, setCustomType] = useState("");
+    const [businessTypeOptions, setBusinessTypeOptions] = useState<OnboardingBusinessTypeOption[]>(BUSINESS_TYPES);
+    const [categoryPreview, setCategoryPreview] = useState<string[]>([]);
+    const [isCategoryLoading, setIsCategoryLoading] = useState(false);
 
     // Step 5: Due setup
     const [dueEnabled, setDueEnabled] = useState(false);
@@ -385,6 +402,67 @@ function OnboardingPageContent() {
         setNewFlowInitialized(true);
     }, [forceNewBusiness, isHydrated, newFlowInitialized]);
 
+    useEffect(() => {
+        if (!isHydrated || !accessToken) return;
+
+        let cancelled = false;
+        const loadTypeOptions = async () => {
+            try {
+                const options = await businessApi.listBusinessTypeOptions();
+                if (cancelled || options.length === 0) return;
+
+                const mapped: OnboardingBusinessTypeOption[] = options.map((option: BusinessTypeOptionResponse) => ({
+                    value: option.value,
+                    labelKey: BUSINESS_TYPE_LABEL_KEYS[option.value],
+                    displayNameEn: option.displayNameEn,
+                    displayNameBn: option.displayNameBn,
+                }));
+                setBusinessTypeOptions(mapped);
+            } catch {
+                // Keep fallback options silently.
+            }
+        };
+
+        void loadTypeOptions();
+        return () => {
+            cancelled = true;
+        };
+    }, [isHydrated, accessToken]);
+
+    const loadCategoryPreview = useCallback(
+        async (typeValue: string | undefined) => {
+            if (!typeValue) {
+                setCategoryPreview([]);
+                return;
+            }
+
+            if (typeValue === "OTHER") {
+                setCategoryPreview(getFallbackCategoryPreview(typeValue));
+                return;
+            }
+
+            setIsCategoryLoading(true);
+            try {
+                const categories: CategoryResponse[] = await getCategoriesByBusinessType(typeValue);
+                const roots = categories
+                    .filter((category) => !category.parentId)
+                    .map((category) => (locale === "bn" ? category.nameBn : (category.nameEn ?? category.nameBn)))
+                    .slice(0, 8);
+
+                setCategoryPreview(roots.length > 0 ? roots : getFallbackCategoryPreview(typeValue));
+            } catch {
+                setCategoryPreview(getFallbackCategoryPreview(typeValue));
+            } finally {
+                setIsCategoryLoading(false);
+            }
+        },
+        [locale],
+    );
+
+    useEffect(() => {
+        void loadCategoryPreview(businessData.type);
+    }, [businessData.type, loadCategoryPreview]);
+
     const getExistingBusinessId = useCallback(() => {
         if (forceNewBusiness) return null;
         const store = useBusinessStore.getState();
@@ -394,8 +472,13 @@ function OnboardingPageContent() {
             : null;
     }, [forceNewBusiness]);
 
+    // ---------------------------------------------------------------------------
+    // Draft persistence
+    // ---------------------------------------------------------------------------
+
     useEffect(() => {
-        if (!isHydrated || typeof window === "undefined") return;
+        if (!isHydrated) return;
+
         const draft: OnboardingDraft = {
             currentStep,
             businessData,
@@ -795,9 +878,14 @@ function OnboardingPageContent() {
             </p>
 
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-                {BUSINESS_TYPES.map((bt) => {
+                {businessTypeOptions.map((bt) => {
                     const isSelected = businessData.type === bt.value;
                     const IconComp = TYPE_ICONS[bt.value] || IconBox;
+                    const localizedLabel = bt.labelKey
+                        ? tb(`types.${bt.labelKey}`)
+                        : locale === "bn"
+                            ? (bt.displayNameBn ?? bt.displayNameEn ?? bt.value)
+                            : (bt.displayNameEn ?? bt.displayNameBn ?? bt.value);
 
                     return (
                         <button
@@ -823,7 +911,7 @@ function OnboardingPageContent() {
                                 className={`text-sm font-medium ${isSelected ? "text-primary" : "text-on-surface"
                                     }`}
                             >
-                                {tb(`types.${bt.labelKey}`)}
+                                {localizedLabel}
                             </span>
                         </button>
                     );
@@ -842,6 +930,23 @@ function OnboardingPageContent() {
                     />
                 </div>
             )}
+
+            <div className="mt-5 rounded-2xl bg-surface-container-low p-4">
+                <h4 className="text-sm font-bold text-on-surface mb-2">{t("businessType.categoryPreviewTitle")}</h4>
+                {isCategoryLoading ? (
+                    <p className="text-sm text-on-surface-variant">{t("businessType.categoryPreviewLoading")}</p>
+                ) : categoryPreview.length > 0 ? (
+                    <div className="flex flex-wrap gap-2">
+                        {categoryPreview.map((name) => (
+                            <span key={name} className="rounded-full bg-primary/10 px-3 py-1 text-xs text-primary font-medium">
+                                {name}
+                            </span>
+                        ))}
+                    </div>
+                ) : (
+                    <p className="text-sm text-on-surface-variant">{t("businessType.categoryPreviewEmpty")}</p>
+                )}
+            </div>
 
             {renderNavButtons({
                 showBack: true,

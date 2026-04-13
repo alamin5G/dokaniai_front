@@ -223,3 +223,10 @@ export interface OnboardingMyStatusResponse {
   hasCompletedOnboarding: boolean;
   incompleteBusinessId: string | null;
 }
+
+/** Response shape for GET /businesses/types/options */
+export interface BusinessTypeOptionResponse {
+  value: string;
+  displayNameEn: string;
+  displayNameBn: string;
+}
