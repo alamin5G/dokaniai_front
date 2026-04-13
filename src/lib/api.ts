@@ -5,6 +5,7 @@ import axios from 'axios';
 
 const PUBLIC_AUTH_FREE_ROUTES = new Set([
   '/',
+  '/pricing',
   '/login',
   '/register',
   '/forgot-password',
@@ -15,6 +16,16 @@ const PUBLIC_AUTH_FREE_ROUTES = new Set([
 
 function shouldSkipLoginRedirect(pathname: string): boolean {
   return PUBLIC_AUTH_FREE_ROUTES.has(pathname);
+}
+
+const PUBLIC_NO_AUTH_ENDPOINTS = ['/subscriptions/plans'];
+
+function isPublicNoAuthEndpoint(url?: string): boolean {
+  if (!url) {
+    return false;
+  }
+
+  return PUBLIC_NO_AUTH_ENDPOINTS.some((endpoint) => url.includes(endpoint));
 }
 
 function getPreferredLocale(): string {
@@ -48,9 +59,10 @@ const apiClient = axios.create({
 
 // Request interceptor to attach token
 apiClient.interceptors.request.use((config) => {
+  const publicNoAuthRequest = isPublicNoAuthEndpoint(config.url);
   let { accessToken } = useAuthStore.getState();
 
-  if (!accessToken && typeof window !== 'undefined') {
+  if (!publicNoAuthRequest && !accessToken && typeof window !== 'undefined') {
     try {
       const raw = localStorage.getItem('dokaniai-auth-storage');
       if (raw) {
@@ -60,7 +72,7 @@ apiClient.interceptors.request.use((config) => {
     } catch { /* ignore */ }
   }
 
-  if (accessToken) {
+  if (!publicNoAuthRequest && accessToken) {
     config.headers.Authorization = `Bearer ${accessToken}`;
   }
   config.headers['Accept-Language'] = getPreferredLocale();
@@ -76,6 +88,11 @@ apiClient.interceptors.response.use(
   (response) => response,
   async (error) => {
     const originalRequest = error.config;
+    const publicNoAuthRequest = isPublicNoAuthEndpoint(originalRequest?.url);
+
+    if (publicNoAuthRequest) {
+      return Promise.reject(error);
+    }
 
     // If 401 Unauthorized and we haven't already retried
     if (error.response?.status === 401 && !originalRequest._retry) {

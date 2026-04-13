@@ -57,7 +57,12 @@ export function PricingSection() {
 
   const [plans, setPlans] = useState<Plan[]>([]);
   const [currentSubscription, setCurrentSubscription] = useState<Subscription | null>(null);
-  const isAuthenticated = hasAccessToken();
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [plansStatus, setPlansStatus] = useState<"loading" | "ready" | "error">("loading");
+
+  useEffect(() => {
+    setIsAuthenticated(hasAccessToken());
+  }, []);
 
   useEffect(() => {
     let cancelled = false;
@@ -67,8 +72,11 @@ export function PricingSection() {
         const data = await getAvailablePlans();
         if (cancelled) return;
         setPlans(data.filter((plan) => plan.isActive).sort((a, b) => a.tierLevel - b.tierLevel));
+        setPlansStatus("ready");
       } catch {
-        // Keep static fallback if API is unavailable.
+        if (!cancelled) {
+          setPlansStatus("error");
+        }
       }
     };
 
@@ -124,7 +132,7 @@ export function PricingSection() {
     router.push(`/subscription/upgrade?plan=${encodeURIComponent(plan.id)}`);
   };
 
-  if (plans.length === 0) {
+  if (plansStatus === "error") {
     return (
       <section className="py-24 px-6">
         <div className="max-w-7xl mx-auto">
@@ -135,6 +143,23 @@ export function PricingSection() {
           </div>
           <div className="rounded-2xl bg-surface-container-low p-8 text-center text-sm text-on-surface-variant">
             {s("pricing.unavailable")}
+          </div>
+        </div>
+      </section>
+    );
+  }
+
+  if (plansStatus === "loading" && plans.length === 0) {
+    return (
+      <section className="py-24 px-6">
+        <div className="max-w-7xl mx-auto">
+          <div className="text-center mb-20 space-y-4">
+            <span className="text-secondary font-bold tracking-widest uppercase text-xs">{t("label")}</span>
+            <h2 className="text-4xl font-black text-primary font-headline">{t("title")}</h2>
+            <p className="text-on-surface-variant text-lg font-medium">{t("subtitle")}</p>
+          </div>
+          <div className="rounded-2xl bg-surface-container-low p-8 text-center text-sm text-on-surface-variant">
+            {s("pricing.loading")}
           </div>
         </div>
       </section>
@@ -153,14 +178,14 @@ export function PricingSection() {
         <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-4">
           {plans.map((plan) => {
             const isHighlighted = plan.highlight === true;
-            const isEnterprise = plan.name === "ENTERPRISE";
+            const isEnterprise = plan.id === "ENTERPRISE";
             const action = resolvePlanAction(currentPlan, plan, isAuthenticated);
             const isDisabled = action === "CURRENT";
 
             return (
               <div
                 key={plan.id}
-                data-testid={`plan-card-${plan.name.toLowerCase()}`}
+                data-testid={`plan-card-${plan.id.toLowerCase()}`}
                 className={`relative p-6 rounded-[1.5rem] flex flex-col justify-between shadow-sm transition-transform hover:scale-[1.02] ${
                   isEnterprise
                     ? "bg-surface-container-low"
@@ -198,7 +223,7 @@ export function PricingSection() {
                 </div>
 
                 <button
-                  data-testid={`plan-action-${plan.name.toLowerCase()}`}
+                  data-testid={`plan-action-${plan.id.toLowerCase()}`}
                   type="button"
                   disabled={isDisabled || isEnterprise}
                   onClick={() => handlePlanAction(plan, action)}

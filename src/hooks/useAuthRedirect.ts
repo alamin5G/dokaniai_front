@@ -2,7 +2,7 @@
 
 import { consumeRedirectAfterLogin } from "@/lib/authFlow";
 import { getPreferredWorkspacePath } from "@/lib/shopRouting";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 
 const AUTH_STORAGE_KEY = "dokaniai-auth-storage";
 
@@ -39,11 +39,20 @@ function getStoredUserRoleRaw(): string | null {
  * Reads directly from localStorage for maximum reliability.
  */
 export function useRedirectIfAuthenticated(redirectTo?: string) {
-  const isClient = typeof window !== "undefined";
-  const token = isClient ? getAccessTokenRaw() : null;
-  const isAuthenticated = token != null;
+  const [hydrated, setHydrated] = useState(false);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
 
   useEffect(() => {
+    setHydrated(true);
+    setIsAuthenticated(getAccessTokenRaw() != null);
+  }, []);
+
+  useEffect(() => {
+    if (!hydrated) {
+      return;
+    }
+
+    const token = getAccessTokenRaw();
     if (token) {
       const role = getStoredUserRoleRaw();
       const pendingRedirect = role === "ADMIN" || role === "SUPER_ADMIN" ? null : consumeRedirectAfterLogin();
@@ -51,7 +60,7 @@ export function useRedirectIfAuthenticated(redirectTo?: string) {
       // Hard navigation for reliability
       window.location.replace(target);
     }
-  }, [redirectTo, token]);
+  }, [hydrated, redirectTo]);
 
-  return { hydrated: isClient, isAuthenticated };
+  return { hydrated, isAuthenticated };
 }
