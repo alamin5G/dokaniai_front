@@ -1,4 +1,4 @@
-import ShopFeaturePage from "@/components/dashboard/ShopFeaturePage";
+import DueLedgerWorkspace from "@/components/due/DueLedgerWorkspace";
 
 export default async function ShopDueLedgerPage({
     params,
@@ -6,11 +6,5 @@ export default async function ShopDueLedgerPage({
     params: Promise<{ businessId: string }>;
 }) {
     const { businessId } = await params;
-    return (
-        <ShopFeaturePage
-            businessId={businessId}
-            title="Due Ledger"
-            description="Monitor customer dues, reminders, and collection progress for the selected shop."
-        />
-    );
+    return <DueLedgerWorkspace businessId={businessId} />;
 }

@@ -1079,6 +1079,121 @@
         "count": "সংখ্যা",
         "percent": "%"
       }
+    },
+    "dueLedger": {
+      "title": "বাকী খাতা",
+      "subtitle": "কাস্টমার ক্রেডিট ব্যবস্থাপনা",
+      "stats": {
+        "totalDue": "মোট বকেয়া",
+        "todayRecovery": "আজকের সংগ্রহ",
+        "customerCount": "বকেয়াদার কাস্টমার",
+        "overdueCount": "৩০+ দিনের বকেয়া"
+      },
+      "alert": {
+        "title": "হাই অ্যালার্ট: দীর্ঘমেয়াদী বকেয়া",
+        "description": "জন কাস্টমারের বকেয়া ৩০ দিনের বেশি সময় ধরে পরিশোধিত হয়নি। অতিসত্বর যোগাযোগ করার পরামর্শ দেওয়া হচ্ছে।",
+        "aiReminder": "AI দিয়ে রিমাইন্ডার পাঠান",
+        "viewList": "তালিকায় দেখুন"
+      },
+      "customerList": {
+        "title": "বকেয়া তালিকা",
+        "subtitle": "পেমেন্ট গুরুত্ব অনুযায়ী সাজানো",
+        "viewAll": "সব কাস্টমার দেখুন",
+        "totalDue": "মোট বকেয়া",
+        "lastPayment": "শেষ পেমেন্ট:",
+        "never": "কখনও না",
+        "daysAgo": "দিন আগে",
+        "addBaki": "বাকি যোগ",
+        "collectPayment": "পেমেন্ট নিন",
+        "whatsappReminder": "WhatsApp রিমাইন্ডার",
+        "priority": {
+          "urgent": "অতি জরুরি",
+          "regular": "নিয়মিত",
+          "new": "নতুন"
+        }
+      },
+      "transactionForm": {
+        "title": "লেনদেন রেকর্ড",
+        "editTitle": "লেনদেন সম্পাদনা",
+        "selectCustomer": "কাস্টমার নির্বাচন করুন",
+        "searchCustomer": "কাস্টমার খুঁজুন...",
+        "type": "লেনদেনের ধরন",
+        "baki": "বাকী (ক্রেডিট)",
+        "joma": "জমা (পেমেন্ট)",
+        "adjustment": "এডজাস্টমেন্ট",
+        "amount": "পরিমাণ (৳)",
+        "description": "বিবরণ",
+        "descriptionPlaceholder": "এই লেনদেনের উদ্দেশ্য কী?",
+        "paymentMethod": "পেমেন্ট মাধ্যম",
+        "cash": "নগদ",
+        "bkash": "বিকাশ",
+        "nagad": "নগদ",
+        "rocket": "রকেট",
+        "bankTransfer": "ব্যাংক ট্রান্সফার",
+        "other": "অন্যান্য",
+        "submit": "লেনদেন রেকর্ড করুন",
+        "cancel": "বাতিল"
+      },
+      "customerForm": {
+        "title": "নতুন কাস্টমার",
+        "editTitle": "কাস্টমার সম্পাদনা",
+        "name": "কাস্টমারের নাম",
+        "namePlaceholder": "কাস্টমারের নাম লিখুন",
+        "phone": "ফোন নম্বর",
+        "phonePlaceholder": "01XXXXXXXXX",
+        "address": "ঠিকানা",
+        "addressPlaceholder": "কাস্টমারের ঠিকানা",
+        "creditLimit": "ক্রেডিট লিমিট (৳)",
+        "creditLimitPlaceholder": "ঐচ্ছিক ক্রেডিট লিমিট",
+        "submit": "কাস্টমার যোগ করুন",
+        "cancel": "বাতিল"
+      },
+      "ledger": {
+        "title": "কাস্টমার লেজার",
+        "balance": "বর্তমান ব্যালেন্স",
+        "creditLimit": "ক্রেডিট লিমিট",
+        "date": "তারিখ",
+        "type": "ধরন",
+        "description": "বিবরণ",
+        "amount": "পরিমাণ",
+        "balance": "ব্যালেন্স",
+        "back": "তালিকায় ফিরুন"
+      },
+      "filter": {
+        "all": "সব",
+        "urgent": "জরুরি",
+        "regular": "নিয়মিত",
+        "new": "নতুন"
+      },
+      "pagination": {
+        "showing": "দেখাচ্ছে",
+        "of": "এর মধ্যে",
+        "customers": "কাস্টমার",
+        "prev": "আগে",
+        "next": "পরে"
+      },
+      "actions": {
+        "newCustomer": "নতুন কাস্টমার",
+        "recordBaki": "বাকি লেনদেন",
+        "recordJoma": "পেমেন্ট সংগ্রহ",
+        "export": "এক্সপোর্ট"
+      },
+      "messages": {
+        "bakiSuccess": "বাকী সফলভাবে রেকর্ড হয়েছে।",
+        "jomaSuccess": "পেমেন্ট সফলভাবে সংগ্রহ হয়েছে।",
+        "adjustmentSuccess": "এডজাস্টমেন্ট সফলভাবে রেকর্ড হয়েছে।",
+        "customerCreated": "কাস্টমার সফলভাবে যোগ হয়েছে।",
+        "customerUpdated": "কাস্টমার সফলভাবে আপডেট হয়েছে।",
+        "reminderSent": "WhatsApp রিমাইন্ডার লিংক তৈরি হয়েছে।",
+        "voidSuccess": "লেনদেন সফলভাবে বাতিল হয়েছে।",
+        "loadError": "বকেয়া তথ্য লোড করা যায়নি।",
+        "saveError": "লেনদেন সংরক্ষণ করা যায়নি।",
+        "customerError": "কাস্টমার সংরক্ষণ করা যায়নি।"
+      },
+      "voice": {
+        "placeholder": "যেমন: রহিমার কাছে ৫০০ টাকা বাকী",
+        "tooltip": "AI-পাওয়ার্ড ভয়েস/টেক্সট কমান্ড"
+      }
     }
   }
 }
