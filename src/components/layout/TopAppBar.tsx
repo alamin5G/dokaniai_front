@@ -50,11 +50,15 @@ export default function TopAppBar({ title, businessId }: TopAppBarProps) {
   const { activeBusiness, businesses, setActiveBusiness } = useBusinessStore();
 
   const [isSwitcherOpen, setIsSwitcherOpen] = useState(false);
-  const dropdownRef = useRef<HTMLDivElement>(null);
+  const desktopDropdownRef = useRef<HTMLDivElement>(null);
+  const mobileDropdownRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+      const target = event.target as Node;
+      const insideDesktop = desktopDropdownRef.current?.contains(target) ?? false;
+      const insideMobile = mobileDropdownRef.current?.contains(target) ?? false;
+      if (!insideDesktop && !insideMobile) {
         setIsSwitcherOpen(false);
       }
     }
@@ -65,6 +69,7 @@ export default function TopAppBar({ title, businessId }: TopAppBarProps) {
 
   const activeBusinesses = businesses.filter((business) => business.status === "ACTIVE");
   const canSwitchBusiness = Boolean(businessId) && activeBusinesses.length > 1;
+  const activeBusinessName = activeBusiness?.name ?? activeBusinesses.find((business) => business.id === businessId)?.name ?? "Business";
 
   const handleSwitchBusiness = (nextBusinessId: string) => {
     const nextBusiness = activeBusinesses.find((business) => business.id === nextBusinessId);
@@ -85,7 +90,54 @@ export default function TopAppBar({ title, businessId }: TopAppBarProps) {
       {/* Left: mobile logo / desktop breadcrumb */}
       <div className="flex items-center gap-3">
         <div className="md:hidden">
-          <h1 className="text-xl font-bold text-primary">DokaniAI</h1>
+          {businessId ? (
+            <div className="flex items-center gap-2">
+              <button
+                type="button"
+                onClick={() => router.push("/businesses")}
+                className="inline-flex h-9 w-9 items-center justify-center rounded-full bg-surface-container text-on-surface"
+                aria-label={t("dashboard")}
+              >
+                <span className="material-symbols-outlined text-lg">menu</span>
+              </button>
+
+              <div className="relative" ref={mobileDropdownRef}>
+                <button
+                  type="button"
+                  onClick={() => setIsSwitcherOpen((prev) => !prev)}
+                  className="inline-flex max-w-[52vw] items-center gap-1 rounded-full bg-surface-container px-3 py-2 text-sm font-semibold text-on-surface"
+                  aria-expanded={isSwitcherOpen}
+                  aria-haspopup="listbox"
+                >
+                  <span className="material-symbols-outlined text-base">storefront</span>
+                  <span className="truncate">{activeBusinessName}</span>
+                  {canSwitchBusiness ? (
+                    <span className="material-symbols-outlined text-base">expand_more</span>
+                  ) : null}
+                </button>
+
+                {isSwitcherOpen && canSwitchBusiness && (
+                  <div className="absolute left-0 mt-2 w-56 rounded-xl bg-surface-container-lowest py-1.5 shadow-xl z-50">
+                    {activeBusinesses.map((business) => (
+                      <button
+                        key={business.id}
+                        type="button"
+                        onClick={() => handleSwitchBusiness(business.id)}
+                        className={`w-full px-3 py-2 text-left text-sm transition-colors ${business.id === activeBusiness?.id
+                            ? "text-primary font-semibold bg-primary/10"
+                            : "text-on-surface hover:bg-surface-container"
+                          }`}
+                      >
+                        {business.name}
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </div>
+          ) : (
+            <h1 className="text-xl font-bold text-primary">DokaniAI</h1>
+          )}
         </div>
         <div className="hidden md:block">
           <p className="text-on-surface-variant font-medium text-sm">
@@ -107,7 +159,7 @@ export default function TopAppBar({ title, businessId }: TopAppBarProps) {
         )}
 
         {canSwitchBusiness && (
-          <div className="relative" ref={dropdownRef}>
+          <div className="relative" ref={desktopDropdownRef}>
             <button
               type="button"
               onClick={() => setIsSwitcherOpen((prev) => !prev)}
@@ -139,7 +191,9 @@ export default function TopAppBar({ title, businessId }: TopAppBarProps) {
           </div>
         )}
 
-        <LanguageSwitcher className="!px-2 !py-2" />
+        <div className="hidden md:block">
+          <LanguageSwitcher className="!px-2 !py-2" />
+        </div>
 
         <button
           type="button"

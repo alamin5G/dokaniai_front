@@ -152,6 +152,23 @@ test("authenticated user sees current plan and upgrade actions", async ({ page }
     });
   });
 
+  await page.route("**/subscriptions/validate-downgrade", async (route) => {
+    await route.fulfill({
+      status: 200,
+      contentType: "application/json",
+      body: JSON.stringify({
+        success: true,
+        data: {
+          canDowngrade: true,
+          businessLimitOk: 1,
+          productLimitOk: 1,
+          warnings: [],
+          actions: [],
+        },
+      }),
+    });
+  });
+
   await page.goto("/pricing");
 
   await expect(page.getByTestId("quick-reference-table")).toBeVisible();
@@ -159,6 +176,9 @@ test("authenticated user sees current plan and upgrade actions", async ({ page }
   await expect(page.getByTestId("plan-action-plan-basic")).toBeDisabled();
   await expect(page.getByTestId("plan-action-plan-pro")).toBeEnabled();
   await expect(page.getByTestId("plan-action-plan-plus")).toBeEnabled();
+
+  await page.getByTestId("plan-action-plan-ft1").click();
+  await expect(page).toHaveURL(/\/subscription\/downgrade\?plan=plan-ft1/);
 });
 
 test("registered phone user with pending upgrade is redirected to upgrade after OTP verification", async ({ page }) => {
@@ -376,4 +396,3 @@ test("verified email user resumes pending upgrade after login", async ({ page })
 
   await expect(page).toHaveURL(/\/subscription\/upgrade\?plan=plan-plus/);
 });
-

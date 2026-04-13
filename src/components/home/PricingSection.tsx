@@ -177,7 +177,11 @@ export function PricingSection() {
       return;
     }
 
-    router.push(`/subscription/upgrade?plan=${encodeURIComponent(plan.id)}`);
+    const targetPath = action === "DOWNGRADE"
+      ? `/subscription/downgrade?plan=${encodeURIComponent(plan.id)}`
+      : `/subscription/upgrade?plan=${encodeURIComponent(plan.id)}`;
+
+    router.push(targetPath);
   };
 
 

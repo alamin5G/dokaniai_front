@@ -749,6 +749,28 @@
         "paymentInitFailed": "Could not initialize payment."
       }
     },
+    "downgrade": {
+      "title": "Subscription Downgrade",
+      "subtitle": "Choose a lower plan, review validation details, and schedule the downgrade.",
+      "loading": "Loading downgrade options...",
+      "noLowerPlan": "No lower-tier plan is available for the current subscription.",
+      "planSelection": "Downgrade plan",
+      "currentPlan": "Current plan",
+      "targetPlan": "Target plan",
+      "validationTitle": "Downgrade validation",
+      "validationLoading": "Checking current usage against target plan limits...",
+      "businessLimitOk": "Business limit check",
+      "productLimitOk": "Product limit check",
+      "warnings": "Warnings",
+      "actions": "Required actions",
+      "confirm": "Schedule downgrade",
+      "scheduled": "Downgrade scheduled successfully.",
+      "errors": {
+        "loadFailed": "Could not load downgrade data.",
+        "validationFailed": "Could not validate the selected downgrade plan.",
+        "scheduleFailed": "Could not schedule the downgrade."
+      }
+    },
     "payment": {
       "title": "Payment Status",
       "subtitle": "Track your subscription payment status here.",

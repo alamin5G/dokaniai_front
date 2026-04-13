@@ -63,6 +63,14 @@ export interface PlanLimits {
   textNlpEnabled: boolean;
 }
 
+export interface DowngradeValidation {
+  canDowngrade: boolean;
+  businessLimitOk: number;
+  productLimitOk: number;
+  warnings: string[];
+  actions: string[];
+}
+
 export interface CouponValidation {
   valid: boolean;
   error: string | null;

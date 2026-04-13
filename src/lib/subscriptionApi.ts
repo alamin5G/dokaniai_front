@@ -3,6 +3,7 @@ import { getApiErrorMessage } from "@/lib/apiError";
 import type {
   AppliedCoupon,
   CouponValidation,
+  DowngradeValidation,
   MfsType,
   PaymentInitializeResponse,
   PaymentIntentStatusResponse,
@@ -33,6 +34,21 @@ export async function getCurrentSubscription(): Promise<Subscription> {
 
 export async function getPlanLimits(): Promise<PlanLimits> {
   const response = await apiClient.get<ApiSuccess<PlanLimits>>("/subscriptions/limits");
+  return unwrap(response);
+}
+
+export async function validateDowngrade(planId: string): Promise<DowngradeValidation> {
+  const response = await apiClient.post<ApiSuccess<DowngradeValidation>>("/subscriptions/validate-downgrade", {
+    planId,
+  });
+  return unwrap(response);
+}
+
+export async function scheduleDowngrade(planId: string): Promise<Subscription> {
+  const response = await apiClient.post<ApiSuccess<Subscription>>("/subscriptions/downgrade", {
+    planId,
+    archiveStrategy: "ARCHIVE",
+  });
   return unwrap(response);
 }
 
