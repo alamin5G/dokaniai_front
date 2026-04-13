@@ -805,5 +805,131 @@
         "resubmitFailed": "পুনরায় সাবমিট ব্যর্থ।"
       }
     }
+  },
+  "shop": {
+    "products": {
+      "label": "স্টক ম্যানেজমেন্ট",
+      "title": "পণ্য ইনভেন্টরি",
+      "subtitle": "{businessName}-র পণ্য, দাম, স্টক অ্যালার্ট এবং দ্রুত এন্ট্রি এক জায়গা থেকে চালান।",
+      "stats": {
+        "totalProducts": "মোট পণ্য",
+        "inventoryValue": "মোট ইনভেন্টরি ভ্যালু (৳)",
+        "stockAlerts": "স্টক অ্যালার্ট",
+        "active": "সক্রিয় {count}",
+        "stockOut": "স্টক আউট {count}",
+        "costBased": "ক্রয়মূল্য ভিত্তিক হিসাব",
+        "realTimeUpdate": "রিয়েল-টাইম আপডেট",
+        "trendUp": "গত মাস থেকে {percent}% বৃদ্ধি"
+      },
+      "insight": {
+        "title": "এআই স্টক বিশ্লেষণ",
+        "subtitle": "লো স্টক আর ইনভেন্টরি চাপ এক নজরে",
+        "totalAlerts": "মোট অ্যালার্ট {count}",
+        "noLowStock": "এই মুহূর্তে কোনো low-stock item নেই।",
+        "threshold": "থ্রেশহোল্ড {count}",
+        "orderSchedule": "অর্ডার শিডিউল করুন"
+      },
+      "table": {
+        "title": "পণ্য তালিকা",
+        "subtitle": "ব্যবসার live catalog, stock position আর selling margin এখান থেকে দেখুন।",
+        "product": "পণ্য",
+        "stock": "স্টক",
+        "costPrice": "ক্রয় মূল্য (৳)",
+        "sellPrice": "বিক্রয় মূল্য (৳)",
+        "margin": "মার্জিন",
+        "status": "অবস্থা",
+        "action": "অ্যাকশন",
+        "loading": "পণ্য তালিকা লোড হচ্ছে...",
+        "empty": "কোনো পণ্য পাওয়া যায়নি।",
+        "showing": "মোট {total} পণ্যের মধ্যে {shown}টি দেখানো হচ্ছে।",
+        "sku": "SKU {sku}",
+        "skuBarcode": "SKU {sku} • Barcode {barcode}"
+      },
+      "status": {
+        "ACTIVE": "পর্যাপ্ত",
+        "LOW_STOCK": "অল্প স্টক",
+        "OUT_OF_STOCK": "স্টক আউট",
+        "ARCHIVED": "আর্কাইভড"
+      },
+      "filter": {
+        "all": "সব অবস্থা",
+        "allCategories": "সব ক্যাটাগরি",
+        "search": "নাম বা SKU দিয়ে খুঁজুন"
+      },
+      "pagination": {
+        "prev": "আগের",
+        "next": "পরের",
+        "page": "{current} / {total}"
+      },
+      "form": {
+        "createTitle": "নতুন পণ্য যোগ করুন",
+        "editTitle": "পণ্য সম্পাদনা",
+        "editProductName": "{name} সম্পাদনা",
+        "quickEntry": "দ্রুত এন্ট্রি",
+        "name": "পণ্যের নাম",
+        "namePlaceholder": "যেমন মিনিকেট চাল",
+        "sku": "SKU",
+        "skuPlaceholder": "ফাঁকা রাখলে auto হবে",
+        "barcode": "বারকোড",
+        "barcodePlaceholder": "ঐচ্ছিক",
+        "description": "সংক্ষিপ্ত বিবরণ",
+        "descriptionPlaceholder": "পণ্যের ছোট নোট বা বৈশিষ্ট্য",
+        "unit": "ইউনিট",
+        "unitPlaceholder": "kg / piece / box",
+        "initialStock": "শুরুর স্টক",
+        "costPrice": "ক্রয় মূল্য",
+        "sellPrice": "বিক্রয় মূল্য",
+        "reorderPoint": "রিঅর্ডার পয়েন্ট",
+        "category": "ক্যাটাগরি",
+        "categoryPlaceholder": "ক্যাটাগরি নির্বাচন করুন",
+        "subCategory": "সাব-ক্যাটাগরি",
+        "subCategoryPlaceholder": "সাব-ক্যাটাগরি নির্বাচন করুন",
+        "submit": {
+          "create": "পণ্য তৈরি করুন",
+          "edit": "পরিবর্তন সংরক্ষণ",
+          "saving": "সংরক্ষণ হচ্ছে..."
+        },
+        "newForm": "নতুন ফর্ম"
+      },
+      "actions": {
+        "addNew": "নতুন পণ্য যোগ করুন",
+        "csvImport": "CSV ইমপোর্ট",
+        "importing": "ইমপোর্ট হচ্ছে...",
+        "templateDownload": "টেমপ্লেট ডাউনলোড",
+        "csvExport": "CSV এক্সপোর্ট",
+        "edit": "এডিট",
+        "archive": "আর্কাইভ",
+        "filter": "ফিল্টার",
+        "export": "এক্সপোর্ট"
+      },
+      "messages": {
+        "created": "নতুন পণ্য যোগ করা হয়েছে।",
+        "updated": "পণ্যের তথ্য আপডেট হয়েছে।",
+        "archived": "পণ্য আর্কাইভ করা হয়েছে।",
+        "importResult": "ইমপোর্ট শেষ। সফল {success}, ব্যর্থ {failed}, মোট {total} লাইন।",
+        "loadError": "পণ্য তথ্য লোড করা যায়নি।",
+        "saveError": "পণ্য সংরক্ষণ করা যায়নি।",
+        "archiveError": "পণ্য আর্কাইভ করা যায়নি।",
+        "importError": "CSV ইমপোর্ট করা যায়নি।",
+        "exportError": "CSV এক্সপোর্ট করা যায়নি।",
+        "templateError": "টেমপ্লেট ডাউনলোড করা যায়নি।",
+        "importLocked": "CSV bulk import ফিচারটি আপনার বর্তমান প্ল্যানে লক আছে। Pro বা তার উপরের প্ল্যানে আপগ্রেড করুন।",
+        "confirmArchive": "\"{name}\" আর্কাইভ করতে চান?"
+      },
+      "voice": {
+        "title": "দ্রুত কমান্ড",
+        "example": "উদাহরণ: \"মিনিকেট চাল ২৫ কেজি যোগ করো\" অথবা \"লো স্টক পণ্য দেখাও\"",
+        "comingSoon": "ভয়েস ও NLP product flow next step",
+        "placeholder": "বলুন: '১০ কেজি চাল যোগ করো'..."
+      },
+      "sidebar": {
+        "inventoryStatus": "ইনভেন্টরি অবস্থা",
+        "activeProducts": "সক্রিয় পণ্য",
+        "archivedProducts": "আর্কাইভড",
+        "lowStockRule": "Low-stock rule",
+        "lowStockRuleDesc": "Product reorder point আর business threshold দুইটাই এখন alert logic-e ধরা হচ্ছে।",
+        "reorderNeeded": "রিঅর্ডার প্রয়োজন"
+      }
+    }
   }
 }

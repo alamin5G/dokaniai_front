@@ -805,5 +805,131 @@
         "resubmitFailed": "Resubmit failed."
       }
     }
+  },
+  "shop": {
+    "products": {
+      "label": "Stock Management",
+      "title": "Product Inventory",
+      "subtitle": "Manage products, prices, stock alerts and quick entry for {businessName} from one place.",
+      "stats": {
+        "totalProducts": "Total Products",
+        "inventoryValue": "Total Inventory Value (৳)",
+        "stockAlerts": "Stock Alerts",
+        "active": "Active {count}",
+        "stockOut": "Out of Stock {count}",
+        "costBased": "Based on cost price",
+        "realTimeUpdate": "Real-time update",
+        "trendUp": "{percent}% increase from last month"
+      },
+      "insight": {
+        "title": "AI Stock Analysis",
+        "subtitle": "Low stock and inventory pressure at a glance",
+        "totalAlerts": "Total Alerts {count}",
+        "noLowStock": "No low-stock items at the moment.",
+        "threshold": "Threshold {count}",
+        "orderSchedule": "Schedule Order"
+      },
+      "table": {
+        "title": "Product List",
+        "subtitle": "Live catalog, stock position and selling margin for your business.",
+        "product": "Product",
+        "stock": "Stock",
+        "costPrice": "Cost Price (৳)",
+        "sellPrice": "Sell Price (৳)",
+        "margin": "Margin",
+        "status": "Status",
+        "action": "Action",
+        "loading": "Loading products...",
+        "empty": "No products found.",
+        "showing": "Showing {shown} of {total} products on this page.",
+        "sku": "SKU {sku}",
+        "skuBarcode": "SKU {sku} • Barcode {barcode}"
+      },
+      "status": {
+        "ACTIVE": "Sufficient",
+        "LOW_STOCK": "Low Stock",
+        "OUT_OF_STOCK": "Out of Stock",
+        "ARCHIVED": "Archived"
+      },
+      "filter": {
+        "all": "All Status",
+        "allCategories": "All Categories",
+        "search": "Search by name or SKU"
+      },
+      "pagination": {
+        "prev": "Previous",
+        "next": "Next",
+        "page": "{current} / {total}"
+      },
+      "form": {
+        "createTitle": "Add New Product",
+        "editTitle": "Edit Product",
+        "editProductName": "Edit {name}",
+        "quickEntry": "Quick Entry",
+        "name": "Product Name",
+        "namePlaceholder": "e.g. Miniket Rice",
+        "sku": "SKU",
+        "skuPlaceholder": "Leave empty for auto",
+        "barcode": "Barcode",
+        "barcodePlaceholder": "Optional",
+        "description": "Description",
+        "descriptionPlaceholder": "Short note or features",
+        "unit": "Unit",
+        "unitPlaceholder": "kg / piece / box",
+        "initialStock": "Initial Stock",
+        "costPrice": "Cost Price",
+        "sellPrice": "Sell Price",
+        "reorderPoint": "Reorder Point",
+        "category": "Category",
+        "categoryPlaceholder": "Select category",
+        "subCategory": "Sub-Category",
+        "subCategoryPlaceholder": "Select sub-category",
+        "submit": {
+          "create": "Create Product",
+          "edit": "Save Changes",
+          "saving": "Saving..."
+        },
+        "newForm": "New Form"
+      },
+      "actions": {
+        "addNew": "Add New Product",
+        "csvImport": "CSV Import",
+        "importing": "Importing...",
+        "templateDownload": "Download Template",
+        "csvExport": "CSV Export",
+        "edit": "Edit",
+        "archive": "Archive",
+        "filter": "Filter",
+        "export": "Export"
+      },
+      "messages": {
+        "created": "New product added.",
+        "updated": "Product updated.",
+        "archived": "Product archived.",
+        "importResult": "Import done. Success: {success}, Failed: {failed}, Total: {total} rows.",
+        "loadError": "Failed to load products.",
+        "saveError": "Failed to save product.",
+        "archiveError": "Failed to archive product.",
+        "importError": "CSV import failed.",
+        "exportError": "CSV export failed.",
+        "templateError": "Template download failed.",
+        "importLocked": "CSV bulk import is locked on your current plan. Upgrade to Pro or above.",
+        "confirmArchive": "Archive \"{name}\"?"
+      },
+      "voice": {
+        "title": "Quick Command",
+        "example": "Example: \"Add 25kg miniket rice\" or \"Show low stock products\"",
+        "comingSoon": "Voice & NLP product flow coming soon",
+        "placeholder": "Say: 'Add 10kg rice'..."
+      },
+      "sidebar": {
+        "inventoryStatus": "Inventory Status",
+        "activeProducts": "Active Products",
+        "archivedProducts": "Archived",
+        "lowStockRule": "Low-stock rule",
+        "lowStockRuleDesc": "Product reorder point and business threshold are both checked in alert logic.",
+        "reorderNeeded": "Reorder Needed"
+      }
+    }
   }
 }
