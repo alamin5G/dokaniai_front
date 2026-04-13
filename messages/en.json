@@ -1193,6 +1193,121 @@
       "voice": {
         "placeholder": "e.g. Rahima 500 taka due",
         "tooltip": "AI-powered voice/text command"
+      }
+    },
+    "dueLedger": {
+      "title": "Due Ledger",
+      "subtitle": "বাকী খাতা — Customer credit management",
+      "stats": {
+        "totalDue": "Total Outstanding",
+        "todayRecovery": "Today's Collection",
+        "customerCount": "Customers with Due",
+        "overdueCount": "Overdue (30+ days)"
+      },
+      "alert": {
+        "title": "High Alert: Long-term Dues",
+        "description": "customers have outstanding dues for over 30 days. Immediate follow-up recommended.",
+        "aiReminder": "Send AI Reminders",
+        "viewList": "View List"
+      },
+      "customerList": {
+        "title": "Due Customers",
+        "subtitle": "Sorted by payment priority",
+        "viewAll": "View All Customers",
+        "totalDue": "Total Due",
+        "lastPayment": "Last payment:",
+        "never": "Never",
+        "daysAgo": "days ago",
+        "addBaki": "Add Due",
+        "collectPayment": "Collect",
+        "whatsappReminder": "WhatsApp Reminder",
+        "priority": {
+          "urgent": "Urgent",
+          "regular": "Regular",
+          "new": "New"
+        }
+      },
+      "transactionForm": {
+        "title": "Record Transaction",
+        "editTitle": "Edit Transaction",
+        "selectCustomer": "Select Customer",
+        "searchCustomer": "Search customer...",
+        "type": "Transaction Type",
+        "baki": "Baki (Due)",
+        "joma": "Joma (Payment)",
+        "adjustment": "Adjustment",
+        "amount": "Amount (৳)",
+        "description": "Description",
+        "descriptionPlaceholder": "What is this transaction for?",
+        "paymentMethod": "Payment Method",
+        "cash": "Cash",
+        "bkash": "bKash",
+        "nagad": "Nagad",
+        "rocket": "Rocket",
+        "bankTransfer": "Bank Transfer",
+        "other": "Other",
+        "submit": "Record Transaction",
+        "cancel": "Cancel"
+      },
+      "customerForm": {
+        "title": "New Customer",
+        "editTitle": "Edit Customer",
+        "name": "Customer Name",
+        "namePlaceholder": "Enter customer name",
+        "phone": "Phone Number",
+        "phonePlaceholder": "01XXXXXXXXX",
+        "address": "Address",
+        "addressPlaceholder": "Customer address",
+        "creditLimit": "Credit Limit (৳)",
+        "creditLimitPlaceholder": "Optional credit limit",
+        "submit": "Add Customer",
+        "cancel": "Cancel"
+      },
+      "ledger": {
+        "title": "Customer Ledger",
+        "balance": "Current Balance",
+        "creditLimit": "Credit Limit",
+        "date": "Date",
+        "type": "Type",
+        "description": "Description",
+        "amount": "Amount",
+        "balance": "Balance",
+        "back": "Back to List"
+      },
+      "filter": {
+        "all": "All",
+        "urgent": "Urgent",
+        "regular": "Regular",
+        "new": "New"
+      },
+      "pagination": {
+        "showing": "Showing",
+        "of": "of",
+        "customers": "customers",
+        "prev": "Previous",
+        "next": "Next"
+      },
+      "actions": {
+        "newCustomer": "New Customer",
+        "recordBaki": "Record Due",
+        "recordJoma": "Collect Payment",
+        "export": "Export"
+      },
+      "messages": {
+        "bakiSuccess": "Due recorded successfully.",
+        "jomaSuccess": "Payment collected successfully.",
+        "adjustmentSuccess": "Adjustment recorded successfully.",
+        "customerCreated": "Customer added successfully.",
+        "customerUpdated": "Customer updated successfully.",
+        "reminderSent": "WhatsApp reminder link generated.",
+        "voidSuccess": "Transaction voided successfully.",
+        "loadError": "Failed to load due data.",
+        "saveError": "Failed to save transaction.",
+        "customerError": "Failed to save customer."
+      },
+      "voice": {
+        "placeholder": "e.g. Rahima 500 taka due",
+        "tooltip": "AI-powered voice/text command"
       },
       "reports": {
         "title": "Reports",
