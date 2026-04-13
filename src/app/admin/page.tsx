@@ -1,9 +1,14 @@
 "use client";
 
 import apiClient from "@/lib/api";
-import { decideCategoryRequest, getPendingCategoryRequests } from "@/lib/categoryApi";
+import {
+  decideCategoryRequest,
+  getCategoriesByBusinessType,
+  getPendingCategoryRequests,
+} from "@/lib/categoryApi";
 import { useAuthStore } from "@/store/authStore";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+import type { CategoryResponse } from "@/types/category";
 import type { CategoryRequestResponse } from "@/types/categoryRequest";
 
 interface AdminProfile {
@@ -21,6 +26,11 @@ export default function AdminDashboardPage() {
   const [profile, setProfile] = useState<AdminProfile | null>(null);
   const [pendingRequests, setPendingRequests] = useState<CategoryRequestResponse[]>([]);
   const [moderatingId, setModeratingId] = useState<string | null>(null);
+  const [mergeForRequestId, setMergeForRequestId] = useState<string | null>(null);
+  const [mergeSearch, setMergeSearch] = useState("");
+  const [mergeSelectedCategoryId, setMergeSelectedCategoryId] = useState("");
+  const [categoriesByType, setCategoriesByType] = useState<Record<string, CategoryResponse[]>>({});
+  const [isMergeCategoryLoading, setIsMergeCategoryLoading] = useState(false);
 
   const loadPendingRequests = async () => {
     try {
@@ -63,14 +73,13 @@ export default function AdminDashboardPage() {
   const handleDecision = async (
     requestId: string,
     action: "APPROVE_GLOBAL" | "APPROVE_BUSINESS" | "MERGE" | "REJECT",
+    mergeCategoryId?: string,
   ) => {
-    let suggestedCategoryId: string | undefined;
+    const suggestedCategoryId: string | undefined = mergeCategoryId;
     let rejectionReason: string | undefined;
 
-    if (action === "MERGE") {
-      const input = window.prompt("Merge target category ID দিন:");
-      if (!input) return;
-      suggestedCategoryId = input;
+    if (action === "MERGE" && !suggestedCategoryId) {
+      return;
     }
 
     if (action === "REJECT") {
@@ -94,6 +103,42 @@ export default function AdminDashboardPage() {
       setModeratingId(null);
     }
   };
+
+  const openMergePicker = async (item: CategoryRequestResponse) => {
+    const businessType = (item.businessType || "OTHER").toUpperCase();
+    setMergeForRequestId(item.id);
+    setMergeSearch("");
+    setMergeSelectedCategoryId("");
+
+    if (categoriesByType[businessType]) {
+      return;
+    }
+
+    setIsMergeCategoryLoading(true);
+    try {
+      const rows = await getCategoriesByBusinessType(businessType);
+      setCategoriesByType((prev) => ({ ...prev, [businessType]: rows }));
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "Failed to load merge categories");
+    } finally {
+      setIsMergeCategoryLoading(false);
+    }
+  };
+
+  const mergeCandidates = useMemo(() => {
+    if (!mergeForRequestId) return [];
+    const request = pendingRequests.find((item) => item.id === mergeForRequestId);
+    if (!request) return [];
+
+    const businessType = (request.businessType || "OTHER").toUpperCase();
+    const all = categoriesByType[businessType] || [];
+    const q = mergeSearch.trim().toLowerCase();
+    if (!q) return all;
+
+    return all.filter((item) =>
+      item.nameBn.toLowerCase().includes(q) || (item.nameEn || "").toLowerCase().includes(q),
+    );
+  }, [categoriesByType, mergeForRequestId, mergeSearch, pendingRequests]);
 
   if (loading) {
     return <main className="min-h-screen bg-surface p-8 text-on-surface">Loading admin dashboard...</main>;
@@ -141,9 +186,53 @@ export default function AdminDashboardPage() {
                 <div className="mt-3 flex flex-wrap gap-2">
                   <button className="rounded-lg border px-3 py-1 text-xs" disabled={moderatingId === item.id} onClick={() => handleDecision(item.id, "APPROVE_GLOBAL")}>Approve GLOBAL</button>
                   <button className="rounded-lg border px-3 py-1 text-xs" disabled={moderatingId === item.id} onClick={() => handleDecision(item.id, "APPROVE_BUSINESS")}>Approve BUSINESS</button>
-                  <button className="rounded-lg border px-3 py-1 text-xs" disabled={moderatingId === item.id} onClick={() => handleDecision(item.id, "MERGE")}>Merge</button>
+                  <button className="rounded-lg border px-3 py-1 text-xs" disabled={moderatingId === item.id} onClick={() => openMergePicker(item)}>Merge</button>
                   <button className="rounded-lg border border-error px-3 py-1 text-xs text-error" disabled={moderatingId === item.id} onClick={() => handleDecision(item.id, "REJECT")}>Reject</button>
                 </div>
+
+                {mergeForRequestId === item.id ? (
+                  <div className="mt-3 rounded-lg border border-outline-variant/30 p-3">
+                    <p className="mb-2 text-xs text-on-surface-variant">Select merge target category</p>
+                    <input
+                      className="mb-2 w-full rounded-md border border-outline-variant/30 bg-surface px-2 py-1 text-sm"
+                      placeholder="Search category by name..."
+                      value={mergeSearch}
+                      onChange={(e) => setMergeSearch(e.target.value)}
+                    />
+                    <select
+                      className="w-full rounded-md border border-outline-variant/30 bg-surface px-2 py-1 text-sm"
+                      value={mergeSelectedCategoryId}
+                      onChange={(e) => setMergeSelectedCategoryId(e.target.value)}
+                      disabled={isMergeCategoryLoading}
+                    >
+                      <option value="">Select a category</option>
+                      {mergeCandidates.slice(0, 50).map((candidate) => (
+                        <option key={candidate.id} value={candidate.id}>
+                          {candidate.nameBn}{candidate.nameEn ? ` / ${candidate.nameEn}` : ""}
+                        </option>
+                      ))}
+                    </select>
+                    <div className="mt-2 flex gap-2">
+                      <button
+                        className="rounded-lg border px-3 py-1 text-xs"
+                        disabled={!mergeSelectedCategoryId || moderatingId === item.id}
+                        onClick={async () => {
+                          await handleDecision(item.id, "MERGE", mergeSelectedCategoryId);
+                          setMergeForRequestId(null);
+                          setMergeSelectedCategoryId("");
+                        }}
+                      >
+                        Confirm Merge
+                      </button>
+                      <button
+                        className="rounded-lg border px-3 py-1 text-xs"
+                        onClick={() => setMergeForRequestId(null)}
+                      >
+                        Cancel
+                      </button>
+                    </div>
+                  </div>
+                ) : null}
               </article>
             ))}
             {pendingRequests.length === 0 ? (
