@@ -116,6 +116,8 @@ test("unauthenticated pricing click stores pending upgrade and redirects to logi
   await page.goto("/pricing");
   await expect(page.getByTestId("quick-reference-table")).toBeVisible();
   await expect(page.getByTestId("feature-matrix-table")).toBeVisible();
+  await expect(page.getByTestId("plan-card-plan-enterprise")).toContainText("Custom");
+  await expect(page.getByTestId("plan-action-plan-basic")).toContainText("Buy Now");
   await page.getByTestId("plan-action-plan-pro").click();
 
   await expect(page).toHaveURL(/\/login$/);

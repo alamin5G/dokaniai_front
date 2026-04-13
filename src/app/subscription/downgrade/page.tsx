@@ -61,7 +61,7 @@ export default function SubscriptionDowngradePage() {
         const currentPlan = activePlans.find((plan) => plan.id === current.planId) ?? null;
         const lowerTierPlans = currentPlan == null
           ? []
-          : activePlans.filter((plan) => plan.tierLevel < currentPlan.tierLevel && plan.id !== "ENTERPRISE");
+          : activePlans.filter((plan) => plan.tierLevel < currentPlan.tierLevel && plan.name !== "ENTERPRISE");
 
         setPlans(activePlans);
         setCurrentSubscription(current);
@@ -95,7 +95,7 @@ export default function SubscriptionDowngradePage() {
 
   const downgradePlans = useMemo(() => {
     if (!currentPlan) return [];
-    return plans.filter((plan) => plan.tierLevel < currentPlan.tierLevel && plan.id !== "ENTERPRISE");
+    return plans.filter((plan) => plan.tierLevel < currentPlan.tierLevel && plan.name !== "ENTERPRISE");
   }, [currentPlan, plans]);
 
   const selectedPlan = useMemo(

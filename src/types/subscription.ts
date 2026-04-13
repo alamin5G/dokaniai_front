@@ -34,6 +34,7 @@ export interface Plan {
   features: Record<string, boolean> | null;
   isTrial: boolean;
   isActive: boolean;
+  customPricing?: boolean;
   highlight?: boolean;
   badge?: string | null;
 }

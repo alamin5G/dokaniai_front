@@ -160,7 +160,7 @@
       "title": "The Right Plan for Your Business",
       "subtitle": "Get all premium features at affordable prices",
       "quickReference": {
-        "title": "Quick Reference Table",
+        "title": "Plan Comparison",
         "columns": {
           "plan": "Plan",
           "price": "Price",
@@ -168,7 +168,7 @@
           "businesses": "Businesses",
           "products": "Products",
           "aiPerDay": "AI/Day",
-          "cta": "CTA"
+          "cta": "Action"
         },
         "days": "days",
         "yearly": "Yearly"
@@ -720,14 +720,20 @@
       "upgrade": "Upgrade",
       "downgrade": "Downgrade",
       "getStarted": "Get Started",
+      "startTrial": "Get Started",
+      "buyNow": "Buy Now",
       "free": "Free",
+      "customPrice": "Custom",
       "month": "month",
       "maxBusinesses": "Max businesses",
+      "maxProducts": "Max products",
       "aiPerDay": "AI/day",
       "unlimited": "Unlimited",
       "loading": "Loading plans...",
       "unavailable": "Plans are currently unavailable. Please try again later.",
-      "contactUs": "Contact Us"
+      "contactUs": "Contact Us",
+      "enterpriseEmail": "support@dokaniai.com",
+      "enterpriseEmailSubject": "Enterprise Plan Inquiry"
     },
     "upgrade": {
       "title": "Subscription Upgrade",

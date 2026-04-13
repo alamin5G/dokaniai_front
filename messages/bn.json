@@ -160,7 +160,7 @@
       "title": "আপনার ব্যবসার জন্য সঠিক প্ল্যান",
       "subtitle": "সাশ্রয়ী মূল্যে পান প্রিমিয়াম সব ফিচার",
       "quickReference": {
-        "title": "দ্রুত রেফারেন্স টেবিল",
+        "title": "সংক্ষিপ্ত প্ল্যান তুলনা",
         "columns": {
           "plan": "প্ল্যান",
           "price": "মূল্য",
@@ -168,7 +168,7 @@
           "businesses": "ব্যবসা",
           "products": "পণ্য",
           "aiPerDay": "AI/দিন",
-          "cta": "CTA"
+          "cta": "অ্যাকশন"
         },
         "days": "দিন",
         "yearly": "বার্ষিক"
@@ -720,14 +720,20 @@
       "upgrade": "আপগ্রেড",
       "downgrade": "ডাউনগ্রেড",
       "getStarted": "শুরু করুন",
+      "startTrial": "শুরু করুন",
+      "buyNow": "কিনুন",
       "free": "ফ্রি",
+      "customPrice": "কাস্টম",
       "month": "মাস",
       "maxBusinesses": "সর্বোচ্চ ব্যবসা",
+      "maxProducts": "সর্বোচ্চ পণ্য",
       "aiPerDay": "AI/দিন",
       "unlimited": "আনলিমিটেড",
       "loading": "প্ল্যান লোড হচ্ছে...",
       "unavailable": "প্ল্যান লোড করা যায়নি। পরে আবার চেষ্টা করুন।",
-      "contactUs": "যোগাযোগ করুন"
+      "contactUs": "যোগাযোগ করুন",
+      "enterpriseEmail": "support@dokaniai.com",
+      "enterpriseEmailSubject": "এন্টারপ্রাইজ প্ল্যান সম্পর্কে জিজ্ঞাসা"
     },
     "upgrade": {
       "title": "সাবস্ক্রিপশন আপগ্রেড",
