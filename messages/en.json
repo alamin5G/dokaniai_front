@@ -995,6 +995,90 @@
         "saleCreated": "Sale recorded successfully.",
         "saleCancelled": "Sale cancelled."
       }
+    },
+    "expenses": {
+      "title": "Expense Tracker",
+      "subtitle": "Track operating costs and keep your shop's expense ledger accurate.",
+      "stats": {
+        "thisMonth": "This Month",
+        "totalExpenses": "Total Expenses",
+        "expenseCount": "{count} transactions",
+        "topCategory": "Top: {category}"
+      },
+      "table": {
+        "title": "Expense Records",
+        "subtitle": "All business expenses with category breakdown.",
+        "description": "Description",
+        "category": "Category",
+        "amount": "Amount",
+        "date": "Date",
+        "action": "Action",
+        "loading": "Loading expenses...",
+        "empty": "No expenses found.",
+        "showing": "Showing {shown} of {total} expenses."
+      },
+      "form": {
+        "createTitle": "Record New Expense",
+        "editTitle": "Edit Expense",
+        "category": "Category",
+        "categoryPlaceholder": "Select category",
+        "customCategory": "Custom Category Name",
+        "customCategoryPlaceholder": "e.g. Office Tea",
+        "amount": "Amount (৳)",
+        "amountPlaceholder": "0",
+        "description": "Description",
+        "descriptionPlaceholder": "Brief note about this expense",
+        "date": "Expense Date",
+        "paymentMethod": "Payment Method",
+        "submit": {
+          "create": "Record Expense",
+          "edit": "Save Changes",
+          "saving": "Saving..."
+        },
+        "newForm": "New Form"
+      },
+      "categories": {
+        "RENT": "Rent",
+        "UTILITIES": "Utilities",
+        "SALARIES": "Salaries",
+        "SUPPLIES": "Supplies",
+        "MARKETING": "Marketing",
+        "MAINTENANCE": "Maintenance",
+        "TRANSPORT": "Transport",
+        "LOAN_PAYMENT": "Loan Payment",
+        "PACKAGING": "Packaging",
+        "MISCELLANEOUS": "Miscellaneous",
+        "CUSTOM": "Custom"
+      },
+      "filter": {
+        "all": "All Categories",
+        "search": "Search expenses..."
+      },
+      "pagination": {
+        "prev": "Previous",
+        "next": "Next"
+      },
+      "actions": {
+        "addNew": "Add Expense",
+        "edit": "Edit",
+        "delete": "Delete"
+      },
+      "messages": {
+        "created": "Expense recorded successfully.",
+        "updated": "Expense updated successfully.",
+        "deleted": "Expense deleted.",
+        "loadError": "Failed to load expenses.",
+        "saveError": "Failed to save expense.",
+        "deleteError": "Failed to delete expense.",
+        "confirmDelete": "Delete this expense?"
+      },
+      "breakdown": {
+        "title": "Category Breakdown",
+        "category": "Category",
+        "amount": "Amount",
+        "count": "Count",
+        "percent": "%"
+      }
     }
   }
 }

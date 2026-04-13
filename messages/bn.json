@@ -995,6 +995,90 @@
         "saleCreated": "বিক্রি সফলভাবে রেকর্ড হয়েছে।",
         "saleCancelled": "বিক্রি বাতিল করা হয়েছে।"
       }
+    },
+    "expenses": {
+      "title": "খরচ ট্র্যাকার",
+      "subtitle": "ব্যবসার খরচ ট্র্যাক করুন এবং সঠিক হিসাব রাখুন।",
+      "stats": {
+        "thisMonth": "এই মাস",
+        "totalExpenses": "মোট খরচ",
+        "expenseCount": "{count}টি লেনদেন",
+        "topCategory": "সর্বোচ্চ: {category}"
+      },
+      "table": {
+        "title": "খরচের রেকর্ড",
+        "subtitle": "ক্যাটাগরি ভিত্তিক সকল ব্যবসায়িক খরচ।",
+        "description": "বিবরণ",
+        "category": "ক্যাটাগরি",
+        "amount": "পরিমাণ",
+        "date": "তারিখ",
+        "action": "অ্যাকশন",
+        "loading": "খরচের তালিকা লোড হচ্ছে...",
+        "empty": "কোনো খরচ পাওয়া যায়নি।",
+        "showing": "মোট {total} খরচের মধ্যে {shown}টি দেখানো হচ্ছে।"
+      },
+      "form": {
+        "createTitle": "নতুন খরচ রেকর্ড করুন",
+        "editTitle": "খরচ সম্পাদনা",
+        "category": "ক্যাটাগরি",
+        "categoryPlaceholder": "ক্যাটাগরি নির্বাচন করুন",
+        "customCategory": "কাস্টম ক্যাটাগরি নাম",
+        "customCategoryPlaceholder": "যেমন অফিস চা",
+        "amount": "পরিমাণ (৳)",
+        "amountPlaceholder": "০",
+        "description": "বিবরণ",
+        "descriptionPlaceholder": "এই খরচ সম্পর্কে সংক্ষিপ্ত নোট",
+        "date": "খরচের তারিখ",
+        "paymentMethod": "পেমেন্ট মেথড",
+        "submit": {
+          "create": "খরচ রেকর্ড করুন",
+          "edit": "পরিবর্তন সংরক্ষণ",
+          "saving": "সংরক্ষণ হচ্ছে..."
+        },
+        "newForm": "নতুন ফর্ম"
+      },
+      "categories": {
+        "RENT": "ভাড়া",
+        "UTILITIES": "ইউটিলিটি",
+        "SALARIES": "বেতন",
+        "SUPPLIES": "সাপ্লাই",
+        "MARKETING": "মার্কেটিং",
+        "MAINTENANCE": "রক্ষণাবেক্ষণ",
+        "TRANSPORT": "যাতায়াত",
+        "LOAN_PAYMENT": "লোন পরিশোধ",
+        "PACKAGING": "প্যাকেজিং",
+        "MISCELLANEOUS": "বিবিধ",
+        "CUSTOM": "কাস্টম"
+      },
+      "filter": {
+        "all": "সব ক্যাটাগরি",
+        "search": "খরচ খুঁজুন..."
+      },
+      "pagination": {
+        "prev": "আগের",
+        "next": "পরের"
+      },
+      "actions": {
+        "addNew": "খরচ যোগ করুন",
+        "edit": "এডিট",
+        "delete": "মুছুন"
+      },
+      "messages": {
+        "created": "খরচ সফলভাবে রেকর্ড হয়েছে।",
+        "updated": "খরচ আপডেট হয়েছে।",
+        "deleted": "খরচ মুছে ফেলা হয়েছে।",
+        "loadError": "খরচ তথ্য লোড করা যায়নি।",
+        "saveError": "খরচ সংরক্ষণ করা যায়নি।",
+        "deleteError": "খরচ মুছতে সমস্যা হয়েছে।",
+        "confirmDelete": "এই খরচ মুছে ফেলতে চান?"
+      },
+      "breakdown": {
+        "title": "ক্যাটাগরি ভাতন",
+        "category": "ক্যাটাগরি",
+        "amount": "পরিমাণ",
+        "count": "সংখ্যা",
+        "percent": "%"
+      }
     }
   }
 }

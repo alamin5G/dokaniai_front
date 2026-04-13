@@ -1,16 +1,10 @@
-import ShopFeaturePage from "@/components/dashboard/ShopFeaturePage";
+import ExpenseWorkspace from "@/components/expenses/ExpenseWorkspace";
 
 export default async function ShopExpensesPage({
-    params,
+  params,
 }: {
-    params: Promise<{ businessId: string }>;
+  params: Promise<{ businessId: string }>;
 }) {
-    const { businessId } = await params;
-    return (
-        <ShopFeaturePage
-            businessId={businessId}
-            title="Expense Workspace"
-            description="Track operating costs and keep this shop's expense ledger accurate and isolated."
-        />
-    );
+  const { businessId } = await params;
+  return <ExpenseWorkspace businessId={businessId} />;
 }
