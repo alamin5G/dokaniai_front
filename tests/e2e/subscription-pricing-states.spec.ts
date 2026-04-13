@@ -114,7 +114,9 @@ test.beforeEach(async ({ page }) => {
 
 test("unauthenticated pricing click stores pending upgrade and redirects to login", async ({ page }) => {
   await page.goto("/pricing");
-  await page.getByTestId("plan-action-pro").click();
+  await expect(page.getByTestId("quick-reference-table")).toBeVisible();
+  await expect(page.getByTestId("feature-matrix-table")).toBeVisible();
+  await page.getByTestId("plan-action-plan-pro").click();
 
   await expect(page).toHaveURL(/\/login$/);
   await expect.poll(async () => page.evaluate(() => sessionStorage.getItem("pending_upgrade_plan"))).toBe("plan-pro");
@@ -152,8 +154,226 @@ test("authenticated user sees current plan and upgrade actions", async ({ page }
 
   await page.goto("/pricing");
 
-  await expect(page.getByTestId("plan-action-basic")).toBeDisabled();
-  await expect(page.getByTestId("plan-action-pro")).toBeEnabled();
-  await expect(page.getByTestId("plan-action-plus")).toBeEnabled();
+  await expect(page.getByTestId("quick-reference-table")).toBeVisible();
+  await expect(page.getByTestId("feature-matrix-table")).toBeVisible();
+  await expect(page.getByTestId("plan-action-plan-basic")).toBeDisabled();
+  await expect(page.getByTestId("plan-action-plan-pro")).toBeEnabled();
+  await expect(page.getByTestId("plan-action-plan-plus")).toBeEnabled();
+});
+
+test("registered phone user with pending upgrade is redirected to upgrade after OTP verification", async ({ page }) => {
+  await page.goto("/");
+  await page.evaluate(() => {
+    sessionStorage.setItem("pending_upgrade_plan", "plan-pro");
+    sessionStorage.setItem("redirect_after_login", "/subscription/upgrade?plan=plan-pro");
+    sessionStorage.setItem("dokaniai-auth-contact", "01700000000");
+    sessionStorage.setItem("dokaniai-auth-method", "phone");
+  });
+
+  await page.route("**/auth/verify/phone", async (route) => {
+    await route.fulfill({
+      status: 200,
+      contentType: "application/json",
+      body: JSON.stringify({
+        success: true,
+        data: {
+          accessToken: "access-token",
+          refreshToken: "refresh-token",
+          userId: "user-1",
+          status: "PASSWORD_SETUP_REQUIRED",
+        },
+      }),
+    });
+  });
+
+  await page.route("**/auth/set-password", async (route) => {
+    await route.fulfill({
+      status: 200,
+      contentType: "application/json",
+      body: JSON.stringify({ success: true, data: {} }),
+    });
+  });
+
+  await page.route("**/auth/login", async (route) => {
+    await route.fulfill({
+      status: 200,
+      contentType: "application/json",
+      body: JSON.stringify({
+        success: true,
+        data: {
+          accessToken: "access-token-final",
+          refreshToken: "refresh-token-final",
+          userId: "user-1",
+          status: "AUTHENTICATED",
+        },
+      }),
+    });
+  });
+
+  await page.route("**/users/me", async (route) => {
+    await route.fulfill({
+      status: 200,
+      contentType: "application/json",
+      body: JSON.stringify({ success: true, data: { id: "user-1", role: "USER" } }),
+    });
+  });
+
+  await page.route("**/subscriptions/current**", async (route) => {
+    await route.fulfill({
+      status: 200,
+      contentType: "application/json",
+      body: JSON.stringify({
+        success: true,
+        data: {
+          id: "sub-1",
+          userId: "user-1",
+          planId: "plan-ft1",
+          status: "ACTIVE",
+          currentPeriodStart: "2026-04-01T00:00:00.000Z",
+          currentPeriodEnd: "2026-05-01T00:00:00.000Z",
+          cancelAtPeriodEnd: false,
+        },
+      }),
+    });
+  });
+
+  await page.goto("/verify-otp");
+  await page.locator("form input").first().fill("123456");
+  await page.locator("form button[type='submit']").click();
+
+  await expect(page).toHaveURL(/\/set-password$/);
+  await page.locator("form input").nth(0).fill("Passw0rd!");
+  await page.locator("form input").nth(1).fill("Passw0rd!");
+  await page.locator("form button[type='submit']").click();
+
+  await expect(page).toHaveURL(/\/login\?passwordSet=true$/);
+  await page.locator("form input").nth(0).fill("demo@example.com");
+  await page.locator("form input").nth(1).fill("Passw0rd!");
+  await page.locator("form button[type='submit']").click();
+
+  await expect(page).toHaveURL(/\/subscription\/upgrade\?plan=plan-pro/);
+});
+
+test("phone OTP authenticated path resumes pending upgrade directly", async ({ page }) => {
+  await page.goto("/");
+  await page.evaluate(() => {
+    sessionStorage.setItem("pending_upgrade_plan", "plan-pro");
+    sessionStorage.setItem("redirect_after_login", "/subscription/upgrade?plan=plan-pro");
+    sessionStorage.setItem("dokaniai-auth-contact", "01700000000");
+    sessionStorage.setItem("dokaniai-auth-method", "phone");
+  });
+
+  await page.route("**/auth/verify/phone", async (route) => {
+    await route.fulfill({
+      status: 200,
+      contentType: "application/json",
+      body: JSON.stringify({
+        success: true,
+        data: {
+          accessToken: "access-token-otp",
+          refreshToken: "refresh-token-otp",
+          userId: "user-otp",
+          status: "AUTHENTICATED",
+        },
+      }),
+    });
+  });
+
+  await page.route("**/subscriptions/current**", async (route) => {
+    await route.fulfill({
+      status: 200,
+      contentType: "application/json",
+      body: JSON.stringify({
+        success: true,
+        data: {
+          id: "sub-otp",
+          userId: "user-otp",
+          planId: "plan-ft1",
+          status: "ACTIVE",
+          currentPeriodStart: "2026-04-01T00:00:00.000Z",
+          currentPeriodEnd: "2026-05-01T00:00:00.000Z",
+          cancelAtPeriodEnd: false,
+        },
+      }),
+    });
+  });
+
+  await page.goto("/verify-otp");
+  await page.locator("form input").first().fill("123456");
+  await page.locator("form button[type='submit']").click();
+
+  await expect(page).toHaveURL(/\/subscription\/upgrade\?plan=plan-pro/);
+});
+
+test("verified email user resumes pending upgrade after login", async ({ page }) => {
+  await page.goto("/");
+  await page.evaluate(() => {
+    sessionStorage.setItem("pending_upgrade_plan", "plan-plus");
+    sessionStorage.setItem("redirect_after_login", "/subscription/upgrade?plan=plan-plus");
+    sessionStorage.setItem("dokaniai-auth-contact", "demo@example.com");
+    sessionStorage.setItem("dokaniai-auth-method", "email");
+  });
+
+  await page.route("**/auth/verify/email", async (route) => {
+    await route.fulfill({
+      status: 200,
+      contentType: "application/json",
+      body: JSON.stringify({ success: true, data: {} }),
+    });
+  });
+
+  await page.route("**/auth/login", async (route) => {
+    await route.fulfill({
+      status: 200,
+      contentType: "application/json",
+      body: JSON.stringify({
+        success: true,
+        data: {
+          accessToken: "access-token-email",
+          refreshToken: "refresh-token-email",
+          userId: "user-2",
+          status: "AUTHENTICATED",
+        },
+      }),
+    });
+  });
+
+  await page.route("**/users/me", async (route) => {
+    await route.fulfill({
+      status: 200,
+      contentType: "application/json",
+      body: JSON.stringify({ success: true, data: { id: "user-2", role: "USER" } }),
+    });
+  });
+
+  await page.route("**/subscriptions/current**", async (route) => {
+    await route.fulfill({
+      status: 200,
+      contentType: "application/json",
+      body: JSON.stringify({
+        success: true,
+        data: {
+          id: "sub-2",
+          userId: "user-2",
+          planId: "plan-ft1",
+          status: "ACTIVE",
+          currentPeriodStart: "2026-04-01T00:00:00.000Z",
+          currentPeriodEnd: "2026-05-01T00:00:00.000Z",
+          cancelAtPeriodEnd: false,
+        },
+      }),
+    });
+  });
+
+  await page.goto("/verify-email");
+  await page.locator("form input").first().fill("123456");
+  await page.locator("form button[type='submit']").click();
+
+  await expect(page).toHaveURL(/\/login\?verified=true$/);
+  await page.locator("form input").nth(0).fill("demo@example.com");
+  await page.locator("form input").nth(1).fill("Passw0rd!");
+  await page.locator("form button[type='submit']").click();
+
+  await expect(page).toHaveURL(/\/subscription\/upgrade\?plan=plan-plus/);
 });
 

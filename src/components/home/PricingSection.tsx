@@ -5,10 +5,34 @@ import { rememberPendingUpgrade } from "@/lib/authFlow";
 import type { Plan, Subscription } from "@/types/subscription";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState, useSyncExternalStore } from "react";
 
 function formatPrice(value: number): string {
   return new Intl.NumberFormat("bn-BD").format(value);
+}
+
+const FEATURE_ALIASES: Record<string, string[]> = {
+  products_sales: ["products_sales"],
+  expense_tracking: ["expense_tracking"],
+  basic_reports: ["basic_reports"],
+  due_management: ["due_management", "dueManagement"],
+  discount_management: ["discount_management", "discountManagement"],
+  voice_entry: ["voice_entry", "voice_input", "voiceInput"],
+  whatsapp_reminder: ["whatsapp_reminder", "whatsappReminder"],
+  advanced_reports: ["advanced_reports", "advanced_analytics", "advancedReports", "advancedAnalytics"],
+  pdf_export: ["pdf_export", "pdfExport"],
+  bulk_import: ["bulk_import", "bulkImport"],
+  priority_support: ["priority_support", "prioritySupport"],
+  data_export: ["data_export", "dataExport"],
+  api_access: ["api_access", "apiAccess"],
+};
+
+function hasFeature(plan: Plan, featureKey: string): boolean {
+  const featureMap = plan.features;
+  if (!featureMap) return false;
+
+  const keys = FEATURE_ALIASES[featureKey] ?? [featureKey];
+  return keys.some((key) => featureMap[key] === true);
 }
 
 type PlanAction = "LOGIN" | "CURRENT" | "UPGRADE" | "DOWNGRADE";
@@ -57,12 +81,12 @@ export function PricingSection() {
 
   const [plans, setPlans] = useState<Plan[]>([]);
   const [currentSubscription, setCurrentSubscription] = useState<Subscription | null>(null);
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [plansStatus, setPlansStatus] = useState<"loading" | "ready" | "error">("loading");
-
-  useEffect(() => {
-    setIsAuthenticated(hasAccessToken());
-  }, []);
+  const isAuthenticated = useSyncExternalStore(
+    () => () => {},
+    () => hasAccessToken(),
+    () => false,
+  );
 
   useEffect(() => {
     let cancelled = false;
@@ -71,7 +95,10 @@ export function PricingSection() {
       try {
         const data = await getAvailablePlans();
         if (cancelled) return;
-        setPlans(data.filter((plan) => plan.isActive).sort((a, b) => a.tierLevel - b.tierLevel));
+        const active = data.filter((plan) => plan.isActive).sort((a, b) => a.tierLevel - b.tierLevel);
+        if (active.length > 0) {
+          setPlans(active);
+        }
         setPlansStatus("ready");
       } catch {
         if (!cancelled) {
@@ -114,6 +141,27 @@ export function PricingSection() {
     return plans.find((plan) => plan.id === currentSubscription.planId) ?? null;
   }, [plans, currentSubscription]);
 
+  const orderedPlans = useMemo(() => [...plans].sort((a, b) => a.tierLevel - b.tierLevel), [plans]);
+
+  const featureRows = useMemo(
+    () => [
+      { key: "products_sales", label: t("featureMatrix.rows.productsSales") },
+      { key: "expense_tracking", label: t("featureMatrix.rows.expenseTracking") },
+      { key: "basic_reports", label: t("featureMatrix.rows.basicReports") },
+      { key: "due_management", label: t("featureMatrix.rows.dueManagement") },
+      { key: "discount_management", label: t("featureMatrix.rows.discountManagement") },
+      { key: "voice_entry", label: t("featureMatrix.rows.voiceInput") },
+      { key: "whatsapp_reminder", label: t("featureMatrix.rows.whatsappReminder") },
+      { key: "advanced_reports", label: t("featureMatrix.rows.advancedReports") },
+      { key: "pdf_export", label: t("featureMatrix.rows.pdfExport") },
+      { key: "bulk_import", label: t("featureMatrix.rows.bulkImport") },
+      { key: "priority_support", label: t("featureMatrix.rows.prioritySupport") },
+      { key: "data_export", label: t("featureMatrix.rows.dataExport") },
+      { key: "api_access", label: t("featureMatrix.rows.apiAccess") },
+    ],
+    [t],
+  );
+
   const handlePlanAction = (plan: Plan, action: PlanAction) => {
     if (plan.name === "ENTERPRISE") {
       return;
@@ -132,22 +180,6 @@ export function PricingSection() {
     router.push(`/subscription/upgrade?plan=${encodeURIComponent(plan.id)}`);
   };
 
-  if (plansStatus === "error") {
-    return (
-      <section className="py-24 px-6">
-        <div className="max-w-7xl mx-auto">
-          <div className="text-center mb-20 space-y-4">
-            <span className="text-secondary font-bold tracking-widest uppercase text-xs">{t("label")}</span>
-            <h2 className="text-4xl font-black text-primary font-headline">{t("title")}</h2>
-            <p className="text-on-surface-variant text-lg font-medium">{t("subtitle")}</p>
-          </div>
-          <div className="rounded-2xl bg-surface-container-low p-8 text-center text-sm text-on-surface-variant">
-            {s("pricing.unavailable")}
-          </div>
-        </div>
-      </section>
-    );
-  }
 
   if (plansStatus === "loading" && plans.length === 0) {
     return (
@@ -238,6 +270,85 @@ export function PricingSection() {
               </div>
             );
           })}
+        </div>
+
+        <div className="mt-14 rounded-[1.5rem] border border-outline-variant/30 bg-surface p-5">
+          <h3 className="text-lg font-bold text-on-surface mb-4">{t("quickReference.title")}</h3>
+          <div className="overflow-x-auto">
+            <table data-testid="quick-reference-table" className="min-w-full text-sm">
+              <thead>
+                <tr className="text-left border-b border-outline-variant/30 text-on-surface-variant">
+                  <th className="px-3 py-2 font-semibold">{t("quickReference.columns.plan")}</th>
+                  <th className="px-3 py-2 font-semibold">{t("quickReference.columns.price")}</th>
+                  <th className="px-3 py-2 font-semibold">{t("quickReference.columns.duration")}</th>
+                  <th className="px-3 py-2 font-semibold">{t("quickReference.columns.businesses")}</th>
+                  <th className="px-3 py-2 font-semibold">{t("quickReference.columns.products")}</th>
+                  <th className="px-3 py-2 font-semibold">{t("quickReference.columns.aiPerDay")}</th>
+                  <th className="px-3 py-2 font-semibold">{t("quickReference.columns.cta")}</th>
+                </tr>
+              </thead>
+              <tbody>
+                {orderedPlans.map((plan) => {
+                  const action = resolvePlanAction(currentPlan, plan, isAuthenticated);
+                  const durationText = plan.durationDays >= 365
+                    ? t("quickReference.yearly")
+                    : plan.durationDays % 30 === 0
+                      ? `${Math.max(1, Math.round(plan.durationDays / 30))} ${s("pricing.month")}`
+                      : `${plan.durationDays} ${t("quickReference.days")}`;
+
+                  return (
+                    <tr key={`quick-${plan.id}`} className="border-b border-outline-variant/20 last:border-none">
+                      <td className="px-3 py-2 font-semibold">{plan.displayNameBn}</td>
+                      <td className="px-3 py-2">{plan.priceBdt === 0 ? s("pricing.free") : `৳${formatPrice(plan.priceBdt)}`}</td>
+                      <td className="px-3 py-2">{durationText}</td>
+                      <td className="px-3 py-2">{plan.maxBusinesses === 0 ? s("pricing.unlimited") : plan.maxBusinesses}</td>
+                      <td className="px-3 py-2">{plan.maxProductsPerBusiness == null ? s("pricing.unlimited") : plan.maxProductsPerBusiness}</td>
+                      <td className="px-3 py-2">{plan.aiQueriesPerDay ?? s("pricing.unlimited")}</td>
+                      <td className="px-3 py-2">{plan.id === "ENTERPRISE" ? s("pricing.contactUs") : actionLabel(action, s)}</td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div className="mt-8 rounded-[1.5rem] border border-outline-variant/30 bg-surface p-5">
+          <h3 className="text-lg font-bold text-on-surface mb-4">{t("featureMatrix.title")}</h3>
+          <div className="overflow-x-auto">
+            <table data-testid="feature-matrix-table" className="min-w-full text-sm">
+              <thead>
+                <tr className="text-left border-b border-outline-variant/30 text-on-surface-variant">
+                  <th className="px-3 py-2 font-semibold">{t("featureMatrix.columns.feature")}</th>
+                  {orderedPlans.map((plan) => (
+                    <th key={`feature-col-${plan.id}`} className="px-3 py-2 font-semibold text-center">
+                      {plan.displayNameBn}
+                    </th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody>
+                {featureRows.map((row) => (
+                  <tr key={row.key} className="border-b border-outline-variant/20 last:border-none">
+                    <td className="px-3 py-2 font-medium">{row.label}</td>
+                    {orderedPlans.map((plan) => (
+                      <td key={`${row.key}-${plan.id}`} className="px-3 py-2 text-center">
+                        {hasFeature(plan, row.key) ? t("featureMatrix.included") : t("featureMatrix.excluded")}
+                      </td>
+                    ))}
+                  </tr>
+                ))}
+                <tr className="border-b border-outline-variant/20 last:border-none">
+                  <td className="px-3 py-2 font-medium">{t("featureMatrix.rows.aiQueries")}</td>
+                  {orderedPlans.map((plan) => (
+                    <td key={`ai-${plan.id}`} className="px-3 py-2 text-center">
+                      {plan.aiQueriesPerDay == null ? s("pricing.unlimited") : `${plan.aiQueriesPerDay}/${t("quickReference.days")}`}
+                    </td>
+                  ))}
+                </tr>
+              </tbody>
+            </table>
+          </div>
         </div>
       </div>
     </section>

@@ -159,6 +159,44 @@
       "label": "Pricing Plans",
       "title": "The Right Plan for Your Business",
       "subtitle": "Get all premium features at affordable prices",
+      "quickReference": {
+        "title": "Quick Reference Table",
+        "columns": {
+          "plan": "Plan",
+          "price": "Price",
+          "duration": "Duration",
+          "businesses": "Businesses",
+          "products": "Products",
+          "aiPerDay": "AI/Day",
+          "cta": "CTA"
+        },
+        "days": "days",
+        "yearly": "Yearly"
+      },
+      "featureMatrix": {
+        "title": "Feature Matrix",
+        "columns": {
+          "feature": "Feature"
+        },
+        "rows": {
+          "productsSales": "Products & Sales",
+          "expenseTracking": "Expense Tracking",
+          "basicReports": "Basic Reports",
+          "dueManagement": "Due Management",
+          "discountManagement": "Discount Management",
+          "voiceInput": "Voice Input",
+          "whatsappReminder": "WhatsApp Reminder",
+          "advancedReports": "Advanced Reports",
+          "pdfExport": "PDF Export",
+          "bulkImport": "Bulk Import",
+          "prioritySupport": "Priority Support",
+          "dataExport": "Data Export",
+          "apiAccess": "API Access",
+          "aiQueries": "AI Queries"
+        },
+        "included": "✓",
+        "excluded": "✗"
+      },
       "trial1": {
         "name": "Free Trial 1",
         "price": "৳0",
@@ -684,6 +722,7 @@
       "maxBusinesses": "Max businesses",
       "aiPerDay": "AI/day",
       "unlimited": "Unlimited",
+      "loading": "Loading plans...",
       "unavailable": "Plans are currently unavailable. Please try again later.",
       "contactUs": "Contact Us"
     },

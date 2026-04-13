@@ -159,6 +159,44 @@
       "label": "Pricing Plans",
       "title": "আপনার ব্যবসার জন্য সঠিক প্ল্যান",
       "subtitle": "সাশ্রয়ী মূল্যে পান প্রিমিয়াম সব ফিচার",
+      "quickReference": {
+        "title": "দ্রুত রেফারেন্স টেবিল",
+        "columns": {
+          "plan": "প্ল্যান",
+          "price": "মূল্য",
+          "duration": "মেয়াদ",
+          "businesses": "ব্যবসা",
+          "products": "পণ্য",
+          "aiPerDay": "AI/দিন",
+          "cta": "CTA"
+        },
+        "days": "দিন",
+        "yearly": "বার্ষিক"
+      },
+      "featureMatrix": {
+        "title": "ফিচার ম্যাট্রিক্স",
+        "columns": {
+          "feature": "ফিচার"
+        },
+        "rows": {
+          "productsSales": "পণ্য ও বিক্রয়",
+          "expenseTracking": "খরচ ট্র্যাকিং",
+          "basicReports": "বেসিক রিপোর্ট",
+          "dueManagement": "বাকী খাতা",
+          "discountManagement": "ডিসকাউন্ট",
+          "voiceInput": "ভয়েস ইনপুট",
+          "whatsappReminder": "WhatsApp রিমাইন্ডার",
+          "advancedReports": "অ্যাডভান্সড রিপোর্ট",
+          "pdfExport": "PDF এক্সপোর্ট",
+          "bulkImport": "বাল্ক ইম্পোর্ট",
+          "prioritySupport": "প্রায়োরিটি সাপোর্ট",
+          "dataExport": "ডেটা এক্সপোর্ট",
+          "apiAccess": "API অ্যাক্সেস",
+          "aiQueries": "AI কুয়েরি"
+        },
+        "included": "✓",
+        "excluded": "✗"
+      },
       "trial1": {
         "name": "Free Trial 1",
         "price": "৳০",

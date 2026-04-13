@@ -4,7 +4,7 @@ import { AuthLayout } from "@/components/layout/AuthLayout";
 import { FormInput, GradientButton } from "@/components/ui/FormPrimitives";
 import apiClient from "@/lib/api";
 import { getApiErrorMessage } from "@/lib/apiError";
-import { clearAuthContact, getAuthContact, maskContact } from "@/lib/authFlow";
+import { clearAuthContact, consumeRedirectAfterLogin, getAuthContact, maskContact } from "@/lib/authFlow";
 import { getClientDeviceContext } from "@/lib/device";
 import { getPreferredWorkspacePath } from "@/lib/shopRouting";
 import { useAuthStore } from "@/store/authStore";
@@ -76,7 +76,8 @@ function VerifyOtpForm() {
         if (data.status === "PASSWORD_SETUP_REQUIRED") {
           router.push("/set-password");
         } else {
-          router.push(getPreferredWorkspacePath());
+          const pendingRedirect = consumeRedirectAfterLogin();
+          router.push(pendingRedirect ?? getPreferredWorkspacePath());
         }
       }
     } catch (error: unknown) {

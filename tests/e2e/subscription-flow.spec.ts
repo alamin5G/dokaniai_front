@@ -201,6 +201,8 @@ test("pricing -> login -> upgrade -> payment status", async ({ page }) => {
 
 	await page.goto("/pricing");
 	await expect(page.getByText("Pricing Plans")).toBeVisible();
+	await expect(page.getByTestId("quick-reference-table")).toBeVisible();
+	await expect(page.getByTestId("feature-matrix-table")).toBeVisible();
 
 	// Seed the same session state used by pricing CTA for unauthenticated upgrade intent.
 	await page.evaluate(() => {
