@@ -143,6 +143,7 @@ export default function SubscriptionPaymentStatusPage() {
         <p data-testid="payment-current-status" className="text-sm text-on-surface-variant">
           {t("payment.currentStatus")}: <span className="font-semibold text-primary">{statusLabel}</span>
         </p>
+        <span data-testid="payment-status-code" className="sr-only">{statusData?.status ?? "UNKNOWN"}</span>
 
         <FormInput
           label={t("payment.trxLabel")}

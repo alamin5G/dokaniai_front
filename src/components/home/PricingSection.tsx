@@ -160,6 +160,7 @@ export function PricingSection() {
             return (
               <div
                 key={plan.id}
+                data-testid={`plan-card-${plan.name.toLowerCase()}`}
                 className={`relative p-6 rounded-[1.5rem] flex flex-col justify-between shadow-sm transition-transform hover:scale-[1.02] ${
                   isEnterprise
                     ? "bg-surface-container-low"
@@ -197,6 +198,7 @@ export function PricingSection() {
                 </div>
 
                 <button
+                  data-testid={`plan-action-${plan.name.toLowerCase()}`}
                   type="button"
                   disabled={isDisabled || isEnterprise}
                   onClick={() => handlePlanAction(plan, action)}
