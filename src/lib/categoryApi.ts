@@ -13,6 +13,14 @@ interface ApiSuccess<T> {
 
 interface Paged<T> {
   content: T[];
+  number: number;
+  last: boolean;
+}
+
+export interface SearchCategoryPage {
+  content: CategoryResponse[];
+  number: number;
+  last: boolean;
 }
 
 function unwrap<T>(response: { data: ApiSuccess<T> }): T {
@@ -24,6 +32,18 @@ export async function getCategoriesByBusinessType(businessType: string): Promise
     `/categories/by-business-type/${encodeURIComponent(businessType)}`,
   );
   return unwrap(response);
+}
+
+export async function searchCategoriesByBusinessType(
+  businessType: string,
+  q: string,
+  page = 0,
+  size = 50,
+): Promise<SearchCategoryPage> {
+  const response = await apiClient.get<ApiSuccess<Paged<CategoryResponse>>>(
+    `/categories/search/by-business-type?businessType=${encodeURIComponent(businessType)}&q=${encodeURIComponent(q)}&page=${page}&size=${size}`,
+  );
+  return response.data.data;
 }
 
 export async function getPendingCategoryRequests(page = 0, size = 20): Promise<CategoryRequestResponse[]> {

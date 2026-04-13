@@ -3,11 +3,11 @@
 import apiClient from "@/lib/api";
 import {
   decideCategoryRequest,
-  getCategoriesByBusinessType,
   getPendingCategoryRequests,
+  searchCategoriesByBusinessType,
 } from "@/lib/categoryApi";
 import { useAuthStore } from "@/store/authStore";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import type { CategoryResponse } from "@/types/category";
 import type { CategoryRequestResponse } from "@/types/categoryRequest";
 
@@ -28,9 +28,15 @@ export default function AdminDashboardPage() {
   const [moderatingId, setModeratingId] = useState<string | null>(null);
   const [mergeForRequestId, setMergeForRequestId] = useState<string | null>(null);
   const [mergeSearch, setMergeSearch] = useState("");
+  const [debouncedMergeSearch, setDebouncedMergeSearch] = useState("");
   const [mergeSelectedCategoryId, setMergeSelectedCategoryId] = useState("");
-  const [categoriesByType, setCategoriesByType] = useState<Record<string, CategoryResponse[]>>({});
+  const [mergeCandidates, setMergeCandidates] = useState<CategoryResponse[]>([]);
   const [isMergeCategoryLoading, setIsMergeCategoryLoading] = useState(false);
+  const [isMergeShowMoreLoading, setIsMergeShowMoreLoading] = useState(false);
+  const [mergePage, setMergePage] = useState(0);
+  const [mergeHasMore, setMergeHasMore] = useState(false);
+  const mergeSearchRequestSeq = useRef(0);
+  const MERGE_PAGE_SIZE = 25;
 
   const loadPendingRequests = async () => {
     try {
@@ -105,40 +111,97 @@ export default function AdminDashboardPage() {
   };
 
   const openMergePicker = async (item: CategoryRequestResponse) => {
-    const businessType = (item.businessType || "OTHER").toUpperCase();
     setMergeForRequestId(item.id);
     setMergeSearch("");
+    setDebouncedMergeSearch("");
     setMergeSelectedCategoryId("");
+    setMergeCandidates([]);
+    setMergePage(0);
+    setMergeHasMore(false);
+  };
 
-    if (categoriesByType[businessType]) {
+  useEffect(() => {
+    const handle = window.setTimeout(() => {
+      setDebouncedMergeSearch(mergeSearch.trim());
+    }, 300);
+
+    return () => {
+      window.clearTimeout(handle);
+    };
+  }, [mergeSearch]);
+
+  const activeMergeRequest = useMemo(() => {
+    if (!mergeForRequestId) return null;
+    return pendingRequests.find((item) => item.id === mergeForRequestId) || null;
+  }, [mergeForRequestId, pendingRequests]);
+
+  const activeMergeBusinessType = useMemo(() => {
+    if (!activeMergeRequest) return null;
+    return (activeMergeRequest.businessType || "OTHER").toUpperCase();
+  }, [activeMergeRequest]);
+
+  useEffect(() => {
+    if (!mergeForRequestId || !activeMergeBusinessType) {
+      setMergeCandidates([]);
       return;
     }
 
+    const seq = ++mergeSearchRequestSeq.current;
     setIsMergeCategoryLoading(true);
+    searchCategoriesByBusinessType(activeMergeBusinessType, debouncedMergeSearch, 0, MERGE_PAGE_SIZE)
+      .then((pageResult) => {
+        if (seq !== mergeSearchRequestSeq.current) return;
+        setMergeCandidates(pageResult.content);
+        setMergePage(pageResult.number);
+        setMergeHasMore(!pageResult.last);
+      })
+      .catch((e) => {
+        if (seq !== mergeSearchRequestSeq.current) return;
+        setError(e instanceof Error ? e.message : "Failed to load merge categories");
+        setMergeCandidates([]);
+        setMergePage(0);
+        setMergeHasMore(false);
+      })
+      .finally(() => {
+        if (seq === mergeSearchRequestSeq.current) {
+          setIsMergeCategoryLoading(false);
+        }
+      });
+  }, [MERGE_PAGE_SIZE, activeMergeBusinessType, debouncedMergeSearch, mergeForRequestId]);
+
+  const handleMergeShowMore = async () => {
+    if (!activeMergeBusinessType || !mergeHasMore || isMergeShowMoreLoading) {
+      return;
+    }
+
+    const seq = ++mergeSearchRequestSeq.current;
+    const nextPage = mergePage + 1;
+    setIsMergeShowMoreLoading(true);
     try {
-      const rows = await getCategoriesByBusinessType(businessType);
-      setCategoriesByType((prev) => ({ ...prev, [businessType]: rows }));
+      const pageResult = await searchCategoriesByBusinessType(
+        activeMergeBusinessType,
+        debouncedMergeSearch,
+        nextPage,
+        MERGE_PAGE_SIZE,
+      );
+      if (seq !== mergeSearchRequestSeq.current) return;
+
+      setMergeCandidates((prev) => {
+        const seen = new Set(prev.map((item) => item.id));
+        const appended = pageResult.content.filter((item) => !seen.has(item.id));
+        return [...prev, ...appended];
+      });
+      setMergePage(pageResult.number);
+      setMergeHasMore(!pageResult.last);
     } catch (e) {
-      setError(e instanceof Error ? e.message : "Failed to load merge categories");
+      if (seq !== mergeSearchRequestSeq.current) return;
+      setError(e instanceof Error ? e.message : "Failed to load more categories");
     } finally {
-      setIsMergeCategoryLoading(false);
+      if (seq === mergeSearchRequestSeq.current) {
+        setIsMergeShowMoreLoading(false);
+      }
     }
   };
-
-  const mergeCandidates = useMemo(() => {
-    if (!mergeForRequestId) return [];
-    const request = pendingRequests.find((item) => item.id === mergeForRequestId);
-    if (!request) return [];
-
-    const businessType = (request.businessType || "OTHER").toUpperCase();
-    const all = categoriesByType[businessType] || [];
-    const q = mergeSearch.trim().toLowerCase();
-    if (!q) return all;
-
-    return all.filter((item) =>
-      item.nameBn.toLowerCase().includes(q) || (item.nameEn || "").toLowerCase().includes(q),
-    );
-  }, [categoriesByType, mergeForRequestId, mergeSearch, pendingRequests]);
 
   if (loading) {
     return <main className="min-h-screen bg-surface p-8 text-on-surface">Loading admin dashboard...</main>;
@@ -203,15 +266,24 @@ export default function AdminDashboardPage() {
                       className="w-full rounded-md border border-outline-variant/30 bg-surface px-2 py-1 text-sm"
                       value={mergeSelectedCategoryId}
                       onChange={(e) => setMergeSelectedCategoryId(e.target.value)}
-                      disabled={isMergeCategoryLoading}
+                      disabled={isMergeCategoryLoading || isMergeShowMoreLoading}
                     >
                       <option value="">Select a category</option>
-                      {mergeCandidates.slice(0, 50).map((candidate) => (
+                      {mergeCandidates.map((candidate) => (
                         <option key={candidate.id} value={candidate.id}>
                           {candidate.nameBn}{candidate.nameEn ? ` / ${candidate.nameEn}` : ""}
                         </option>
                       ))}
                     </select>
+                    {mergeHasMore ? (
+                      <button
+                        className="mt-2 rounded-lg border px-3 py-1 text-xs"
+                        disabled={isMergeShowMoreLoading}
+                        onClick={handleMergeShowMore}
+                      >
+                        {isMergeShowMoreLoading ? "Loading..." : "Show more"}
+                      </button>
+                    ) : null}
                     <div className="mt-2 flex gap-2">
                       <button
                         className="rounded-lg border px-3 py-1 text-xs"
