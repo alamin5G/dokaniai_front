@@ -930,6 +930,71 @@
         "lowStockRuleDesc": "Product reorder point আর business threshold দুইটাই এখন alert logic-e ধরা হচ্ছে।",
         "reorderNeeded": "রিঅর্ডার প্রয়োজন"
       }
+    },
+    "sales": {
+      "title": "বিক্রি",
+      "subtitle": "বিক্রি রেকর্ড করুন, কার্ট ম্যানেজ করুন, ডিসকাউন্ট প্রয়োগ করুন এবং লেনদেন সম্পন্ন করুন।",
+      "productSearch": "পণ্য খুঁজুন (চাল, ডাল, তেল...)",
+      "scanner": "স্ক্যানার",
+      "allCategories": "সবগুলো",
+      "productHeader": {
+        "name": "পণ্যের নাম",
+        "unit": "ইউনিট",
+        "price": "মূল্য",
+        "action": ""
+      },
+      "lowStock": "Low Stock: {qty} {unit} বাকি",
+      "stock": "স্টক: {qty} {unit}",
+      "andMore": "এবং আরও {count}+ পণ্য...",
+      "cart": {
+        "title": "বিক্রয় তালিকা",
+        "empty": "কার্ট খালি। বাম পাশ থেকে পণ্য যোগ করুন।",
+        "clearAll": "সব মুছুন",
+        "perUnit": "৳{price} / {unit}",
+        "subtotal": "সাবটোটাল",
+        "discount": {
+          "label": "ডিসকাউন্ট যোগ করুন",
+          "fixed": "৳",
+          "percentage": "%",
+          "placeholder": "পরিমাণ লিখুন",
+          "applied": "ডিসকাউন্ট ৳{amount}"
+        },
+        "vat": "ভ্যাট ({percent}%)",
+        "total": "সর্বমোট প্রদেয়",
+        "bengali": "{amount} টাকা",
+        "cashSale": "নগদ বিক্রি (Cash)",
+        "cashSaleDesc": "তাত্ক্ষণিক রসিদ প্রিন্ট করুন",
+        "creditSale": "বাকী বিক্রি (Credit)",
+        "saving": "প্রক্রিয়াধীন...",
+        "success": "বিক্রি সফলভাবে রেকর্ড হয়েছে! ইনভয়েস: {invoice}",
+        "error": "বিক্রি রেকর্ড করা যায়নি।",
+        "errorStock": "{product} এর পর্যাপ্ত স্টক নেই।"
+      },
+      "payment": {
+        "CASH": "নগদ",
+        "CREDIT": "ক্রেডিট",
+        "BKASH": "বিকাশ",
+        "NAGAD": "নগদ",
+        "ROCKET": "রকেট",
+        "CARD": "কার্ড",
+        "BANK": "ব্যাংক ট্রান্সফার",
+        "MANUAL": "ম্যানুয়াল"
+      },
+      "status": {
+        "PAID": "পরিশোধিত",
+        "PARTIAL": "আংশিক",
+        "DUE": "বাকী"
+      },
+      "voice": {
+        "title": "AI কমান্ড",
+        "placeholder": "AI এর সাথে কথা বলুন বা কমান্ড লিখুন...",
+        "comingSoon": "ভয়েস ও NLP বিক্রি ফ্লো শীঘ্রই আসছে"
+      },
+      "messages": {
+        "loadError": "পণ্য তথ্য লোড করা যায়নি।",
+        "saleCreated": "বিক্রি সফলভাবে রেকর্ড হয়েছে।",
+        "saleCancelled": "বিক্রি বাতিল করা হয়েছে।"
+      }
     }
   }
 }

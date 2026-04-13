@@ -930,6 +930,71 @@
         "lowStockRuleDesc": "Product reorder point and business threshold are both checked in alert logic.",
         "reorderNeeded": "Reorder Needed"
       }
+    },
+    "sales": {
+      "title": "Sales",
+      "subtitle": "Record sales, manage cart, apply discounts and complete transactions.",
+      "productSearch": "Search products (rice, dal, oil...)",
+      "scanner": "Scanner",
+      "allCategories": "All",
+      "productHeader": {
+        "name": "Product Name",
+        "unit": "Unit",
+        "price": "Price",
+        "action": ""
+      },
+      "lowStock": "Low Stock: {qty} {unit} left",
+      "stock": "Stock: {qty} {unit}",
+      "andMore": "and {count}+ more products...",
+      "cart": {
+        "title": "Sales Cart",
+        "empty": "Cart is empty. Add products from the left.",
+        "clearAll": "Clear All",
+        "perUnit": "৳{price} / {unit}",
+        "subtotal": "Subtotal",
+        "discount": {
+          "label": "Add Discount",
+          "fixed": "৳",
+          "percentage": "%",
+          "placeholder": "Enter amount",
+          "applied": "Discount ৳{amount}"
+        },
+        "vat": "VAT ({percent}%)",
+        "total": "Total Payable",
+        "bengali": "{amount} taka",
+        "cashSale": "Cash Sale",
+        "cashSaleDesc": "Print instant receipt",
+        "creditSale": "Credit Sale (Due)",
+        "saving": "Processing...",
+        "success": "Sale recorded successfully! Invoice: {invoice}",
+        "error": "Failed to record sale.",
+        "errorStock": "Insufficient stock for {product}."
+      },
+      "payment": {
+        "CASH": "Cash",
+        "CREDIT": "Credit",
+        "BKASH": "bKash",
+        "NAGAD": "Nagad",
+        "ROCKET": "Rocket",
+        "CARD": "Card",
+        "BANK": "Bank Transfer",
+        "MANUAL": "Manual"
+      },
+      "status": {
+        "PAID": "Paid",
+        "PARTIAL": "Partial",
+        "DUE": "Due"
+      },
+      "voice": {
+        "title": "AI Command",
+        "placeholder": "Talk to AI or type a command...",
+        "comingSoon": "Voice & NLP sale flow coming soon"
+      },
+      "messages": {
+        "loadError": "Failed to load products.",
+        "saleCreated": "Sale recorded successfully.",
+        "saleCancelled": "Sale cancelled."
+      }
     }
   }
 }

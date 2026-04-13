@@ -1,16 +1,10 @@
-import ShopFeaturePage from "@/components/dashboard/ShopFeaturePage";
+import SalesWorkspace from "@/components/sales/SalesWorkspace";
 
 export default async function ShopSalesPage({
-    params,
+  params,
 }: {
-    params: Promise<{ businessId: string }>;
+  params: Promise<{ businessId: string }>;
 }) {
-    const { businessId } = await params;
-    return (
-        <ShopFeaturePage
-            businessId={businessId}
-            title="Sales Workspace"
-            description="Record new sales, returns, and payment updates for this shop from a single flow."
-        />
-    );
+  const { businessId } = await params;
+  return <SalesWorkspace businessId={businessId} />;
 }
