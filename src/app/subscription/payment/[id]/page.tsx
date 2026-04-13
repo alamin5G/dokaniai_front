@@ -126,7 +126,7 @@ export default function SubscriptionPaymentStatusPage() {
   return (
     <section className="space-y-6">
       <header className="rounded-[1.75rem] border border-outline-variant/30 bg-surface p-6">
-        <h1 className="text-2xl font-bold text-on-surface">{t("payment.title")}</h1>
+        <h1 data-testid="payment-status-title" className="text-2xl font-bold text-on-surface">{t("payment.title")}</h1>
         <p className="mt-2 text-sm text-on-surface-variant">
           {t("payment.subtitle")}
         </p>
@@ -140,7 +140,7 @@ export default function SubscriptionPaymentStatusPage() {
 
       <section className="rounded-[1.5rem] border border-outline-variant/30 bg-surface p-5 space-y-4">
         <p className="text-sm text-on-surface-variant">{t("payment.intentId")}: <span className="font-semibold text-on-surface">{paymentIntentId}</span></p>
-        <p className="text-sm text-on-surface-variant">
+        <p data-testid="payment-current-status" className="text-sm text-on-surface-variant">
           {t("payment.currentStatus")}: <span className="font-semibold text-primary">{statusLabel}</span>
         </p>
 
@@ -172,7 +172,7 @@ export default function SubscriptionPaymentStatusPage() {
 
         <button
           type="button"
-          onClick={() => router.push("/account/subscription")}
+          onClick={() => router.push("/subscription")}
           className="rounded-full bg-surface-container-high px-5 py-3 text-sm font-semibold text-on-surface"
         >
           {statusData?.status === "COMPLETED"

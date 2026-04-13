@@ -174,7 +174,7 @@ export default function SubscriptionUpgradePage() {
   return (
     <section className="space-y-6">
       <header className="rounded-[1.75rem] border border-outline-variant/30 bg-surface p-6">
-        <h1 className="text-2xl font-bold text-on-surface">{t("upgrade.title")}</h1>
+        <h1 data-testid="subscription-upgrade-title" className="text-2xl font-bold text-on-surface">{t("upgrade.title")}</h1>
         <p className="mt-2 text-sm text-on-surface-variant">
           {t("upgrade.subtitle")}
         </p>
@@ -247,6 +247,7 @@ export default function SubscriptionUpgradePage() {
             </select>
 
             <button
+              data-testid="continue-to-payment"
               type="button"
               onClick={handleContinueToPayment}
               disabled={isSubmitting || !selectedPlan || isCurrentPlan}
