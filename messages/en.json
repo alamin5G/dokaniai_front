@@ -1193,6 +1193,436 @@
       "voice": {
         "placeholder": "e.g. Rahima 500 taka due",
         "tooltip": "AI-powered voice/text command"
+      },
+      "reports": {
+        "title": "Reports",
+        "subtitle": "Business analytics and insights",
+        "tabs": {
+          "dashboard": "Dashboard",
+          "sales": "Sales",
+          "profit": "Profit",
+          "expenses": "Expenses",
+          "due": "Due",
+          "stock": "Stock",
+          "advanced": "Advanced Analytics"
+        },
+        "dashboard": {
+          "todaySales": "Today's Sales",
+          "todayProfit": "Today's Profit",
+          "monthSales": "Monthly Sales",
+          "monthProfit": "Monthly Profit",
+          "totalDue": "Total Due",
+          "customersWithDue": "Customers with Due",
+          "lowStock": "Low Stock Items",
+          "reorderNeeded": "Reorder Needed",
+          "topSelling": "Top Selling Today",
+          "recentActivity": "Recent Activity",
+          "noData": "No data available yet."
+        },
+        "sales": {
+          "title": "Sales Report",
+          "daily": "Daily",
+          "weekly": "Weekly",
+          "monthly": "Monthly",
+          "totalSales": "Total Sales",
+          "totalRevenue": "Total Revenue",
+          "totalProfit": "Total Profit",
+          "totalDiscount": "Total Discount",
+          "itemsSold": "Items Sold",
+          "topItems": "Top Selling Items",
+          "dailyBreakdown": "Daily Breakdown",
+          "date": "Date",
+          "revenue": "Revenue",
+          "profit": "Profit",
+          "sales": "Sales",
+          "quantity": "Qty"
+        },
+        "profit": {
+          "title": "Profit Analysis",
+          "totalRevenue": "Total Revenue",
+          "totalCost": "Total Cost",
+          "totalProfit": "Total Profit",
+          "grossProfit": "Gross Profit",
+          "totalExpenses": "Total Expenses",
+          "netProfit": "Net Profit",
+          "profitMargin": "Profit Margin",
+          "cogs": "Cost of Goods Sold",
+          "product": "Product",
+          "revenue": "Revenue",
+          "cost": "Cost",
+          "profit": "Profit",
+          "margin": "Margin",
+          "quantity": "Qty Sold"
+        },
+        "expenses": {
+          "title": "Expense Breakdown",
+          "category": "Category",
+          "amount": "Amount",
+          "percentage": "%",
+          "count": "Count"
+        },
+        "due": {
+          "title": "Due Report",
+          "totalDue": "Total Outstanding",
+          "customersWithDue": "Customers with Due",
+          "customer": "Customer",
+          "phone": "Phone",
+          "dueAmount": "Due Amount",
+          "lastTransaction": "Last Transaction"
+        },
+        "stock": {
+          "title": "Stock Alerts",
+          "lowStock": "Low Stock",
+          "outOfStock": "Out of Stock",
+          "reorderNeeded": "Reorder Needed",
+          "product": "Product",
+          "sku": "SKU",
+          "currentStock": "Current Stock",
+          "reorderPoint": "Reorder Point",
+          "status": "Status"
+        },
+        "dateRange": {
+          "today": "Today",
+          "thisWeek": "This Week",
+          "thisMonth": "This Month",
+          "last30Days": "Last 30 Days",
+          "custom": "Custom",
+          "startDate": "Start Date",
+          "endDate": "End Date",
+          "apply": "Apply"
+        },
+        "export": {
+          "pdf": "Export PDF",
+          "csv": "Export CSV"
+        },
+        "messages": {
+          "loadError": "Failed to load report data.",
+          "exportError": "Failed to export report.",
+          "noData": "No data available for the selected period."
+        },
+        "charts": {
+          "salesTrend": "Sales Trend",
+          "revenue": "Revenue",
+          "profit": "Profit",
+          "expenses": "Expenses",
+          "cogs": "Cost of Goods",
+          "profitAnalysis": "Profit Analysis",
+          "margin": "Margin: {value}%",
+          "revenueDistribution": "Revenue Distribution",
+          "totalExpenses": "Total Expenses",
+          "dueByCustomer": "Due by Customer",
+          "dueAging": "Due Aging Analysis",
+          "amount": "Amount",
+          "periodComparison": "Period Comparison",
+          "currentPeriod": "Current Period",
+          "previousPeriod": "Previous Period",
+          "day": "Day {n}",
+          "aging": {
+            "current": "Current",
+            "days30": "1-30 Days",
+            "days60": "31-60 Days",
+            "days90": "90+ Days"
+          }
+        },
+        "insights": {
+          "title": "AI Business Insights",
+          "subtitle": "Powered by AI analysis",
+          "loading": "Analyzing your business data…",
+          "revenueChange": "Revenue",
+          "profitChange": "Profit",
+          "expenseChange": "Expenses",
+          "recommendations": "Recommendations",
+          "refresh": "Refresh Insights",
+          "fallbackSummary": "Connect more sales data to unlock personalized AI insights about your business performance.",
+          "fallbackRec1": "Track daily sales consistently for better trend analysis.",
+          "fallbackRec2": "Keep product costs updated for accurate profit calculations.",
+          "fallbackRec3": "Review due balances weekly to maintain healthy cash flow."
+        },
+        "customerAnalytics": {
+          "title": "Customer Analytics",
+          "noData": "Customer analytics data is not available yet. Keep processing sales to unlock insights.",
+          "totalCustomers": "Total Customers",
+          "activeCustomers": "Active Customers",
+          "avgLifetimeValue": "Avg. Lifetime Value",
+          "avgOrderValue": "Avg. Order Value",
+          "topCustomers": "Top Customers",
+          "customerName": "Customer",
+          "totalSpent": "Total Spent",
+          "orders": "Orders",
+          "avgOrder": "Avg. Order",
+          "segments": "Customer Segments",
+          "customers": "customers"
+        },
+        "upgrade": {
+          "currentPlan": "Current plan: {plan}",
+          "toPro": "Upgrade to Pro — ৳399/mo",
+          "toPlus": "Upgrade to Plus — ৳799/mo",
+          "advancedReports": {
+            "title": "Advanced Analytics",
+            "description": "Unlock trend charts, period comparisons, AI insights, and more with a Pro subscription."
+          },
+          "aiInsights": {
+            "title": "AI Business Insights",
+            "description": "Get AI-powered recommendations and trend analysis for your business."
+          },
+          "customerAnalytics": {
+            "title": "Customer Analytics",
+            "description": "Understand your customers better with lifetime value, segmentation, and purchase frequency analysis."
+          },
+          "forecasting": {
+            "title": "Revenue Forecasting",
+            "description": "Predict future revenue and plan your business with AI-powered forecasting."
+          }
+        }
+      },
+      "ai": {
+        "title": "AI Assistant",
+        "subtitle": "Your intelligent business companion",
+        "tabs": {
+          "chat": "Chat",
+          "voice": "Voice",
+          "commands": "Commands"
+        },
+        "usage": {
+          "queries": "AI Queries: {used}/{limit} today"
+        },
+        "actions": {
+          "SALE": "Sale",
+          "EXPENSE": "Expense",
+          "DUE_BAKI": "Due (Baki)",
+          "DUE_JOMA": "Due (Joma)",
+          "DISCOUNT": "Discount",
+          "RETURN": "Return",
+          "QUERY": "Query",
+          "UNKNOWN": "Unknown"
+        },
+        "chat": {
+          "newChat": "New Chat",
+          "welcome": "How can I help your business today?",
+          "welcomeHint": "Ask me about sales, expenses, dues, or give me a command in Bengali.",
+          "placeholder": "Type a message or command…",
+          "error": "Sorry, I couldn't process that. Please try again."
+        },
+        "voice": {
+          "tapToRecord": "Tap to start recording",
+          "recording": "Recording… tap to stop",
+          "processing": "Processing audio…",
+          "micError": "Could not access microphone. Please allow microphone permission.",
+          "transcribeError": "Failed to transcribe audio. Please try again.",
+          "updateError": "Failed to update transcript.",
+          "confirmError": "Failed to confirm transcript.",
+          "parseError": "Failed to parse the command.",
+          "executeError": "Failed to execute the command.",
+          "dismiss": "Dismiss",
+          "session": "Voice Session",
+          "transcript": "Transcript",
+          "confidence": "Confidence: {value}%",
+          "confirm": "Confirm",
+          "parse": "Parse Command",
+          "reset": "Start Over",
+          "status": {
+            "DRAFT": "Draft",
+            "TRANSCRIBED": "Transcribed",
+            "EDITED": "Edited",
+            "CONFIRMED": "Confirmed",
+            "EXECUTED": "Executed",
+            "CANCELLED": "Cancelled",
+            "EXPIRED": "Expired"
+          }
+        },
+        "commands": {
+          "title": "Quick Commands",
+          "hint": "Type a command in Bengali or English. AI will parse and execute it.",
+          "placeholder": "e.g., চাল ২০ কেজি বিক্রি ১২০০ টাকায়",
+          "parse": "Parse",
+          "confirm": "Confirm & Execute",
+          "execute": "Execute",
+          "executed": "Command executed successfully!",
+          "error": "Failed to process command. Please try again.",
+          "originalText": "Original",
+          "needsConfirmation": "Confirmation Required",
+          "highRisk": "High-Risk Action",
+          "highRiskHint": "This action modifies financial data. Please review carefully before confirming in the chat.",
+          "examples": {
+            "sale": "চাল ২০ কেজি বিক্রি ১২০০ টাকায়",
+            "expense": "ভাড়া ৫০০০ টাকা দিলাম",
+            "dueBaki": "রহিম বাকী ৩০০০ টাকা",
+            "dueJoma": "রহিম জমা দিল ১০০০ টাকা",
+            "query": "আজকের বিক্রি কত?"
+          }
+        }
+      }
+    },
+    "support": {
+      "title": "Help & Support",
+      "subtitle": "Get help with your account and business",
+      "status": {
+        "ALL": "All",
+        "OPEN": "Open",
+        "IN_PROGRESS": "In Progress",
+        "WAITING_USER": "Waiting for You",
+        "RESOLVED": "Resolved",
+        "CLOSED": "Closed"
+      },
+      "priority": {
+        "LOW": "Low",
+        "NORMAL": "Normal",
+        "MEDIUM": "Medium",
+        "HIGH": "High",
+        "URGENT": "Urgent"
+      },
+      "category": {
+        "GENERAL": "General",
+        "BILLING": "Billing",
+        "TECHNICAL": "Technical",
+        "CATEGORY_REQUEST": "Category Request",
+        "FEATURE_REQUEST": "Feature Request",
+        "ACCOUNT": "Account",
+        "OTHER": "Other"
+      },
+      "create": {
+        "title": "Create Ticket",
+        "subject": "Subject",
+        "subjectPlaceholder": "Brief description of your issue",
+        "body": "Description",
+        "bodyPlaceholder": "Describe your issue in detail…",
+        "category": "Category",
+        "priority": "Priority",
+        "submit": "Submit Ticket",
+        "cancel": "Cancel"
+      },
+      "detail": {
+        "back": "Back to Tickets",
+        "close": "Close Ticket",
+        "reopen": "Reopen Ticket",
+        "replyPlaceholder": "Type a reply…"
+      },
+      "messages": {
+        "loadError": "Failed to load tickets.",
+        "createError": "Failed to create ticket.",
+        "replyError": "Failed to send reply.",
+        "closeError": "Failed to close ticket.",
+        "reopenError": "Failed to reopen ticket.",
+        "noTickets": "No support tickets found. Create one if you need help.",
+        "messages": "messages"
+      }
+    },
+    "admin": {
+      "title": "Admin Panel",
+      "subtitle": "Manage users, support tickets, and system settings",
+      "tabs": {
+        "dashboard": "Dashboard",
+        "users": "Users",
+        "tickets": "Tickets",
+        "audit": "Audit Logs"
+      },
+      "dashboard": {
+        "error": "Failed to load system statistics.",
+        "userStats": "User Statistics",
+        "totalUsers": "Total Users",
+        "activeUsers": "Active Users",
+        "suspendedUsers": "Suspended",
+        "adminCount": "Admins",
+        "subscriptionStats": "Subscription Overview",
+        "totalActive": "Active Subscriptions",
+        "trialUsers": "Trial",
+        "basicUsers": "Basic",
+        "proUsers": "Pro",
+        "plusUsers": "Plus",
+        "ticketStats": "Support Tickets",
+        "totalOpen": "Open",
+        "totalInProgress": "In Progress",
+        "totalResolved": "Resolved",
+        "totalClosed": "Closed",
+        "unassignedCount": "Unassigned",
+        "avgResolution": "Avg Resolution"
+      },
+      "users": {
+        "searchPlaceholder": "Search by name, phone, or email…",
+        "allRoles": "All Roles",
+        "allStatuses": "All Statuses",
+        "export": "Export CSV",
+        "colName": "Name",
+        "colPhone": "Phone",
+        "colRole": "Role",
+        "colStatus": "Status",
+        "colLastLogin": "Last Login",
+        "colCreated": "Created",
+        "colActions": "Actions",
+        "noUsers": "No users found.",
+        "prev": "Previous",
+        "next": "Next",
+        "pageInfo": "Page {page} of {total}",
+        "reason": "Reason",
+        "days": "Days",
+        "cancel": "Cancel",
+        "confirm": "Confirm",
+        "loading": "Processing…",
+        "actionUser": "User",
+        "action_suspend": "Suspend User",
+        "action_unsuspend": "Unsuspend User",
+        "action_archive": "Archive User",
+        "action_restore": "Restore User",
+        "action_delete": "Delete User",
+        "action_extendTrial": "Extend Trial",
+        "action_resetPassword": "Reset Password",
+        "action_role_USER": "Set Role: User",
+        "action_role_ADMIN": "Set Role: Admin",
+        "action_role_SUPER_ADMIN": "Set Role: Super Admin",
+        "actSuspend": "Suspend",
+        "actUnsuspend": "Unsuspend",
+        "actArchive": "Archive",
+        "actRestore": "Restore",
+        "actDelete": "Delete",
+        "actExtendTrial": "Extend Trial",
+        "actResetPassword": "Reset Password",
+        "actRoleAdmin": "Make Admin",
+        "actRoleSuperAdmin": "Make Super Admin",
+        "actRoleUser": "Make User"
+      },
+      "tickets": {
+        "allStatuses": "All Statuses",
+        "colSubject": "Subject",
+        "colCategory": "Category",
+        "colPriority": "Priority",
+        "colStatus": "Status",
+        "colAssigned": "Assigned",
+        "colDate": "Date",
+        "colActions": "Actions",
+        "noTickets": "No support tickets found.",
+        "assignToMe": "Assign to Me",
+        "escalate": "Escalate",
+        "assigned": "Assigned",
+        "unassigned": "Unassigned",
+        "prev": "Previous",
+        "next": "Next",
+        "pageInfo": "Page {page} of {total}",
+        "backToList": "Back to list",
+        "messages": "Message Thread",
+        "senderUser": "User",
+        "senderAdmin": "Admin",
+        "internalNote": "Internal Note",
+        "replyLabel": "Reply to User",
+        "replyPlaceholder": "Write your response…",
+        "sendReply": "Send Reply",
+        "sending": "Sending…",
+        "internalNoteLabel": "Internal Note (admins only)",
+        "internalNotePlaceholder": "Add a note visible only to admins…",
+        "addNote": "Add Note"
+      },
+      "audit": {
+        "filterUserId": "Filter by User ID…",
+        "allActions": "All Actions",
+        "colTimestamp": "Timestamp",
+        "colAction": "Action",
+        "colActor": "Actor",
+        "colTarget": "Target",
+        "colSeverity": "Severity",
+        "colDetails": "Details",
+        "noLogs": "No audit logs found.",
+        "prev": "Previous",
+        "next": "Next",
+        "pageInfo": "Page {page} of {total}"
       }
     }
   }

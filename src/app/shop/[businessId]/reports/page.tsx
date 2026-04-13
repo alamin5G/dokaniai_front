@@ -1,4 +1,4 @@
-import ShopFeaturePage from "@/components/dashboard/ShopFeaturePage";
+import ReportWorkspace from "@/components/reports/ReportWorkspace";
 
 export default async function ShopReportsPage({
     params,
@@ -6,11 +6,5 @@ export default async function ShopReportsPage({
     params: Promise<{ businessId: string }>;
 }) {
     const { businessId } = await params;
-    return (
-        <ShopFeaturePage
-            businessId={businessId}
-            title="Reports Workspace"
-            description="Review sales, due, and profitability reports scoped to the current shop."
-        />
-    );
+    return <ReportWorkspace businessId={businessId} />;
 }

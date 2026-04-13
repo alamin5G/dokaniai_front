@@ -1193,6 +1193,436 @@
       "voice": {
         "placeholder": "যেমন: রহিমার কাছে ৫০০ টাকা বাকী",
         "tooltip": "AI-পাওয়ার্ড ভয়েস/টেক্সট কমান্ড"
+      },
+      "reports": {
+        "title": "রিপোর্ট",
+        "subtitle": "ব্যবসার বিশ্লেষণ ও অন্তর্দৃষ্টি",
+        "tabs": {
+          "dashboard": "ড্যাশবোর্ড",
+          "sales": "বিক্রয়",
+          "profit": "লাভ",
+          "expenses": "খরচ",
+          "due": "বাকী",
+          "stock": "স্টক",
+          "advanced": "উন্নত বিশ্লেষণ"
+        },
+        "dashboard": {
+          "todaySales": "আজকের বিক্রি",
+          "todayProfit": "আজকের লাভ",
+          "monthSales": "মাসিক বিক্রি",
+          "monthProfit": "মাসিক লাভ",
+          "totalDue": "মোট বকেয়া",
+          "customersWithDue": "বকেয়াদার কাস্টমার",
+          "lowStock": "স্টক কম আছে",
+          "reorderNeeded": "পুনরায় অর্ডার প্রয়োজন",
+          "topSelling": "আজকের সেরা বিক্রি",
+          "recentActivity": "সাম্প্রতিক কার্যকলাপ",
+          "noData": "এখনও কোনো তথ্য নেই।"
+        },
+        "sales": {
+          "title": "বিক্রয় রিপোর্ট",
+          "daily": "দৈনিক",
+          "weekly": "সাপ্তাহিক",
+          "monthly": "মাসিক",
+          "totalSales": "মোট বিক্রি",
+          "totalRevenue": "মোট আয়",
+          "totalProfit": "মোট লাভ",
+          "totalDiscount": "মোট ছাড়",
+          "itemsSold": "বিক্রি হয়েছে",
+          "topItems": "সেরা বিক্রি",
+          "dailyBreakdown": "দৈনিক বিবরণ",
+          "date": "তারিখ",
+          "revenue": "আয়",
+          "profit": "লাভ",
+          "sales": "বিক্রি",
+          "quantity": "পরিমাণ"
+        },
+        "profit": {
+          "title": "লাভ বিশ্লেষণ",
+          "totalRevenue": "মোট আয়",
+          "totalCost": "মোট খরচ",
+          "totalProfit": "মোট লাভ",
+          "grossProfit": "স্থূল লাভ",
+          "totalExpenses": "মোট খরচ",
+          "netProfit": "নিট লাভ",
+          "profitMargin": "লাভের হার",
+          "cogs": "পণ্যের খরচ",
+          "product": "পণ্য",
+          "revenue": "আয়",
+          "cost": "খরচ",
+          "profit": "লাভ",
+          "margin": "মার্জিন",
+          "quantity": "বিক্রি"
+        },
+        "expenses": {
+          "title": "খরচ বিশ্লেষণ",
+          "category": "ক্যাটাগরি",
+          "amount": "পরিমাণ",
+          "percentage": "%",
+          "count": "সংখ্যা"
+        },
+        "due": {
+          "title": "বাকী রিপোর্ট",
+          "totalDue": "মোট বকেয়া",
+          "customersWithDue": "বকেয়াদার কাস্টমার",
+          "customer": "কাস্টমার",
+          "phone": "ফোন",
+          "dueAmount": "বকেয়া পরিমাণ",
+          "lastTransaction": "শেষ লেনদেন"
+        },
+        "stock": {
+          "title": "স্টক সতর্কতা",
+          "lowStock": "স্টক কম",
+          "outOfStock": "স্টক শেষ",
+          "reorderNeeded": "পুনরায় অর্ডার",
+          "product": "পণ্য",
+          "sku": "SKU",
+          "currentStock": "বর্তমান স্টক",
+          "reorderPoint": "রিঅর্ডার পয়েন্ট",
+          "status": "অবস্থা"
+        },
+        "dateRange": {
+          "today": "আজ",
+          "thisWeek": "এই সপ্তাহ",
+          "thisMonth": "এই মাস",
+          "last30Days": "গত ৩০ দিন",
+          "custom": "কাস্টম",
+          "startDate": "শুরু তারিখ",
+          "endDate": "শেষ তারিখ",
+          "apply": "প্রয়োগ"
+        },
+        "export": {
+          "pdf": "PDF এক্সপোর্ট",
+          "csv": "CSV এক্সপোর্ট"
+        },
+        "messages": {
+          "loadError": "রিপোর্ট তথ্য লোড করা যায়নি।",
+          "exportError": "রিপোর্ট এক্সপোর্ট করা যায়নি।",
+          "noData": "নির্বাচিত সময়ের জন্য কোনো তথ্য নেই।"
+        },
+        "charts": {
+          "salesTrend": "বিক্রয় প্রবণতা",
+          "revenue": "আয়",
+          "profit": "লাভ",
+          "expenses": "খরচ",
+          "cogs": "পণ্যের খরচ",
+          "profitAnalysis": "লাভ বিশ্লেষণ",
+          "margin": "মার্জিন: {value}%",
+          "revenueDistribution": "আয়ের বণ্টন",
+          "totalExpenses": "মোট খরচ",
+          "dueByCustomer": "কাস্টমার অনুযায়ী বকেয়া",
+          "dueAging": "বকেয়া বয়স বিশ্লেষণ",
+          "amount": "পরিমাণ",
+          "periodComparison": "সময়কাল তুলনা",
+          "currentPeriod": "বর্তমান সময়কাল",
+          "previousPeriod": "পূর্ববর্তী সময়কাল",
+          "day": "দিন {n}",
+          "aging": {
+            "current": "চলমান",
+            "days30": "১-৩০ দিন",
+            "days60": "৩১-৬০ দিন",
+            "days90": "৯০+ দিন"
+          }
+        },
+        "insights": {
+          "title": "AI ব্যবসা অন্তর্দৃষ্টি",
+          "subtitle": "AI বিশ্লেষণ দ্বারা পরিচালিত",
+          "loading": "আপনার ব্যবসার তথ্য বিশ্লেষণ করা হচ্ছে…",
+          "revenueChange": "আয়",
+          "profitChange": "লাভ",
+          "expenseChange": "খরচ",
+          "recommendations": "সুপারিশসমূহ",
+          "refresh": "অন্তর্দৃষ্টি রিফ্রেশ করুন",
+          "fallbackSummary": "আপনার ব্যবসার কর্মক্ষমতা সম্পর্কে ব্যক্তিগতকৃত AI অন্তর্দৃষ্টি আনলক করতে আরও বিক্রয় ডেটা যুক্ত করুন।",
+          "fallbackRec1": "ভালো প্রবণতা বিশ্লেষণের জন্য প্রতিদিন বিক্রি ট্র্যাক করুন।",
+          "fallbackRec2": "সঠিক লাভ গণনার জন্য পণ্যের খরচ আপডেট রাখুন।",
+          "fallbackRec3": "সুস্থ নগদ প্রবাহ বজায় রাখতে সপ্তাহে একবার বকেয়া পর্যালোচনা করুন।"
+        },
+        "customerAnalytics": {
+          "title": "কাস্টমার বিশ্লেষণ",
+          "noData": "কাস্টমার বিশ্লেষণ তথ্য এখনও পাওয়া যায়নি। অন্তর্দৃষ্টি আনলক করতে বিক্রি চালিয়ে যান।",
+          "totalCustomers": "মোট কাস্টমার",
+          "activeCustomers": "সক্রিয় কাস্টমার",
+          "avgLifetimeValue": "গড় লাইফটাইম ভ্যালু",
+          "avgOrderValue": "গড় অর্ডার ভ্যালু",
+          "topCustomers": "সেরা কাস্টমার",
+          "customerName": "কাস্টমার",
+          "totalSpent": "মোট খরচ",
+          "orders": "অর্ডার",
+          "avgOrder": "গড় অর্ডার",
+          "segments": "কাস্টমার সেগমেন্ট",
+          "customers": "কাস্টমার"
+        },
+        "upgrade": {
+          "currentPlan": "বর্তমান প্ল্যান: {plan}",
+          "toPro": "Pro তে আপগ্রেড করুন — ৳৩৯৯/মাস",
+          "toPlus": "Plus এ আপগ্রেড করুন — ৳৭৯৯/মাস",
+          "advancedReports": {
+            "title": "উন্নত বিশ্লেষণ",
+            "description": "Pro সাবস্ক্রিপশনে ট্রেন্ড চার্ট, সময়কাল তুলনা, AI অন্তর্দৃষ্টি এবং আরও অনেক কিছু আনলক করুন।"
+          },
+          "aiInsights": {
+            "title": "AI ব্যবসা অন্তর্দৃষ্টি",
+            "description": "আপনার ব্যবসার জন্য AI-চালিত সুপারিশ এবং প্রবণতা বিশ্লেষণ পান।"
+          },
+          "customerAnalytics": {
+            "title": "কাস্টমার বিশ্লেষণ",
+            "description": "লাইফটাইম ভ্যালু, সেগমেন্টেশন এবং ক্রয় ফ্রিকোয়েন্সি বিশ্লেষণ দিয়ে কাস্টমারদের আরও ভালোভাবে বুঝুন।"
+          },
+          "forecasting": {
+            "title": "আয়ের পূর্বাভাস",
+            "description": "AI-চালিত পূর্বাভাস দিয়ে ভবিষ্যত আয়ের পূর্বাভাস দিন এবং ব্যবসা পরিকল্পনা করুন।"
+          }
+        }
+      },
+      "ai": {
+        "title": "AI সহকারী",
+        "subtitle": "আপনার বুদ্ধিমান ব্যবসা সঙ্গী",
+        "tabs": {
+          "chat": "চ্যাট",
+          "voice": "ভয়েস",
+          "commands": "কমান্ড"
+        },
+        "usage": {
+          "queries": "AI কুয়েরি: আজ {used}/{limit}"
+        },
+        "actions": {
+          "SALE": "বিক্রি",
+          "EXPENSE": "খরচ",
+          "DUE_BAKI": "বাকী",
+          "DUE_JOMA": "জমা",
+          "DISCOUNT": "ছাড়",
+          "RETURN": "ফেরত",
+          "QUERY": "জিজ্ঞাসা",
+          "UNKNOWN": "অজানা"
+        },
+        "chat": {
+          "newChat": "নতুন চ্যাট",
+          "welcome": "আজ আপনার ব্যবসায় কীভাবে সাহায্য করতে পারি?",
+          "welcomeHint": "বিক্রি, খরচ, বকেয়া সম্পর্কে জিজ্ঞাসা করুন বা বাংলায় কমান্ড দিন।",
+          "placeholder": "মেসেজ বা কমান্ড টাইপ করুন…",
+          "error": "দুঃখিত, এটি প্রসেস করা যায়নি। আবার চেষ্টা করুন।"
+        },
+        "voice": {
+          "tapToRecord": "রেকর্ড শুরু করতে ট্যাপ করুন",
+          "recording": "রেকর্ড হচ্ছে… থামাতে ট্যাপ করুন",
+          "processing": "অডিও প্রসেস হচ্ছে…",
+          "micError": "মাইক্রোফোন অ্যাক্সেস করা যায়নি। অনুগ্রহ করে মাইক্রোফোন অনুমতি দিন।",
+          "transcribeError": "অডিও ট্রান্সক্রাইব করা যায়নি। আবার চেষ্টা করুন।",
+          "updateError": "ট্রান্সক্রিপ্ট আপডেট করা যায়নি।",
+          "confirmError": "ট্রান্সক্রিপ্ট কনফার্ম করা যায়নি।",
+          "parseError": "কমান্ড পার্স করা যায়নি।",
+          "executeError": "কমান্ড এক্সিকিউট করা যায়নি।",
+          "dismiss": "বন্ধ করুন",
+          "session": "ভয়েস সেশন",
+          "transcript": "ট্রান্সক্রিপ্ট",
+          "confidence": "নির্ভুলতা: {value}%",
+          "confirm": "কনফার্ম",
+          "parse": "কমান্ড পার্স করুন",
+          "reset": "আবার শুরু করুন",
+          "status": {
+            "DRAFT": "খসড়া",
+            "TRANSCRIBED": "ট্রান্সক্রাইবড",
+            "EDITED": "সম্পাদিত",
+            "CONFIRMED": "কনফার্মড",
+            "EXECUTED": "এক্সিকিউটেড",
+            "CANCELLED": "বাতিল",
+            "EXPIRED": "মেয়াদোত্তীর্ণ"
+          }
+        },
+        "commands": {
+          "title": "দ্রুত কমান্ড",
+          "hint": "বাংলা বা ইংরেজিতে কমান্ড টাইপ করুন। AI এটি পার্স এবং এক্সিকিউট করবে।",
+          "placeholder": "যেমন: চাল ২০ কেজি বিক্রি ১২০০ টাকায়",
+          "parse": "পার্স",
+          "confirm": "কনফার্ম ও এক্সিকিউট",
+          "execute": "এক্সিকিউট",
+          "executed": "কমান্ড সফলভাবে এক্সিকিউট হয়েছে!",
+          "error": "কমান্ড প্রসেস করা যায়নি। আবার চেষ্টা করুন।",
+          "originalText": "মূল টেক্সট",
+          "needsConfirmation": "কনফার্মেশন প্রয়োজন",
+          "highRisk": "উচ্চ-ঝুঁকি অ্যাকশন",
+          "highRiskHint": "এই অ্যাকশনটি আর্থিক ডেটা পরিবর্তন করে। চ্যাটে কনফার্ম করার আগে ভালোভাবে পর্যালোচনা করুন।",
+          "examples": {
+            "sale": "চাল ২০ কেজি বিক্রি ১২০০ টাকায়",
+            "expense": "ভাড়া ৫০০০ টাকা দিলাম",
+            "dueBaki": "রহিম বাকী ৩০০০ টাকা",
+            "dueJoma": "রহিম জমা দিল ১০০০ টাকা",
+            "query": "আজকের বিক্রি কত?"
+          }
+        }
+      }
+    },
+    "support": {
+      "title": "সাহায্য ও সাপোর্ট",
+      "subtitle": "আপনার অ্যাকাউন্ট ও ব্যবসার জন্য সাহায্য নিন",
+      "status": {
+        "ALL": "সব",
+        "OPEN": "খোলা",
+        "IN_PROGRESS": "চলমান",
+        "WAITING_USER": "আপনার জন্য অপেক্ষা",
+        "RESOLVED": "সমাধান",
+        "CLOSED": "বন্ধ"
+      },
+      "priority": {
+        "LOW": "কম",
+        "NORMAL": "স্বাভাবিক",
+        "MEDIUM": "মিডিয়াম",
+        "HIGH": "উচ্চ",
+        "URGENT": "জরুরি"
+      },
+      "category": {
+        "GENERAL": "সাধারণ",
+        "BILLING": "বিলিং",
+        "TECHNICAL": "টেকনিক্যাল",
+        "CATEGORY_REQUEST": "ক্যাটাগরি রিকুয়েস্ট",
+        "FEATURE_REQUEST": "ফিচার রিকুয়েস্ট",
+        "ACCOUNT": "অ্যাকাউন্ট",
+        "OTHER": "অন্যান্য"
+      },
+      "create": {
+        "title": "টিকেট তৈরি করুন",
+        "subject": "বিষয়",
+        "subjectPlaceholder": "আপনার সমস্যার সংক্ষিপ্ত বিবরণ",
+        "body": "বিবরণ",
+        "bodyPlaceholder": "আপনার সমস্যা বিস্তারিত বর্ণনা করুন…",
+        "category": "ক্যাটাগরি",
+        "priority": "অগ্রাধিকার",
+        "submit": "টিকেট জমা দিন",
+        "cancel": "বাতিল"
+      },
+      "detail": {
+        "back": "টিকেট তালিকায় ফিরুন",
+        "close": "টিকেট বন্ধ করুন",
+        "reopen": "টিকেট পুনরায় খুলুন",
+        "replyPlaceholder": "রিপ্লাই লিখুন…"
+      },
+      "messages": {
+        "loadError": "টিকেট লোড করা যায়নি।",
+        "createError": "টিকেট তৈরি করা যায়নি।",
+        "replyError": "রিপ্লাই পাঠানো যায়নি।",
+        "closeError": "টিকেট বন্ধ করা যায়নি।",
+        "reopenError": "টিকেট পুনরায় খোলা যায়নি।",
+        "noTickets": "কোনো সাপোর্ট টিকেট পাওয়া যায়নি। সাহায্য প্রয়োজন হলে একটি তৈরি করুন।",
+        "messages": "মেসেজ"
+      }
+    },
+    "admin": {
+      "title": "অ্যাডমিন প্যানেল",
+      "subtitle": "ব্যবহারকারী, সাপোর্ট টিকেট এবং সিস্টেম সেটিংস পরিচালনা করুন",
+      "tabs": {
+        "dashboard": "ড্যাশবোর্ড",
+        "users": "ব্যবহারকারী",
+        "tickets": "টিকেট",
+        "audit": "অডিট লগ"
+      },
+      "dashboard": {
+        "error": "সিস্টেম পরিসংখ্যান লোড করা যায়নি।",
+        "userStats": "ব্যবহারকারী পরিসংখ্যান",
+        "totalUsers": "মোট ব্যবহারকারী",
+        "activeUsers": "সক্রিয়",
+        "suspendedUsers": "স্থগিত",
+        "adminCount": "অ্যাডমিন",
+        "subscriptionStats": "সাবস্ক্রিপশন ওভারভিউ",
+        "totalActive": "সক্রিয় সাবস্ক্রিপশন",
+        "trialUsers": "ট্রায়াল",
+        "basicUsers": "বেসিক",
+        "proUsers": "প্রো",
+        "plusUsers": "প্লাস",
+        "ticketStats": "সাপোর্ট টিকেট",
+        "totalOpen": "খোলা",
+        "totalInProgress": "চলমান",
+        "totalResolved": "সমাধান",
+        "totalClosed": "বন্ধ",
+        "unassignedCount": "অ্যাসাইনহীন",
+        "avgResolution": "গড় সমাধান"
+      },
+      "users": {
+        "searchPlaceholder": "নাম, ফোন বা ইমেইল দিয়ে খুঁজুন…",
+        "allRoles": "সব ভূমিকা",
+        "allStatuses": "সব স্ট্যাটাস",
+        "export": "CSV এক্সপোর্ট",
+        "colName": "নাম",
+        "colPhone": "ফোন",
+        "colRole": "ভূমিকা",
+        "colStatus": "স্ট্যাটাস",
+        "colLastLogin": "শেষ লগইন",
+        "colCreated": "তৈরি",
+        "colActions": "অ্যাকশন",
+        "noUsers": "কোনো ব্যবহারকারী পাওয়া যায়নি।",
+        "prev": "আগে",
+        "next": "পরে",
+        "pageInfo": "পৃষ্ঠা {page} / {total}",
+        "reason": "কারণ",
+        "days": "দিন",
+        "cancel": "বাতিল",
+        "confirm": "নিশ্চিত",
+        "loading": "প্রক্রিয়াধীন…",
+        "actionUser": "ব্যবহারকারী",
+        "action_suspend": "ব্যবহারকারী স্থগিত",
+        "action_unsuspend": "ব্যবহারকারী পুনরায় সক্রিয়",
+        "action_archive": "ব্যবহারকারী আর্কাইভ",
+        "action_restore": "ব্যবহারকারী পুনরুদ্ধার",
+        "action_delete": "ব্যবহারকারী মুছুন",
+        "action_extendTrial": "ট্রায়াল বাড়ান",
+        "action_resetPassword": "পাসওয়ার্ড রিসেট",
+        "action_role_USER": "ভূমিকা: ব্যবহারকারী",
+        "action_role_ADMIN": "ভূমিকা: অ্যাডমিন",
+        "action_role_SUPER_ADMIN": "ভূমিকা: সুপার অ্যাডমিন",
+        "actSuspend": "স্থগিত",
+        "actUnsuspend": "পুনরায় সক্রিয়",
+        "actArchive": "আর্কাইভ",
+        "actRestore": "পুনরুদ্ধার",
+        "actDelete": "মুছুন",
+        "actExtendTrial": "ট্রায়াল বাড়ান",
+        "actResetPassword": "পাসওয়ার্ড রিসেট",
+        "actRoleAdmin": "অ্যাডমিন করুন",
+        "actRoleSuperAdmin": "সুপার অ্যাডমিন করুন",
+        "actRoleUser": "ব্যবহারকারী করুন"
+      },
+      "tickets": {
+        "allStatuses": "সব স্ট্যাটাস",
+        "colSubject": "বিষয়",
+        "colCategory": "ক্যাটেগরি",
+        "colPriority": "অগ্রাধিকার",
+        "colStatus": "স্ট্যাটাস",
+        "colAssigned": "অ্যাসাইন",
+        "colDate": "তারিখ",
+        "colActions": "অ্যাকশন",
+        "noTickets": "কোনো সাপোর্ট টিকেট পাওয়া যায়নি।",
+        "assignToMe": "আমাকে অ্যাসাইন করুন",
+        "escalate": "এসকেলেট",
+        "assigned": "অ্যাসাইন করা",
+        "unassigned": "অ্যাসাইনহীন",
+        "prev": "আগে",
+        "next": "পরে",
+        "pageInfo": "পৃষ্ঠা {page} / {total}",
+        "backToList": "তালিকায় ফিরুন",
+        "messages": "মেসেজ থ্রেড",
+        "senderUser": "ব্যবহারকারী",
+        "senderAdmin": "অ্যাডমিন",
+        "internalNote": "অভ্যন্তরীণ নোট",
+        "replyLabel": "ব্যবহারকারীকে উত্তর দিন",
+        "replyPlaceholder": "আপনার উত্তর লিখুন…",
+        "sendReply": "উত্তর পাঠান",
+        "sending": "পাঠানো হচ্ছে…",
+        "internalNoteLabel": "অভ্যন্তরীণ নোট (শুধু অ্যাডমিন)",
+        "internalNotePlaceholder": "শুধু অ্যাডমিনদের দেখার জন্য নোট যোগ করুন…",
+        "addNote": "নোট যোগ করুন"
+      },
+      "audit": {
+        "filterUserId": "ব্যবহারকারী ID দিয়ে ফিল্টার…",
+        "allActions": "সব অ্যাকশন",
+        "colTimestamp": "সময়",
+        "colAction": "অ্যাকশন",
+        "colActor": "অভিনেতা",
+        "colTarget": "টার্গেট",
+        "colSeverity": "তীব্রতা",
+        "colDetails": "বিবরণ",
+        "noLogs": "কোনো অডিট লগ পাওয়া যায়নি।",
+        "prev": "আগে",
+        "next": "পরে",
+        "pageInfo": "পৃষ্ঠা {page} / {total}"
       }
     }
   }
