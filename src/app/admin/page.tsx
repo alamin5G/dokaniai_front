@@ -1,8 +1,10 @@
 "use client";
 
 import apiClient from "@/lib/api";
+import { decideCategoryRequest, getPendingCategoryRequests } from "@/lib/categoryApi";
 import { useAuthStore } from "@/store/authStore";
 import { useEffect, useState } from "react";
+import type { CategoryRequestResponse } from "@/types/categoryRequest";
 
 interface AdminProfile {
   id: string;
@@ -17,6 +19,18 @@ export default function AdminDashboardPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [profile, setProfile] = useState<AdminProfile | null>(null);
+  const [pendingRequests, setPendingRequests] = useState<CategoryRequestResponse[]>([]);
+  const [moderatingId, setModeratingId] = useState<string | null>(null);
+
+  const loadPendingRequests = async () => {
+    try {
+      const rows = await getPendingCategoryRequests(0, 20);
+      setPendingRequests(rows);
+    } catch {
+      // Keep dashboard usable even if moderation API fails.
+      setPendingRequests([]);
+    }
+  };
 
   useEffect(() => {
     const loadAdminProfile = async () => {
@@ -35,6 +49,7 @@ export default function AdminDashboardPage() {
           return;
         }
         setProfile(user);
+        await loadPendingRequests();
       } catch (e) {
         setError(e instanceof Error ? e.message : "Failed to load admin profile");
       } finally {
@@ -44,6 +59,41 @@ export default function AdminDashboardPage() {
 
     void loadAdminProfile();
   }, [accessToken]);
+
+  const handleDecision = async (
+    requestId: string,
+    action: "APPROVE_GLOBAL" | "APPROVE_BUSINESS" | "MERGE" | "REJECT",
+  ) => {
+    let suggestedCategoryId: string | undefined;
+    let rejectionReason: string | undefined;
+
+    if (action === "MERGE") {
+      const input = window.prompt("Merge target category ID দিন:");
+      if (!input) return;
+      suggestedCategoryId = input;
+    }
+
+    if (action === "REJECT") {
+      const input = window.prompt("Reject reason দিন:");
+      if (!input) return;
+      rejectionReason = input;
+    }
+
+    setModeratingId(requestId);
+    try {
+      await decideCategoryRequest(requestId, {
+        action,
+        approvedScope: action === "APPROVE_BUSINESS" ? "BUSINESS" : action === "APPROVE_GLOBAL" ? "GLOBAL" : undefined,
+        suggestedCategoryId,
+        rejectionReason,
+      });
+      await loadPendingRequests();
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "Decision update failed");
+    } finally {
+      setModeratingId(null);
+    }
+  };
 
   if (loading) {
     return <main className="min-h-screen bg-surface p-8 text-on-surface">Loading admin dashboard...</main>;
@@ -76,6 +126,31 @@ export default function AdminDashboardPage() {
             <p className="mt-2 text-lg font-semibold text-on-surface">Ready</p>
           </article>
         </div>
+
+        <section className="mt-8 rounded-2xl border border-outline-variant/30 bg-surface p-4">
+          <h2 className="text-lg font-semibold text-on-surface">Category Request Moderation</h2>
+          <p className="mt-1 text-sm text-on-surface-variant">Pending: {pendingRequests.length}</p>
+
+          <div className="mt-4 space-y-3">
+            {pendingRequests.map((item) => (
+              <article key={item.id} className="rounded-xl border border-outline-variant/30 p-3">
+                <p className="text-sm font-semibold text-on-surface">{item.nameBn} {item.nameEn ? `/ ${item.nameEn}` : ""}</p>
+                <p className="text-xs text-on-surface-variant">
+                  {item.businessName || "Business"} • {item.businessType || "OTHER"} • Scope: {item.requestedScope || "AUTO"}
+                </p>
+                <div className="mt-3 flex flex-wrap gap-2">
+                  <button className="rounded-lg border px-3 py-1 text-xs" disabled={moderatingId === item.id} onClick={() => handleDecision(item.id, "APPROVE_GLOBAL")}>Approve GLOBAL</button>
+                  <button className="rounded-lg border px-3 py-1 text-xs" disabled={moderatingId === item.id} onClick={() => handleDecision(item.id, "APPROVE_BUSINESS")}>Approve BUSINESS</button>
+                  <button className="rounded-lg border px-3 py-1 text-xs" disabled={moderatingId === item.id} onClick={() => handleDecision(item.id, "MERGE")}>Merge</button>
+                  <button className="rounded-lg border border-error px-3 py-1 text-xs text-error" disabled={moderatingId === item.id} onClick={() => handleDecision(item.id, "REJECT")}>Reject</button>
+                </div>
+              </article>
+            ))}
+            {pendingRequests.length === 0 ? (
+              <p className="text-sm text-on-surface-variant">No pending category requests.</p>
+            ) : null}
+          </div>
+        </section>
       </section>
     </main>
   );

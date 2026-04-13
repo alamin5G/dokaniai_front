@@ -814,6 +814,12 @@ one-time OTP authentication step is required to prevent abuse.
                 (available on Pro+ plans). Template provided for
                 download. \[NEW in v6.4\]
 
+  FR-PRD-07     Users shall submit new category requests for admin
+                moderation with decision actions: APPROVE_GLOBAL,
+                APPROVE_BUSINESS, MERGE, REJECT. System shall store
+                suggested scope, approved scope, rejection reason,
+                and notify requester on final decision. \[NEW\]
+
   FR-STOCK-01   User shall set reorder point (minimum stock level) per
                 product. \[NEW in v6.4\]
 
@@ -2463,6 +2469,16 @@ business-scoped custom sub-categories. Key fields: parent_id (NULL for
 root), scope (GLOBAL/BUSINESS), business_id (NULL for GLOBAL).
 Constraints: scope validation, two-tier rule (subcategories cannot have
 children), UNIQUE(scope, business_id, slug).
+
+### 12.2.5A category_requests
+
+Purpose: Controlled custom-category pipeline to avoid duplicate/abusive
+taxonomy growth. Key fields: business_id, business_type, requested_by,
+name_bn, name_en, parent_id, status, requested_scope, approved_scope,
+reviewed_by, reviewed_at, rejection_reason, suggested_category_id,
+merged_into_category_id, created_category_id. Workflow:
+PENDING/UNDER_REVIEW -> APPROVED_GLOBAL|APPROVED_BUSINESS|REJECTED or
+DUPLICATE_SUGGESTED (merge/similar existing).
 
 ### 12.2.6 products
 
