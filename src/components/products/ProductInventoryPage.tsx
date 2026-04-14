@@ -37,6 +37,7 @@ import ProductForm, {
 } from "./ProductForm";
 import ProductSidebar from "./ProductSidebar";
 import VoiceCommandBar from "./VoiceCommandBar";
+import InventoryTab from "./InventoryTab";
 
 function toCreatePayload(form: ProductFormState): ProductCreateRequest {
     return {
@@ -100,6 +101,9 @@ export default function ProductInventoryPage({
     const [editorMode, setEditorMode] = useState<EditorMode>("create");
     const [editingProduct, setEditingProduct] = useState<Product | null>(null);
     const [form, setForm] = useState<ProductFormState>(initialFormState);
+
+    // Top-level tab: "products" or "inventory"
+    const [activeTopTab, setActiveTopTab] = useState<"products" | "inventory">("products");
 
     // Permissions
     const [canBulkImport, setCanBulkImport] = useState(true);
@@ -344,6 +348,12 @@ export default function ProductInventoryPage({
         }
     }
 
+    // Top-level tab options
+    const topTabs: { key: "products" | "inventory"; label: string }[] = [
+        { key: "products", label: t("tabProducts") },
+        { key: "inventory", label: t("tabInventory") },
+    ];
+
     return (
         <section className="space-y-8">
             {/* Page Header */}
@@ -362,37 +372,57 @@ export default function ProductInventoryPage({
                     </p>
                 </div>
 
-                <div className="flex flex-col gap-3 sm:flex-row">
+                {/* Products tab action buttons */}
+                {activeTopTab === "products" && (
+                    <div className="flex flex-col gap-3 sm:flex-row">
+                        <button
+                            type="button"
+                            onClick={() => fileInputRef.current?.click()}
+                            disabled={!canBulkImport}
+                            className="rounded-full bg-surface-container px-5 py-3 text-sm font-semibold text-on-surface transition hover:bg-surface-container-high disabled:cursor-not-allowed disabled:opacity-50"
+                        >
+                            {isImporting ? t("actions.importing") : t("actions.csvImport")}
+                        </button>
+                        <button
+                            type="button"
+                            onClick={handleTemplateDownload}
+                            className="rounded-full bg-surface-container-lowest px-5 py-3 text-sm font-semibold text-primary transition hover:bg-primary-fixed"
+                        >
+                            {t("actions.templateDownload")}
+                        </button>
+                        <button
+                            type="button"
+                            onClick={handleExport}
+                            className="rounded-full bg-surface-container-lowest px-5 py-3 text-sm font-semibold text-primary transition hover:bg-primary-fixed"
+                        >
+                            {t("actions.csvExport")}
+                        </button>
+                        <button
+                            type="button"
+                            onClick={resetEditor}
+                            className="rounded-full bg-gradient-to-br from-primary to-primary-container px-6 py-3 text-sm font-semibold text-white shadow-[0_16px_40px_rgba(0,55,39,0.18)] transition hover:opacity-95"
+                        >
+                            {t("actions.addNew")}
+                        </button>
+                    </div>
+                )}
+            </div>
+
+            {/* ─── Top-level Tab Navigation ─────────────────── */}
+            <div className="flex gap-2 border-b border-surface-container pb-0">
+                {topTabs.map((tab) => (
                     <button
+                        key={tab.key}
                         type="button"
-                        onClick={() => fileInputRef.current?.click()}
-                        disabled={!canBulkImport}
-                        className="rounded-full bg-surface-container px-5 py-3 text-sm font-semibold text-on-surface transition hover:bg-surface-container-high disabled:cursor-not-allowed disabled:opacity-50"
+                        onClick={() => setActiveTopTab(tab.key)}
+                        className={`rounded-t-xl px-6 py-3 text-sm font-semibold transition ${activeTopTab === tab.key
+                                ? "bg-surface-container-lowest text-primary shadow-sm"
+                                : "text-on-surface-variant hover:text-on-surface"
+                            }`}
                     >
-                        {isImporting ? t("actions.importing") : t("actions.csvImport")}
+                        {tab.label}
                     </button>
-                    <button
-                        type="button"
-                        onClick={handleTemplateDownload}
-                        className="rounded-full bg-surface-container-lowest px-5 py-3 text-sm font-semibold text-primary transition hover:bg-primary-fixed"
-                    >
-                        {t("actions.templateDownload")}
-                    </button>
-                    <button
-                        type="button"
-                        onClick={handleExport}
-                        className="rounded-full bg-surface-container-lowest px-5 py-3 text-sm font-semibold text-primary transition hover:bg-primary-fixed"
-                    >
-                        {t("actions.csvExport")}
-                    </button>
-                    <button
-                        type="button"
-                        onClick={resetEditor}
-                        className="rounded-full bg-gradient-to-br from-primary to-primary-container px-6 py-3 text-sm font-semibold text-white shadow-[0_16px_40px_rgba(0,55,39,0.18)] transition hover:opacity-95"
-                    >
-                        {t("actions.addNew")}
-                    </button>
-                </div>
+                ))}
             </div>
 
             {/* Hidden file input for CSV import */}
@@ -406,7 +436,7 @@ export default function ProductInventoryPage({
             />
 
             {/* Import locked notice */}
-            {!canBulkImport ? (
+            {!canBulkImport && activeTopTab === "products" ? (
                 <div className="rounded-[24px] border border-amber-200 bg-amber-50 px-5 py-4 text-sm text-amber-800">
                     {t("messages.importLocked")}
                 </div>
@@ -428,62 +458,70 @@ export default function ProductInventoryPage({
                 </div>
             ) : null}
 
-            {/* Main content grid */}
-            <div className="grid gap-6 xl:grid-cols-[minmax(0,1.8fr)_380px]">
-                <div className="space-y-6">
-                    {/* Stats Cards */}
-                    <ProductStatsCards stats={stats} />
+            {/* ─── Products Tab Content ──────────────────────── */}
+            {activeTopTab === "products" && (
+                <div className="grid gap-6 xl:grid-cols-[minmax(0,1.8fr)_380px]">
+                    <div className="space-y-6">
+                        {/* Stats Cards */}
+                        <ProductStatsCards stats={stats} />
 
-                    {/* AI Insight Panel */}
-                    <ProductInsightPanel
-                        lowStockProducts={lowStockProducts}
-                        onEdit={handleEdit}
-                    />
+                        {/* AI Insight Panel */}
+                        <ProductInsightPanel
+                            lowStockProducts={lowStockProducts}
+                            onEdit={handleEdit}
+                        />
 
-                    {/* Product Table */}
-                    <ProductTable
-                        products={products}
-                        isLoading={isLoading}
-                        searchInput={searchInput}
-                        onSearchInputChange={setSearchInput}
-                        status={status}
-                        onStatusChange={(newStatus) => {
-                            setStatus(newStatus);
-                            setPage(0);
-                        }}
-                        categories={categories}
-                        selectedCategoryId={selectedCategoryId}
-                        onCategorySelect={(categoryId) => {
-                            setSelectedCategoryId(categoryId);
-                            setPage(0);
-                        }}
-                        page={page}
-                        totalPages={totalPages}
-                        totalElements={totalElements}
-                        onEdit={handleEdit}
-                        onArchive={handleArchive}
-                        onPageChange={setPage}
-                    />
+                        {/* Product Table */}
+                        <ProductTable
+                            products={products}
+                            isLoading={isLoading}
+                            searchInput={searchInput}
+                            onSearchInputChange={setSearchInput}
+                            status={status}
+                            onStatusChange={(newStatus) => {
+                                setStatus(newStatus);
+                                setPage(0);
+                            }}
+                            categories={categories}
+                            selectedCategoryId={selectedCategoryId}
+                            onCategorySelect={(categoryId) => {
+                                setSelectedCategoryId(categoryId);
+                                setPage(0);
+                            }}
+                            page={page}
+                            totalPages={totalPages}
+                            totalElements={totalElements}
+                            onEdit={handleEdit}
+                            onArchive={handleArchive}
+                            onPageChange={setPage}
+                        />
+                    </div>
+
+                    {/* Sidebar */}
+                    <aside className="space-y-6">
+                        {/* Product Form */}
+                        <ProductForm
+                            form={form}
+                            editorMode={editorMode}
+                            editingProduct={editingProduct}
+                            categories={categories}
+                            isSubmitting={isSubmitting}
+                            onSubmit={handleSubmit}
+                            onUpdateForm={updateForm}
+                            onReset={resetEditor}
+                        />
+
+                        {/* Inventory Status Sidebar */}
+                        <ProductSidebar stats={stats} reorderProducts={reorderProducts} />
+                    </aside>
                 </div>
+            )}
 
-                {/* Sidebar */}
-                <aside className="space-y-6">
-                    {/* Product Form */}
-                    <ProductForm
-                        form={form}
-                        editorMode={editorMode}
-                        editingProduct={editingProduct}
-                        categories={categories}
-                        isSubmitting={isSubmitting}
-                        onSubmit={handleSubmit}
-                        onUpdateForm={updateForm}
-                        onReset={resetEditor}
-                    />
-
-                    {/* Inventory Status Sidebar */}
-                    <ProductSidebar stats={stats} reorderProducts={reorderProducts} />
-                </aside>
-            </div>
+            {/* ─── Inventory Tab Content ─────────────────────── */}
+            {activeTopTab === "inventory" && (
+                <InventoryTab businessId={businessId} />
+            )}
         </section>
     );
 }
+
