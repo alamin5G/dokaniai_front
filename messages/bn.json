@@ -16,7 +16,7 @@
       "heading": "লগইন করুন",
       "subheading": "আপনার মোবাইল নম্বর বা ইমেল এবং পাসওয়ার্ড ব্যবহার করে প্রবেশ করুন",
       "identifierLabel": "মোবাইল বা ইমেইল",
-      "identifierPlaceholder": "017... অথবা email@example.com",
+      "identifierPlaceholder": "015... অথবা email@example.com",
       "passwordLabel": "পাসওয়ার্ড",
       "passwordPlaceholder": "আপনার পাসওয়ার্ড দিন",
       "forgotPassword": "ভুলে গেছেন?",
@@ -811,6 +811,8 @@
       "label": "স্টক ম্যানেজমেন্ট",
       "title": "পণ্য ইনভেন্টরি",
       "subtitle": "{businessName}-র পণ্য, দাম, স্টক অ্যালার্ট এবং দ্রুত এন্ট্রি এক জায়গা থেকে চালান।",
+      "tabProducts": "পণ্যসমূহ",
+      "tabInventory": "ইনভেন্টরি",
       "stats": {
         "totalProducts": "মোট পণ্য",
         "inventoryValue": "মোট ইনভেন্টরি ভ্যালু (৳)",
@@ -929,6 +931,73 @@
         "lowStockRule": "Low-stock rule",
         "lowStockRuleDesc": "Product reorder point আর business threshold দুইটাই এখন alert logic-e ধরা হচ্ছে।",
         "reorderNeeded": "রিঅর্ডার প্রয়োজন"
+      },
+      "inventory": {
+        "title": "ইনভেন্টরি ব্যবস্থাপনা",
+        "tabs": {
+          "alerts": "স্টক অ্যালার্ট",
+          "logs": "ইনভেন্টরি লগ",
+          "adjust": "স্টক সমন্বয়"
+        },
+        "alerts": {
+          "title": "স্টক অ্যালার্ট",
+          "lowStock": "স্টক কম",
+          "outOfStock": "স্টক শেষ",
+          "reorderNeeded": "রিঅর্ডার প্রয়োজন",
+          "noAlerts": "কোনো স্টক অ্যালার্ট নেই — সব পণ্য পর্যাপ্ত পরিমাণে আছে।",
+          "currentStock": "বর্তমান স্টক",
+          "reorderPoint": "রিঅর্ডার পয়েন্ট",
+          "status": "অবস্থা"
+        },
+        "logs": {
+          "title": "ইনভেন্টরি লগ",
+          "subtitle": "সম্পূর্ণ স্টক অডিট ট্রেইল — বিক্রি, ফেরত, রিস্টক এবং সমন্বয়",
+          "filterAction": "অ্যাকশন দিয়ে ফিল্টার",
+          "allActions": "সব অ্যাকশন",
+          "sale": "বিক্রি",
+          "return": "ফেরত",
+          "restock": "রিস্টক",
+          "adjustment": "সমন্বয়",
+          "initial": "প্রাথমিক",
+          "change": "পরিবর্তন",
+          "before": "আগে",
+          "after": "পরে",
+          "reason": "কারণ",
+          "date": "তারিখ",
+          "product": "পণ্য",
+          "noLogs": "কোনো ইনভেন্টরি লগ পাওয়া যায়নি।",
+          "showing": "দেখাচ্ছে",
+          "of": "এর মধ্যে",
+          "entries": "টি এন্ট্রি"
+        },
+        "adjust": {
+          "title": "স্টক সমন্বয়",
+          "subtitle": "ম্যানুয়ালি স্টক সমন্বয় করুন — রিস্টক বা সংশোধন",
+          "selectProduct": "পণ্য নির্বাচন করুন",
+          "searchProduct": "পণ্য খুঁজুন...",
+          "action": "অ্যাকশন",
+          "restock": "রিস্টক (স্টক যোগ করুন)",
+          "adjustment": "সমন্বয় (স্টক সংশোধন)",
+          "quantity": "পরিমাণ",
+          "quantityPlaceholder": "পরিমাণ লিখুন",
+          "reason": "কারণ",
+          "reasonPlaceholder": "এই সমন্বয় কেন করা হচ্ছে?",
+          "submit": "স্টক সমন্বয় করুন",
+          "cancel": "বাতিল",
+          "currentStock": "বর্তমান স্টক"
+        },
+        "summary": {
+          "title": "ইনভেন্টরি সারসংক্ষেপ",
+          "totalSales": "বিক্রি হয়েছে",
+          "totalReturns": "ফেরত এসেছে",
+          "totalRestocks": "রিস্টক হয়েছে",
+          "totalAdjustments": "সমন্বয় করা হয়েছে"
+        },
+        "messages": {
+          "adjustSuccess": "স্টক সফলভাবে সমন্বয় হয়েছে।",
+          "adjustError": "স্টক সমন্বয় করা যায়নি।",
+          "loadError": "ইনভেন্টরি তথ্য লোড করা যায়নি।"
+        }
       }
     },
     "sales": {
@@ -1305,10 +1374,31 @@
         "customerCreated": "কাস্টমার সফলভাবে যোগ হয়েছে।",
         "customerUpdated": "কাস্টমার সফলভাবে আপডেট হয়েছে।",
         "reminderSent": "WhatsApp রিমাইন্ডার লিংক তৈরি হয়েছে।",
+        "reminderBulkSent": "সব রিমাইন্ডার লিংক তৈরি হয়েছে।",
+        "reminderError": "রিমাইন্ডার তৈরি করা যায়নি।",
         "voidSuccess": "লেনদেন সফলভাবে বাতিল হয়েছে।",
         "loadError": "বকেয়া তথ্য লোড করা যায়নি।",
         "saveError": "লেনদেন সংরক্ষণ করা যায়নি।",
         "customerError": "কাস্টমার সংরক্ষণ করা যায়নি।"
+      },
+      "reminder": {
+        "title": "WhatsApp রিমাইন্ডার পাঠান",
+        "preview": "মেসেজ প্রিভিউ",
+        "customer": "কাস্টমার",
+        "dueAmount": "বকেয়া পরিমাণ",
+        "mfsNumber": "পেমেন্ট নম্বর (বিকাশ/নগদ/রকেট)",
+        "mfsNumberHint": "এটি আপনার প্রোফাইল সেটিংস থেকে ব্যবসার ফোন নম্বর।",
+        "customMessage": "কাস্টম মেসেজ",
+        "customMessagePlaceholder": "কাস্টম মেসেজ লিখুন অথবা ডিফল্ট ব্যবহার করুন...",
+        "defaultMessage": "ডিফল্ট মেসেজ ব্যবহার করুন",
+        "send": "WhatsApp খুলুন",
+        "sending": "লিংক তৈরি হচ্ছে...",
+        "bulkTitle": "সবাইকে রিমাইন্ডার পাঠান",
+        "bulkDescription": "সব বকেয়াদার কাস্টমারদের WhatsApp রিমাইন্ডার লিংক তৈরি করুন।",
+        "bulkSend": "সবাইকে পাঠান",
+        "bulkCount": "জন কাস্টমার রিমাইন্ডার পাবেন",
+        "noPhone": "ফোন নম্বর নেই",
+        "close": "বন্ধ করুন"
       },
       "voice": {
         "placeholder": "যেমন: রহিমার কাছে ৫০০ টাকা বাকী",

@@ -811,6 +811,8 @@
       "label": "Stock Management",
       "title": "Product Inventory",
       "subtitle": "Manage products, prices, stock alerts and quick entry for {businessName} from one place.",
+      "tabProducts": "Products",
+      "tabInventory": "Inventory",
       "stats": {
         "totalProducts": "Total Products",
         "inventoryValue": "Total Inventory Value (৳)",
@@ -929,6 +931,73 @@
         "lowStockRule": "Low-stock rule",
         "lowStockRuleDesc": "Product reorder point and business threshold are both checked in alert logic.",
         "reorderNeeded": "Reorder Needed"
+      },
+      "inventory": {
+        "title": "Inventory Management",
+        "tabs": {
+          "alerts": "Stock Alerts",
+          "logs": "Inventory Log",
+          "adjust": "Adjust Stock"
+        },
+        "alerts": {
+          "title": "Stock Alerts",
+          "lowStock": "Low Stock",
+          "outOfStock": "Out of Stock",
+          "reorderNeeded": "Reorder Needed",
+          "noAlerts": "No stock alerts — all products are well-stocked.",
+          "currentStock": "Current Stock",
+          "reorderPoint": "Reorder Point",
+          "status": "Status"
+        },
+        "logs": {
+          "title": "Inventory Log",
+          "subtitle": "Complete stock audit trail — sales, returns, restocks, and adjustments",
+          "filterAction": "Filter by action",
+          "allActions": "All Actions",
+          "sale": "Sale",
+          "return": "Return",
+          "restock": "Restock",
+          "adjustment": "Adjustment",
+          "initial": "Initial",
+          "change": "Change",
+          "before": "Before",
+          "after": "After",
+          "reason": "Reason",
+          "date": "Date",
+          "product": "Product",
+          "noLogs": "No inventory logs found.",
+          "showing": "Showing",
+          "of": "of",
+          "entries": "entries"
+        },
+        "adjust": {
+          "title": "Adjust Stock",
+          "subtitle": "Manually adjust stock for a product — restock or correct inventory",
+          "selectProduct": "Select Product",
+          "searchProduct": "Search product...",
+          "action": "Action",
+          "restock": "Restock (Add Stock)",
+          "adjustment": "Adjustment (Correct Stock)",
+          "quantity": "Quantity",
+          "quantityPlaceholder": "Enter quantity",
+          "reason": "Reason",
+          "reasonPlaceholder": "Why is this adjustment being made?",
+          "submit": "Adjust Stock",
+          "cancel": "Cancel",
+          "currentStock": "Current Stock"
+        },
+        "summary": {
+          "title": "Inventory Summary",
+          "totalSales": "Items Sold",
+          "totalReturns": "Items Returned",
+          "totalRestocks": "Items Restocked",
+          "totalAdjustments": "Adjustments Made"
+        },
+        "messages": {
+          "adjustSuccess": "Stock adjusted successfully.",
+          "adjustError": "Failed to adjust stock.",
+          "loadError": "Failed to load inventory data."
+        }
       }
     },
     "sales": {
@@ -1305,10 +1374,31 @@
         "customerCreated": "Customer added successfully.",
         "customerUpdated": "Customer updated successfully.",
         "reminderSent": "WhatsApp reminder link generated.",
+        "reminderBulkSent": "Bulk reminders generated successfully.",
+        "reminderError": "Failed to generate reminder.",
         "voidSuccess": "Transaction voided successfully.",
         "loadError": "Failed to load due data.",
         "saveError": "Failed to save transaction.",
         "customerError": "Failed to save customer."
+      },
+      "reminder": {
+        "title": "Send WhatsApp Reminder",
+        "preview": "Message Preview",
+        "customer": "Customer",
+        "dueAmount": "Due Amount",
+        "mfsNumber": "Payment Number (bKash/Nagad/Rocket)",
+        "mfsNumberHint": "This is your business phone number from profile settings.",
+        "customMessage": "Custom Message",
+        "customMessagePlaceholder": "Write a custom message or use the default...",
+        "defaultMessage": "Use Default Message",
+        "send": "Open WhatsApp",
+        "sending": "Generating link...",
+        "bulkTitle": "Send Bulk Reminders",
+        "bulkDescription": "Generate WhatsApp reminder links for all customers with outstanding dues.",
+        "bulkSend": "Send to All",
+        "bulkCount": "customers will receive reminders",
+        "noPhone": "No phone number on file",
+        "close": "Close"
       },
       "voice": {
         "placeholder": "e.g. Rahima 500 taka due",
@@ -1750,6 +1840,7 @@
       "tabs": {
         "dashboard": "Dashboard",
         "users": "Users",
+        "coupons": "Coupons",
         "tickets": "Tickets",
         "audit": "Audit Logs"
       },
@@ -1860,6 +1951,94 @@
         "prev": "Previous",
         "next": "Next",
         "pageInfo": "Page {page} of {total}"
+      },
+      "coupons": {
+        "title": "Coupon Management",
+        "subtitle": "Create, manage, and track promotional coupons for subscriptions",
+        "createNew": "Create Coupon",
+        "allTypes": "All Types",
+        "allStatus": "All Status",
+        "active": "Active",
+        "inactive": "Inactive",
+        "expired": "Expired",
+        "noCoupons": "No coupons found.",
+        "prev": "Previous",
+        "next": "Next",
+        "pageInfo": "Page {page} of {total}",
+        "stats": {
+          "totalCoupons": "Total Coupons",
+          "activeCoupons": "Active",
+          "totalRedemptions": "Total Redemptions",
+          "totalDiscount": "Total Discount Given"
+        },
+        "table": {
+          "code": "Code",
+          "type": "Type",
+          "value": "Value",
+          "usage": "Usage",
+          "validity": "Validity",
+          "status": "Status",
+          "actions": "Actions"
+        },
+        "type": {
+          "PERCENTAGE": "Percentage",
+          "FIXED_AMOUNT": "Fixed Amount",
+          "FREE_DAYS": "Free Days"
+        },
+        "form": {
+          "title": "Create New Coupon",
+          "editTitle": "Edit Coupon",
+          "code": "Coupon Code",
+          "codePlaceholder": "e.g., SUMMER2026",
+          "description": "Description",
+          "descriptionPlaceholder": "What is this coupon for?",
+          "type": "Discount Type",
+          "value": "Value",
+          "valuePlaceholderPercent": "e.g., 20 (for 20%)",
+          "valuePlaceholderFixed": "e.g., 100 (for ৳100 off)",
+          "valuePlaceholderDays": "e.g., 7 (for 7 free days)",
+          "minPurchase": "Min. Purchase Amount (৳)",
+          "minPurchasePlaceholder": "Optional — minimum purchase amount",
+          "maxDiscount": "Max Discount Amount (৳)",
+          "maxDiscountPlaceholder": "Optional — cap the discount",
+          "usageLimit": "Total Usage Limit",
+          "usageLimitPlaceholder": "How many times can this be used?",
+          "perUserLimit": "Per-User Limit",
+          "perUserLimitPlaceholder": "How many times per user?",
+          "firstPurchaseOnly": "First Purchase Only",
+          "validFrom": "Valid From",
+          "validUntil": "Valid Until",
+          "submit": "Create Coupon",
+          "update": "Update Coupon",
+          "cancel": "Cancel"
+        },
+        "actions": {
+          "activate": "Activate",
+          "deactivate": "Deactivate",
+          "edit": "Edit",
+          "delete": "Delete",
+          "stats": "View Stats"
+        },
+        "messages": {
+          "created": "Coupon created successfully.",
+          "updated": "Coupon updated successfully.",
+          "deleted": "Coupon deleted.",
+          "activated": "Coupon activated.",
+          "deactivated": "Coupon deactivated.",
+          "createError": "Failed to create coupon.",
+          "updateError": "Failed to update coupon.",
+          "deleteError": "Failed to delete coupon.",
+          "loadError": "Failed to load coupons.",
+          "confirmDelete": "Are you sure you want to delete this coupon? This action cannot be undone."
+        },
+        "statsModal": {
+          "title": "Coupon Statistics",
+          "totalRedemptions": "Total Redemptions",
+          "usedCount": "Times Used",
+          "remainingUses": "Remaining Uses",
+          "totalDiscount": "Total Discount Given (৳)",
+          "recentRedemptions": "Recent Redemption IDs"
+        }
       }
     }
   }

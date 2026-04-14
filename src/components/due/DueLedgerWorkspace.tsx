@@ -19,6 +19,7 @@ import {
     getCustomerDueLedger,
     generateDueReminder,
 } from "@/lib/dueApi";
+import ReminderPreviewModal from "./ReminderPreviewModal";
 
 // ─── Helpers ─────────────────────────────────────────────
 
@@ -110,6 +111,7 @@ export default function DueLedgerWorkspace({
     const [custForm, setCustForm] = useState<CustomerFormState>(initialCustomerForm);
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [toast, setToast] = useState<string | null>(null);
+    const [reminderCustomer, setReminderCustomer] = useState<CustomerDueSummary | null>(null);
 
     // ── Computed stats ──
     const totalDue = useMemo(
@@ -258,16 +260,46 @@ export default function DueLedgerWorkspace({
         }
     }
 
-    async function handleWhatsAppReminder(customerId: string) {
-        try {
-            const link = await generateDueReminder(businessId, customerId);
-            if (link.link) {
-                window.open(link.link, "_blank");
-            }
-            setToast(t("messages.reminderSent"));
-        } catch {
-            setToast(t("messages.saveError"));
+    function handleOpenReminder(customerId: string) {
+        const customer = customersWithDue.find((c) => c.customerId === customerId);
+        if (customer) {
+            setReminderCustomer(customer);
         }
+    }
+
+    function handleReminderSent() {
+        setReminderCustomer(null);
+        setToast(t("messages.reminderSent"));
+    }
+
+    async function handleBulkReminders() {
+        // Get overdue customers (30+ days)
+        const overdueCustomers = customersWithDue.filter((c) => {
+            const days = daysSincePayment(c.lastPaymentDate);
+            return days !== null && days > 30;
+        });
+
+        if (overdueCustomers.length === 0) {
+            setToast(t("messages.loadError"));
+            return;
+        }
+
+        // Generate and open WhatsApp links sequentially with a small delay
+        let count = 0;
+        for (const customer of overdueCustomers.slice(0, 5)) {
+            try {
+                const link = await generateDueReminder(businessId, customer.customerId);
+                if (link.link) {
+                    window.open(link.link, "_blank");
+                    count++;
+                    // Small delay to prevent browser from blocking popups
+                    await new Promise((r) => setTimeout(r, 800));
+                }
+            } catch {
+                // Skip failed customers
+            }
+        }
+        setToast(`${count} ${t("messages.reminderBulkSent")}`);
     }
 
     // ── Priority badge classes ──
@@ -395,10 +427,10 @@ export default function DueLedgerWorkspace({
                                         <td className="px-6 py-4">
                                             <span
                                                 className={`inline-block rounded-full px-3 py-1 text-xs font-bold ${tx.type === "BAKI"
-                                                        ? "bg-tertiary-container text-on-tertiary-container"
-                                                        : tx.type === "JOMA"
-                                                            ? "bg-primary-container text-on-primary-container"
-                                                            : "bg-surface-container-high text-on-surface-variant"
+                                                    ? "bg-tertiary-container text-on-tertiary-container"
+                                                    : tx.type === "JOMA"
+                                                        ? "bg-primary-container text-on-primary-container"
+                                                        : "bg-surface-container-high text-on-surface-variant"
                                                     }`}
                                             >
                                                 {tx.type}
@@ -464,8 +496,8 @@ export default function DueLedgerWorkspace({
                                             type="button"
                                             onClick={() => setTxForm((f) => ({ ...f, type }))}
                                             className={`flex-1 rounded-xl px-3 py-2 text-sm font-bold transition-colors ${txForm.type === type
-                                                    ? "bg-primary text-white"
-                                                    : "bg-surface-container text-on-surface-variant hover:bg-surface-container-high"
+                                                ? "bg-primary text-white"
+                                                : "bg-surface-container text-on-surface-variant hover:bg-surface-container-high"
                                                 }`}
                                         >
                                             {t(`transactionForm.${type.toLowerCase()}` as "baki")}
@@ -650,7 +682,10 @@ export default function DueLedgerWorkspace({
                             {overdueCount} {t("alert.description")}
                         </p>
                         <div className="flex flex-wrap gap-4">
-                            <button className="bg-primary text-white px-6 py-3 rounded-full font-bold flex items-center gap-2 hover:bg-primary/90 transition-colors">
+                            <button
+                                onClick={handleBulkReminders}
+                                className="bg-primary text-white px-6 py-3 rounded-full font-bold flex items-center gap-2 hover:bg-primary/90 transition-colors"
+                            >
                                 <span className="material-symbols-outlined">smart_toy</span>
                                 {t("alert.aiReminder")}
                             </button>
@@ -693,8 +728,8 @@ export default function DueLedgerWorkspace({
                                     key={f}
                                     onClick={() => setFilterPriority(f)}
                                     className={`rounded-full px-3 py-1.5 text-xs font-bold transition-colors ${filterPriority === f
-                                            ? "bg-primary text-white"
-                                            : "bg-surface-container text-on-surface-variant hover:bg-surface-container-high"
+                                        ? "bg-primary text-white"
+                                        : "bg-surface-container text-on-surface-variant hover:bg-surface-container-high"
                                         }`}
                                 >
                                     {t(`filter.${f}`)}
@@ -788,7 +823,7 @@ export default function DueLedgerWorkspace({
                                             {t("customerList.collectPayment")}
                                         </button>
                                         <button
-                                            onClick={() => handleWhatsAppReminder(customer.customerId)}
+                                            onClick={() => handleOpenReminder(customer.customerId)}
                                             className="bg-[#25D366] text-white p-4 rounded-xl flex items-center justify-center hover:shadow-lg hover:scale-105 transition-all"
                                             title={t("customerList.whatsappReminder")}
                                         >
@@ -845,8 +880,8 @@ export default function DueLedgerWorkspace({
                                         type="button"
                                         onClick={() => setTxForm((f) => ({ ...f, type }))}
                                         className={`flex-1 rounded-xl px-3 py-2 text-sm font-bold transition-colors ${txForm.type === type
-                                                ? "bg-primary text-white"
-                                                : "bg-surface-container text-on-surface-variant hover:bg-surface-container-high"
+                                            ? "bg-primary text-white"
+                                            : "bg-surface-container text-on-surface-variant hover:bg-surface-container-high"
                                             }`}
                                     >
                                         {t(`transactionForm.${type.toLowerCase()}` as "baki")}
@@ -1013,6 +1048,16 @@ export default function DueLedgerWorkspace({
                         </div>
                     </form>
                 </div>
+            )}
+
+            {/* ── Reminder Preview Modal ── */}
+            {reminderCustomer && (
+                <ReminderPreviewModal
+                    businessId={businessId}
+                    customer={reminderCustomer}
+                    onClose={() => setReminderCustomer(null)}
+                    onSent={handleReminderSent}
+                />
             )}
         </div>
     );

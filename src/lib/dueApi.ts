@@ -221,3 +221,14 @@ export async function generateDueReminder(
     );
     return unwrap<WhatsAppLink>(data);
 }
+
+// ─── Bulk WhatsApp Reminders ────────────────────────────
+
+export async function generateBulkReminders(
+    businessId: string
+): Promise<WhatsAppLink[]> {
+    const { data } = await apiClient.post(
+        `/api/v1/businesses/${businessId}/customers/bulk-reminder`
+    );
+    return unwrap<WhatsAppLink[]>(data);
+}
