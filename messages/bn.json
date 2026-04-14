@@ -1840,6 +1840,8 @@
       "tabs": {
         "dashboard": "ড্যাশবোর্ড",
         "users": "ব্যবহারকারী",
+        "coupons": "কুপন",
+        "categories": "ক্যাটেগরি",
         "tickets": "টিকেট",
         "audit": "অডিট লগ"
       },
@@ -1950,6 +1952,143 @@
         "prev": "আগে",
         "next": "পরে",
         "pageInfo": "পৃষ্ঠা {page} / {total}"
+      },
+      "coupons": {
+        "title": "কুপন ম্যানেজমেন্ট",
+        "subtitle": "সাবস্ক্রিপশনের জন্য প্রমোশনাল কুপন তৈরি, পরিচালনা এবং ট্র্যাক করুন",
+        "createNew": "কুপন তৈরি করুন",
+        "allTypes": "সব ধরন",
+        "allStatus": "সব স্ট্যাটাস",
+        "active": "সক্রিয়",
+        "inactive": "নিষ্ক্রিয়",
+        "expired": "মেয়াদোত্তীর্ণ",
+        "noCoupons": "কোনো কুপন পাওয়া যায়নি।",
+        "prev": "আগে",
+        "next": "পরে",
+        "pageInfo": "পৃষ্ঠা {page} / {total}",
+        "stats": {
+          "totalCoupons": "মোট কুপন",
+          "activeCoupons": "সক্রিয়",
+          "totalRedemptions": "মোট রিডিম্পশন",
+          "totalDiscount": "মোট ডিসকাউন্ট প্রদান (৳)"
+        },
+        "table": {
+          "code": "কোড",
+          "type": "ধরন",
+          "value": "মান",
+          "usage": "ব্যবহার",
+          "validity": "বৈধতা",
+          "status": "স্ট্যাটাস",
+          "actions": "অ্যাকশন"
+        },
+        "type": {
+          "PERCENTAGE": "শতাংশ",
+          "FIXED_AMOUNT": "নির্দিষ্ট পরিমাণ",
+          "FREE_DAYS": "ফ্রি দিন"
+        },
+        "form": {
+          "title": "নতুন কুপন তৈরি করুন",
+          "editTitle": "কুপন সম্পাদনা",
+          "code": "কুপন কোড",
+          "codePlaceholder": "যেমন, SUMMER2026",
+          "description": "বিবরণ",
+          "descriptionPlaceholder": "এই কুপন কিসের জন্য?",
+          "type": "ডিসকাউন্ট ধরন",
+          "value": "মান",
+          "valuePlaceholderPercent": "যেমন, 20 (২০% এর জন্য)",
+          "valuePlaceholderFixed": "যেমন, 100 (৳১০০ ছাড়ের জন্য)",
+          "valuePlaceholderDays": "যেমন, 7 (৭ ফ্রি দিনের জন্য)",
+          "minPurchase": "সর্বনিম্ন ক্রয়ের পরিমাণ (৳)",
+          "minPurchasePlaceholder": "ঐচ্ছিক — সর্বনিম্ন ক্রয়ের পরিমাণ",
+          "maxDiscount": "সর্বোচ্চ ডিসকাউন্ট পরিমাণ (৳)",
+          "maxDiscountPlaceholder": "ঐচ্ছিক — ডিসকাউন্ট সীমিত করুন",
+          "usageLimit": "মোট ব্যবহার সীমা",
+          "usageLimitPlaceholder": "কতবার ব্যবহার করা যাবে?",
+          "perUserLimit": "প্রতি-ব্যবহারকারী সীমা",
+          "perUserLimitPlaceholder": "প্রতি ব্যবহারকারী কতবার?",
+          "firstPurchaseOnly": "শুধুমাত্র প্রথম ক্রয়",
+          "validFrom": "শুরু তারিখ",
+          "validUntil": "শেষ তারিখ",
+          "submit": "কুপন তৈরি করুন",
+          "update": "কুপন আপডেট করুন",
+          "cancel": "বাতিল"
+        },
+        "actions": {
+          "activate": "সক্রিয় করুন",
+          "deactivate": "নিষ্ক্রিয় করুন",
+          "edit": "সম্পাদনা",
+          "delete": "মুছুন",
+          "stats": "পরিসংখ্যান দেখুন"
+        },
+        "messages": {
+          "created": "কুপন সফলভাবে তৈরি হয়েছে।",
+          "updated": "কুপন সফলভাবে আপডেট হয়েছে।",
+          "deleted": "কুপন মুছে ফেলা হয়েছে।",
+          "activated": "কুপন সক্রিয় করা হয়েছে।",
+          "deactivated": "কুপন নিষ্ক্রিয় করা হয়েছে।",
+          "createError": "কুপন তৈরি করা যায়নি।",
+          "updateError": "কুপন আপডেট করা যায়নি।",
+          "deleteError": "কুপন মুছে ফেলা যায়নি।",
+          "loadError": "কুপন লোড করা যায়নি।",
+          "confirmDelete": "আপনি কি নিশ্চিত যে এই কুপন মুছে ফেলতে চান? এই কাজ পূর্বাবস্থায় ফেরানো যাবে না।"
+        },
+        "statsModal": {
+          "title": "কুপন পরিসংখ্যান",
+          "totalRedemptions": "মোট রিডিম্পশন",
+          "usedCount": "ব্যবহারের সংখ্যা",
+          "remainingUses": "অবশিষ্ট ব্যবহার",
+          "totalDiscount": "মোট ডিসকাউন্ট প্রদান (৳)",
+          "recentRedemptions": "সাম্প্রতিক রিডিম্পশন ID"
+        },
+        "categories": {
+          "title": "ক্যাটেগরি অনুরোধ",
+          "subtitle": "দোকান মালিকদের কাস্টম ক্যাটেগরি অনুরোধ পর্যালোচনা এবং পরিচালনা করুন",
+          "noRequests": "কোনো অপেক্ষমাণ ক্যাটেগরি অনুরোধ নেই।",
+          "colBusiness": "ব্যবসা",
+          "colCategory": "ক্যাটেগরি নাম",
+          "colType": "ব্যবসার ধরন",
+          "colJustification": "যৌক্তিকতা",
+          "colDate": "অনুরোধের তারিখ",
+          "colActions": "অ্যাকশন",
+          "prev": "আগে",
+          "next": "পরে",
+          "pageInfo": "পৃষ্ঠা {page} / {total}",
+          "actions": {
+            "approveGlobal": "অনুমোদন (গ্লোবাল)",
+            "approveBusiness": "অনুমোদন (ব্যবসা)",
+            "merge": "একত্রিত করুন",
+            "reject": "প্রত্যাখ্যান"
+          },
+          "decisionModal": {
+            "title": "ক্যাটেগরি অনুরোধ পর্যালোচনা",
+            "categoryName": "ক্যাটেগরি নাম",
+            "businessName": "ব্যবসা",
+            "businessType": "ব্যবসার ধরন",
+            "description": "বিবরণ",
+            "justification": "যৌক্তিকতা",
+            "requestedScope": "অনুরোধকৃত স্কোপ",
+            "action": "সিদ্ধান্ত",
+            "similarCategory": "সমজাতীয়",
+            "suggestedCategory": "⚠️ অনুরূপ ক্যাটেগরি আগে থেকেই আছে",
+            "mergeCategory": "বিদ্যমান ক্যাটেগরিতে একত্রিত করুন",
+            "mergeCategorySearch": "ক্যাটেগরি খুঁজুন…",
+            "mergeInto": "একত্রিত হবে",
+            "noCategories": "এই ব্যবসার ধরনের জন্য কোনো ক্যাটেগরি পাওয়া যায়নি।",
+            "reviewNotes": "পর্যালোচনা নোট",
+            "reviewNotesPlaceholder": "ঐচ্ছিক পর্যালোচনা নোট যোগ করুন…",
+            "rejectionReason": "প্রত্যাখ্যানের কারণ",
+            "rejectionReasonPlaceholder": "কেন এই অনুরোধ প্রত্যাখ্যান করা হচ্ছে?",
+            "submit": "সিদ্ধান্ত জমা দিন",
+            "cancel": "বাতিল"
+          },
+          "messages": {
+            "approved": "ক্যাটেগরি অনুরোধ সফলভাবে অনুমোদিত হয়েছে।",
+            "rejected": "ক্যাটেগরি অনুরোধ প্রত্যাখ্যাত হয়েছে।",
+            "merged": "ক্যাটেগরি অনুরোধ বিদ্যমান ক্যাটেগরিতে একত্রিত হয়েছে।",
+            "error": "ক্যাটেগরি অনুরোধ প্রক্রিয়া করা যায়নি।",
+            "loadError": "ক্যাটেগরি অনুরোধ লোড করা যায়নি।"
+          }
+        }
       }
     }
   }

@@ -12,6 +12,8 @@ import type {
     UserStatus,
 } from "@/types/admin";
 import type { SupportTicket } from "@/types/support";
+import CouponsTab from "./CouponsTab";
+import CategoryRequestsTab from "./CategoryRequestsTab";
 
 // ─── Icons (inline SVG) ─────────────────────────────────────────────────────
 
@@ -71,9 +73,26 @@ function IconChevron({ className = "w-4 h-4" }: { className?: string }) {
     );
 }
 
+function IconTag({ className = "w-5 h-5" }: { className?: string }) {
+    return (
+        <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M9.568 3H5.25A2.25 2.25 0 003 5.25v4.318c0 .597.237 1.17.659 1.591l9.581 9.581c.699.699 1.78.872 2.607.33a18.095 18.095 0 005.223-5.223c.542-.827.369-1.908-.33-2.607L11.16 3.66A2.25 2.25 0 009.568 3z" />
+            <path strokeLinecap="round" strokeLinejoin="round" d="M6 6h.008v.008H6V6z" />
+        </svg>
+    );
+}
+
+function IconFolder({ className = "w-5 h-5" }: { className?: string }) {
+    return (
+        <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 12.75V12A2.25 2.25 0 014.5 9.75h15A2.25 2.25 0 0121.75 12v.75m-8.69-6.44l-2.12-2.12a1.5 1.5 0 00-1.061-.44H4.5A2.25 2.25 0 002.25 6v12a2.25 2.25 0 002.25 2.25h15A2.25 2.25 0 0021.75 18V9a2.25 2.25 0 00-2.25-2.25h-5.379a1.5 1.5 0 01-1.06-.44z" />
+        </svg>
+    );
+}
+
 // ─── Tab type ────────────────────────────────────────────────────────────────
 
-type TabKey = "dashboard" | "users" | "tickets" | "audit";
+type TabKey = "dashboard" | "users" | "coupons" | "categories" | "tickets" | "audit";
 
 // ─── Status Badge ───────────────────────────────────────────────────────────
 
@@ -154,6 +173,8 @@ export default function AdminWorkspace() {
     const tabs: { key: TabKey; label: string; icon: React.ReactNode; superAdminOnly?: boolean }[] = [
         { key: "dashboard", label: t("tabs.dashboard"), icon: <IconShield /> },
         { key: "users", label: t("tabs.users"), icon: <IconUsers /> },
+        { key: "coupons", label: t("tabs.coupons"), icon: <IconTag /> },
+        { key: "categories", label: t("tabs.categories"), icon: <IconFolder /> },
         { key: "tickets", label: t("tabs.tickets"), icon: <IconTicket /> },
         { key: "audit", label: t("tabs.audit"), icon: <IconClipboard />, superAdminOnly: true },
     ];
@@ -178,8 +199,8 @@ export default function AdminWorkspace() {
                         key={tab.key}
                         onClick={() => setActiveTab(tab.key)}
                         className={`flex items-center gap-2 whitespace-nowrap rounded-full px-5 py-2.5 text-sm font-medium transition-all ${activeTab === tab.key
-                                ? "bg-primary text-on-primary shadow-sm"
-                                : "bg-surface-container-low text-on-surface-variant hover:bg-surface-container"
+                            ? "bg-primary text-on-primary shadow-sm"
+                            : "bg-surface-container-low text-on-surface-variant hover:bg-surface-container"
                             }`}
                     >
                         {tab.icon}
@@ -191,6 +212,8 @@ export default function AdminWorkspace() {
             {/* Tab Content */}
             {activeTab === "dashboard" && <DashboardTab />}
             {activeTab === "users" && <UsersTab />}
+            {activeTab === "coupons" && <CouponsTab />}
+            {activeTab === "categories" && <CategoryRequestsTab />}
             {activeTab === "tickets" && <TicketsTab />}
             {activeTab === "audit" && isSuperAdmin && <AuditTab />}
         </div>
@@ -800,8 +823,8 @@ function TicketsTab() {
                             <div
                                 key={msg.id}
                                 className={`rounded-xl p-4 ${msg.isInternal
-                                        ? "bg-yellow-50 border border-yellow-200"
-                                        : "bg-surface-container-low"
+                                    ? "bg-yellow-50 border border-yellow-200"
+                                    : "bg-surface-container-low"
                                     }`}
                             >
                                 <div className="flex items-center justify-between">
