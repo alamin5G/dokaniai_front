@@ -691,6 +691,33 @@
     "settings": "সেটিংস",
     "newEntry": "নতুন এন্ট্রি"
   },
+  "notifications": {
+    "title": "বিজ্ঞপ্তি",
+    "empty": "কোনো বিজ্ঞপ্তি নেই।",
+    "markAllRead": "সব পড়া হয়েছে",
+    "markRead": "পড়া হয়েছে",
+    "delete": "মুছুন",
+    "justNow": "এইমাত্র",
+    "minutesAgo": "{count}মি আগে",
+    "hoursAgo": "{count}ঘ আগে",
+    "daysAgo": "{count}দিন আগে",
+    "type": {
+      "LOW_STOCK": "স্টক কম",
+      "REORDER_NEEDED": "রিঅর্ডার",
+      "DISCOUNT": "ছাড়",
+      "PAYMENT": "পেমেন্ট",
+      "TRIAL_ENDING": "ট্রায়াল",
+      "GRACE_PERIOD": "গ্রেস",
+      "DUE_REMINDER": "বাকী",
+      "SYSTEM": "সিস্টেম",
+      "SUBSCRIPTION": "সাবস্ক্রিপশন",
+      "SUPPORT": "সাপোর্ট",
+      "MARKETING": "মার্কেটিং",
+      "DAILY_SUMMARY": "সারাংশ",
+      "AI_TIP": "এআই টিপস",
+      "PATTERN_ALERT": "সতর্কতা"
+    }
+  },
   "userProfile": {
     "profile": "প্রোফাইল",
     "subscription": "সাবস্ক্রিপশন",

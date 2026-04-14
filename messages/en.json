@@ -691,6 +691,33 @@
     "settings": "Settings",
     "newEntry": "New Entry"
   },
+  "notifications": {
+    "title": "Notifications",
+    "empty": "No notifications yet.",
+    "markAllRead": "Mark all read",
+    "markRead": "Mark as read",
+    "delete": "Delete",
+    "justNow": "Just now",
+    "minutesAgo": "{count}m ago",
+    "hoursAgo": "{count}h ago",
+    "daysAgo": "{count}d ago",
+    "type": {
+      "LOW_STOCK": "Low Stock",
+      "REORDER_NEEDED": "Reorder",
+      "DISCOUNT": "Discount",
+      "PAYMENT": "Payment",
+      "TRIAL_ENDING": "Trial",
+      "GRACE_PERIOD": "Grace",
+      "DUE_REMINDER": "Due",
+      "SYSTEM": "System",
+      "SUBSCRIPTION": "Subscription",
+      "SUPPORT": "Support",
+      "MARKETING": "Marketing",
+      "DAILY_SUMMARY": "Summary",
+      "AI_TIP": "AI Tip",
+      "PATTERN_ALERT": "Alert"
+    }
+  },
   "userProfile": {
     "profile": "Profile",
     "subscription": "Subscription",

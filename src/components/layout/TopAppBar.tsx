@@ -1,6 +1,7 @@
 "use client";
 
 import { LanguageSwitcher } from "@/components/ui/LanguageSwitcher";
+import NotificationBell from "@/components/layout/NotificationBell";
 import UserProfileSection from "@/components/ui/UserProfileSection";
 import { buildShopPath, replaceShopBusinessInPath } from "@/lib/shopRouting";
 import { useBusinessStore } from "@/store/businessStore";
@@ -124,8 +125,8 @@ export default function TopAppBar({ title, businessId }: TopAppBarProps) {
                         type="button"
                         onClick={() => handleSwitchBusiness(business.id)}
                         className={`w-full px-3 py-2 text-left text-sm transition-colors ${business.id === activeBusiness?.id
-                            ? "text-primary font-semibold bg-primary/10"
-                            : "text-on-surface hover:bg-surface-container"
+                          ? "text-primary font-semibold bg-primary/10"
+                          : "text-on-surface hover:bg-surface-container"
                           }`}
                       >
                         {business.name}
@@ -179,8 +180,8 @@ export default function TopAppBar({ title, businessId }: TopAppBarProps) {
                     type="button"
                     onClick={() => handleSwitchBusiness(business.id)}
                     className={`w-full px-3 py-2 text-left text-sm transition-colors ${business.id === activeBusiness?.id
-                        ? "text-primary font-semibold bg-primary/10"
-                        : "text-on-surface hover:bg-surface-container"
+                      ? "text-primary font-semibold bg-primary/10"
+                      : "text-on-surface hover:bg-surface-container"
                       }`}
                   >
                     {business.name}
@@ -195,13 +196,7 @@ export default function TopAppBar({ title, businessId }: TopAppBarProps) {
           <LanguageSwitcher className="!px-2 !py-2" />
         </div>
 
-        <button
-          type="button"
-          className="p-2 rounded-full text-primary-container hover:bg-surface-container-high transition-colors"
-          aria-label="Notifications"
-        >
-          <IconBell className="w-5 h-5" />
-        </button>
+        <NotificationBell />
 
         <UserProfileSection variant="compact" />
       </div>

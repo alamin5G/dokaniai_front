@@ -5,6 +5,7 @@ import SideNavBar from "@/components/layout/SideNavBar";
 import TopAppBar from "@/components/layout/TopAppBar";
 import * as businessApi from "@/lib/businessApi";
 import { useBusinessStore } from "@/store/businessStore";
+import { useWebPush } from "@/hooks/useWebPush";
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
 
@@ -79,6 +80,9 @@ const LOADING_TIMEOUT = 10_000;
 export default function DashboardLayout({ children, title, businessId }: DashboardLayoutProps) {
   const router = useRouter();
   const { activeBusiness, activeBusinessId, loadBusinesses, loadBusiness, setActiveBusiness, businesses } = useBusinessStore();
+
+  // Web Push — auto-registers service worker when dashboard loads
+  useWebPush();
 
   const [isReady, setIsReady] = useState(false);
   const [error, setError] = useState<string | null>(null);
