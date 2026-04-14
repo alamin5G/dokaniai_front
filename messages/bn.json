@@ -1080,6 +1080,66 @@
         "percent": "%"
       }
     },
+    "discounts": {
+      "title": "ডিসকাউন্ট ব্যবস্থাপনা",
+      "subtitle": "সকল ডিসকাউন্ট ট্র্যাক করুন — টাইপ, পদ্ধতি ও তারিখ অনুযায়ী।",
+      "stats": {
+        "totalDiscounts": "মোট ডিসকাউন্ট",
+        "totalAmount": "মোট পরিমাণ",
+        "averageDiscount": "গড় ডিসকাউন্ট",
+        "thisPeriod": "এই সময়ে"
+      },
+      "table": {
+        "date": "তারিখ",
+        "type": "টাইপ",
+        "method": "পদ্ধতি",
+        "value": "মান",
+        "amount": "পরিমাণ",
+        "reason": "কারণ",
+        "sale": "বিক্রয়",
+        "customer": "কাস্টমার",
+        "noReason": "—"
+      },
+      "type": {
+        "BULK_PAYMENT": "বাল্ক পেমেন্ট",
+        "CASH_PAYMENT": "ক্যাশ পেমেন্ট",
+        "LOYALTY": "লয়ালটি",
+        "CUSTOM": "কাস্টম"
+      },
+      "method": {
+        "PERCENTAGE": "শতাংশ",
+        "FIXED": "নির্দিষ্ট"
+      },
+      "filter": {
+        "allTypes": "সব টাইপ",
+        "dateRange": "তারিখ সীমা",
+        "last7": "গত ৭ দিন",
+        "last30": "গত ৩০ দিন",
+        "thisMonth": "এই মাস",
+        "lastMonth": "গত মাস",
+        "custom": "কাস্টম",
+        "from": "থেকে",
+        "to": "পর্যন্ত",
+        "apply": "প্রয়োগ করুন"
+      },
+      "pagination": {
+        "showing": "{total} টির মধ্যে {from}–{to} দেখাচ্ছে",
+        "previous": "আগে",
+        "next": "পরে",
+        "noResults": "নির্বাচিত ফিল্টারে কোনো ডিসকাউন্ট পাওয়া যায়নি।"
+      },
+      "summary": {
+        "title": "টাইপ অনুযায়ী সারসংক্ষেপ",
+        "type": "টাইপ",
+        "count": "সংখ্যা",
+        "total": "মোট",
+        "byMethod": "পদ্ধতি অনুযায়ী"
+      },
+      "messages": {
+        "loadError": "ডিসকাউন্ট লোড করতে ব্যর্থ।",
+        "statsError": "ডিসকাউন্ট পরিসংখ্যান লোড করতে ব্যর্থ।"
+      }
+    },
     "dueLedger": {
       "title": "বাকী খাতা",
       "subtitle": "কাস্টমার ক্রেডিট ব্যবস্থাপনা",
@@ -1319,6 +1379,7 @@
           "expenses": "খরচ",
           "due": "বাকী",
           "stock": "স্টক",
+          "discounts": "ডিসকাউন্ট",
           "advanced": "উন্নত বিশ্লেষণ"
         },
         "dashboard": {

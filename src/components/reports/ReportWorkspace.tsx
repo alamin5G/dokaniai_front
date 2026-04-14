@@ -36,6 +36,7 @@ import DueAgingChart from "./charts/DueAgingChart";
 import ComparisonChart from "./charts/ComparisonChart";
 import AIInsightPanel from "./insights/AIInsightPanel";
 import CustomerAnalytics from "./CustomerAnalytics";
+import DiscountReportTab from "./DiscountReportTab";
 
 // ─── Helpers ─────────────────────────────────────────────
 
@@ -43,7 +44,7 @@ function resolveLocale(locale?: string): string {
     return locale?.toLowerCase().startsWith("bn") ? "bn-BD" : "en-US";
 }
 
-type TabKey = "dashboard" | "sales" | "profit" | "expenses" | "due" | "stock" | "advanced";
+type TabKey = "dashboard" | "sales" | "profit" | "expenses" | "due" | "stock" | "discounts" | "advanced";
 
 // ─── Component ───────────────────────────────────────────
 
@@ -193,6 +194,7 @@ export default function ReportWorkspace({
                 expenses: "EXPENSE_BREAKDOWN",
                 due: "DUE_LEDGER",
                 stock: "STOCK_ALERT",
+                discounts: "CUSTOM",
                 advanced: "CUSTOM",
             };
             const blob = await exportReport(businessId, typeMap[activeTab], format);
@@ -215,6 +217,7 @@ export default function ReportWorkspace({
         { key: "expenses", icon: "payments" },
         { key: "due", icon: "menu_book" },
         { key: "stock", icon: "inventory_2" },
+        { key: "discounts", icon: "sell" },
         { key: "advanced", icon: "auto_awesome", proOnly: true },
     ];
 
@@ -254,8 +257,8 @@ export default function ReportWorkspace({
                         key={tab.key}
                         onClick={() => setActiveTab(tab.key)}
                         className={`flex items-center gap-2 whitespace-nowrap rounded-xl px-4 py-2.5 text-sm font-bold transition-colors ${activeTab === tab.key
-                                ? "bg-surface-container-lowest text-primary shadow-sm"
-                                : "text-on-surface-variant hover:bg-surface-container-low"
+                            ? "bg-surface-container-lowest text-primary shadow-sm"
+                            : "text-on-surface-variant hover:bg-surface-container-low"
                             }`}
                     >
                         <span className="material-symbols-outlined text-sm">{tab.icon}</span>
@@ -328,6 +331,11 @@ export default function ReportWorkspace({
                     {/* ────── STOCK TAB ────── */}
                     {activeTab === "stock" && stockAlert && (
                         <StockTab stockAlert={stockAlert} t={t} formatMoney={formatMoney} />
+                    )}
+
+                    {/* ────── DISCOUNTS TAB ────── */}
+                    {activeTab === "discounts" && (
+                        <DiscountReportTab businessId={businessId} />
                     )}
 
                     {/* ────── ADVANCED TAB ────── */}
@@ -499,8 +507,8 @@ function SalesTab({
                         key={p}
                         onClick={() => setSalesPeriod(p)}
                         className={`rounded-xl px-4 py-2 text-sm font-bold transition-colors ${salesPeriod === p
-                                ? "bg-primary text-white"
-                                : "bg-surface-container text-on-surface-variant hover:bg-surface-container-high"
+                            ? "bg-primary text-white"
+                            : "bg-surface-container text-on-surface-variant hover:bg-surface-container-high"
                             }`}
                     >
                         {t(`sales.${p}`)}
@@ -778,10 +786,10 @@ function StockTab({
                                     <td className="px-6 py-4 text-right text-on-surface-variant">{formatMoney(item.reorderPoint)}</td>
                                     <td className="px-6 py-4">
                                         <span className={`inline-block rounded-full px-3 py-1 text-xs font-bold ${item.status === "OUT_OF_STOCK"
-                                                ? "bg-error-container text-on-error-container"
-                                                : item.status === "LOW_STOCK"
-                                                    ? "bg-tertiary-container text-on-tertiary-container"
-                                                    : "bg-surface-container-high text-on-surface-variant"
+                                            ? "bg-error-container text-on-error-container"
+                                            : item.status === "LOW_STOCK"
+                                                ? "bg-tertiary-container text-on-tertiary-container"
+                                                : "bg-surface-container-high text-on-surface-variant"
                                             }`}>
                                             {item.status}
                                         </span>

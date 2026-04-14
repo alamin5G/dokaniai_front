@@ -1080,6 +1080,66 @@
         "percent": "%"
       }
     },
+    "discounts": {
+      "title": "Discount Management",
+      "subtitle": "Track all discounts given — by type, method, and date range.",
+      "stats": {
+        "totalDiscounts": "Total Discounts",
+        "totalAmount": "Total Amount",
+        "averageDiscount": "Average Discount",
+        "thisPeriod": "This Period"
+      },
+      "table": {
+        "date": "Date",
+        "type": "Type",
+        "method": "Method",
+        "value": "Value",
+        "amount": "Amount",
+        "reason": "Reason",
+        "sale": "Sale",
+        "customer": "Customer",
+        "noReason": "—"
+      },
+      "type": {
+        "BULK_PAYMENT": "Bulk Payment",
+        "CASH_PAYMENT": "Cash Payment",
+        "LOYALTY": "Loyalty",
+        "CUSTOM": "Custom"
+      },
+      "method": {
+        "PERCENTAGE": "Percentage",
+        "FIXED": "Fixed"
+      },
+      "filter": {
+        "allTypes": "All Types",
+        "dateRange": "Date Range",
+        "last7": "Last 7 Days",
+        "last30": "Last 30 Days",
+        "thisMonth": "This Month",
+        "lastMonth": "Last Month",
+        "custom": "Custom",
+        "from": "From",
+        "to": "To",
+        "apply": "Apply"
+      },
+      "pagination": {
+        "showing": "Showing {from}–{to} of {total}",
+        "previous": "Previous",
+        "next": "Next",
+        "noResults": "No discounts found for the selected filters."
+      },
+      "summary": {
+        "title": "Summary by Type",
+        "type": "Type",
+        "count": "Count",
+        "total": "Total",
+        "byMethod": "By Method"
+      },
+      "messages": {
+        "loadError": "Failed to load discounts.",
+        "statsError": "Failed to load discount statistics."
+      }
+    },
     "dueLedger": {
       "title": "Due Ledger",
       "subtitle": "বাকী খাতা — Customer credit management",
@@ -1319,6 +1379,7 @@
           "expenses": "Expenses",
           "due": "Due",
           "stock": "Stock",
+          "discounts": "Discounts",
           "advanced": "Advanced Analytics"
         },
         "dashboard": {
