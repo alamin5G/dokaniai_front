@@ -13,6 +13,19 @@ export type CategoryRequestStatus =
   | 'CANCELLED'
   | 'DUPLICATE_SUGGESTED';
 
+export type SimilarityDetectionMethod = 'EXACT' | 'TEXT_MATCH' | 'AI_SEMANTIC';
+
+export interface SimilarCategoryResult {
+  categoryId: string;
+  nameBn: string;
+  nameEn: string | null;
+  scope: 'GLOBAL' | 'BUSINESS';
+  businessId: string | null;
+  similarityScore: number;
+  detectionMethod: SimilarityDetectionMethod;
+  reason: string;
+}
+
 export interface CategoryRequestResponse {
   id: string;
   businessId: string;
@@ -38,6 +51,11 @@ export interface CategoryRequestResponse {
   createdCategoryId: string | null;
   createdAt: string;
   updatedAt: string;
+  // AI Similarity Analysis
+  aiSimilarityCheck: boolean | null;
+  aiRecommendation: string | null;
+  aiReasoning: string | null;
+  similarCategories: SimilarCategoryResult[] | null;
 }
 
 export interface CategoryRequestDecisionPayload {
@@ -48,4 +66,3 @@ export interface CategoryRequestDecisionPayload {
   suggestedCategoryId?: string;
   rejectionReason?: string;
 }
-

@@ -2074,6 +2074,8 @@
             "mergeCategorySearch": "ক্যাটেগরি খুঁজুন…",
             "mergeInto": "একত্রিত হবে",
             "noCategories": "এই ব্যবসার ধরনের জন্য কোনো ক্যাটেগরি পাওয়া যায়নি।",
+            "aiSimilarCategories": "⚠️ AI সমজাতীয় ক্যাটেগরি সনাক্ত করেছে",
+            "useThis": "এটি ব্যবহার করুন",
             "reviewNotes": "পর্যালোচনা নোট",
             "reviewNotesPlaceholder": "ঐচ্ছিক পর্যালোচনা নোট যোগ করুন…",
             "rejectionReason": "প্রত্যাখ্যানের কারণ",

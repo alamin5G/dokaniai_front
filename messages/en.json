@@ -2074,6 +2074,8 @@
             "mergeCategorySearch": "Search categories…",
             "mergeInto": "Will merge into",
             "noCategories": "No categories found for this business type.",
+            "aiSimilarCategories": "⚠️ AI Detected Similar Categories",
+            "useThis": "Use This",
             "reviewNotes": "Review Notes",
             "reviewNotesPlaceholder": "Add optional review notes…",
             "rejectionReason": "Rejection Reason",
