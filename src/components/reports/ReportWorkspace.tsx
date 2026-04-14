@@ -37,6 +37,7 @@ import ComparisonChart from "./charts/ComparisonChart";
 import AIInsightPanel from "./insights/AIInsightPanel";
 import CustomerAnalytics from "./CustomerAnalytics";
 import DiscountReportTab from "./DiscountReportTab";
+import ReturnReportTab from "./ReturnReportTab";
 
 // ─── Helpers ─────────────────────────────────────────────
 
@@ -44,7 +45,7 @@ function resolveLocale(locale?: string): string {
     return locale?.toLowerCase().startsWith("bn") ? "bn-BD" : "en-US";
 }
 
-type TabKey = "dashboard" | "sales" | "profit" | "expenses" | "due" | "stock" | "discounts" | "advanced";
+type TabKey = "dashboard" | "sales" | "profit" | "expenses" | "due" | "stock" | "discounts" | "returns" | "advanced";
 
 // ─── Component ───────────────────────────────────────────
 
@@ -195,6 +196,7 @@ export default function ReportWorkspace({
                 due: "DUE_LEDGER",
                 stock: "STOCK_ALERT",
                 discounts: "CUSTOM",
+                returns: "CUSTOM",
                 advanced: "CUSTOM",
             };
             const blob = await exportReport(businessId, typeMap[activeTab], format);
@@ -218,6 +220,7 @@ export default function ReportWorkspace({
         { key: "due", icon: "menu_book" },
         { key: "stock", icon: "inventory_2" },
         { key: "discounts", icon: "sell" },
+        { key: "returns", icon: "undo" },
         { key: "advanced", icon: "auto_awesome", proOnly: true },
     ];
 
@@ -336,6 +339,11 @@ export default function ReportWorkspace({
                     {/* ────── DISCOUNTS TAB ────── */}
                     {activeTab === "discounts" && (
                         <DiscountReportTab businessId={businessId} />
+                    )}
+
+                    {/* ────── RETURNS TAB ────── */}
+                    {activeTab === "returns" && (
+                        <ReturnReportTab businessId={businessId} />
                     )}
 
                     {/* ────── ADVANCED TAB ────── */}

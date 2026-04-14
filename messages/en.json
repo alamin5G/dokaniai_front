@@ -994,6 +994,66 @@
         "loadError": "Failed to load products.",
         "saleCreated": "Sale recorded successfully.",
         "saleCancelled": "Sale cancelled."
+      },
+      "returns": {
+        "title": "Record Return",
+        "subtitle": "Process a product return for this sale.",
+        "returnType": {
+          "FULL": "Full Return",
+          "PARTIAL": "Partial Return",
+          "DEFECTIVE": "Defective",
+          "EXCHANGE": "Exchange"
+        },
+        "form": {
+          "type": "Return Type",
+          "reason": "Reason",
+          "reasonPlaceholder": "Why is this being returned?",
+          "notes": "Notes",
+          "notesPlaceholder": "Additional details (optional)",
+          "submit": "Process Return",
+          "submitting": "Processing...",
+          "void": "Void Return",
+          "voidReason": "Reason for voiding"
+        },
+        "status": {
+          "PENDING": "Pending",
+          "PAID": "Refunded",
+          "PARTIAL": "Partial",
+          "DUE": "Due",
+          "COMPLETED": "Completed"
+        },
+        "messages": {
+          "created": "Return processed successfully. Stock restored.",
+          "voided": "Return voided successfully.",
+          "error": "Failed to process return.",
+          "voidError": "Failed to void return."
+        },
+        "stats": {
+          "totalReturns": "Total Returns",
+          "totalRefund": "Total Refund",
+          "fullReturns": "Full Returns",
+          "partialReturns": "Partial Returns",
+          "defectiveReturns": "Defective",
+          "stockRestored": "Stock Restored"
+        },
+        "table": {
+          "date": "Date",
+          "sale": "Sale",
+          "type": "Type",
+          "quantity": "Qty",
+          "refund": "Refund",
+          "status": "Status",
+          "reason": "Reason",
+          "stockRestored": "Stock Restored",
+          "yes": "Yes",
+          "no": "No"
+        },
+        "pagination": {
+          "showing": "Showing {from}–{to} of {total}",
+          "previous": "Previous",
+          "next": "Next",
+          "noResults": "No returns found."
+        }
       }
     },
     "expenses": {
@@ -1380,6 +1440,7 @@
           "due": "Due",
           "stock": "Stock",
           "discounts": "Discounts",
+          "returns": "Returns",
           "advanced": "Advanced Analytics"
         },
         "dashboard": {

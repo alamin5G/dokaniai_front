@@ -994,6 +994,66 @@
         "loadError": "পণ্য তথ্য লোড করা যায়নি।",
         "saleCreated": "বিক্রি সফলভাবে রেকর্ড হয়েছে।",
         "saleCancelled": "বিক্রি বাতিল করা হয়েছে।"
+      },
+      "returns": {
+        "title": "রিটার্ন রেকর্ড",
+        "subtitle": "এই বিক্রির জন্য পণ্য রিটার্ন প্রসেস করুন।",
+        "returnType": {
+          "FULL": "সম্পূর্ণ রিটার্ন",
+          "PARTIAL": "আংশিক রিটার্ন",
+          "DEFECTIVE": "ত্রুটিপূর্ণ",
+          "EXCHANGE": "বিনিময়"
+        },
+        "form": {
+          "type": "রিটার্ন টাইপ",
+          "reason": "কারণ",
+          "reasonPlaceholder": "কেন রিটার্ন করা হচ্ছে?",
+          "notes": "নোট",
+          "notesPlaceholder": "অতিরিক্ত তথ্য (ঐচ্ছিক)",
+          "submit": "রিটার্ন প্রসেস করুন",
+          "submitting": "প্রসেস হচ্ছে...",
+          "void": "রিটার্ন বাতিল",
+          "voidReason": "বাতিলের কারণ"
+        },
+        "status": {
+          "PENDING": "অপেক্ষমান",
+          "PAID": "ফেরত দেওয়া হয়েছে",
+          "PARTIAL": "আংশিক",
+          "DUE": "বকেয়া",
+          "COMPLETED": "সম্পন্ন"
+        },
+        "messages": {
+          "created": "রিটার্ন সফলভাবে প্রসেস হয়েছে। স্টক পুনরুদ্ধার হয়েছে।",
+          "voided": "রিটার্ন সফলভাবে বাতিল করা হয়েছে।",
+          "error": "রিটার্ন প্রসেস করতে ব্যর্থ।",
+          "voidError": "রিটার্ন বাতিল করতে ব্যর্থ।"
+        },
+        "stats": {
+          "totalReturns": "মোট রিটার্ন",
+          "totalRefund": "মোট ফেরত",
+          "fullReturns": "সম্পূর্ণ রিটার্ন",
+          "partialReturns": "আংশিক রিটার্ন",
+          "defectiveReturns": "ত্রুটিপূর্ণ",
+          "stockRestored": "স্টক পুনরুদ্ধার"
+        },
+        "table": {
+          "date": "তারিখ",
+          "sale": "বিক্রি",
+          "type": "টাইপ",
+          "quantity": "পরিমাণ",
+          "refund": "ফেরত",
+          "status": "স্ট্যাটাস",
+          "reason": "কারণ",
+          "stockRestored": "স্টক পুনরুদ্ধার",
+          "yes": "হ্যাঁ",
+          "no": "না"
+        },
+        "pagination": {
+          "showing": "{total} টির মধ্যে {from}–{to} দেখাচ্ছে",
+          "previous": "আগে",
+          "next": "পরে",
+          "noResults": "কোনো রিটার্ন পাওয়া যায়নি।"
+        }
       }
     },
     "expenses": {
@@ -1380,6 +1440,7 @@
           "due": "বাকী",
           "stock": "স্টক",
           "discounts": "ডিসকাউন্ট",
+          "returns": "রিটার্ন",
           "advanced": "উন্নত বিশ্লেষণ"
         },
         "dashboard": {
