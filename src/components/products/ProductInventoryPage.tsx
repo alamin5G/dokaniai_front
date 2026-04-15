@@ -10,21 +10,17 @@ import type {
     ProductUpdateRequest,
 } from "@/types/product";
 import {
-    archiveProduct,
-    createProduct,
     downloadProductImportTemplate,
     exportProductsCsv,
-    getLowStockProducts,
-    getReorderNeededProducts,
-    getProductStats,
     importProductsCsv,
-    listProducts,
-    updateProduct,
 } from "@/lib/productApi";
-import { getCategoriesByBusinessType } from "@/lib/categoryApi";
+import { useProducts, useProductStats, useLowStockProducts, useReorderNeededProducts } from "@/hooks/useProducts";
+import { useCategoriesByBusinessType } from "@/hooks/useCategories";
+import { useProductMutations } from "@/hooks/useProductMutations";
+import { invalidateProducts } from "@/lib/swrMutations";
 import { getAvailablePlans, getCurrentSubscription } from "@/lib/subscriptionApi";
 import { useTranslations } from "next-intl";
-import { ChangeEvent, FormEvent, useCallback, useEffect, useRef, useState } from "react";
+import { ChangeEvent, FormEvent, useEffect, useRef, useState } from "react";
 
 import ProductStatsCards from "./ProductStatsCards";
 import ProductInsightPanel from "./ProductInsightPanel";
@@ -76,22 +72,30 @@ export default function ProductInventoryPage({
     const t = useTranslations("shop.products");
     const activeBusiness = useBusinessStore((state) => state.activeBusiness);
 
-    // Data state
-    const [products, setProducts] = useState<Product[]>([]);
-    const [lowStockProducts, setLowStockProducts] = useState<Product[]>([]);
-    const [reorderProducts, setReorderProducts] = useState<Product[]>([]);
-    const [stats, setStats] = useState<ProductStatsResponse | null>(null);
-    const [categories, setCategories] = useState<CategoryResponse[]>([]);
-
-    // UI state
+    // UI filter state (drives SWR keys)
     const [searchInput, setSearchInput] = useState("");
     const [search, setSearch] = useState("");
     const [status, setStatus] = useState<"" | ProductStatus>("");
     const [selectedCategoryId, setSelectedCategoryId] = useState<string | null>(null);
     const [page, setPage] = useState(0);
-    const [totalPages, setTotalPages] = useState(1);
-    const [totalElements, setTotalElements] = useState(0);
-    const [isLoading, setIsLoading] = useState(true);
+
+    // Data — SWR-backed (shared cache, auto-revalidation)
+    const { products, totalPages, totalElements, isLoading } = useProducts(businessId, {
+        page,
+        size: 12,
+        search: search || undefined,
+        status: status || undefined,
+        category: selectedCategoryId || undefined,
+    });
+    const { stats } = useProductStats(businessId);
+    const { lowStockProducts } = useLowStockProducts(businessId);
+    const { reorderProducts } = useReorderNeededProducts(businessId);
+    const { categories } = useCategoriesByBusinessType(activeBusiness?.type ?? null);
+
+    // Mutations — SWR-backed with cache invalidation
+    const { submitCreate, submitUpdate, submitArchive } = useProductMutations(businessId);
+
+    // UI-only state
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [isImporting, setIsImporting] = useState(false);
     const [error, setError] = useState<string | null>(null);
@@ -109,7 +113,7 @@ export default function ProductInventoryPage({
     const [canBulkImport, setCanBulkImport] = useState(true);
     const fileInputRef = useRef<HTMLInputElement | null>(null);
 
-    // Debounced search
+    // Debounced search — updates the `search` state that drives the SWR key
     useEffect(() => {
         const timer = window.setTimeout(() => {
             setSearch(searchInput.trim());
@@ -117,67 +121,6 @@ export default function ProductInventoryPage({
         }, 250);
         return () => window.clearTimeout(timer);
     }, [searchInput]);
-
-    // Load categories based on business type
-    useEffect(() => {
-        if (!activeBusiness?.type) return;
-        let cancelled = false;
-        const loadCategories = async () => {
-            try {
-                const cats = await getCategoriesByBusinessType(activeBusiness.type);
-                if (!cancelled) {
-                    setCategories(cats);
-                }
-            } catch {
-                // Categories are optional — silently fail
-            }
-        };
-        void loadCategories();
-        return () => {
-            cancelled = true;
-        };
-    }, [activeBusiness?.type]);
-
-    // Main data loading
-    const loadWorkspace = useCallback(async () => {
-        setIsLoading(true);
-        setError(null);
-
-        try {
-            const [productPage, lowStock, reorderNeeded, statsResponse] =
-                await Promise.all([
-                    listProducts(businessId, {
-                        page,
-                        size: 12,
-                        search: search || undefined,
-                        status: status || undefined,
-                        category: selectedCategoryId || undefined,
-                    }),
-                    getLowStockProducts(businessId),
-                    getReorderNeededProducts(businessId),
-                    getProductStats(businessId),
-                ]);
-
-            setProducts(productPage.content);
-            setTotalPages(Math.max(productPage.totalPages, 1));
-            setTotalElements(productPage.totalElements);
-            setLowStockProducts(lowStock);
-            setReorderProducts(reorderNeeded);
-            setStats(statsResponse);
-        } catch (loadError) {
-            setError(
-                loadError instanceof Error
-                    ? loadError.message
-                    : t("messages.loadError"),
-            );
-        } finally {
-            setIsLoading(false);
-        }
-    }, [businessId, page, search, status, selectedCategoryId, t]);
-
-    useEffect(() => {
-        void loadWorkspace();
-    }, [loadWorkspace]);
 
     // Check bulk import permission
     useEffect(() => {
@@ -231,14 +174,13 @@ export default function ProductInventoryPage({
 
         try {
             if (editorMode === "edit" && editingProduct) {
-                await updateProduct(businessId, editingProduct.id, toUpdatePayload(form));
+                await submitUpdate(editingProduct.id, toUpdatePayload(form));
                 setNotice(t("messages.updated"));
             } else {
-                await createProduct(businessId, toCreatePayload(form));
+                await submitCreate(toCreatePayload(form));
                 setNotice(t("messages.created"));
             }
             resetEditor();
-            await loadWorkspace();
         } catch (submitError) {
             setError(
                 submitError instanceof Error
@@ -257,12 +199,11 @@ export default function ProductInventoryPage({
         if (!confirmed) return;
 
         try {
-            await archiveProduct(businessId, product.id);
+            await submitArchive(product.id);
             if (editingProduct?.id === product.id) {
                 resetEditor();
             }
             setNotice(t("messages.archived"));
-            await loadWorkspace();
         } catch (archiveError) {
             setError(
                 archiveError instanceof Error
@@ -335,7 +276,7 @@ export default function ProductInventoryPage({
                     total: result.totalRows,
                 }),
             );
-            await loadWorkspace();
+            await invalidateProducts(businessId);
         } catch (importError) {
             setError(
                 importError instanceof Error
@@ -416,8 +357,8 @@ export default function ProductInventoryPage({
                         type="button"
                         onClick={() => setActiveTopTab(tab.key)}
                         className={`rounded-t-xl px-6 py-3 text-sm font-semibold transition ${activeTopTab === tab.key
-                                ? "bg-surface-container-lowest text-primary shadow-sm"
-                                : "text-on-surface-variant hover:text-on-surface"
+                            ? "bg-surface-container-lowest text-primary shadow-sm"
+                            : "text-on-surface-variant hover:text-on-surface"
                             }`}
                     >
                         {tab.label}

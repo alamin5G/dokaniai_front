@@ -1,6 +1,7 @@
 "use client";
 
 import { useLocale, useTranslations } from "next-intl";
+import { useCallback, useEffect, useRef, useState } from "react";
 import type { CategoryResponse } from "@/types/category";
 import type { Product } from "@/types/product";
 import type { CartItem } from "@/types/sale";
@@ -37,6 +38,11 @@ export default function ProductSelector({
     const loc = resolveLocale(locale);
     const isBn = locale.toLowerCase().startsWith("bn");
 
+    // FR-SRC-07: Autocomplete state
+    const [showAutocomplete, setShowAutocomplete] = useState(false);
+    const [autocompleteIndex, setAutocompleteIndex] = useState(-1);
+    const searchWrapperRef = useRef<HTMLDivElement>(null);
+
     const qtyFormatter = new Intl.NumberFormat(loc, {
         maximumFractionDigits: 3,
     });
@@ -65,12 +71,50 @@ export default function ProductSelector({
         return cartItems.find((ci) => ci.productId === productId)?.quantity ?? 0;
     }
 
+    // FR-SRC-07: Autocomplete suggestions — show after 2 characters typed
+    const autocompleteItems = searchQuery.length >= 2 ? products.slice(0, 8) : [];
+
+    // Close autocomplete on outside click
+    useEffect(() => {
+        function handleClickOutside(event: MouseEvent) {
+            if (searchWrapperRef.current && !searchWrapperRef.current.contains(event.target as Node)) {
+                setShowAutocomplete(false);
+            }
+        }
+        document.addEventListener("mousedown", handleClickOutside);
+        return () => document.removeEventListener("mousedown", handleClickOutside);
+    }, []);
+
+    const handleSearchKeyDown = useCallback(
+        (e: React.KeyboardEvent) => {
+            if (!showAutocomplete || autocompleteItems.length === 0) return;
+            if (e.key === "ArrowDown") {
+                e.preventDefault();
+                setAutocompleteIndex((i) => Math.min(i + 1, autocompleteItems.length - 1));
+            } else if (e.key === "ArrowUp") {
+                e.preventDefault();
+                setAutocompleteIndex((i) => Math.max(i - 1, -1));
+            } else if (e.key === "Enter" && autocompleteIndex >= 0) {
+                e.preventDefault();
+                const product = autocompleteItems[autocompleteIndex];
+                onAddProduct(product);
+                onSearchChange("");
+                setShowAutocomplete(false);
+                setAutocompleteIndex(-1);
+            } else if (e.key === "Escape") {
+                setShowAutocomplete(false);
+                setAutocompleteIndex(-1);
+            }
+        },
+        [showAutocomplete, autocompleteItems, autocompleteIndex, onAddProduct, onSearchChange]
+    );
+
     return (
         <section className="flex flex-1 flex-col overflow-hidden p-6">
             {/* Search + Scanner */}
             <div className="mb-6 flex flex-col gap-4">
                 <div className="flex items-center gap-4">
-                    <div className="relative flex-1">
+                    <div className="relative flex-1" ref={searchWrapperRef}>
                         <span className="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-on-surface-variant">
                             search
                         </span>
@@ -79,8 +123,54 @@ export default function ProductSelector({
                             placeholder={t("productSearch")}
                             type="text"
                             value={searchQuery}
-                            onChange={(e) => onSearchChange(e.target.value)}
+                            onChange={(e) => {
+                                onSearchChange(e.target.value);
+                                setShowAutocomplete(e.target.value.length >= 2);
+                                setAutocompleteIndex(-1);
+                            }}
+                            onFocus={() => {
+                                if (searchQuery.length >= 2) setShowAutocomplete(true);
+                            }}
+                            onKeyDown={handleSearchKeyDown}
                         />
+
+                        {/* FR-SRC-07: Autocomplete dropdown */}
+                        {showAutocomplete && autocompleteItems.length > 0 && (
+                            <div className="absolute left-0 right-0 top-full z-50 mt-1 max-h-64 overflow-y-auto rounded-xl bg-surface-container-lowest shadow-lg ring-1 ring-outline-variant/20">
+                                {autocompleteItems.map((product, idx) => (
+                                    <button
+                                        key={product.id}
+                                        type="button"
+                                        onClick={() => {
+                                            onAddProduct(product);
+                                            onSearchChange("");
+                                            setShowAutocomplete(false);
+                                            setAutocompleteIndex(-1);
+                                        }}
+                                        className={`flex w-full items-center gap-3 px-4 py-3 text-left transition ${
+                                            idx === autocompleteIndex
+                                                ? "bg-primary/10 text-primary"
+                                                : "text-on-surface hover:bg-surface-container-low"
+                                        }`}
+                                    >
+                                        <span className="material-symbols-outlined text-base text-on-surface-variant">
+                                            inventory_2
+                                        </span>
+                                        <div className="min-w-0 flex-1">
+                                            <p className="truncate text-sm font-semibold">
+                                                {product.name}
+                                            </p>
+                                            <p className="text-xs text-on-surface-variant">
+                                                {product.unit} · ৳{formatMoney(product.sellPrice)}
+                                            </p>
+                                        </div>
+                                        <span className="material-symbols-outlined text-base text-primary">
+                                            add
+                                        </span>
+                                    </button>
+                                ))}
+                            </div>
+                        )}
                     </div>
                     <button className="flex items-center gap-2 rounded-xl bg-surface-container-highest px-4 py-3 font-medium text-on-surface transition-colors hover:bg-surface-variant">
                         <span className="material-symbols-outlined">barcode_scanner</span>
@@ -94,8 +184,8 @@ export default function ProductSelector({
                         type="button"
                         onClick={() => onCategorySelect(null)}
                         className={`whitespace-nowrap rounded-full px-5 py-2 text-sm font-medium transition-colors ${selectedCategoryId === null
-                                ? "bg-primary text-white"
-                                : "bg-surface-container-high text-on-surface-variant hover:bg-surface-container-highest"
+                            ? "bg-primary text-white"
+                            : "bg-surface-container-high text-on-surface-variant hover:bg-surface-container-highest"
                             }`}
                     >
                         {t("allCategories")}
@@ -108,8 +198,8 @@ export default function ProductSelector({
                                 onCategorySelect(selectedCategoryId === cat.id ? null : cat.id)
                             }
                             className={`whitespace-nowrap rounded-full px-5 py-2 text-sm font-medium transition-colors ${selectedCategoryId === cat.id
-                                    ? "bg-primary text-white"
-                                    : "bg-surface-container-high text-on-surface-variant hover:bg-surface-container-highest"
+                                ? "bg-primary text-white"
+                                : "bg-surface-container-high text-on-surface-variant hover:bg-surface-container-highest"
                                 }`}
                         >
                             {getCategoryName(cat)}
@@ -152,8 +242,8 @@ export default function ProductSelector({
                                 <div
                                     key={product.id}
                                     className={`group grid grid-cols-12 items-center rounded-xl bg-surface-container-lowest p-4 transition-all hover:bg-surface-container-low ${isLowStock
-                                            ? "border-l-4 border-tertiary"
-                                            : ""
+                                        ? "border-l-4 border-tertiary"
+                                        : ""
                                         }`}
                                 >
                                     <div className="col-span-6">

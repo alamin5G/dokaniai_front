@@ -83,6 +83,27 @@ export default function ProductTable({
         return category.nameEn ?? category.nameBn;
     }
 
+    /**
+     * FR-SRC-03: Highlight matching text in search results.
+     * Wraps matching substrings in a <mark> element.
+     */
+    function highlightText(text: string, query: string): React.ReactNode {
+        if (!query || query.length < 1) return text;
+        const lowerText = text.toLowerCase();
+        const lowerQuery = query.toLowerCase();
+        const index = lowerText.indexOf(lowerQuery);
+        if (index === -1) return text;
+        return (
+            <>
+                {text.slice(0, index)}
+                <mark className="bg-yellow-200 text-on-surface rounded px-0.5">
+                    {text.slice(index, index + query.length)}
+                </mark>
+                {text.slice(index + query.length)}
+            </>
+        );
+    }
+
     // Build a category lookup for displaying breadcrumbs in the table
     const categoryMap = new Map<string, CategoryResponse>();
     for (const cat of categories) {
@@ -195,7 +216,7 @@ export default function ProductTable({
                                                 </div>
                                                 <div>
                                                     <p className="font-bold text-on-surface">
-                                                        {product.name}
+                                                        {highlightText(product.name, searchInput)}
                                                     </p>
                                                     <p className="text-xs text-on-surface-variant">
                                                         {breadcrumb
@@ -334,8 +355,8 @@ function CategoryFilterChipsInline({
                 type="button"
                 onClick={() => onSelect(null)}
                 className={`shrink-0 rounded-full px-4 py-2 text-sm font-semibold transition ${selectedCategoryId === null
-                        ? "bg-primary text-white"
-                        : "bg-surface text-on-surface hover:bg-surface-container-high"
+                    ? "bg-primary text-white"
+                    : "bg-surface text-on-surface hover:bg-surface-container-high"
                     }`}
             >
                 {t("filter.allCategories")}
@@ -348,8 +369,8 @@ function CategoryFilterChipsInline({
                         onSelect(selectedCategoryId === cat.id ? null : cat.id)
                     }
                     className={`shrink-0 rounded-full px-4 py-2 text-sm font-semibold transition ${selectedCategoryId === cat.id
-                            ? "bg-primary text-white"
-                            : "bg-surface text-on-surface hover:bg-surface-container-high"
+                        ? "bg-primary text-white"
+                        : "bg-surface text-on-surface hover:bg-surface-container-high"
                         }`}
                 >
                     {getName(cat)}
@@ -358,3 +379,4 @@ function CategoryFilterChipsInline({
         </div>
     );
 }
+
