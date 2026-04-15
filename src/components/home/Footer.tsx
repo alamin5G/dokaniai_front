@@ -9,7 +9,7 @@ export function Footer() {
   return (
     /* Matches reference: bg-surface-container-low */
     <footer className="bg-surface-container-low w-full mt-16 md:mt-20">
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-6 md:gap-8 px-4 sm:px-6 py-12 max-w-7xl mx-auto">
+      <div className="grid grid-cols-2 md:grid-cols-5 gap-6 md:gap-8 px-4 sm:px-6 py-12 max-w-7xl mx-auto">
         <div className="col-span-2 md:col-span-1 space-y-4">
           <Link href="/" className="text-xl font-bold text-primary font-headline hover:opacity-80 transition-opacity inline-block">
             DokaniAI
@@ -34,6 +34,14 @@ export function Footer() {
             <li><Link className="hover:text-primary hover:translate-x-1 transition-transform inline-block" href="/about">{t("aboutUs")}</Link></li>
             <li><Link className="hover:text-primary hover:translate-x-1 transition-transform inline-block" href="/#features">{t("features")}</Link></li>
             <li><Link className="hover:text-primary hover:translate-x-1 transition-transform inline-block" href="/pricing">{t("pricing")}</Link></li>
+          </ul>
+        </div>
+
+        <div className="space-y-3">
+          <h5 className="font-bold text-primary font-headline">{t("legal")}</h5>
+          <ul className="text-sm text-on-surface-variant font-medium space-y-2">
+            <li><Link className="hover:text-primary hover:translate-x-1 transition-transform inline-block" href="/legal/terms">{t("terms")}</Link></li>
+            <li><Link className="hover:text-primary hover:translate-x-1 transition-transform inline-block" href="/legal/privacy">{t("privacy")}</Link></li>
           </ul>
         </div>
 
