@@ -1,5 +1,6 @@
 import { LocaleUpdater } from "@/components/LocaleUpdater";
 import { I18nProvider } from "@/i18n/provider";
+import SWRProvider from "@/providers/SWRProvider";
 import type { Metadata, Viewport } from "next";
 import { Hind_Siliguri, Manrope } from "next/font/google";
 import "./globals.css";
@@ -49,10 +50,12 @@ export default function RootLayout({
         <link rel="apple-touch-icon" href="/icons/icon-192x192.png" />
       </head>
       <body suppressHydrationWarning className={`${hindSiliguri.variable} ${manrope.variable} font-body bg-background text-on-surface min-h-screen antialiased`}>
-        <I18nProvider>
-          <LocaleUpdater />
-          {children}
-        </I18nProvider>
+        <SWRProvider>
+          <I18nProvider>
+            <LocaleUpdater />
+            {children}
+          </I18nProvider>
+        </SWRProvider>
       </body>
     </html>
   );

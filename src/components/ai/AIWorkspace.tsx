@@ -103,8 +103,8 @@ export default function AIWorkspace({ businessId }: { businessId: string }) {
                         key={tab.key}
                         onClick={() => setActiveTab(tab.key)}
                         className={`flex items-center gap-2 whitespace-nowrap rounded-xl px-4 py-2.5 text-sm font-bold transition-colors ${activeTab === tab.key
-                                ? "bg-surface-container-lowest text-primary shadow-sm"
-                                : "text-on-surface-variant hover:bg-surface-container-low"
+                            ? "bg-surface-container-lowest text-primary shadow-sm"
+                            : "text-on-surface-variant hover:bg-surface-container-low"
                             }`}
                     >
                         <span className="material-symbols-outlined text-sm">{tab.icon}</span>
@@ -264,8 +264,8 @@ function ChatTab({ businessId }: { businessId: string }) {
                         <div
                             key={conv.id}
                             className={`flex items-center justify-between rounded-xl px-3 py-2.5 text-sm cursor-pointer transition-colors ${activeConvId === conv.id
-                                    ? "bg-primary-container/20 text-primary font-bold"
-                                    : "text-on-surface-variant hover:bg-surface-container-low"
+                                ? "bg-primary-container/20 text-primary font-bold"
+                                : "text-on-surface-variant hover:bg-surface-container-low"
                                 }`}
                             onClick={() => setActiveConvId(conv.id)}
                         >
@@ -307,8 +307,8 @@ function ChatTab({ businessId }: { businessId: string }) {
                         >
                             <div
                                 className={`max-w-[80%] rounded-2xl px-4 py-3 ${msg.role === "USER"
-                                        ? "bg-primary text-white rounded-br-md"
-                                        : "bg-surface-container text-on-surface rounded-bl-md"
+                                    ? "bg-primary text-white rounded-br-md"
+                                    : "bg-surface-container text-on-surface rounded-bl-md"
                                     }`}
                             >
                                 <p className="text-sm whitespace-pre-wrap">{msg.content}</p>
@@ -333,8 +333,34 @@ function ChatTab({ businessId }: { businessId: string }) {
                     <div ref={messagesEndRef} />
                 </div>
 
+                {/* Quick Query Buttons */}
+                <div className="border-t border-surface-container px-4 pt-3">
+                    <div className="flex gap-2 overflow-x-auto pb-2">
+                        {[
+                            { key: "QQ-01", bn: "আজকের বিক্রয় কত?", en: "Today's sales?" },
+                            { key: "QQ-02", bn: "এই মাসের লাভ কত?", en: "Month's profit?" },
+                            { key: "QQ-03", bn: "কোন পণ্য কম আছে?", en: "Low stock?" },
+                            { key: "QQ-04", bn: "কার কত বাকি?", en: "Who owes?" },
+                            { key: "QQ-05", bn: "সেরা বিক্রিত পণ্য?", en: "Best seller?" },
+                            { key: "QQ-06", bn: "গত সপ্তাহের খরচ?", en: "Last week expense?" },
+                            { key: "QQ-07", bn: "স্টক রিঅর্ডার কোনগুলো?", en: "Reorder items?" },
+                            { key: "QQ-08", bn: "আজকের ডিসকাউন্ট কত?", en: "Today discounts?" },
+                        ].map((qq) => (
+                            <button
+                                key={qq.key}
+                                onClick={() => {
+                                    setInput(qq.bn);
+                                }}
+                                className="whitespace-nowrap rounded-full bg-primary-container/30 px-3 py-1.5 text-xs font-medium text-primary hover:bg-primary-container transition-colors"
+                            >
+                                {qq.bn}
+                            </button>
+                        ))}
+                    </div>
+                </div>
+
                 {/* Input */}
-                <div className="border-t border-surface-container p-4">
+                <div className="px-4 pb-4">
                     <form
                         onSubmit={(e) => {
                             e.preventDefault();
@@ -520,8 +546,8 @@ function VoiceTab({ businessId }: { businessId: string }) {
                     onClick={isRecording ? stopRecording : startRecording}
                     disabled={isProcessing}
                     className={`flex items-center justify-center w-20 h-20 rounded-full transition-all ${isRecording
-                            ? "bg-error text-white animate-pulse scale-110"
-                            : "bg-primary text-white hover:bg-primary-container hover:scale-105"
+                        ? "bg-error text-white animate-pulse scale-110"
+                        : "bg-primary text-white hover:bg-primary-container hover:scale-105"
                         } disabled:opacity-50`}
                 >
                     <span className="material-symbols-outlined text-3xl">
@@ -739,8 +765,8 @@ function CommandsTab({ businessId }: { businessId: string }) {
                         onClick={confirmationToken ? handleConfirmExecute : handleParse}
                         disabled={!input.trim() || isProcessing}
                         className={`flex items-center gap-2 rounded-xl px-5 py-3 text-sm font-bold text-white transition-colors disabled:opacity-50 ${confirmationToken
-                                ? "bg-secondary hover:bg-secondary-container"
-                                : "bg-primary hover:bg-primary-container"
+                            ? "bg-secondary hover:bg-secondary-container"
+                            : "bg-primary hover:bg-primary-container"
                             }`}
                     >
                         <span className="material-symbols-outlined text-sm">
@@ -814,10 +840,10 @@ function CommandPreview({
                     </div>
                     <div className="ml-auto">
                         <span className={`rounded-full px-3 py-1 text-xs font-bold ${action.confidenceScore > 0.8
-                                ? "bg-secondary-container text-on-secondary-container"
-                                : action.confidenceScore > 0.5
-                                    ? "bg-tertiary-container text-on-tertiary-container"
-                                    : "bg-error-container text-on-error-container"
+                            ? "bg-secondary-container text-on-secondary-container"
+                            : action.confidenceScore > 0.5
+                                ? "bg-tertiary-container text-on-tertiary-container"
+                                : "bg-error-container text-on-error-container"
                             }`}>
                             {(action.confidenceScore * 100).toFixed(0)}%
                         </span>
@@ -872,3 +898,4 @@ function CommandPreview({
         </div>
     );
 }
+
