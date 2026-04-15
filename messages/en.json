@@ -159,6 +159,24 @@
       "label": "Pricing Plans",
       "title": "The Right Plan for Your Business",
       "subtitle": "Get all premium features at affordable prices",
+      "heroTitle": "Your Business",
+      "heroTitleAccent": "Companion for Every Step of Growth",
+      "heroDescription": "A digital ledger that grows with you. From simple tracking to AI-powered insights — everything in one place.",
+      "bestChoice": "Best Choice",
+      "enterpriseDescription": "Customized solutions tailored to your organization's needs. Dedicated manager and on-premise data hosting.",
+      "monthly": "Monthly",
+      "annual": "Annual",
+      "savePercent": "Save {percent}%",
+      "perMonth": "/month",
+      "perYear": "/year",
+      "annualDiscount": "12 months for the price of 10",
+      "categories": {
+        "starter": "Getting Started",
+        "growing": "Growing Business",
+        "professional": "Professional",
+        "established": "Established Business",
+        "enterprise": "Enterprise"
+      },
       "quickReference": {
         "title": "Plan Comparison",
         "columns": {
@@ -268,6 +286,45 @@
       "pwaGuide": "PWA Guide",
       "helpCenter": "Help Center",
       "connect": "Connect"
+    },
+    "growthStory": {
+      "title": "Journey of Prosperity",
+      "subtitle": "Our ledger will be with you at every step from a small shop to a super shop. See how your business can grow.",
+      "stage1": {
+        "number": "01",
+        "title": "From Ledger to Digital",
+        "description": "Say goodbye to lost ledgers and accounting confusion! With the magical power of digital ledgers, keep every transaction of your business in front of your eyes, within reach. Start your digital revolution today."
+      },
+      "stage2": {
+        "number": "02",
+        "title": "Building Customer Trust",
+        "description": "Step forward in professionalism. Build immense trust in your customers' minds through automatic SMS alerts. Transparent transactions and clear accounting are the main keys to your business's lasting success."
+      },
+      "stage3": {
+        "number": "03",
+        "title": "Intelligent Decisions",
+        "description": "Your data will now tell your future. Our powerful AI will find which products give you the most profit and where waste occurs. Increase your profits manifold by making the right decisions at the right time."
+      },
+      "stage4": {
+        "number": "04",
+        "title": "Empire Expansion",
+        "description": "Build your business empire from a single shop! Control all your branches from anywhere in the world through multi-store connectivity. Business expansion is now in your hands."
+      }
+    },
+    "trust": {
+      "title": "Safe and Reliable",
+      "security": {
+        "title": "Bank-Level Security",
+        "description": "All your data is end-to-end encrypted."
+      },
+      "backup": {
+        "title": "Live Backup",
+        "description": "Don't worry if you lose your phone, your data is safe in the cloud."
+      },
+      "support": {
+        "title": "24/7 Customer Support",
+        "description": "Our team is by your side for any problem."
+      }
     }
   },
   "authLayout": {
@@ -444,7 +501,9 @@
       "stepInventoryAlert": "Inventory Alert",
       "stepInventoryAlertDesc": "Set low-stock thresholds for critical items.",
       "stepAiSync": "AI Assistant Sync",
-      "stepAiSyncDesc": "Enable voice commands for shop management."
+      "stepAiSyncDesc": "Enable voice commands for shop management.",
+      "tabData": "Data Export",
+      "tabDataDesc": "Download your business data (ZIP/CSV) with OTP verification"
     },
     "profile": {
       "descriptionLabel": "Description",
@@ -780,7 +839,11 @@
         "enterCoupon": "Enter a coupon code.",
         "couponFailed": "Coupon apply failed.",
         "paymentInitFailed": "Could not initialize payment."
-      }
+      },
+      "referralDiscount": "Referral Discount: {value}% off",
+      "referralDiscountFlat": "Referral Discount: ৳{value} off",
+      "referralDiscountFreeDays": "Referral Discount: {value} free days",
+      "bestDiscountNote": "We'll apply whichever saves you more"
     },
     "downgrade": {
       "title": "Subscription Downgrade",
@@ -1086,10 +1149,20 @@
         "placeholder": "Talk to AI or type a command...",
         "comingSoon": "Voice & NLP sale flow coming soon"
       },
+      "taxLabel": "VAT/Tax",
+      "taxRate": "Tax Rate",
+      "taxAmount": "Tax Amount",
+      "includingTax": "Including {rate}% tax",
       "messages": {
         "loadError": "Failed to load products.",
         "saleCreated": "Sale recorded successfully.",
         "saleCancelled": "Sale cancelled."
+      },
+      "stockConflict": {
+        "title": "Stock Conflict",
+        "message": "Insufficient stock for '{product}'. Requested: {requested}, Available: {available}",
+        "confirm": "Confirm Anyway",
+        "discard": "Discard Sale"
       },
       "returns": {
         "title": "Record Return",
@@ -1366,149 +1439,12 @@
       },
       "ledger": {
         "title": "Customer Ledger",
-        "balance": "Current Balance",
+        "balance": "Balance",
         "creditLimit": "Credit Limit",
         "date": "Date",
         "type": "Type",
         "description": "Description",
         "amount": "Amount",
-        "balance": "Balance",
-        "back": "Back to List"
-      },
-      "filter": {
-        "all": "All",
-        "urgent": "Urgent",
-        "regular": "Regular",
-        "new": "New"
-      },
-      "pagination": {
-        "showing": "Showing",
-        "of": "of",
-        "customers": "customers",
-        "prev": "Previous",
-        "next": "Next"
-      },
-      "actions": {
-        "newCustomer": "New Customer",
-        "recordBaki": "Record Due",
-        "recordJoma": "Collect Payment",
-        "export": "Export"
-      },
-      "messages": {
-        "bakiSuccess": "Due recorded successfully.",
-        "jomaSuccess": "Payment collected successfully.",
-        "adjustmentSuccess": "Adjustment recorded successfully.",
-        "customerCreated": "Customer added successfully.",
-        "customerUpdated": "Customer updated successfully.",
-        "reminderSent": "WhatsApp reminder link generated.",
-        "reminderBulkSent": "Bulk reminders generated successfully.",
-        "reminderError": "Failed to generate reminder.",
-        "voidSuccess": "Transaction voided successfully.",
-        "loadError": "Failed to load due data.",
-        "saveError": "Failed to save transaction.",
-        "customerError": "Failed to save customer."
-      },
-      "reminder": {
-        "title": "Send WhatsApp Reminder",
-        "preview": "Message Preview",
-        "customer": "Customer",
-        "dueAmount": "Due Amount",
-        "mfsNumber": "Payment Number (bKash/Nagad/Rocket)",
-        "mfsNumberHint": "This is your business phone number from profile settings.",
-        "customMessage": "Custom Message",
-        "customMessagePlaceholder": "Write a custom message or use the default...",
-        "defaultMessage": "Use Default Message",
-        "send": "Open WhatsApp",
-        "sending": "Generating link...",
-        "bulkTitle": "Send Bulk Reminders",
-        "bulkDescription": "Generate WhatsApp reminder links for all customers with outstanding dues.",
-        "bulkSend": "Send to All",
-        "bulkCount": "customers will receive reminders",
-        "noPhone": "No phone number on file",
-        "close": "Close"
-      },
-      "voice": {
-        "placeholder": "e.g. Rahima 500 taka due",
-        "tooltip": "AI-powered voice/text command"
-      }
-    },
-    "dueLedger": {
-      "title": "Due Ledger",
-      "subtitle": "বাকী খাতা — Customer credit management",
-      "stats": {
-        "totalDue": "Total Outstanding",
-        "todayRecovery": "Today's Collection",
-        "customerCount": "Customers with Due",
-        "overdueCount": "Overdue (30+ days)"
-      },
-      "alert": {
-        "title": "High Alert: Long-term Dues",
-        "description": "customers have outstanding dues for over 30 days. Immediate follow-up recommended.",
-        "aiReminder": "Send AI Reminders",
-        "viewList": "View List"
-      },
-      "customerList": {
-        "title": "Due Customers",
-        "subtitle": "Sorted by payment priority",
-        "viewAll": "View All Customers",
-        "totalDue": "Total Due",
-        "lastPayment": "Last payment:",
-        "never": "Never",
-        "daysAgo": "days ago",
-        "addBaki": "Add Due",
-        "collectPayment": "Collect",
-        "whatsappReminder": "WhatsApp Reminder",
-        "priority": {
-          "urgent": "Urgent",
-          "regular": "Regular",
-          "new": "New"
-        }
-      },
-      "transactionForm": {
-        "title": "Record Transaction",
-        "editTitle": "Edit Transaction",
-        "selectCustomer": "Select Customer",
-        "searchCustomer": "Search customer...",
-        "type": "Transaction Type",
-        "baki": "Baki (Due)",
-        "joma": "Joma (Payment)",
-        "adjustment": "Adjustment",
-        "amount": "Amount (৳)",
-        "description": "Description",
-        "descriptionPlaceholder": "What is this transaction for?",
-        "paymentMethod": "Payment Method",
-        "cash": "Cash",
-        "bkash": "bKash",
-        "nagad": "Nagad",
-        "rocket": "Rocket",
-        "bankTransfer": "Bank Transfer",
-        "other": "Other",
-        "submit": "Record Transaction",
-        "cancel": "Cancel"
-      },
-      "customerForm": {
-        "title": "New Customer",
-        "editTitle": "Edit Customer",
-        "name": "Customer Name",
-        "namePlaceholder": "Enter customer name",
-        "phone": "Phone Number",
-        "phonePlaceholder": "01XXXXXXXXX",
-        "address": "Address",
-        "addressPlaceholder": "Customer address",
-        "creditLimit": "Credit Limit (৳)",
-        "creditLimitPlaceholder": "Optional credit limit",
-        "submit": "Add Customer",
-        "cancel": "Cancel"
-      },
-      "ledger": {
-        "title": "Customer Ledger",
-        "balance": "Current Balance",
-        "creditLimit": "Credit Limit",
-        "date": "Date",
-        "type": "Type",
-        "description": "Description",
-        "amount": "Amount",
-        "balance": "Balance",
         "back": "Back to List"
       },
       "filter": {
@@ -1755,7 +1691,18 @@
           "welcome": "How can I help your business today?",
           "welcomeHint": "Ask me about sales, expenses, dues, or give me a command in Bengali.",
           "placeholder": "Type a message or command…",
-          "error": "Sorry, I couldn't process that. Please try again."
+          "error": "Sorry, I couldn't process that. Please try again.",
+          "quickQueries": {
+            "title": "Quick Queries",
+            "QQ-01": "Today's sales?",
+            "QQ-02": "Month's profit?",
+            "QQ-03": "Low stock?",
+            "QQ-04": "Who owes?",
+            "QQ-05": "Best seller?",
+            "QQ-06": "Last week expense?",
+            "QQ-07": "Reorder items?",
+            "QQ-08": "Today discounts?"
+          }
         },
         "voice": {
           "tapToRecord": "Tap to start recording",
@@ -1869,8 +1816,10 @@
         "users": "Users",
         "coupons": "Coupons",
         "categories": "Categories",
+        "payments": "Payments",
         "tickets": "Tickets",
-        "audit": "Audit Logs"
+        "audit": "Audit Logs",
+        "referral": "Referral"
       },
       "dashboard": {
         "error": "Failed to load system statistics.",
@@ -2117,8 +2066,199 @@
             "error": "Failed to process category request.",
             "loadError": "Failed to load category requests."
           }
+        },
+        "payments": {
+          "title": "Payment Management",
+          "subtitle": "Review payments, manage devices, and monitor SMS verification",
+          "tabs": {
+            "review": "Review Queue",
+            "fraud": "Fraud Flags",
+            "devices": "Devices",
+            "smsPool": "SMS Pool",
+            "mfsNumbers": "MFS Numbers"
+          },
+          "summary": {
+            "todayRevenue": "Today Revenue",
+            "totalCompleted": "Total Completed",
+            "manualReview": "Manual Review",
+            "fraudFlags": "Fraud Flags",
+            "autoVerified": "Auto-verified",
+            "refresh": "Refresh"
+          },
+          "table": {
+            "userName": "User",
+            "phone": "Phone",
+            "amount": "Amount",
+            "mfsMethod": "MFS Method",
+            "trxId": "TrxID",
+            "submittedAt": "Submitted",
+            "failedAttempts": "Attempts",
+            "fraudFlag": "Fraud",
+            "actions": "Actions",
+            "deviceName": "Device",
+            "user": "User",
+            "appVariant": "Variant",
+            "status": "Status",
+            "lastReport": "Last Report",
+            "registeredAt": "Registered",
+            "sender": "Sender",
+            "receiver": "Receiver",
+            "receivedAt": "Received",
+            "matchStatus": "Status"
+          },
+          "actions": {
+            "verify": "Verify",
+            "reject": "Reject",
+            "revoke": "Revoke",
+            "confirm": "Confirm",
+            "cancel": "Cancel",
+            "search": "Search..."
+          },
+          "status": {
+            "ACTIVE": "Active",
+            "SUSPENDED": "Suspended",
+            "REVOKED": "Revoked",
+            "PENDING": "Pending",
+            "COMPLETED": "Completed",
+            "MANUAL_REVIEW": "Manual Review",
+            "FAILED": "Failed",
+            "EXPIRED": "Expired",
+            "MATCHED": "Matched",
+            "UNMATCHED": "Unmatched",
+            "IGNORED": "Ignored"
+          },
+          "modal": {
+            "verifyTitle": "Verify Payment",
+            "rejectTitle": "Reject Payment",
+            "revokeTitle": "Revoke Device",
+            "selectSms": "Select SMS Report to Link",
+            "rejectionReason": "Rejection Reason",
+            "revokeReason": "Revoke Reason",
+            "reasonPlaceholder": "Enter reason...",
+            "confirmVerify": "Confirm Verification",
+            "confirmReject": "Confirm Rejection",
+            "confirmRevoke": "Confirm Revocation",
+            "paymentDetails": "Payment Details",
+            "noSmsFound": "No unmatched SMS reports found"
+          },
+          "messages": {
+            "verifySuccess": "Payment verified successfully",
+            "rejectSuccess": "Payment rejected",
+            "revokeSuccess": "Device revoked successfully",
+            "loadFailed": "Failed to load data",
+            "actionFailed": "Action failed",
+            "noPayments": "No payments in review queue",
+            "noFraud": "No fraud-flagged payments",
+            "noDevices": "No registered devices",
+            "noSms": "No unmatched SMS reports"
+          },
+          "mfsNumbers": {
+            "pending": "pending",
+            "noPending": "No pending MFS number registrations",
+            "approved": "MFS number approved successfully",
+            "rejected": "MFS number rejected",
+            "approve": "Approve",
+            "reject": "Reject",
+            "rejectReasonPrompt": "Enter rejection reason:",
+            "table": {
+              "user": "User",
+              "phone": "Phone",
+              "mfsType": "MFS Type",
+              "mfsNumber": "MFS Number",
+              "simSlot": "SIM Slot",
+              "submittedAt": "Submitted"
+            }
+          }
         }
+      },
+      "referralConfig": {
+        "title": "Referral Program",
+        "referrerReward": "Referrer Reward",
+        "referredDiscount": "Referred User Discount",
+        "monthlyCap": "Monthly Cap",
+        "freeDays": "Free Days",
+        "discountPercent": "Discount %",
+        "flatAmount": "Flat Amount (BDT)",
+        "active": "Program Active",
+        "saved": "Referral config saved",
+        "save": "Save",
+        "rewardType": "Reward type",
+        "discountType": "Discount type"
       }
+    },
+    "dataExport": {
+      "title": "Export Business Data",
+      "description": "Download all your business data in ZIP, CSV, or JSON format. OTP verification required for security.",
+      "formatLabel": "Export Format",
+      "sectionsLabel": "Data to Include",
+      "sections": {
+        "products": "Products",
+        "sales": "Sales",
+        "expenses": "Expenses",
+        "customers": "Customers",
+        "dueTransactions": "Due Transactions"
+      },
+      "requestExport": "Request Export",
+      "requesting": "Requesting...",
+      "monthlyUsage": "Monthly Exports",
+      "limitReached": "Monthly Limit Reached",
+      "otpSent": "An OTP has been sent to your registered phone/email. Please enter it below to verify.",
+      "otpLabel": "Enter OTP",
+      "verifyOtp": "Verify OTP",
+      "verifying": "Verifying...",
+      "readyToDownload": "Your export is ready for download!",
+      "download": "Download Now",
+      "downloading": "Downloading...",
+      "downloadComplete": "Download complete! Your data has been saved.",
+      "exportAgain": "Export Again",
+      "steps": {
+        "select": "Select Data",
+        "otp": "Verify OTP",
+        "download": "Download"
+      },
+      "errors": {
+        "noSections": "Please select at least one data section",
+        "requestFailed": "Failed to request export. Please try again.",
+        "otpRequired": "Please enter the OTP code",
+        "otpInvalid": "Invalid or expired OTP. Please try again.",
+        "downloadFailed": "Failed to download export. Please try again.",
+        "limitExceeded": "Monthly export limit reached. Upgrade to Plus for unlimited exports."
+      },
+      "planNotice": "ZIP export is available to all plans as a data right. CSV and JSON formats require Plus or Enterprise plan. Upgrade to unlock all formats."
+    },
+    "activityLog": {
+      "label": "ACCOUNT",
+      "title": "Activity Log",
+      "subtitle": "View your recent account activity from the last 90 days.",
+      "loadError": "Failed to load activity log",
+      "noActivity": "No activity recorded yet.",
+      "previous": "Previous",
+      "next": "Next",
+      "page": "Page {number}"
+    },
+    "referral": {
+      "title": "Refer & Earn",
+      "subtitle": "Share your referral code with friends and earn free subscription days for every successful referral.",
+      "yourCode": "Your Referral Code",
+      "copyCode": "Copy Code",
+      "copied": "Copied!",
+      "shareWhatsApp": "Share on WhatsApp",
+      "totalReferrals": "Total Referrals",
+      "earnedCredits": "Free Days Earned",
+      "pendingRewards": "Pending Rewards",
+      "daysPerReferral": "{days} days per referral",
+      "howItWorks": "How It Works",
+      "step1": "Share your code",
+      "step1Desc": "Share your unique referral code with friends",
+      "step2": "They register",
+      "step2Desc": "They sign up using your referral code",
+      "step3": "They subscribe",
+      "step3Desc": "When they activate a paid plan",
+      "step4": "You earn {days} days",
+      "step4Desc": "Free days added to your subscription",
+      "noCode": "No referral code yet",
+      "noCodeDesc": "Your referral code will appear here after registration",
+      "loadError": "Failed to load referral status"
     }
   }
 }
