@@ -47,6 +47,7 @@ export interface Subscription {
   currentPeriodStart: string;
   currentPeriodEnd: string;
   cancelAtPeriodEnd: boolean;
+  billingCycle?: "MONTHLY" | "ANNUAL";
   downgradeScheduledTo?: string | null;
   downgradeScheduledAt?: string | null;
 }
@@ -103,4 +104,15 @@ export interface PaymentIntentStatusResponse {
   verifiedAt: string | null;
   failedAttempts: number | null;
   fraudFlag: boolean | null;
+}
+
+export interface ReferralStatus {
+  referralCode: string | null;
+  referredBy: string | null;
+  earnedCredits: number;
+  totalReferrals: number;
+  pendingRewardCount: number;
+  rewardDays: number;
+  referredDiscountType: string | null;
+  referredDiscountValue: number | null;
 }

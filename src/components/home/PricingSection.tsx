@@ -58,24 +58,43 @@ function resolvePlanAction(currentPlan: Plan | null, targetPlan: Plan, isAuthent
   return targetPlan.tierLevel > currentPlan.tierLevel ? "UPGRADE" : "DOWNGRADE";
 }
 
-function formatPlanDuration(plan: Plan, t: (key: string) => string, s: (key: string) => string): string {
+function formatPlanDuration(plan: Plan, billingAnnual: boolean, t: (key: string) => string, s: (key: string) => string): string {
   if (isEnterprisePlan(plan)) {
     return t("quickReference.yearly");
   }
 
-  if (plan.durationDays % 30 === 0 && plan.durationDays < 365) {
-    return `/${Math.max(1, Math.round(plan.durationDays / 30))} ${s("pricing.month")}`;
+  if (plan.priceBdt === 0 || plan.isTrial) {
+    if (plan.durationDays % 30 === 0 && plan.durationDays < 365) {
+      return `/${Math.max(1, Math.round(plan.durationDays / 30))} ${s("pricing.month")}`;
+    }
+    return `/${plan.durationDays} ${t("quickReference.days")}`;
   }
 
-  return `/${plan.durationDays} ${t("quickReference.days")}`;
+  if (billingAnnual && plan.annualPriceBdt != null) {
+    return `/${t("perYear")}`;
+  }
+
+  return `/${s("pricing.month")}`;
 }
 
-function formatPlanPrice(plan: Plan, s: (key: string) => string): string {
+function formatPlanPrice(plan: Plan, billingAnnual: boolean, s: (key: string) => string): string {
   if (isEnterprisePlan(plan)) {
     return s("pricing.customPrice");
   }
 
+  if (billingAnnual && plan.annualPriceBdt != null && !plan.isTrial && plan.priceBdt > 0) {
+    return `৳${formatPrice(plan.annualPriceBdt)}`;
+  }
+
   return plan.priceBdt === 0 ? s("pricing.free") : `৳${formatPrice(plan.priceBdt)}`;
+}
+
+function calcAnnualDiscountPercent(plan: Plan): number | null {
+  if (plan.annualPriceBdt == null || plan.priceBdt <= 0 || plan.isTrial) return null;
+  const monthlyAnnualized = plan.priceBdt * 12;
+  const saved = monthlyAnnualized - plan.annualPriceBdt;
+  if (saved <= 0) return null;
+  return Math.round((saved / monthlyAnnualized) * 100);
 }
 
 function actionLabel(plan: Plan, action: PlanAction, isAuthenticated: boolean, s: (key: string) => string): string {
@@ -101,6 +120,11 @@ function getEnterpriseContactHref(email: string, subject: string): string {
   return `mailto:${email}?subject=${encodeURIComponent(subject)}`;
 }
 
+function getCategoryKey(index: number): string {
+  const keys = ["starter", "growing", "professional", "established", "enterprise"];
+  return keys[index] ?? "enterprise";
+}
+
 function hasAccessToken(): boolean {
   if (typeof window === "undefined") {
     return false;
@@ -123,8 +147,9 @@ export function PricingSection() {
   const [plans, setPlans] = useState<Plan[]>([]);
   const [currentSubscription, setCurrentSubscription] = useState<Subscription | null>(null);
   const [plansStatus, setPlansStatus] = useState<"loading" | "ready" | "error">("loading");
+  const [billingAnnual, setBillingAnnual] = useState(false);
   const isAuthenticated = useSyncExternalStore(
-    () => () => {},
+    () => () => { },
     () => hasAccessToken(),
     () => false,
   );
@@ -203,6 +228,8 @@ export function PricingSection() {
     [t],
   );
 
+  const hasAnyAnnualPrice = useMemo(() => plans.some((p) => p.annualPriceBdt != null && !p.isTrial && p.priceBdt > 0), [plans]);
+
   const handlePlanAction = (plan: Plan, action: PlanAction) => {
     if (isEnterprisePlan(plan)) {
       if (typeof window !== "undefined") {
@@ -221,9 +248,10 @@ export function PricingSection() {
       return;
     }
 
+    const billingParam = billingAnnual && plan.annualPriceBdt != null ? "&billing=ANNUAL" : "";
     const targetPath = action === "DOWNGRADE"
       ? `/subscription/downgrade?plan=${encodeURIComponent(plan.id)}`
-      : `/subscription/upgrade?plan=${encodeURIComponent(plan.id)}`;
+      : `/subscription/upgrade?plan=${encodeURIComponent(plan.id)}${billingParam}`;
 
     router.push(targetPath);
   };
@@ -233,10 +261,14 @@ export function PricingSection() {
     return (
       <section className="py-24 px-6">
         <div className="max-w-7xl mx-auto">
-          <div className="text-center mb-20 space-y-4">
-            <span className="text-secondary font-bold tracking-widest uppercase text-xs">{t("label")}</span>
-            <h2 className="text-4xl font-black text-primary font-headline">{t("title")}</h2>
-            <p className="text-on-surface-variant text-lg font-medium">{t("subtitle")}</p>
+          <div className="mb-20">
+            <h1 className="text-5xl md:text-7xl font-bold text-primary font-headline mb-6 leading-tight">
+              {t("heroTitle")}<br className="hidden md:block" />{" "}
+              <span className="text-secondary italic">{t("heroTitleAccent")}</span>
+            </h1>
+            <p className="text-xl text-on-surface-variant max-w-2xl leading-relaxed">
+              {t("heroDescription")}
+            </p>
           </div>
           <div className="rounded-2xl bg-surface-container-low p-8 text-center text-sm text-on-surface-variant">
             {s("pricing.loading")}
@@ -249,75 +281,169 @@ export function PricingSection() {
   return (
     <section className="py-24 px-6">
       <div className="max-w-7xl mx-auto">
-        <div className="text-center mb-20 space-y-4">
-          <span className="text-secondary font-bold tracking-widest uppercase text-xs">{t("label")}</span>
-          <h2 className="text-4xl font-black text-primary font-headline">{t("title")}</h2>
-          <p className="text-on-surface-variant text-lg font-medium">{t("subtitle")}</p>
+        {/* Editorial Header */}
+        <div className="mb-20">
+          <h1 className="text-5xl md:text-7xl font-bold text-primary font-headline mb-6 leading-tight">
+            {t("heroTitle")}<br className="hidden md:block" />{" "}
+            <span className="text-secondary italic">{t("heroTitleAccent")}</span>
+          </h1>
+          <p className="text-xl text-on-surface-variant max-w-2xl leading-relaxed">
+            {t("heroDescription")}
+          </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-4">
-          {plans.map((plan) => {
+        {/* Billing Cycle Toggle */}
+        {hasAnyAnnualPrice && (
+          <div className="flex items-center justify-center mb-10">
+            <div className="inline-flex items-center rounded-full bg-surface-container-low p-1 gap-1">
+              <button
+                type="button"
+                onClick={() => setBillingAnnual(false)}
+                className={`px-5 py-2 rounded-full text-sm font-semibold transition-all ${!billingAnnual
+                  ? "bg-primary text-on-primary shadow-sm"
+                  : "text-on-surface-variant hover:text-on-surface"
+                  }`}
+              >
+                {t("monthly")}
+              </button>
+              <button
+                type="button"
+                onClick={() => setBillingAnnual(true)}
+                className={`px-5 py-2 rounded-full text-sm font-semibold transition-all inline-flex items-center gap-1.5 ${billingAnnual
+                  ? "bg-primary text-on-primary shadow-sm"
+                  : "text-on-surface-variant hover:text-on-surface"
+                  }`}
+              >
+                {t("annual")}
+                <span className="text-xs bg-secondary text-on-secondary px-2 py-0.5 rounded-full">
+                  {t("annualDiscount")}
+                </span>
+              </button>
+            </div>
+          </div>
+        )}
+
+        {/* Bento-style Pricing Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-16">
+          {orderedPlans.map((plan, index) => {
             const isHighlighted = plan.highlight === true;
             const isEnterprise = isEnterprisePlan(plan);
             const action = resolvePlanAction(currentPlan, plan, isAuthenticated);
             const isDisabled = action === "CURRENT";
+            const annualDiscount = calcAnnualDiscountPercent(plan);
+
+            // Bento layout offsets
+            const offsetClass =
+              index === 1 ? "translate-y-4" :
+                index === orderedPlans.length - 1 && orderedPlans.length >= 5 ? "translate-y-6" : "";
+
+            // Grid placement for 5+ plans
+            const gridPlacement =
+              orderedPlans.length >= 5
+                ? index === 3
+                  ? "lg:col-start-1 lg:row-start-2"
+                  : index === 4
+                    ? "lg:col-start-3 lg:row-start-2"
+                    : ""
+                : "";
 
             return (
               <div
                 key={plan.id}
                 data-testid={`plan-card-${plan.id.toLowerCase()}`}
-                className={`relative p-6 rounded-[1.5rem] flex flex-col justify-between shadow-sm transition-transform hover:scale-[1.02] ${
-                  isEnterprise
-                    ? "bg-surface-container-low"
-                    : isHighlighted
-                      ? "bg-primary-container text-on-primary-container shadow-xl border-2 border-primary/30"
-                      : "bg-surface-container-lowest"
-                }`}
+                className={`p-8 rounded-[1rem] flex flex-col justify-between transition-colors ${offsetClass} ${gridPlacement} ${isHighlighted
+                  ? "primary-gradient text-white relative overflow-hidden"
+                  : "bg-surface-container-low hover:bg-surface-container"
+                  }`}
               >
-                {plan.badge && (
-                  <div className={`absolute top-0 right-0 px-3 py-1 text-[10px] font-bold uppercase tracking-widest rounded-bl-xl rounded-tr-[1.5rem] ${
-                    isHighlighted ? "bg-primary text-on-primary" : "bg-secondary text-on-secondary"
-                  }`}>
-                    {plan.badge}
+                {/* Best Choice Badge */}
+                {isHighlighted && (
+                  <div className="absolute top-0 right-0 p-4">
+                    <span className="bg-secondary-container text-on-secondary-container px-3 py-1 rounded-full text-xs font-bold">
+                      {plan.badge || t("bestChoice")}
+                    </span>
                   </div>
                 )}
 
                 <div>
-                  <h4 className="font-bold mb-1">{plan.displayNameBn}</h4>
-                  <div className="text-2xl font-black mb-4">
-                    {formatPlanPrice(plan, s)} {" "}
-                    <span className="text-sm font-normal opacity-75">
-                      {formatPlanDuration(plan, t, s)}
+                  {/* Category Label */}
+                  <span
+                    className={`text-sm font-label uppercase tracking-widest mb-4 block ${isHighlighted ? "opacity-70" : "text-on-surface-variant"
+                      }`}
+                  >
+                    {t(`categories.${getCategoryKey(index)}`)}
+                  </span>
+
+                  {/* Plan Name */}
+                  <h3 className={`text-3xl font-bold font-headline mb-6 ${isHighlighted ? "text-white" : ""}`}>
+                    {plan.displayNameBn}
+                  </h3>
+
+                  {/* Price */}
+                  <div className="mb-8">
+                    <span className={`text-5xl font-headline font-extrabold ${isHighlighted ? "" : "text-primary"}`}>
+                      {formatPlanPrice(plan, billingAnnual, s)}
                     </span>
+                    {!isEnterprise && (
+                      <span className={isHighlighted ? "opacity-70" : "text-on-surface-variant"}>
+                        {" "}{formatPlanDuration(plan, billingAnnual, t, s)}
+                      </span>
+                    )}
+                    {billingAnnual && !isEnterprise && annualDiscount != null && (
+                      <span className="ml-2 text-xs bg-secondary-container text-on-secondary-container px-2 py-0.5 rounded-full font-semibold">
+                        {t("savePercent", { percent: annualDiscount })}
+                      </span>
+                    )}
                   </div>
-                  <ul className="space-y-3 text-sm font-medium">
-                    <li className="flex items-center gap-2">
-                      <span className="material-symbols-outlined text-base">check_circle</span>
-                      {s("pricing.maxBusinesses")}: {plan.maxBusinesses === 0 ? s("pricing.unlimited") : plan.maxBusinesses}
-                    </li>
-                    <li className="flex items-center gap-2">
-                      <span className="material-symbols-outlined text-base">check_circle</span>
-                      {s("pricing.maxProducts")}: {getProductsLabel(plan, s)}
-                    </li>
-                    <li className="flex items-center gap-2">
-                      <span className="material-symbols-outlined text-base">check_circle</span>
-                      {s("pricing.aiPerDay")}: {plan.aiQueriesPerDay ?? s("pricing.unlimited")}
-                    </li>
-                  </ul>
+
+                  {/* Features or Enterprise Description */}
+                  {isEnterprise ? (
+                    <p className={`text-sm leading-relaxed ${isHighlighted ? "opacity-80" : "text-on-surface-variant"}`}>
+                      {t("enterpriseDescription")}
+                    </p>
+                  ) : (
+                    <ul className="space-y-4">
+                      <li className="flex items-center gap-3 text-sm">
+                        <span className={`material-symbols-outlined ${isHighlighted ? "text-inverse-primary" : "text-primary"} scale-75`}>
+                          check_circle
+                        </span>
+                        {s("pricing.maxBusinesses")}: {plan.maxBusinesses === 0 ? s("pricing.unlimited") : plan.maxBusinesses}
+                      </li>
+                      <li className="flex items-center gap-3 text-sm">
+                        <span className={`material-symbols-outlined ${isHighlighted ? "text-inverse-primary" : "text-primary"} scale-75`}>
+                          check_circle
+                        </span>
+                        {s("pricing.maxProducts")}: {getProductsLabel(plan, s)}
+                      </li>
+                      <li className="flex items-center gap-3 text-sm">
+                        <span
+                          className={`material-symbols-outlined ${isHighlighted ? "text-inverse-primary" : "text-primary"} scale-75`}
+                          style={isHighlighted ? { fontVariationSettings: "'FILL' 1" } : undefined}
+                        >
+                          {isHighlighted ? "auto_awesome" : "check_circle"}
+                        </span>
+                        {s("pricing.aiPerDay")}: {plan.aiQueriesPerDay ?? s("pricing.unlimited")}
+                      </li>
+                    </ul>
+                  )}
                 </div>
 
+                {/* CTA Button */}
                 <button
                   data-testid={`plan-action-${plan.id.toLowerCase()}`}
                   type="button"
-                  disabled={isDisabled || isEnterprise}
+                  disabled={isDisabled}
                   onClick={() => handlePlanAction(plan, action)}
-                  className={`mt-8 w-full py-3 rounded-xl font-bold text-sm shadow-md transition-all text-center ${
-                    isDisabled
-                      ? "bg-surface-container-high text-on-surface-variant cursor-not-allowed"
+                  className={`mt-12 w-full py-4 rounded-lg font-bold transition-all text-center ${isDisabled
+                    ? isHighlighted
+                      ? "bg-white/20 text-white/60 cursor-not-allowed"
+                      : "bg-surface-container-high text-on-surface-variant cursor-not-allowed"
+                    : isHighlighted
+                      ? "bg-white text-primary hover:shadow-lg active:scale-95"
                       : isEnterprise
-                        ? "bg-secondary text-on-secondary hover:shadow-lg active:scale-95"
-                        : "bg-primary text-on-primary hover:shadow-lg active:scale-95"
-                  }`}
+                        ? "bg-primary text-on-primary hover:shadow-lg active:scale-95"
+                        : "bg-surface-container-highest text-primary hover:bg-outline-variant"
+                    }`}
                 >
                   {action === "CURRENT" ? `${s("pricing.currentPlan")} ✓` : actionLabel(plan, action, isAuthenticated, s)}
                 </button>
@@ -353,7 +479,7 @@ export function PricingSection() {
                   return (
                     <tr key={`quick-${plan.id}`} className="border-b border-outline-variant/20 last:border-none">
                       <td className="px-3 py-2 font-semibold">{plan.displayNameBn}</td>
-                      <td className="px-3 py-2">{formatPlanPrice(plan, s)}</td>
+                      <td className="px-3 py-2">{formatPlanPrice(plan, billingAnnual, s)}</td>
                       <td className="px-3 py-2">{durationText}</td>
                       <td className="px-3 py-2">{plan.maxBusinesses === 0 ? s("pricing.unlimited") : plan.maxBusinesses}</td>
                       <td className="px-3 py-2">{getProductsLabel(plan, s)}</td>
@@ -363,13 +489,12 @@ export function PricingSection() {
                           type="button"
                           onClick={() => handlePlanAction(plan, action)}
                           disabled={action === "CURRENT"}
-                          className={`inline-flex items-center justify-center rounded-full px-3 py-1.5 text-xs font-semibold transition-colors ${
-                            action === "CURRENT"
-                              ? "bg-surface-container-high text-on-surface-variant cursor-not-allowed"
-                              : isEnterprisePlan(plan)
-                                ? "bg-secondary text-on-secondary"
-                                : "bg-primary/10 text-primary hover:bg-primary/15"
-                          }`}
+                          className={`inline-flex items-center justify-center rounded-full px-3 py-1.5 text-xs font-semibold transition-colors ${action === "CURRENT"
+                            ? "bg-surface-container-high text-on-surface-variant cursor-not-allowed"
+                            : isEnterprisePlan(plan)
+                              ? "bg-secondary text-on-secondary"
+                              : "bg-primary/10 text-primary hover:bg-primary/15"
+                            }`}
                         >
                           {action === "CURRENT" ? `${s("pricing.currentPlan")} ✓` : actionLabel(plan, action, isAuthenticated, s)}
                         </button>

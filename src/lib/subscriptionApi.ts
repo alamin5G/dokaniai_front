@@ -9,6 +9,7 @@ import type {
   PaymentIntentStatusResponse,
   Plan,
   PlanLimits,
+  ReferralStatus,
   Subscription,
 } from "@/types/subscription";
 
@@ -91,6 +92,7 @@ export interface InitializePaymentInput {
   amount: number;
   mfsMethod: MfsType;
   couponCode?: string;
+  billingCycle?: "MONTHLY" | "ANNUAL";
 }
 
 export async function initializePaymentIntent(
@@ -105,6 +107,7 @@ export async function initializePaymentIntent(
       amount: payload.amount,
       mfsMethod: payload.mfsMethod,
       idempotencyKey: crypto.randomUUID(),
+      billingCycle: payload.billingCycle || "MONTHLY",
     });
     return unwrap(response);
   } catch (error) {
@@ -151,4 +154,9 @@ export async function resubmitPaymentIntent(
   } catch (error) {
     throw new Error(getApiErrorMessage(error, "পেমেন্ট পুনরায় সাবমিট করা যায়নি।"));
   }
+}
+
+export async function getReferralStatus(): Promise<ReferralStatus> {
+  const response = await apiClient.get<ApiSuccess<ReferralStatus>>("/subscriptions/referral-status");
+  return unwrap(response);
 }

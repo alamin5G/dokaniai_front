@@ -5,6 +5,7 @@ import {
   applyCoupon,
   getAvailablePlans,
   getCurrentSubscription,
+  getReferralStatus,
   initializePaymentIntent,
 } from "@/lib/subscriptionApi";
 import {
@@ -12,7 +13,7 @@ import {
   getPendingUpgradePlan,
   setRedirectAfterLogin,
 } from "@/lib/authFlow";
-import type { AppliedCoupon, MfsType, Plan, Subscription } from "@/types/subscription";
+import type { AppliedCoupon, MfsType, Plan, ReferralStatus, Subscription } from "@/types/subscription";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useLocale, useTranslations } from "next-intl";
 import { useEffect, useMemo, useState } from "react";
@@ -32,6 +33,7 @@ export default function SubscriptionUpgradePage() {
 
   const [plans, setPlans] = useState<Plan[]>([]);
   const [currentSubscription, setCurrentSubscription] = useState<Subscription | null>(null);
+  const [referralStatus, setReferralStatus] = useState<ReferralStatus | null>(null);
   const [selectedPlanId, setSelectedPlanId] = useState("");
   const [couponCode, setCouponCode] = useState("");
   const [appliedCoupon, setAppliedCoupon] = useState<AppliedCoupon | null>(null);
@@ -68,9 +70,10 @@ export default function SubscriptionUpgradePage() {
     const loadData = async () => {
       setIsLoading(true);
       try {
-        const [allPlans, current] = await Promise.all([
+        const [allPlans, current, referral] = await Promise.all([
           getAvailablePlans(),
           getCurrentSubscription().catch(() => null),
+          getReferralStatus().catch(() => null),
         ]);
 
         if (cancelled) {
@@ -80,6 +83,7 @@ export default function SubscriptionUpgradePage() {
         const activePlans = allPlans.filter((plan) => plan.isActive).sort((a, b) => a.tierLevel - b.tierLevel);
         setPlans(activePlans);
         setCurrentSubscription(current);
+        setReferralStatus(referral);
 
         const planFromUrl = searchParams.get("plan");
         const pendingPlan = getPendingUpgradePlan();
@@ -126,7 +130,11 @@ export default function SubscriptionUpgradePage() {
     [plans, currentSubscription?.planId],
   );
 
-  const payableAmount = appliedCoupon?.finalAmount ?? selectedPlan?.priceBdt ?? 0;
+  const billingCycle = searchParams.get("billing") === "ANNUAL" ? "ANNUAL" as const : "MONTHLY" as const;
+  const planPrice = billingCycle === "ANNUAL" && selectedPlan?.annualPriceBdt != null
+    ? selectedPlan.annualPriceBdt
+    : selectedPlan?.priceBdt ?? 0;
+  const payableAmount = appliedCoupon?.finalAmount ?? planPrice;
 
   const handleApplyCoupon = async () => {
     if (!selectedPlan || !couponCode.trim()) {
@@ -136,7 +144,7 @@ export default function SubscriptionUpgradePage() {
 
     setIsSubmitting(true);
     try {
-      const result = await applyCoupon(couponCode.trim(), selectedPlan.id, selectedPlan.priceBdt);
+      const result = await applyCoupon(couponCode.trim(), selectedPlan.id, planPrice);
       setAppliedCoupon(result);
       setNotice(t("upgrade.couponApplied"));
     } catch (error) {
@@ -159,6 +167,7 @@ export default function SubscriptionUpgradePage() {
         amount: payableAmount,
         mfsMethod: checkoutMethod,
         couponCode: appliedCoupon?.code ?? (couponCode.trim() || undefined),
+        billingCycle,
       });
       clearPendingUpgradePlan();
       router.push(`/subscription/payment/${intent.paymentIntentId}`);
@@ -183,6 +192,30 @@ export default function SubscriptionUpgradePage() {
       {notice ? (
         <div className="rounded-[1rem] border border-outline-variant/30 bg-surface-container px-4 py-3 text-sm text-on-surface">
           {notice}
+        </div>
+      ) : null}
+
+      {/* Referral discount banner for referred users */}
+      {referralStatus?.referredBy && referralStatus.referredDiscountType && referralStatus.referredDiscountValue && !isLoading ? (
+        <div className="rounded-[1.25rem] border border-primary/20 bg-primary-container/10 px-5 py-4 space-y-1">
+          <p className="text-sm font-semibold text-primary">
+            🎁 {referralStatus.referredDiscountType === "DISCOUNT_PERCENT"
+              ? t("upgrade.referralDiscount", { value: referralStatus.referredDiscountValue })
+              : referralStatus.referredDiscountType === "FLAT_AMOUNT"
+                ? t("upgrade.referralDiscountFlat", { value: referralStatus.referredDiscountValue })
+                : t("upgrade.referralDiscountFreeDays", { value: referralStatus.referredDiscountValue })}
+          </p>
+          {selectedPlan && referralStatus.referredDiscountType === "DISCOUNT_PERCENT" && (
+            <p className="text-xs text-on-surface-variant">
+              ৳{formatPrice(planPrice, locale)} → ৳{formatPrice(Math.round(planPrice * (1 - referralStatus.referredDiscountValue / 100)), locale)}
+            </p>
+          )}
+          {selectedPlan && referralStatus.referredDiscountType === "FLAT_AMOUNT" && (
+            <p className="text-xs text-on-surface-variant">
+              ৳{formatPrice(planPrice, locale)} → ৳{formatPrice(Math.max(0, planPrice - referralStatus.referredDiscountValue), locale)}
+            </p>
+          )}
+          <p className="text-xs text-on-surface-variant">{t("upgrade.bestDiscountNote")}</p>
         </div>
       ) : null}
 
