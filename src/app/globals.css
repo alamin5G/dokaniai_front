@@ -52,7 +52,7 @@
   --color-on-tertiary-fixed: #390b08;
   --color-on-tertiary-container: #f09e95;
   --color-on-primary-fixed-variant: #02513b;
-  
+
   --font-headline: "Manrope", "Hind Siliguri", sans-serif;
   --font-body: "Manrope", "Hind Siliguri", sans-serif;
   --font-label: "Manrope", "Hind Siliguri", sans-serif;
@@ -144,10 +144,22 @@
   * {
     @apply border-border outline-ring/50;
   }
+
   body {
     @apply bg-background text-foreground;
   }
+
   html {
     @apply font-sans;
   }
+}
+
+.primary-gradient {
+  background: linear-gradient(135deg, #003727 0%, #00503a 100%);
+}
+
+.editorial-grid {
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  gap: 2rem;
 }
