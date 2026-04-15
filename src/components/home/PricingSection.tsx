@@ -247,7 +247,7 @@ export function PricingSection() {
 
     if (!isAuthenticated) {
       rememberPendingUpgrade(plan.id);
-      router.push("/login");
+      router.push("/register");
       return;
     }
 

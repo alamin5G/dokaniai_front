@@ -129,6 +129,7 @@
       "features": "Features",
       "pricing": "Pricing",
       "about": "About",
+      "login": "Login",
       "getStarted": "Get Started"
     },
     "hero": {
@@ -279,16 +280,21 @@
       }
     },
     "footer": {
-      "copyright": "© 2024 DokaniAI. Empowering Bangladesh's Micro-Shops with Amanat.",
+      "tagline": "Empowering Bangladesh's micro-shops with AI-powered digital accounting.",
+      "copyright": "© 2026 DokaniAI. All rights reserved.",
       "plans": "Plans",
-      "trialPlan": "Trial 1 (65 Days)",
-      "basicPlan": "Basic (149 BDT)",
-      "proPlan": "Pro (399 BDT)",
-      "resources": "Resources",
-      "privacyPolicy": "Privacy Policy",
-      "pwaGuide": "PWA Guide",
-      "helpCenter": "Help Center",
-      "connect": "Connect"
+      "trialPlan": "Free Trial",
+      "basicPlan": "Basic — ৳149/mo",
+      "proPlan": "Pro — ৳399/mo",
+      "plusPlan": "Plus — ৳799/mo",
+      "company": "Company",
+      "aboutUs": "About Us",
+      "features": "Features",
+      "pricing": "Pricing",
+      "connect": "Connect",
+      "email": "support@dokaniai.com",
+      "phone": "+880 1822-679672",
+      "madeInBD": "Made with ❤️ in Bangladesh"
     },
     "growthStory": {
       "title": "Journey of Prosperity",
@@ -328,6 +334,70 @@
         "title": "24/7 Customer Support",
         "description": "Our team is by your side for any problem."
       }
+    }
+  },
+  "about": {
+    "hero": {
+      "badge": "Built for Bangladesh",
+      "title": "Every Shop Deserves Smart Accounting",
+      "subtitle": "DokaniAI is on a mission to bring AI-powered digital accounting to every micro-shop in Bangladesh — starting from your neighborhood মুদি দোকান."
+    },
+    "mission": {
+      "title": "Our Mission",
+      "description": "Bangladesh has over 5 million micro-shops. Most still rely on paper ledgers, mental math, and guesswork. We're changing that — one voice command at a time.",
+      "shops": "Micro-Shops in BD",
+      "startCost": "To Start",
+      "freeDays": "Days Free Trial",
+      "aiSupport": "AI Assistant",
+      "card1Title": "Built for Shopkeepers",
+      "card1Desc": "No complex UI. Just speak in Bangla and DokaniAI does the rest — sales, expenses, inventory, due tracking.",
+      "card2Title": "AI That Understands You",
+      "card2Desc": "Our AI speaks Bangla. Tell it \"৫ কেজি চাল বিক্রি ৩০০ টাকা\" and watch the magic happen.",
+      "card3Title": "Grow Your Business",
+      "card3Desc": "Smart insights, profit reports, and inventory alerts help you make better business decisions every day."
+    },
+    "problem": {
+      "title": "The Problem We Solve",
+      "subtitle": "Paper-based accounting is holding back millions of Bangladeshi businesses.",
+      "p1Title": "Lost in Paper",
+      "p1Desc": "Handwritten ledgers get damaged, lost, or are impossible to search. Critical business data disappears daily.",
+      "p2Title": "Calculation Errors",
+      "p2Desc": "Mental math and manual calculations lead to pricing mistakes, wrong totals, and lost profits.",
+      "p3Title": "No Business Insights",
+      "p3Desc": "Without digital records, shopkeepers can't see trends, track profits, or plan for growth."
+    },
+    "solution": {
+      "title": "How DokaniAI Helps",
+      "subtitle": "Simple, powerful tools designed specifically for Bangladeshi shopkeepers.",
+      "s1Title": "Voice Entry",
+      "s1Desc": "Just speak in Bangla — AI understands and records everything automatically.",
+      "s2Title": "Smart Inventory",
+      "s2Desc": "Track products, get low-stock alerts, and never run out of best-sellers.",
+      "s3Title": "Due Management",
+      "s3Desc": "Track বাকী (credit sales), send WhatsApp reminders, and get paid faster.",
+      "s4Title": "AI Advisor",
+      "s4Desc": "Ask questions about your business in Bangla and get instant, actionable insights."
+    },
+    "why": {
+      "title": "Why Choose DokaniAI?",
+      "w1Title": "100% Bangla",
+      "w1Desc": "Full Bengali language support — not a translated afterthought, but built from the ground up for Bangla speakers.",
+      "w2Title": "Works Offline",
+      "w2Desc": "PWA technology means it works even with poor internet. Your data syncs when connection returns.",
+      "w3Title": "Bank-Level Security",
+      "w3Desc": "Your business data is encrypted and secure. We never share your information with third parties.",
+      "w4Title": "Affordable Pricing",
+      "w4Desc": "Starting at just ৳149/month — less than a cup of tea per day. And the 65-day free trial means zero risk.",
+      "ctaTitle": "Ready to Digitize Your Shop?",
+      "ctaDesc": "Join thousands of Bangladeshi shopkeepers who are already using DokaniAI to grow their business.",
+      "ctaButton": "Start Free Trial",
+      "ctaSubtext": "No credit card required • 65 days free • Cancel anytime"
+    },
+    "cta": {
+      "title": "Your Shop's Digital Journey Starts Here",
+      "description": "Try DokaniAI free for 65 days. No credit card, no commitment. Just speak and see the magic.",
+      "startFree": "Start Free Trial",
+      "viewPricing": "View Plans"
     }
   },
   "authLayout": {
