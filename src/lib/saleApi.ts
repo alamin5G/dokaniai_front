@@ -59,6 +59,21 @@ export async function createSale(
 }
 
 // ---------------------------------------------------------------------------
+// Force Create Sale (stock override — used after stock conflict confirmation)
+// ---------------------------------------------------------------------------
+
+export async function forceCreateSale(
+    businessId: string,
+    data: SaleCreateRequest,
+): Promise<Sale> {
+    const response = await apiClient.post<ApiSuccess<Sale>>(
+        `/businesses/${businessId}/sales/force`,
+        data,
+    );
+    return unwrap(response);
+}
+
+// ---------------------------------------------------------------------------
 // Get Sale
 // ---------------------------------------------------------------------------
 

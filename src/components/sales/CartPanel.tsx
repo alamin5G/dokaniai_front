@@ -15,6 +15,8 @@ interface CartPanelProps {
     onDiscountValueChange: (value: string) => void;
     discountAmount: number;
     subtotal: number;
+    taxRate: number;
+    taxAmount: number;
     total: number;
     isSubmitting: boolean;
     onSubmitCash: () => void;
@@ -38,6 +40,8 @@ export default function CartPanel({
     onDiscountValueChange,
     discountAmount,
     subtotal,
+    taxRate,
+    taxAmount,
     total,
     isSubmitting,
     onSubmitCash,
@@ -165,6 +169,14 @@ export default function CartPanel({
                             <span>{t("cart.discount.applied", { amount: formatMoney(discountAmount) })}</span>
                             <span className="font-medium text-tertiary">
                                 - ৳ {formatMoney(discountAmount)}
+                            </span>
+                        </div>
+                    ) : null}
+                    {taxAmount > 0 ? (
+                        <div className="flex justify-between text-sm text-on-surface-variant">
+                            <span>{t("cart.vat", { percent: taxRate })}</span>
+                            <span className="font-medium">
+                                + ৳ {formatMoney(taxAmount)}
                             </span>
                         </div>
                     ) : null}

@@ -10,14 +10,17 @@ import type {
     PaymentMethod,
     SaleCreateRequest,
 } from "@/types/sale";
-import { createSale } from "@/lib/saleApi";
-import { getCategoriesByBusinessType } from "@/lib/categoryApi";
-import { listProducts } from "@/lib/productApi";
+import { useProducts } from "@/hooks/useProducts";
+import { useCategoriesByBusinessType } from "@/hooks/useCategories";
+import { useSaleMutations } from "@/hooks/useSaleMutations";
+import { getBusinessSettings } from "@/lib/businessApi";
 import { useTranslations } from "next-intl";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+import type { StockConflictDetail } from "@/components/sales/StockConflictModal";
 
 import ProductSelector from "./ProductSelector";
 import CartPanel from "./CartPanel";
+import StockConflictModal from "./StockConflictModal";
 
 export default function SalesWorkspace({
     businessId,
@@ -27,12 +30,19 @@ export default function SalesWorkspace({
     const t = useTranslations("shop.sales");
     const activeBusiness = useBusinessStore((state) => state.activeBusiness);
 
-    // Products & Categories
-    const [products, setProducts] = useState<Product[]>([]);
-    const [categories, setCategories] = useState<CategoryResponse[]>([]);
-    const [isLoading, setIsLoading] = useState(true);
+    // Search & filter state (drives SWR keys)
     const [searchQuery, setSearchQuery] = useState("");
     const [selectedCategoryId, setSelectedCategoryId] = useState<string | null>(null);
+
+    // Products & Categories — SWR-backed (shared cache across components)
+    const { products, isLoading } = useProducts(businessId, {
+        page: 0,
+        size: 200,
+        search: searchQuery.trim() || undefined,
+        status: "ACTIVE",
+        category: selectedCategoryId || undefined,
+    });
+    const { categories } = useCategoriesByBusinessType(activeBusiness?.type ?? null);
 
     // Cart
     const [cartItems, setCartItems] = useState<CartItem[]>([]);
@@ -41,52 +51,40 @@ export default function SalesWorkspace({
     const [discountMethod, setDiscountMethod] = useState<DiscountMethod>("FIXED");
     const [discountValue, setDiscountValue] = useState("");
 
+    // Tax settings
+    const [taxEnabled, setTaxEnabled] = useState(false);
+    const [taxRate, setTaxRate] = useState(0);
+
     // Sale submission
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [notice, setNotice] = useState<string | null>(null);
 
-    // Load categories
+    // Stock conflict
+    const [conflictOpen, setConflictOpen] = useState(false);
+    const [conflictDetail, setConflictDetail] = useState<StockConflictDetail | null>(null);
+    const [pendingRequest, setPendingRequest] = useState<SaleCreateRequest | null>(null);
+
+    // Sale mutations — SWR-backed with cache invalidation
+    const { submitCreate, submitForceCreate } = useSaleMutations(businessId);
+
+    // Load tax settings
     useEffect(() => {
-        if (!activeBusiness?.type) return;
         let cancelled = false;
-        const loadCategories = async () => {
+        const loadSettings = async () => {
             try {
-                const cats = await getCategoriesByBusinessType(activeBusiness.type);
-                if (!cancelled) setCategories(cats);
+                const settings = await getBusinessSettings(businessId);
+                if (!cancelled) {
+                    setTaxEnabled(settings.taxEnabled ?? false);
+                    setTaxRate(settings.taxRate ?? 0);
+                }
             } catch {
-                // Categories are optional
+                // Tax settings are optional — default to no tax
             }
         };
-        void loadCategories();
+        void loadSettings();
         return () => { cancelled = true; };
-    }, [activeBusiness?.type]);
-
-    // Load products
-    const loadProducts = useCallback(async () => {
-        setIsLoading(true);
-        try {
-            const response = await listProducts(businessId, {
-                page: 0,
-                size: 200,
-                search: searchQuery.trim() || undefined,
-                status: "ACTIVE",
-                category: selectedCategoryId || undefined,
-            });
-            setProducts(response.content);
-        } catch {
-            setError(t("messages.loadError"));
-        } finally {
-            setIsLoading(false);
-        }
-    }, [businessId, searchQuery, selectedCategoryId, t]);
-
-    useEffect(() => {
-        const timer = window.setTimeout(() => {
-            void loadProducts();
-        }, 200);
-        return () => window.clearTimeout(timer);
-    }, [loadProducts]);
+    }, [businessId]);
 
     // Cart calculations
     const subtotal = useMemo(
@@ -103,7 +101,15 @@ export default function SalesWorkspace({
         return Math.min(val, subtotal);
     }, [discountValue, discountMethod, subtotal]);
 
-    const total = useMemo(() => Math.max(subtotal - discountAmount, 0), [subtotal, discountAmount]);
+    const taxAmount = useMemo(() => {
+        if (!taxEnabled || taxRate <= 0) return 0;
+        return Math.round((subtotal - discountAmount) * taxRate) / 100;
+    }, [subtotal, discountAmount, taxEnabled, taxRate]);
+
+    const total = useMemo(
+        () => Math.max(subtotal - discountAmount + taxAmount, 0),
+        [subtotal, discountAmount, taxAmount],
+    );
 
     // Cart actions
     function handleAddProduct(product: Product) {
@@ -152,6 +158,33 @@ export default function SalesWorkspace({
         setNotice(null);
     }
 
+    // Build sale request payload (shared between normal & force submit)
+    function buildSaleRequest(paymentMethod: PaymentMethod): SaleCreateRequest {
+        const discounts: DiscountRequest[] =
+            discountAmount > 0
+                ? [
+                    {
+                        discountType: "CUSTOM",
+                        discountMethod,
+                        value: parseFloat(discountValue),
+                        reason: "POS discount",
+                    },
+                ]
+                : [];
+
+        return {
+            items: cartItems.map((ci) => ({
+                productId: ci.productId,
+                productName: ci.productName,
+                quantity: ci.quantity,
+                unitPrice: ci.unitPrice,
+            })),
+            discounts,
+            paymentMethod,
+            recordedVia: "MANUAL",
+        };
+    }
+
     // Sale submission
     async function handleSubmit(paymentMethod: PaymentMethod) {
         if (cartItems.length === 0) return;
@@ -160,7 +193,7 @@ export default function SalesWorkspace({
         setError(null);
         setNotice(null);
 
-        // Validate stock
+        // Validate stock (client-side pre-check)
         for (const item of cartItems) {
             if (item.quantity > item.stockQty) {
                 setError(t("cart.errorStock", { product: item.productName }));
@@ -170,34 +203,46 @@ export default function SalesWorkspace({
         }
 
         try {
-            const discounts: DiscountRequest[] =
-                discountAmount > 0
-                    ? [
-                        {
-                            discountType: "CUSTOM",
-                            discountMethod,
-                            value: parseFloat(discountValue),
-                            reason: "POS discount",
-                        },
-                    ]
-                    : [];
-
-            const request: SaleCreateRequest = {
-                items: cartItems.map((ci) => ({
-                    productId: ci.productId,
-                    productName: ci.productName,
-                    quantity: ci.quantity,
-                    unitPrice: ci.unitPrice,
-                })),
-                discounts,
-                paymentMethod,
-                recordedVia: "MANUAL",
-            };
-
-            const sale = await createSale(businessId, request);
+            const request = buildSaleRequest(paymentMethod);
+            const sale = await submitCreate(request);
             setNotice(
                 t("cart.success", { invoice: sale.invoiceNumber }),
             );
+            setCartItems([]);
+            setDiscountValue("");
+        } catch (submitError: unknown) {
+            // Check for 409 STOCK_CONFLICT from backend
+            const axiosErr = submitError as { response?: { status?: number; data?: { error?: { code?: string; details?: StockConflictDetail } } } };
+            if (
+                axiosErr.response?.status === 409 &&
+                axiosErr.response?.data?.error?.code === "STOCK_CONFLICT" &&
+                axiosErr.response?.data?.error?.details
+            ) {
+                setConflictDetail(axiosErr.response.data.error.details);
+                setPendingRequest(buildSaleRequest(paymentMethod));
+                setConflictOpen(true);
+            } else {
+                setError(
+                    submitError instanceof Error
+                        ? submitError.message
+                        : t("cart.error"),
+                );
+            }
+        } finally {
+            setIsSubmitting(false);
+        }
+    }
+
+    // Conflict modal: user confirms force sale
+    async function handleConflictConfirm() {
+        if (!pendingRequest) return;
+        setConflictOpen(false);
+        setIsSubmitting(true);
+        setError(null);
+
+        try {
+            const sale = await submitForceCreate(pendingRequest);
+            setNotice(t("cart.success", { invoice: sale.invoiceNumber }));
             setCartItems([]);
             setDiscountValue("");
         } catch (submitError) {
@@ -208,7 +253,17 @@ export default function SalesWorkspace({
             );
         } finally {
             setIsSubmitting(false);
+            setPendingRequest(null);
+            setConflictDetail(null);
         }
+    }
+
+    // Conflict modal: user discards sale
+    function handleConflictDiscard() {
+        setConflictOpen(false);
+        setConflictDetail(null);
+        setPendingRequest(null);
+        setError(null);
     }
 
     return (
@@ -238,12 +293,23 @@ export default function SalesWorkspace({
                 onDiscountValueChange={setDiscountValue}
                 discountAmount={discountAmount}
                 subtotal={subtotal}
+                taxRate={taxEnabled ? taxRate : 0}
+                taxAmount={taxAmount}
                 total={total}
                 isSubmitting={isSubmitting}
                 onSubmitCash={() => handleSubmit("CASH")}
                 onSubmitCredit={() => handleSubmit("CREDIT")}
                 error={error}
                 notice={notice}
+            />
+
+            {/* Stock Conflict Modal */}
+            <StockConflictModal
+                open={conflictOpen}
+                onClose={handleConflictDiscard}
+                conflict={conflictDetail}
+                onConfirm={handleConflictConfirm}
+                onDiscard={handleConflictDiscard}
             />
         </div>
     );

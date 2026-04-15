@@ -79,6 +79,8 @@ export interface Sale {
     invoiceNumber: string;
     subtotal: number;
     totalDiscount: number;
+    taxRate: number;
+    taxAmount: number;
     totalAmount: number;
     totalCost: number;
     profit: number;
