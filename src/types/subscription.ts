@@ -58,6 +58,7 @@ export interface PlanLimits {
   maxProductsPerBusiness: number;
   aiQueriesPerDay: number;
   maxAiTokensPerQuery: number;
+  maxQueryCharacters: number;
   conversationHistoryTurns: number;
   dueManagementEnabled: boolean;
   discountEnabled: boolean;

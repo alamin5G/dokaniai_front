@@ -217,7 +217,10 @@ export function PricingSection() {
       { key: "due_management", label: t("featureMatrix.rows.dueManagement") },
       { key: "discount_management", label: t("featureMatrix.rows.discountManagement") },
       { key: "voice_entry", label: t("featureMatrix.rows.voiceInput") },
+      { key: "text_nlp", label: t("featureMatrix.rows.textNlp") },
       { key: "whatsapp_reminder", label: t("featureMatrix.rows.whatsappReminder") },
+      { key: "smart_notifications", label: t("featureMatrix.rows.smartNotifications") },
+      { key: "email_support", label: t("featureMatrix.rows.emailSupport") },
       { key: "advanced_reports", label: t("featureMatrix.rows.advancedReports") },
       { key: "pdf_export", label: t("featureMatrix.rows.pdfExport") },
       { key: "bulk_import", label: t("featureMatrix.rows.bulkImport") },
@@ -233,7 +236,7 @@ export function PricingSection() {
   const handlePlanAction = (plan: Plan, action: PlanAction) => {
     if (isEnterprisePlan(plan)) {
       if (typeof window !== "undefined") {
-        window.open(getEnterpriseContactHref(s("pricing.enterpriseEmail"), s("pricing.enterpriseEmailSubject")), "_self");
+        window.location.href = getEnterpriseContactHref(s("pricing.enterpriseEmail"), s("pricing.enterpriseEmailSubject"));
       }
       return;
     }

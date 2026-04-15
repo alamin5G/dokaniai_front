@@ -2,6 +2,7 @@
 
 import { useTranslations } from "next-intl";
 import { useCallback, useEffect, useRef, useState } from "react";
+import { usePlanLimits } from "@/hooks/usePlanLimits";
 import type {
     AIResponse,
     AIMessage,
@@ -47,6 +48,7 @@ const ACTION_META: Record<AIActionType, { icon: string; color: string }> = {
 
 export default function AIWorkspace({ businessId }: { businessId: string }) {
     const t = useTranslations("shop.ai");
+    const { maxQueryCharacters } = usePlanLimits();
     const plan = usePlanFeatures();
 
     const [activeTab, setActiveTab] = useState<TabKey>("chat");
@@ -368,14 +370,20 @@ function ChatTab({ businessId }: { businessId: string }) {
                         }}
                         className="flex items-center gap-3"
                     >
-                        <input
-                            type="text"
-                            value={input}
-                            onChange={(e) => setInput(e.target.value)}
-                            placeholder={t("chat.placeholder")}
-                            className="flex-1 rounded-xl bg-surface-container px-4 py-3 text-sm text-on-surface placeholder:text-on-surface-variant focus:outline-none focus:ring-2 focus:ring-primary/30"
-                            disabled={isSending}
-                        />
+                        <div className="flex-1 relative">
+                            <input
+                                type="text"
+                                value={input}
+                                onChange={(e) => setInput(e.target.value.slice(0, maxQueryCharacters))}
+                                placeholder={t("chat.placeholder")}
+                                maxLength={maxQueryCharacters}
+                                className="w-full rounded-xl bg-surface-container px-4 py-3 pr-16 text-sm text-on-surface placeholder:text-on-surface-variant focus:outline-none focus:ring-2 focus:ring-primary/30"
+                                disabled={isSending}
+                            />
+                            <span className={`absolute right-3 top-1/2 -translate-y-1/2 text-xs ${input.length > maxQueryCharacters * 0.9 ? "text-error" : "text-on-surface-variant"}`}>
+                                {input.length}/{maxQueryCharacters}
+                            </span>
+                        </div>
                         <button
                             type="submit"
                             disabled={!input.trim() || isSending}
@@ -750,17 +758,23 @@ function CommandsTab({ businessId }: { businessId: string }) {
                 <p className="text-sm text-on-surface-variant mb-4">{t("commands.hint")}</p>
 
                 <div className="flex gap-3">
-                    <input
-                        type="text"
-                        value={input}
-                        onChange={(e) => setInput(e.target.value)}
-                        placeholder={t("commands.placeholder")}
-                        className="flex-1 rounded-xl bg-surface-container px-4 py-3 text-sm text-on-surface placeholder:text-on-surface-variant focus:outline-none focus:ring-2 focus:ring-primary/30"
-                        onKeyDown={(e) => {
-                            if (e.key === "Enter" && !confirmationToken) handleParse();
-                        }}
-                        disabled={isProcessing}
-                    />
+                    <div className="flex-1 relative">
+                        <input
+                            type="text"
+                            value={input}
+                            onChange={(e) => setInput(e.target.value.slice(0, maxQueryCharacters))}
+                            placeholder={t("commands.placeholder")}
+                            maxLength={maxQueryCharacters}
+                            className="w-full rounded-xl bg-surface-container px-4 py-3 pr-16 text-sm text-on-surface placeholder:text-on-surface-variant focus:outline-none focus:ring-2 focus:ring-primary/30"
+                            onKeyDown={(e) => {
+                                if (e.key === "Enter" && !confirmationToken) handleParse();
+                            }}
+                            disabled={isProcessing}
+                        />
+                        <span className={`absolute right-3 top-1/2 -translate-y-1/2 text-xs ${input.length > maxQueryCharacters * 0.9 ? "text-error" : "text-on-surface-variant"}`}>
+                            {input.length}/{maxQueryCharacters}
+                        </span>
+                    </div>
                     <button
                         onClick={confirmationToken ? handleConfirmExecute : handleParse}
                         disabled={!input.trim() || isProcessing}
