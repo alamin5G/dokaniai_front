@@ -101,7 +101,7 @@ export default function AboutPage() {
                             {[
                                 { icon: "menu_book", title: t("problem.p1Title"), desc: t("problem.p1Desc") },
                                 { icon: "calculate", title: t("problem.p2Title"), desc: t("problem.p2Desc") },
-                                { icon: "person_off", title: t("problem.p3Title"), desc: t("problem.p3Desc") },
+                                { icon: "trending_flat", title: t("problem.p3Title"), desc: t("problem.p3Desc") },
                             ].map((item, i) => (
                                 <div key={i} className="bg-surface-container-lowest p-8 rounded-2xl border border-outline-variant/10 hover:translate-y-[-4px] transition-transform duration-300">
                                     <div className="w-14 h-14 bg-error-container text-on-error-container rounded-2xl flex items-center justify-center mb-6">
@@ -148,7 +148,7 @@ export default function AboutPage() {
                             <h2 className="text-3xl font-black text-primary font-headline">{t("why.title")}</h2>
                             {[
                                 { icon: "language", title: t("why.w1Title"), desc: t("why.w1Desc") },
-                                { icon: "offline_bolt", title: t("why.w2Title"), desc: t("why.w2Desc") },
+                                { icon: "insights", title: t("why.w2Title"), desc: t("why.w2Desc") },
                                 { icon: "lock", title: t("why.w3Title"), desc: t("why.w3Desc") },
                                 { icon: "payments", title: t("why.w4Title"), desc: t("why.w4Desc") },
                             ].map((item, i) => (

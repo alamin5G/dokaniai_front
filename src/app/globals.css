@@ -53,9 +53,9 @@
   --color-on-tertiary-container: #f09e95;
   --color-on-primary-fixed-variant: #02513b;
 
-  --font-headline: "Manrope", "Hind Siliguri", sans-serif;
-  --font-body: "Manrope", "Hind Siliguri", sans-serif;
-  --font-label: "Manrope", "Hind Siliguri", sans-serif;
+  --font-headline: "Plus Jakarta Sans", "Hind Siliguri", sans-serif;
+  --font-body: "Inter", "Hind Siliguri", sans-serif;
+  --font-label: "Inter", "Hind Siliguri", sans-serif;
 
   --color-foreground: var(--foreground);
   --font-sans: var(--font-sans);

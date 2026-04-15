@@ -7,6 +7,7 @@ export function Footer() {
   const t = useTranslations("home.footer");
 
   return (
+    /* Matches reference: bg-surface-container-low */
     <footer className="bg-surface-container-low w-full mt-20">
       <div className="grid grid-cols-2 md:grid-cols-4 gap-8 px-6 py-12 max-w-7xl mx-auto">
         <div className="col-span-2 md:col-span-1 space-y-4">
@@ -18,7 +19,7 @@ export function Footer() {
         </div>
 
         <div className="space-y-3">
-          <h5 className="font-bold text-primary">{t("plans")}</h5>
+          <h5 className="font-bold text-primary font-headline">{t("plans")}</h5>
           <ul className="text-sm text-on-surface-variant font-medium space-y-2">
             <li><Link className="hover:text-primary hover:translate-x-1 transition-transform inline-block" href="/pricing">{t("trialPlan")}</Link></li>
             <li><Link className="hover:text-primary hover:translate-x-1 transition-transform inline-block" href="/pricing">{t("basicPlan")}</Link></li>
@@ -28,7 +29,7 @@ export function Footer() {
         </div>
 
         <div className="space-y-3">
-          <h5 className="font-bold text-primary">{t("company")}</h5>
+          <h5 className="font-bold text-primary font-headline">{t("company")}</h5>
           <ul className="text-sm text-on-surface-variant font-medium space-y-2">
             <li><Link className="hover:text-primary hover:translate-x-1 transition-transform inline-block" href="/about">{t("aboutUs")}</Link></li>
             <li><Link className="hover:text-primary hover:translate-x-1 transition-transform inline-block" href="/#features">{t("features")}</Link></li>
@@ -37,7 +38,7 @@ export function Footer() {
         </div>
 
         <div className="space-y-3">
-          <h5 className="font-bold text-primary">{t("connect")}</h5>
+          <h5 className="font-bold text-primary font-headline">{t("connect")}</h5>
           <ul className="text-sm text-on-surface-variant font-medium space-y-2">
             <li><Link className="hover:text-primary hover:translate-x-1 transition-transform inline-block" href="mailto:support@dokaniai.com">{t("email")}</Link></li>
             <li><Link className="hover:text-primary hover:translate-x-1 transition-transform inline-block" href="tel:+8801XXXXXXXXX">{t("phone")}</Link></li>
@@ -54,10 +55,6 @@ export function Footer() {
             </Link>
           </div>
         </div>
-      </div>
-
-      <div className="border-t border-outline-variant/20 px-6 py-4 max-w-7xl mx-auto">
-        <p className="text-xs text-on-surface-variant/50 text-center">{t("madeInBD")}</p>
       </div>
     </footer>
   );

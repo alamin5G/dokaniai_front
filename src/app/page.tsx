@@ -1,11 +1,16 @@
 "use client";
 
+import { DemoSection } from "@/components/home/DemoSection";
+import { FAQSection } from "@/components/home/FAQSection";
 import { FeaturesSection } from "@/components/home/FeaturesSection";
+import { FinalCTASection } from "@/components/home/FinalCTASection";
 import { Footer } from "@/components/home/Footer";
 import { HeroSection } from "@/components/home/HeroSection";
+import { HowItWorksSection } from "@/components/home/HowItWorksSection";
 import { NavBar } from "@/components/home/NavBar";
 import { PricingSection } from "@/components/home/PricingSection";
 import { TestimonialsSection } from "@/components/home/TestimonialsSection";
+import { TrustIndicators } from "@/components/home/TrustIndicators";
 import { useRedirectIfAuthenticated } from "@/hooks/useAuthRedirect";
 
 export default function HomePage() {
@@ -27,16 +32,15 @@ export default function HomePage() {
 
       <main>
         <HeroSection />
+        <TrustIndicators />
+        <DemoSection />
         <FeaturesSection />
-        <PricingSection />
+        <HowItWorksSection />
         <TestimonialsSection />
+        <PricingSection />
+        <FAQSection />
+        <FinalCTASection />
       </main>
-
-      {/* Floating Action Button (FAB) - Speak to AI */}
-      <button className="fixed bottom-8 right-8 w-20 h-20 bg-primary rounded-full shadow-2xl flex items-center justify-center hover:scale-110 active:scale-95 transition-all z-[100] border-4 border-white/20 group">
-        <div className="absolute -inset-2 bg-primary/20 rounded-full blur-xl group-hover:bg-primary/40 transition-colors"></div>
-        <span className="material-symbols-outlined text-white text-4xl relative z-10" data-icon="mic" style={{ fontVariationSettings: "'FILL' 1" }}>mic</span>
-      </button>
 
       <Footer />
     </div>

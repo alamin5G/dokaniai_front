@@ -8,9 +8,10 @@ export function NavBar() {
   const t = useTranslations("home.nav");
 
   return (
-    <nav className="bg-surface/80 backdrop-blur-md border-b border-surface-container sticky top-0 z-50 w-full">
+    /* Matches reference: bg-surface/80 + backdrop-blur + border-black/5 */
+    <nav className="bg-[#f7faf6]/80 backdrop-blur-md border-b border-black/5 sticky top-0 z-50 w-full">
       <div className="flex justify-between items-center w-full px-6 py-4 max-w-7xl mx-auto">
-        <Link href="/" className="text-2xl font-black text-primary tracking-tight hover:opacity-80 transition-opacity">
+        <Link href="/" className="text-2xl font-black text-primary tracking-tight hover:opacity-80 transition-opacity font-headline">
           DokaniAI
         </Link>
         <div className="hidden md:flex gap-8 items-center font-semibold text-base">
@@ -24,7 +25,7 @@ export function NavBar() {
             {t("login")}
           </Link>
           <Link href="/register">
-            <button className="bg-primary text-on-primary px-6 py-2.5 rounded-full font-bold active:scale-95 transition-transform shadow-md">
+            <button className="bg-primary text-on-primary px-6 py-2.5 rounded-full font-bold active:scale-95 transition-transform">
               {t("getStarted")}
             </button>
           </Link>
