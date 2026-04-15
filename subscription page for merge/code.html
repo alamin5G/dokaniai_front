@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+
+<html lang="bn"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>সাবস্ক্রিপশন ও প্রাইসিং - The Digital Ledger</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@300;400;500;600;700&amp;family=Manrope:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "secondary-fixed": "#d1e4ff",
+                    "on-tertiary-fixed": "#390b08",
+                    "on-tertiary": "#ffffff",
+                    "surface-dim": "#d8dbd7",
+                    "surface-container-lowest": "#ffffff",
+                    "tertiary-fixed-dim": "#ffb4ab",
+                    "primary": "#003727",
+                    "on-tertiary-fixed-variant": "#70352f",
+                    "inverse-primary": "#91d4b7",
+                    "surface-bright": "#f8faf6",
+                    "outline": "#707974",
+                    "on-secondary-fixed": "#001d36",
+                    "tertiary": "#531e1a",
+                    "surface-container": "#ecefeb",
+                    "inverse-on-surface": "#eff1ee",
+                    "surface-container-high": "#e6e9e5",
+                    "primary-fixed-dim": "#91d4b7",
+                    "on-primary-fixed": "#002116",
+                    "on-primary-fixed-variant": "#02513b",
+                    "surface-variant": "#e1e3df",
+                    "tertiary-container": "#6f342e",
+                    "on-secondary": "#ffffff",
+                    "secondary-container": "#77b7ff",
+                    "on-background": "#191c1a",
+                    "surface-tint": "#276a52",
+                    "tertiary-fixed": "#ffdad6",
+                    "secondary": "#0061a4",
+                    "on-secondary-fixed-variant": "#00497d",
+                    "surface": "#f8faf6",
+                    "surface-container-low": "#f2f4f0",
+                    "on-primary": "#ffffff",
+                    "background": "#f8faf6",
+                    "on-primary-container": "#7fc1a5",
+                    "on-secondary-container": "#00477b",
+                    "error": "#ba1a1a",
+                    "on-error-container": "#93000a",
+                    "error-container": "#ffdad6",
+                    "inverse-surface": "#2e312f",
+                    "surface-container-highest": "#e1e3df",
+                    "on-tertiary-container": "#f09e95",
+                    "on-error": "#ffffff",
+                    "secondary-fixed-dim": "#9fcaff",
+                    "primary-container": "#00503a",
+                    "on-surface-variant": "#404944",
+                    "primary-fixed": "#adf1d2",
+                    "outline-variant": "#bfc9c2",
+                    "on-surface": "#191c1a"
+            },
+            "borderRadius": {
+                    "DEFAULT": "1rem",
+                    "lg": "2rem",
+                    "xl": "3rem",
+                    "full": "9999px"
+            },
+            "fontFamily": {
+                    "hind-siliguri": ["Hind Siliguri", "sans-serif"],
+                    "manrope": ["Manrope", "sans-serif"],
+                    "headline": ["Manrope", "sans-serif"],
+                    "body": ["Manrope", "sans-serif"],
+                    "label": ["Manrope", "sans-serif"]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        body { font-family: 'Hind Siliguri', 'Manrope', sans-serif; }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .editorial-grid {
+            display: grid;
+            grid-template-columns: repeat(12, 1fr);
+            gap: 2rem;
+        }
+        .glass-card {
+            background: rgba(225, 227, 223, 0.6);
+            backdrop-filter: blur(20px);
+        }
+        .primary-gradient {
+            background: linear-gradient(135deg, #003727 0%, #00503a 100%);
+        }
+    </style>
+</head>
+<body class="bg-background text-on-surface">
+<!-- Main Content Canvas -->
+<main class="pt-16 pb-12 px-6 md:px-12 lg:px-24 bg-background min-h-screen">
+<!-- Hero Section: Editorial Header -->
+<section class="mb-20">
+<div class="editorial-grid">
+<div class="col-span-12 md:col-span-8">
+<h1 class="text-5xl md:text-7xl font-bold text-primary font-hind-siliguri mb-6 leading-tight" style="">
+                    আপনার ব্যবসার <br/> <span class="text-secondary italic" style="">উন্নতির প্রতিটি ধাপের</span> সঙ্গী
+                </h1>
+<p class="text-xl text-on-surface-variant max-w-2xl leading-relaxed" style="">
+                    একটি ডিজিটাল খাতা যা আপনার সাথে বড় হয়। সহজ ট্র্যাকিং থেকে শুরু করে কৃত্রিম বুদ্ধিমত্তা চালিত ইনসাইট পর্যন্ত — সব পাবেন এখানে।
+                </p>
+</div>
+</div>
+</section>
+<!-- Pricing Grid: Bento Style & Intentional Asymmetry -->
+<section class="mb-32">
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+<!-- Plan 1: Starter (Free) -->
+<div class="bg-surface-container-low p-8 rounded-DEFAULT flex flex-col justify-between hover:bg-surface-container transition-colors">
+<div>
+<span class="text-sm font-label uppercase tracking-widest text-on-surface-variant mb-4 block" style="">প্রারম্ভিক</span>
+<h3 class="text-3xl font-bold font-hind-siliguri mb-6" style="">ফ্রি খাতা</h3>
+<div class="mb-8">
+<span class="text-5xl font-manrope font-extrabold text-primary" style="">৳০</span>
+<span class="text-on-surface-variant" style="">/ চিরকাল</span>
+</div>
+<ul class="space-y-4">
+<li class="flex items-center gap-3 text-sm" style="">
+<span class="material-symbols-outlined text-primary scale-75" data-icon="check_circle" style="">check_circle</span>
+                            প্রতিদিন ১০টি এন্ট্রি
+                        </li>
+<li class="flex items-center gap-3 text-sm" style="">
+<span class="material-symbols-outlined text-primary scale-75" data-icon="check_circle" style="">check_circle</span>
+                            ১ জন ইউজার
+                        </li>
+<li class="flex items-center gap-3 text-sm text-on-surface-variant/50" style="">
+<span class="material-symbols-outlined scale-75" data-icon="cancel" style="">cancel</span>
+                            অটোমেটিক এসএমএস নেই
+                        </li>
+</ul>
+</div>
+<button class="mt-12 w-full py-4 rounded-lg bg-surface-container-highest font-bold text-primary hover:bg-outline-variant transition-colors" style="">শুরু করুন</button>
+</div>
+<!-- Plan 2: Basic -->
+<div class="bg-surface-container-low p-8 rounded-DEFAULT flex flex-col justify-between translate-y-4">
+<div>
+<span class="text-sm font-label uppercase tracking-widest text-on-surface-variant mb-4 block" style="">উঠতি ব্যবসা</span>
+<h3 class="text-3xl font-bold font-hind-siliguri mb-6" style="">বেসিক খাতা</h3>
+<div class="mb-8">
+<span class="text-5xl font-manrope font-extrabold text-primary" style="">৳৯৯</span>
+<span class="text-on-surface-variant" style="">/ মাস</span>
+</div>
+<ul class="space-y-4">
+<li class="flex items-center gap-3 text-sm" style="">
+<span class="material-symbols-outlined text-primary scale-75" data-icon="check_circle" style="">check_circle</span>
+                            আনলিমিটেড এন্ট্রি
+                        </li>
+<li class="flex items-center gap-3 text-sm" style="">
+<span class="material-symbols-outlined text-primary scale-75" data-icon="check_circle" style="">check_circle</span>
+                            ১০০টি ফ্রি এসএমএস
+                        </li>
+<li class="flex items-center gap-3 text-sm" style="">
+<span class="material-symbols-outlined text-primary scale-75" data-icon="check_circle" style="">check_circle</span>
+                            ইনভয়েস জেনারেশন
+                        </li>
+</ul>
+</div>
+<button class="mt-12 w-full py-4 rounded-lg bg-primary text-white font-bold" style="">নির্বাচন করুন</button>
+</div>
+<!-- Plan 3: Pro (Highlighted) -->
+<div class="primary-gradient p-8 rounded-DEFAULT flex flex-col justify-between text-white relative overflow-hidden">
+<div class="absolute top-0 right-0 p-4">
+<span class="bg-secondary-container text-on-secondary-container px-3 py-1 rounded-full text-xs font-bold" style="">সেরা পছন্দ</span>
+</div>
+<div>
+<span class="text-sm font-label uppercase tracking-widest opacity-70 mb-4 block" style="">পেশাদার</span>
+<h3 class="text-3xl font-bold font-hind-siliguri mb-6 text-white" style="">প্রো খাতা</h3>
+<div class="mb-8">
+<span class="text-5xl font-manrope font-extrabold" style="">৳৩৯৯</span>
+<span class="opacity-70" style="">/ মাস</span>
+</div>
+<ul class="space-y-4">
+<li class="flex items-center gap-3 text-sm" style="">
+<span class="material-symbols-outlined text-inverse-primary" data-icon="auto_awesome" style='font-variation-settings: "FILL" 1;'>auto_awesome</span>
+                            AI বিজনেস ইনসাইটস
+                        </li>
+<li class="flex items-center gap-3 text-sm" style="">
+<span class="material-symbols-outlined text-inverse-primary scale-75" data-icon="check_circle" style='font-variation-settings: "FILL" 1;'>check_circle</span>
+                            আনলিমিটেড এসএমএস
+                        </li>
+<li class="flex items-center gap-3 text-sm" style="">
+<span class="material-symbols-outlined text-inverse-primary scale-75" data-icon="check_circle" style='font-variation-settings: "FILL" 1;'>check_circle</span>
+                            ৩ জন স্টাফ এক্সেস
+                        </li>
+<li class="flex items-center gap-3 text-sm" style="">
+<span class="material-symbols-outlined text-inverse-primary scale-75" data-icon="check_circle" style='font-variation-settings: "FILL" 1;'>check_circle</span>
+                            কাস্টম ব্র্যান্ডিং
+                        </li>
+</ul>
+</div>
+<button class="mt-12 w-full py-4 rounded-lg bg-white text-primary font-bold" style="">প্রো-তে আপগ্রেড করুন</button>
+</div>
+<!-- Plan 4: Advance -->
+<div class="bg-surface-container-low p-8 rounded-DEFAULT flex flex-col justify-between lg:col-start-1 lg:row-start-2">
+<div>
+<span class="text-sm font-label uppercase tracking-widest text-on-surface-variant mb-4 block" style="">মাঝারি দোকান</span>
+<h3 class="text-3xl font-bold font-hind-siliguri mb-6" style="">অ্যাডভান্সড</h3>
+<div class="mb-8">
+<span class="text-5xl font-manrope font-extrabold text-primary" style="">৳৭৯৯</span>
+<span class="text-on-surface-variant" style="">/ মাস</span>
+</div>
+<ul class="space-y-4 text-sm">
+<li class="flex items-center gap-3" style=""><span class="material-symbols-outlined text-primary scale-75" data-icon="check_circle" style="">check_circle</span> ইনভেন্টরি ম্যানেজমেন্ট</li>
+<li class="flex items-center gap-3" style=""><span class="material-symbols-outlined text-primary scale-75" data-icon="check_circle" style="">check_circle</span> অটো সাপ্লায়ার পেমেন্ট</li>
+<li class="flex items-center gap-3" style=""><span class="material-symbols-outlined text-primary scale-75" data-icon="check_circle" style="">check_circle</span> হোয়াটসঅ্যাপ অ্যালার্ট</li>
+</ul>
+</div>
+<button class="mt-12 w-full py-4 rounded-lg bg-surface-container-highest font-bold text-primary" style="">প্ল্যান দেখুন</button>
+</div>
+<!-- Plan 5: Multi-Store -->
+<!-- Plan 6: Enterprise -->
+<div class="bg-surface-container-low p-8 rounded-DEFAULT flex flex-col justify-between translate-y-6 lg:col-start-3 lg:row-start-2">
+<div>
+<span class="text-sm font-label uppercase tracking-widest text-on-surface-variant mb-4 block" style="">বিশাল প্রতিষ্ঠান</span>
+<h3 class="text-3xl font-bold font-hind-siliguri mb-6" style="">এন্টারপ্রাইজ</h3>
+<div class="mb-8">
+<span class="text-3xl font-manrope font-extrabold text-primary" style="">আলোচনা সাপেক্ষে</span>
+</div>
+<p class="text-sm text-on-surface-variant mb-8 leading-relaxed" style="">
+                        আপনার প্রতিষ্ঠানের প্রয়োজন অনুযায়ী কাস্টমাইজড সমাধান। ডেডিকেটেড ম্যানেজার এবং ওন-প্রিমিস ডেটা হোস্টিং।
+                    </p>
+</div>
+<button class="mt-12 w-full py-4 rounded-lg bg-primary text-white font-bold" style="">বুক এ ডেমো</button>
+</div>
+</div>
+</section>
+<!-- Vertical 'Story of Growth' Section -->
+<section class="mb-32">
+<div class="editorial-grid">
+<div class="col-span-12 md:col-span-4 sticky top-12 h-fit">
+<h2 class="text-4xl font-bold text-primary font-hind-siliguri mb-8 leading-tight" style="">সমৃদ্ধির পথচলা</h2>
+<p class="text-on-surface-variant leading-relaxed" style="">
+                    একটি ছোট দোকান থেকে সুপারশপে পরিণত হওয়ার প্রতিটি ধাপে আমাদের লেজার আপনার সাথে থাকবে। কীভাবে আপনার ব্যবসা বড় হবে দেখুন।
+                </p>
+<div class="mt-12 h-64 w-full bg-surface-container rounded-lg overflow-hidden relative">
+<img alt="Modern Bangladeshi grocery shop with clean organized shelves and a smiling merchant looking at a tablet" class="w-full h-full object-cover grayscale opacity-50" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDeOAD5BFprugQrq3dsDnMCjNfbUbNm7bIN2rNfDlb8Cxb_t2v-6hxqvMUnCRh80XtwtzeOzdZYD1H9QYEL24rHuotIKVvMJrWZtwv0Ev8j3GhBbKJQZVgZ8X-RB_j_v-OS8MbFPNzkgAUf2ILIgzgQYQ8vSrtudZgvPaX1ZBeSYyTOh97JU10IDH8oe9FfDZuT0WeTBp5EowmZQegTmcA-kOoj9Ih8cev-ZUb9xokn2J-61QOFxmJqqOsQZTfMbNjgfMiwzqcT4EH1" style=""/>
+<div class="absolute inset-0 bg-primary/10"></div>
+</div>
+</div>
+<div class="col-span-12 md:col-span-7 md:col-start-6 space-y-24">
+<!-- Stage 1 -->
+<div class="flex flex-col gap-6 items-start">
+<div class="w-16 h-16 bg-primary-fixed flex items-center justify-center rounded-full text-primary font-bold text-2xl" style="">০১</div>
+<h4 class="text-2xl font-bold font-hind-siliguri text-primary" style="">খাতা থেকে ডিজিটাল</h4>
+<p class="text-lg text-on-surface-variant" style="">হারিয়ে যাওয়া খাতা আর হিসেবের গোলমালের দুশ্চিন্তা ঝেড়ে ফেলুন আজই! ডিজিটাল খাতার জাদুকরী শক্তিতে আপনার ব্যবসার প্রতিটি লেনদেন থাকুক চোখের সামনে, হাতের নাগালে। আজই শুরু করুন আপনার ডিজিটাল বিপ্লব।</p>
+</div>
+<!-- Stage 2 -->
+<div class="flex flex-col gap-6 items-end text-right">
+<div class="w-16 h-16 bg-secondary-fixed flex items-center justify-center rounded-full text-secondary font-bold text-2xl" style="">০২</div>
+<h4 class="text-2xl font-bold font-hind-siliguri text-primary" style="">গ্রাহকের সাথে বিশ্বাস</h4>
+<p class="text-lg text-on-surface-variant" style="">পেশাদারিত্বে এক ধাপ এগিয়ে যান। স্বয়ংক্রিয় এসএমএস অ্যালার্টের মাধ্যমে গ্রাহকের মনে তৈরি করুন অগাধ বিশ্বাস। স্বচ্ছ লেনদেন আর পরিষ্কার হিসেবই আপনার ব্যবসার স্থায়ী সাফল্যের মূল চাবিকাঠি।</p>
+</div>
+<!-- Stage 3 -->
+<div class="flex flex-col gap-6 items-start">
+<div class="w-16 h-16 bg-inverse-primary flex items-center justify-center rounded-full text-primary font-bold text-2xl" style="">০৩</div>
+<h4 class="text-2xl font-bold font-hind-siliguri text-primary" style="">বুদ্ধিদীপ্ত সিদ্ধান্ত</h4>
+<p class="text-lg text-on-surface-variant" style="">আপনার ডেটাই এখন বলবে আপনার ভবিষ্যৎ। আমাদের শক্তিশালী AI খুঁজে বের করবে কোন পণ্য আপনাকে দিচ্ছে সর্বোচ্চ লাভ আর কোথায় হচ্ছে অপচয়। সঠিক সময়ে সঠিক সিদ্ধান্ত নিয়ে মুনাফা বাড়ান বহুগুণ।</p>
+</div>
+<!-- Stage 4 -->
+<div class="flex flex-col gap-6 items-end text-right">
+<div class="w-16 h-16 bg-tertiary-fixed flex items-center justify-center rounded-full text-tertiary font-bold text-2xl" style="">০৪</div>
+<h4 class="text-2xl font-bold font-hind-siliguri text-primary" style="">সাম্রাজ্য বিস্তার</h4>
+<p class="text-lg text-on-surface-variant" style="">একটি দোকান থেকে তৈরি করুন আপনার ব্যবসায়িক সাম্রাজ্য! মাল্টি-স্টোর কানেক্টিভিটির মাধ্যমে বিশ্বের যেকোনো প্রান্ত থেকে নিয়ন্ত্রণ করুন আপনার সব শাখা। ব্যবসার বিস্তার এখন আপনার হাতের মুঠোয়।</p>
+</div>
+</div>
+</div>
+</section>
+<!-- Digital Heirloom Detail: Soft Tonal Section -->
+<section class="bg-surface-container-low rounded-xl p-12 md:p-20 text-center mb-20">
+<h2 class="text-3xl font-bold font-hind-siliguri text-primary mb-8" style="">নিরাপদ এবং নির্ভরযোগ্য</h2>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-12">
+<div class="flex flex-col items-center">
+<span class="material-symbols-outlined text-secondary text-5xl mb-4" data-icon="encrypted" style="">encrypted</span>
+<h5 class="text-xl font-bold mb-2" style="">ব্যাংক লেভেল নিরাপত্তা</h5>
+<p class="text-sm opacity-70" style="">আপনার সকল ডেটা এন্ড-টু-এন্ড এনক্রিপ্টেড থাকে।</p>
+</div>
+<div class="flex flex-col items-center">
+<span class="material-symbols-outlined text-secondary text-5xl mb-4" data-icon="cloud_sync" style="">cloud_sync</span>
+<h5 class="text-xl font-bold mb-2" style="">লাইভ ব্যাকআপ</h5>
+<p class="text-sm opacity-70" style="">ফোন হারিয়ে গেলেও চিন্তার কিছু নেই, ক্লাউডে আপনার ডেটা সুরক্ষিত।</p>
+</div>
+<div class="flex flex-col items-center">
+<span class="material-symbols-outlined text-secondary text-5xl mb-4" data-icon="support_agent" style="">support_agent</span>
+<h5 class="text-xl font-bold mb-2" style="">২৪/৭ কাস্টমার সাপোর্ট</h5>
+<p class="text-sm opacity-70" style="">যেকোনো সমস্যায় আমাদের টিম আছে আপনার পাশে।</p>
+</div>
+</div>
+</section>
+</main>
+<!-- Speak to AI FAB -->
+<div class="fixed bottom-12 right-12 z-50">
+<button class="w-16 h-16 md:w-20 md:h-20 rounded-xl primary-gradient flex items-center justify-center text-white shadow-2xl hover:scale-105 transition-transform" style="">
+<span class="material-symbols-outlined text-3xl md:text-4xl" data-icon="auto_awesome" style='font-variation-settings: "FILL" 1;'>auto_awesome</span>
+</button>
+</div>
+</body></html>
