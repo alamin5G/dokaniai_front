@@ -3,6 +3,7 @@
 import type { ReactNode } from "react";
 import { useEffect, useState } from "react";
 
+import DataExportPanel from "@/components/settings/DataExportPanel";
 import { FormInput, GradientButton } from "@/components/ui/FormPrimitives";
 import {
     getBusiness,
@@ -20,7 +21,7 @@ import type { PaymentMethod } from "@/types/business";
 import { useLocale, useTranslations } from "next-intl";
 import { usePathname, useRouter } from "next/navigation";
 
-type TabKey = "general" | "profile" | "location" | "danger";
+type TabKey = "general" | "profile" | "location" | "data" | "danger";
 type Feedback = { type: "success" | "error"; message: string } | null;
 
 const BUSINESS_TYPES = [
@@ -96,6 +97,7 @@ const TAB_ITEMS: { key: TabKey; titleKey: string; descriptionKey: string }[] = [
     { key: "general", titleKey: "settings.tabGeneral", descriptionKey: "settings.tabGeneralDesc" },
     { key: "profile", titleKey: "settings.tabProfile", descriptionKey: "settings.tabProfileDesc" },
     { key: "location", titleKey: "settings.tabLocation", descriptionKey: "settings.tabLocationDesc" },
+    { key: "data", titleKey: "settings.tabData", descriptionKey: "settings.tabDataDesc" },
     { key: "danger", titleKey: "danger.heading", descriptionKey: "danger.description" },
 ];
 
@@ -256,14 +258,12 @@ function ToggleField({
                 ) : null}
             </div>
             <span
-                className={`mt-1 inline-flex h-7 w-12 rounded-full p-1 transition ${
-                    checked ? "bg-primary" : "bg-outline-variant"
-                }`}
+                className={`mt-1 inline-flex h-7 w-12 rounded-full p-1 transition ${checked ? "bg-primary" : "bg-outline-variant"
+                    }`}
             >
                 <span
-                    className={`h-5 w-5 rounded-full bg-white transition ${
-                        checked ? "translate-x-5" : "translate-x-0"
-                    }`}
+                    className={`h-5 w-5 rounded-full bg-white transition ${checked ? "translate-x-5" : "translate-x-0"
+                        }`}
                 />
             </span>
         </button>
@@ -772,19 +772,17 @@ export default function BusinessSettingsPage() {
                                 key={tab.key}
                                 type="button"
                                 onClick={() => setActiveTab(tab.key)}
-                                className={`w-full rounded-[1.25rem] px-4 py-4 text-left transition ${
-                                    activeTab === tab.key
-                                        ? "bg-primary text-white shadow-md"
-                                        : "bg-transparent text-on-surface hover:bg-surface-container-high"
-                                }`}
+                                className={`w-full rounded-[1.25rem] px-4 py-4 text-left transition ${activeTab === tab.key
+                                    ? "bg-primary text-white shadow-md"
+                                    : "bg-transparent text-on-surface hover:bg-surface-container-high"
+                                    }`}
                             >
                                 <p className="font-semibold">{t(tab.titleKey)}</p>
                                 <p
-                                    className={`mt-1 text-sm ${
-                                        activeTab === tab.key
-                                            ? "text-white/80"
-                                            : "text-on-surface-variant"
-                                    }`}
+                                    className={`mt-1 text-sm ${activeTab === tab.key
+                                        ? "text-white/80"
+                                        : "text-on-surface-variant"
+                                        }`}
                                 >
                                     {t(tab.descriptionKey)}
                                 </p>
@@ -796,11 +794,10 @@ export default function BusinessSettingsPage() {
                 <div className="space-y-6">
                     {feedback ? (
                         <div
-                            className={`rounded-[1.25rem] border px-4 py-3 text-sm font-medium ${
-                                feedback.type === "success"
-                                    ? "border-emerald-200 bg-emerald-50 text-emerald-800"
-                                    : "border-rose-200 bg-rose-50 text-rose-800"
-                            }`}
+                            className={`rounded-[1.25rem] border px-4 py-3 text-sm font-medium ${feedback.type === "success"
+                                ? "border-emerald-200 bg-emerald-50 text-emerald-800"
+                                : "border-rose-200 bg-rose-50 text-rose-800"
+                                }`}
                         >
                             {feedback.message}
                         </div>
@@ -921,11 +918,10 @@ export default function BusinessSettingsPage() {
                                                             key={label}
                                                             type="button"
                                                             onClick={() => handleDayToggle(index)}
-                                                            className={`rounded-full px-4 py-2 text-sm font-semibold transition ${
-                                                                selected
-                                                                    ? "bg-primary text-white"
-                                                                    : "bg-surface-container-high text-on-surface"
-                                                            }`}
+                                                            className={`rounded-full px-4 py-2 text-sm font-semibold transition ${selected
+                                                                ? "bg-primary text-white"
+                                                                : "bg-surface-container-high text-on-surface"
+                                                                }`}
                                                         >
                                                             {label}
                                                         </button>
@@ -1365,6 +1361,10 @@ export default function BusinessSettingsPage() {
                         </>
                     ) : null}
 
+                    {activeTab === "data" ? (
+                        <DataExportPanel />
+                    ) : null}
+
                     {activeTab === "danger" ? (
                         <SectionCard
                             title={t("danger.heading")}
@@ -1400,3 +1400,5 @@ export default function BusinessSettingsPage() {
         </div>
     );
 }
+
+

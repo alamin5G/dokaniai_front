@@ -3,6 +3,7 @@
 import { FormInput, GradientButton } from "@/components/ui/FormPrimitives";
 import * as businessApi from "@/lib/businessApi";
 import { getCategoriesByBusinessType } from "@/lib/categoryApi";
+import { createProduct } from "@/lib/productApi";
 import { formatLocalizedNumber, sanitizeNumericInput } from "@/lib/localeNumber";
 import { getSampleProductsByBusinessType } from "@/lib/onboardingSampleProducts";
 import { getFallbackCategoryPreview } from "@/lib/onboardingFallbackCategories";
@@ -539,7 +540,7 @@ function OnboardingPageContent() {
                 const validActiveBusiness = forceNewBusiness
                     ? null
                     : store.activeBusinessId &&
-                      store.businesses.some((b) => b.id === store.activeBusinessId && b.status === "ACTIVE")
+                        store.businesses.some((b) => b.id === store.activeBusinessId && b.status === "ACTIVE")
                         ? store.activeBusinessId
                         : null;
 
@@ -678,7 +679,37 @@ function OnboardingPageContent() {
         }
     };
 
-    const handleProductsDone = () => advanceStep(5);
+    const handleProductsDone = async () => {
+        const bid = createdBusinessId || getExistingBusinessId();
+        if (!bid || quickProducts.length === 0) {
+            advanceStep(5);
+            return;
+        }
+
+        setIsLoading(true);
+        setError("");
+
+        try {
+            // Persist each quick-product to the backend
+            await Promise.all(
+                quickProducts.map((p) =>
+                    createProduct(bid, {
+                        name: p.name,
+                        unit: "piece",
+                        costPrice: 0,
+                        sellPrice: p.price ? Number(p.price) || 0 : 0,
+                    })
+                )
+            );
+        } catch {
+            // Non-fatal: continue onboarding even if some products fail to save
+            console.error("Failed to save some onboarding products");
+        } finally {
+            setIsLoading(false);
+        }
+
+        advanceStep(5);
+    };
 
     // Step 5: Due Setup + essentials
     const handleDueNext = async () => {

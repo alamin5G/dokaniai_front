@@ -6,8 +6,8 @@ import {
   NetworkFirst,
   StaleWhileRevalidate,
   ExpirationPlugin,
-  BackgroundSyncPlugin,
 } from "serwist";
+import { Queue } from "@serwist/background-sync";
 
 declare global {
   interface WorkerGlobalScope {
@@ -17,10 +17,50 @@ declare global {
 
 declare const self: WorkerGlobalScope & {
   __SW_MANIFEST: (PrecacheEntry | string)[] | undefined;
-};
+} & Record<string, unknown>;
 
-// SRS §7.6.2: POST requests - Queue in IndexedDB, replay when online
-const bgSyncPlugin = new BackgroundSyncPlugin("dokaniai-post-queue", {
+// SRS §7.6.2: Custom queue for POST requests with conflict detection
+const postQueue = new Queue("dokaniai-post-queue", {
+  onSync: async ({ queue }) => {
+    let entry;
+    while ((entry = await queue.shiftRequest())) {
+      try {
+        const response = await fetch(entry.request.clone());
+
+        // Intercept 409 STOCK_CONFLICT responses during replay
+        if (response.status === 409) {
+          try {
+            const body = await response.json();
+            if (body?.error?.code === "STOCK_CONFLICT" && body?.error?.details) {
+              // Post conflict details to the main thread so the UI can show the modal
+              // eslint-disable-next-line @typescript-eslint/no-explicit-any
+              const sw = self as any;
+              const clients: any[] = await sw.clients?.matchAll?.({ type: "window" }) ?? [];
+              for (const client of clients) {
+                client.postMessage({
+                  type: "STOCK_CONFLICT",
+                  conflict: body.error.details,
+                  requestUrl: entry.request.url,
+                });
+              }
+              // Do not replay this entry — the main thread will handle it
+              continue;
+            }
+          } catch {
+            // If we can't parse the body, fall through to treat as failure
+          }
+        }
+
+        if (!response.ok) {
+          throw new Error(`Request failed with status ${response.status}`);
+        }
+      } catch (error) {
+        // Re-queue for next sync attempt (up to 24h retention)
+        await queue.unshiftRequest(entry);
+        throw error;
+      }
+    }
+  },
   maxRetentionTime: 24 * 60, // Retry for up to 24 hours (in minutes)
 });
 
@@ -57,14 +97,35 @@ const serwist = new Serwist({
         ],
       }),
     },
-    // SRS §7.6.2: POST requests - Queue in IndexedDB, replay when online
+    // SRS §7.6.2: POST requests - Custom queue with conflict detection
     {
       matcher: /\/api\/.*$/i,
       method: "POST",
-      handler: new NetworkFirst({
-        cacheName: "dokaniai-post-cache",
-        plugins: [bgSyncPlugin],
-      }),
+      handler: async ({ request }) => {
+        try {
+          // Try network first
+          const response = await fetch(request.clone());
+
+          // If 409 conflict, let it propagate to the caller
+          return response;
+        } catch {
+          // Network failed — queue for background sync
+          await postQueue.pushRequest({ request });
+          return new Response(
+            JSON.stringify({
+              success: false,
+              error: {
+                code: "OFFLINE_QUEUED",
+                message: "Request queued for sync when back online.",
+              },
+            }),
+            {
+              status: 202,
+              headers: { "Content-Type": "application/json" },
+            },
+          );
+        }
+      },
     },
     // SRS §7.6: View products - Cached data with background sync
     {

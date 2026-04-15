@@ -2,6 +2,7 @@
 
 import { formatCurrencyBDT, formatLocalizedNumber } from "@/lib/localeNumber";
 import { useBusinessStore } from "@/store/businessStore";
+import { useBusinessStats, useOnboarding } from "@/hooks/useDashboard";
 import { useLocale, useTranslations } from "next-intl";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect } from "react";
@@ -91,19 +92,11 @@ export default function DashboardPage() {
     const {
         activeBusiness,
         activeBusinessId,
-        stats,
-        onboardingData,
-        isLoading,
-        loadStats,
-        loadOnboarding,
     } = useBusinessStore();
 
-    useEffect(() => {
-        if (activeBusinessId) {
-            loadStats(activeBusinessId);
-            loadOnboarding(activeBusinessId);
-        }
-    }, [activeBusinessId, loadStats, loadOnboarding]);
+    // Stats & onboarding — SWR-backed (auto-revalidation, shared cache)
+    const { stats, isLoading } = useBusinessStats(activeBusinessId ?? null);
+    const { onboardingData } = useOnboarding(activeBusinessId ?? null);
 
     useEffect(() => {
         if (pathname === "/dashboard" && activeBusinessId) {
