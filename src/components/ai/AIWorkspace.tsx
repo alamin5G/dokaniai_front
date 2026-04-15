@@ -142,6 +142,7 @@ export default function AIWorkspace({ businessId }: { businessId: string }) {
 
 function ChatTab({ businessId }: { businessId: string }) {
     const t = useTranslations("shop.ai");
+    const { maxQueryCharacters } = usePlanLimits();
     const [messages, setMessages] = useState<AIMessage[]>([]);
     const [input, setInput] = useState("");
     const [isSending, setIsSending] = useState(false);
@@ -673,6 +674,7 @@ function VoiceTab({ businessId }: { businessId: string }) {
 
 function CommandsTab({ businessId }: { businessId: string }) {
     const t = useTranslations("shop.ai");
+    const { maxQueryCharacters } = usePlanLimits();
     const [input, setInput] = useState("");
     const [isProcessing, setIsProcessing] = useState(false);
     const [parsedAction, setParsedAction] = useState<ParsedAction | null>(null);

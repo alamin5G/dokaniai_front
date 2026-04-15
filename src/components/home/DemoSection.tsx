@@ -25,101 +25,114 @@ const EXAMPLES = [
 ];
 
 export function DemoSection() {
-    const t = useTranslations("home.demo");
-    const [exampleIndex, setExampleIndex] = useState(0);
+  const t = useTranslations("home.demo");
+  const [exampleIndex, setExampleIndex] = useState(0);
 
-    const handleNext = useCallback(() => {
-        setExampleIndex((prev) => (prev + 1) % EXAMPLES.length);
-    }, []);
+  const handleNext = useCallback(() => {
+    setExampleIndex((prev) => (prev + 1) % EXAMPLES.length);
+  }, []);
 
-    const ex = EXAMPLES[exampleIndex];
+  const ex = EXAMPLES[exampleIndex];
 
-    return (
-        <section id="demo" className="py-24 px-6">
-            <div className="max-w-3xl mx-auto text-center space-y-10">
-                <h2 className="text-3xl md:text-4xl font-black text-primary font-headline">{t("title")}</h2>
+  return (
+    <section
+      id="demo"
+      className="home-section"
+      style={{ background: "linear-gradient(180deg, rgba(241,245,240,0.2) 0%, rgba(0,97,164,0.04) 100%)" }}
+    >
+      <div className="home-container grid lg:grid-cols-[1.1fr_1.4fr] gap-8 md:gap-10 items-start">
+        <div className="space-y-6 lg:sticky lg:top-24">
+          <div className="inline-flex items-center gap-2 px-4 py-2 bg-primary-fixed text-on-primary-fixed rounded-full text-sm font-semibold">
+            <span className="material-symbols-outlined home-icon-fill text-base">
+              smart_toy
+            </span>
+            {t("title")}
+          </div>
+          <h2 className="text-3xl sm:text-4xl md:text-5xl font-black text-primary leading-tight font-headline">{t("resultTitle")}</h2>
+          <p className="text-lg text-on-surface-variant leading-relaxed">{t(ex.voiceKey)}</p>
+          <button
+            onClick={handleNext}
+            className="w-full sm:w-auto px-6 py-4 bg-surface-container-high text-on-surface rounded-xl font-bold hover:bg-surface-dim transition-all flex items-center justify-center gap-2 min-h-[48px]"
+          >
+            <span className="material-symbols-outlined home-icon">refresh</span>
+            {t("anotherExample")}
+          </button>
+        </div>
 
-                {/* No-Line Rule: tonal layering, no borders */}
-                <div className="relative bg-surface-container-lowest rounded-2xl overflow-hidden"
-                    style={{ boxShadow: "0 48px 80px -12px rgba(24, 29, 26, 0.06)" }}>
-
-                    {/* Voice Input — Glassmorphism for AI (DESIGN.md §2) */}
-                    <div className="p-8"
-                        style={{
-                            background: "linear-gradient(135deg, rgba(0, 80, 58, 0.06) 0%, rgba(0, 97, 164, 0.06) 100%)"
-                        }}>
-                        <div className="inline-flex items-center gap-3 px-6 py-4 rounded-2xl"
-                            style={{
-                                background: "linear-gradient(135deg, rgba(0, 80, 58, 0.12) 0%, rgba(0, 106, 78, 0.10) 100%)",
-                                backdropFilter: "blur(12px)",
-                                WebkitBackdropFilter: "blur(12px)"
-                            }}>
-                            <span className="material-symbols-outlined text-primary text-3xl" style={{ fontVariationSettings: "'FILL' 1" }}>mic</span>
-                            <p className="text-lg font-bold text-on-surface font-headline">{t(ex.voiceKey)}</p>
-                        </div>
-                    </div>
-
-                    {/* Transition zone — No-Line Rule: use spacing, no dividers */}
-                    <div className="flex items-center px-8 py-3 bg-surface-container-low">
-                        <div className="flex-1"></div>
-                        <div className="mx-4 w-8 h-8 bg-primary-container rounded-full flex items-center justify-center">
-                            <span className="material-symbols-outlined text-on-primary-container text-lg animate-bounce">arrow_downward</span>
-                        </div>
-                        <div className="flex-1"></div>
-                    </div>
-
-                    {/* AI Result */}
-                    <div className="p-8 space-y-4">
-                        <div className="flex items-center gap-3 mb-6">
-                            <div className="w-10 h-10 bg-primary-container rounded-full flex items-center justify-center">
-                                <span className="material-symbols-outlined text-on-primary-container" style={{ fontVariationSettings: "'FILL' 1" }}>check_circle</span>
-                            </div>
-                            <p className="font-bold text-primary text-xl font-headline">{t("resultTitle")}</p>
-                        </div>
-
-                        {/* Result cards — tonal layering on surface-container-lowest */}
-                        <div className="grid grid-cols-2 gap-4">
-                            <div className="bg-surface-container-low p-4 rounded-xl flex items-center gap-3">
-                                <span className="material-symbols-outlined text-secondary" style={{ fontVariationSettings: "'FILL' 1" }}>inventory_2</span>
-                                <div>
-                                    <p className="text-xs text-on-surface-variant font-label">{t("labelProduct")}</p>
-                                    <p className="font-bold text-on-surface">{t(ex.productKey)}</p>
-                                </div>
-                            </div>
-                            <div className="bg-surface-container-low p-4 rounded-xl flex items-center gap-3">
-                                <span className="material-symbols-outlined text-secondary" style={{ fontVariationSettings: "'FILL' 1" }}>scale</span>
-                                <div>
-                                    <p className="text-xs text-on-surface-variant font-label">{t("labelQuantity")}</p>
-                                    <p className="font-bold text-on-surface">{t(ex.quantityKey)}</p>
-                                </div>
-                            </div>
-                            <div className="bg-surface-container-low p-4 rounded-xl flex items-center gap-3">
-                                <span className="material-symbols-outlined text-secondary" style={{ fontVariationSettings: "'FILL' 1" }}>payments</span>
-                                <div>
-                                    <p className="text-xs text-on-surface-variant font-label">{t("labelTotal")}</p>
-                                    <p className="font-bold text-primary text-lg font-headline">{t(ex.totalKey)}</p>
-                                </div>
-                            </div>
-                            <div className="bg-surface-container-low p-4 rounded-xl flex items-center gap-3">
-                                <span className="material-symbols-outlined text-secondary" style={{ fontVariationSettings: "'FILL' 1" }}>trending_down</span>
-                                <div>
-                                    <p className="text-xs text-on-surface-variant font-label">{t("labelStock")}</p>
-                                    <p className="font-bold text-on-surface">{t("resultStock")}</p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                {/* Cycle button — 48px touch target */}
-                <button
-                    onClick={handleNext}
-                    className="px-6 py-3 bg-primary/10 text-primary rounded-xl font-bold hover:bg-primary/20 transition-all flex items-center gap-2 mx-auto min-h-[48px]"
-                >
-                    <span className="material-symbols-outlined">refresh</span>
-                    {t("anotherExample")}
-                </button>
+        <div className="relative rounded-[2rem] bg-surface-container p-3 shadow-[0_40px_100px_-55px_rgba(0,80,58,0.45)]">
+          <div className="relative rounded-[1.6rem] bg-surface-container-high overflow-hidden">
+            <div className="p-7 md:p-8"
+              style={{
+                background: "linear-gradient(135deg, rgba(0, 80, 58, 0.08) 0%, rgba(0, 106, 78, 0.06) 100%)",
+              }}
+            >
+              <div
+                className="inline-flex items-center gap-3 px-5 py-4 rounded-2xl"
+                style={{
+                  background: "linear-gradient(135deg, rgba(0, 80, 58, 0.92) 0%, rgba(0, 106, 78, 0.82) 100%)",
+                  backdropFilter: "blur(20px)",
+                  WebkitBackdropFilter: "blur(20px)",
+                }}
+              >
+                <span className="material-symbols-outlined home-icon-fill text-white text-2xl">
+                  mic
+                </span>
+                <p className="text-white font-bold font-headline">{t(ex.voiceKey)}</p>
+              </div>
             </div>
-        </section>
-    );
+
+            <div className="p-7 md:p-8 bg-surface-container-low space-y-5">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 bg-primary-container rounded-full flex items-center justify-center">
+                  <span className="material-symbols-outlined home-icon-fill text-on-primary-container">
+                    auto_awesome
+                  </span>
+                </div>
+                <p className="font-bold text-primary text-xl font-headline">{t("resultTitle")}</p>
+              </div>
+
+              <div className="grid sm:grid-cols-2 gap-4">
+                <div className="bg-surface-container p-4 rounded-xl flex items-center gap-3">
+                  <span className="material-symbols-outlined home-icon-fill text-secondary">
+                    inventory_2
+                  </span>
+                  <div>
+                    <p className="text-xs text-on-surface-variant font-label">{t("labelProduct")}</p>
+                    <p className="font-bold text-on-surface">{t(ex.productKey)}</p>
+                  </div>
+                </div>
+                <div className="bg-surface-container p-4 rounded-xl flex items-center gap-3">
+                  <span className="material-symbols-outlined home-icon-fill text-secondary">
+                    scale
+                  </span>
+                  <div>
+                    <p className="text-xs text-on-surface-variant font-label">{t("labelQuantity")}</p>
+                    <p className="font-bold text-on-surface">{t(ex.quantityKey)}</p>
+                  </div>
+                </div>
+                <div className="bg-surface-container p-4 rounded-xl flex items-center gap-3">
+                  <span className="material-symbols-outlined home-icon-fill text-secondary">
+                    payments
+                  </span>
+                  <div>
+                    <p className="text-xs text-on-surface-variant font-label">{t("labelTotal")}</p>
+                    <p className="font-bold text-primary text-lg font-headline">{t(ex.totalKey)}</p>
+                  </div>
+                </div>
+                <div className="bg-surface-container p-4 rounded-xl flex items-center gap-3">
+                  <span className="material-symbols-outlined home-icon-fill text-secondary">
+                    trending_down
+                  </span>
+                  <div>
+                    <p className="text-xs text-on-surface-variant font-label">{t("labelStock")}</p>
+                    <p className="font-bold text-on-surface">{t("resultStock")}</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
 }

@@ -7,16 +7,16 @@ export function TestimonialsSection() {
 
   return (
     /* Matches reference: bg-surface-container-high/30 */
-    <section className="py-24 px-6 bg-surface-container-high/30">
-      <div className="max-w-7xl mx-auto">
-        <h3 className="text-3xl font-black text-primary text-center mb-16 font-headline">{t("title")}</h3>
+    <section className="home-section bg-surface-container-high/30">
+      <div className="home-container">
+        <h3 className="text-3xl sm:text-4xl font-black text-primary text-center mb-12 md:mb-16 font-headline">{t("title")}</h3>
 
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 md:gap-8">
           {/* Testimonial 1 — matches reference: rounded-3xl, border-t on author */}
           <div className="bg-surface-container-lowest p-8 rounded-3xl space-y-4">
             <div className="flex text-secondary mb-4">
               {[1,2,3,4,5].map((_, i) => (
-                <span key={i} className="material-symbols-outlined" style={{ fontVariationSettings: "'FILL' 1" }}>star</span>
+                <span key={i} className="material-symbols-outlined home-icon-fill">star</span>
               ))}
             </div>
             <p className="text-lg italic font-medium text-on-surface leading-relaxed">
@@ -41,7 +41,7 @@ export function TestimonialsSection() {
           <div className="bg-surface-container-lowest p-8 rounded-3xl space-y-4">
             <div className="flex text-secondary mb-4">
               {[1,2,3,4,5].map((_, i) => (
-                <span key={i} className="material-symbols-outlined" style={{ fontVariationSettings: "'FILL' 1" }}>star</span>
+                <span key={i} className="material-symbols-outlined home-icon-fill">star</span>
               ))}
             </div>
             <p className="text-lg italic font-medium text-on-surface leading-relaxed">
@@ -66,7 +66,7 @@ export function TestimonialsSection() {
           <div className="bg-surface-container-lowest p-8 rounded-3xl space-y-4">
             <div className="flex text-secondary mb-4">
               {[1,2,3,4,5].map((_, i) => (
-                <span key={i} className="material-symbols-outlined" style={{ fontVariationSettings: "'FILL' 1" }}>star</span>
+                <span key={i} className="material-symbols-outlined home-icon-fill">star</span>
               ))}
             </div>
             <p className="text-lg italic font-medium text-on-surface leading-relaxed">

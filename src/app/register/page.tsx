@@ -168,8 +168,8 @@ export default function RegisterPage() {
           </div>
           <span className="text-sm text-on-surface-variant leading-relaxed select-none">
             {t.rich("agreeTerms", {
-              terms: (chunks) => <a className="text-secondary font-semibold hover:underline" href="#">{chunks}</a>,
-              privacy: (chunks) => <a className="text-secondary font-semibold hover:underline" href="#">{chunks}</a>,
+              terms: (chunks) => <a className="text-secondary font-semibold hover:underline" href="/legal#terms">{chunks}</a>,
+              privacy: (chunks) => <a className="text-secondary font-semibold hover:underline" href="/legal#privacy">{chunks}</a>,
             })}
           </span>
         </label>

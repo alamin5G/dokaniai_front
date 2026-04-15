@@ -8,8 +8,8 @@ export function Footer() {
 
   return (
     /* Matches reference: bg-surface-container-low */
-    <footer className="bg-surface-container-low w-full mt-20">
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-8 px-6 py-12 max-w-7xl mx-auto">
+    <footer className="bg-surface-container-low w-full mt-16 md:mt-20">
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-6 md:gap-8 px-4 sm:px-6 py-12 max-w-7xl mx-auto">
         <div className="col-span-2 md:col-span-1 space-y-4">
           <Link href="/" className="text-xl font-bold text-primary font-headline hover:opacity-80 transition-opacity inline-block">
             DokaniAI
@@ -44,13 +44,13 @@ export function Footer() {
             <li><Link className="hover:text-primary hover:translate-x-1 transition-transform inline-block" href="tel:+8801XXXXXXXXX">{t("phone")}</Link></li>
           </ul>
           <div className="flex gap-4 pt-2">
-            <Link href="#" className="material-symbols-outlined text-on-surface-variant hover:text-primary transition-colors" aria-label="Facebook">
+            <Link href="#" className="material-symbols-outlined home-icon text-on-surface-variant hover:text-primary transition-colors" aria-label="Facebook">
               social_leaderboard
             </Link>
-            <Link href="#" className="material-symbols-outlined text-on-surface-variant hover:text-primary transition-colors" aria-label="WhatsApp">
+            <Link href="#" className="material-symbols-outlined home-icon text-on-surface-variant hover:text-primary transition-colors" aria-label="WhatsApp">
               forum
             </Link>
-            <Link href="mailto:support@dokaniai.com" className="material-symbols-outlined text-on-surface-variant hover:text-primary transition-colors" aria-label="Email">
+            <Link href="mailto:support@dokaniai.com" className="material-symbols-outlined home-icon text-on-surface-variant hover:text-primary transition-colors" aria-label="Email">
               mail
             </Link>
           </div>

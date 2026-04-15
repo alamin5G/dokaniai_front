@@ -163,3 +163,23 @@
   grid-template-columns: repeat(12, 1fr);
   gap: 2rem;
 }
+
+@layer utilities {
+  .home-section {
+    @apply px-4 sm:px-6 py-16 md:py-20 lg:py-24;
+  }
+
+  .home-container {
+    @apply max-w-7xl mx-auto;
+  }
+
+  .home-icon {
+    font-variation-settings: "FILL" 0, "wght" 560, "GRAD" 0, "opsz" 24;
+    line-height: 1;
+  }
+
+  .home-icon-fill {
+    font-variation-settings: "FILL" 1, "wght" 560, "GRAD" 0, "opsz" 24;
+    line-height: 1;
+  }
+}

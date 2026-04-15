@@ -4,24 +4,37 @@ import Link from "next/link";
 import { useTranslations } from "next-intl";
 
 export function FinalCTASection() {
-    const t = useTranslations("home.finalCta");
+  const t = useTranslations("home.finalCta");
 
-    return (
-        /* Glassmorphism gradient CTA — DESIGN.md §2: primary → primary_container gradient */
-        <section className="py-20 px-6"
-            style={{
-                background: "linear-gradient(135deg, #003727 0%, #00503a 100%)"
-            }}>
-            <div className="max-w-4xl mx-auto text-center space-y-8">
-                <h2 className="text-4xl font-black text-on-primary font-headline">{t("title")}</h2>
-                <p className="text-on-primary/80 text-lg max-w-2xl mx-auto">{t("description")}</p>
-                {/* CTA Button — 48px touch target, inverted colors */}
-                <Link href="/register">
-                    <button className="px-10 py-5 bg-on-primary text-primary rounded-xl font-bold text-xl hover:brightness-110 transition-all flex items-center gap-3 mx-auto min-h-[48px]">
-                        {t("button")}
-                    </button>
-                </Link>
-            </div>
-        </section>
-    );
+  return (
+    <section className="home-section py-16 md:py-20 relative overflow-hidden"
+      style={{
+        background: "linear-gradient(135deg, #003727 0%, #00503a 100%)",
+      }}
+    >
+      <div className="absolute -top-24 -right-20 w-72 h-72 rounded-full bg-white/15 blur-3xl" />
+      <div className="absolute -bottom-28 -left-16 w-80 h-80 rounded-full bg-primary-container/35 blur-3xl" />
+      <div className="absolute top-1/3 left-1/3 w-64 h-64 rounded-full bg-secondary/15 blur-3xl" />
+
+      <div className="relative max-w-5xl mx-auto rounded-[2rem] p-7 sm:p-8 md:p-12 text-center space-y-6 md:space-y-7 border border-white/15"
+        style={{
+          background: "linear-gradient(145deg, rgba(255,255,255,0.14) 0%, rgba(255,255,255,0.07) 100%)",
+          backdropFilter: "blur(16px)",
+          WebkitBackdropFilter: "blur(16px)",
+        }}
+      >
+        <h2 className="text-3xl sm:text-4xl md:text-5xl font-black text-on-primary font-headline leading-tight">{t("title")}</h2>
+        <p className="text-base sm:text-lg text-on-primary/85 max-w-2xl mx-auto leading-relaxed">{t("description")}</p>
+        <Link href="/register">
+          <button
+            className="w-full sm:w-auto px-10 py-5 rounded-xl font-bold text-lg sm:text-xl hover:brightness-110 transition-all flex items-center justify-center gap-3 mx-auto min-h-[48px]"
+            style={{ background: "linear-gradient(135deg, #ffffff 0%, #e9f5ef 100%)", color: "#00503a" }}
+          >
+            <span className="material-symbols-outlined home-icon">rocket_launch</span>
+            {t("button")}
+          </button>
+        </Link>
+      </div>
+    </section>
+  );
 }

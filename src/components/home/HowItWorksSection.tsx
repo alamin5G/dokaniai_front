@@ -4,56 +4,57 @@ import Link from "next/link";
 import { useTranslations } from "next-intl";
 
 export function HowItWorksSection() {
-    const t = useTranslations("home.howItWorks");
+  const t = useTranslations("home.howItWorks");
 
-    const steps = [
-        { num: "১", icon: "person_add", title: t("step1Title"), desc: t("step1Desc") },
-        { num: "২", icon: "storefront", title: t("step2Title"), desc: t("step2Desc") },
-        { num: "৩", icon: "play_circle", title: t("step3Title"), desc: t("step3Desc") },
-    ];
+  const steps = [
+    { num: "১", icon: "person_add", title: t("step1Title"), desc: t("step1Desc") },
+    { num: "২", icon: "storefront", title: t("step2Title"), desc: t("step2Desc") },
+    { num: "৩", icon: "play_circle", title: t("step3Title"), desc: t("step3Desc") },
+  ];
 
-    return (
-        /* Alternating section bg for visual separation — No-Line Rule */
-        <section className="py-24 px-6">
-            <div className="max-w-5xl mx-auto text-center space-y-16">
-                <h2 className="text-3xl md:text-4xl font-black text-primary font-headline">{t("title")}</h2>
+  return (
+    <section
+      className="home-section"
+      style={{ background: "linear-gradient(180deg, rgba(241,245,240,0.2) 0%, rgba(0,106,78,0.05) 100%)" }}
+    >
+      <div className="home-container space-y-10 md:space-y-12">
+        <div className="text-center space-y-4">
+          <h2 className="text-3xl sm:text-4xl md:text-5xl font-black text-primary font-headline">{t("title")}</h2>
+        </div>
 
-                <div className="grid md:grid-cols-3 gap-8 relative">
-                    {/* Connector — No-Line Rule: use subtle tonal indicator instead of line */}
-                    <div className="hidden md:block absolute top-16 left-[33%] right-[33%]">
-                        <div className="flex items-center justify-center">
-                            <div className="flex-1 h-0.5 bg-outline-variant/15"></div>
-                            <span className="material-symbols-outlined text-primary mx-2 text-xl">arrow_forward</span>
-                            <div className="flex-1 h-0.5 bg-outline-variant/15"></div>
-                        </div>
-                    </div>
-
-                    {steps.map((step, i) => (
-                        <div key={i}
-                            /* No-Line Rule: no border. Tonal layering only */
-                            className="bg-surface-container-lowest p-8 rounded-2xl transition-all">
-                            {/* Step number — primary circle, tonal elevation */}
-                            <div className="w-16 h-16 bg-primary text-on-primary rounded-full flex items-center justify-center mx-auto mb-6 text-2xl font-black font-headline">
-                                {step.num}
-                            </div>
-                            {/* Icon */}
-                            <div className="w-12 h-12 bg-primary-container text-on-primary-container rounded-xl flex items-center justify-center mx-auto mb-4">
-                                <span className="material-symbols-outlined" style={{ fontVariationSettings: "'FILL' 1" }}>{step.icon}</span>
-                            </div>
-                            <h3 className="font-bold text-on-surface text-lg mb-2 font-headline">{step.title}</h3>
-                            <p className="text-sm text-on-surface-variant leading-relaxed">{step.desc}</p>
-                        </div>
-                    ))}
+        <div className="grid lg:grid-cols-3 gap-4 sm:gap-6 lg:gap-8">
+          {steps.map((step) => (
+            <article key={step.num} className="bg-surface-container rounded-3xl p-3 shadow-[0_28px_72px_-52px_rgba(0,80,58,0.45)]">
+              <div className="bg-surface-container-high rounded-[1.25rem] p-7 h-full">
+                <div className="flex items-center justify-between mb-6">
+                  <div className="w-12 h-12 bg-primary-container text-on-primary-container rounded-xl flex items-center justify-center">
+                    <span className="material-symbols-outlined home-icon-fill">
+                      {step.icon}
+                    </span>
+                  </div>
+                  <div className="w-10 h-10 bg-primary text-on-primary rounded-full flex items-center justify-center font-black font-headline">
+                    {step.num}
+                  </div>
                 </div>
+                <h3 className="font-bold text-on-surface text-xl mb-3 font-headline">{step.title}</h3>
+                <p className="text-on-surface-variant leading-relaxed">{step.desc}</p>
+              </div>
+            </article>
+          ))}
+        </div>
 
-                {/* CTA — 48px touch target */}
-                <Link href="/register">
-                    <button className="px-8 py-4 bg-primary text-on-primary rounded-xl font-bold text-lg flex items-center gap-3 hover:brightness-110 transition-all mx-auto min-h-[48px]">
-                        <span className="material-symbols-outlined" style={{ fontVariationSettings: "'FILL' 1" }}>rocket_launch</span>
-                        {t("cta")}
-                    </button>
-                </Link>
-            </div>
-        </section>
-    );
+        <div className="flex justify-center pt-2">
+          <Link href="/register">
+            <button
+              className="w-full sm:w-auto px-8 py-4 text-on-primary rounded-xl font-bold text-base sm:text-lg flex items-center justify-center gap-3 hover:shadow-xl transition-all mx-auto min-h-[48px]"
+              style={{ background: "linear-gradient(135deg, #00503a 0%, #006a4e 100%)" }}
+            >
+              <span className="material-symbols-outlined home-icon">rocket_launch</span>
+              {t("cta")}
+            </button>
+          </Link>
+        </div>
+      </div>
+    </section>
+  );
 }

@@ -7,32 +7,32 @@ export function HeroSection() {
   const t = useTranslations("home.hero");
 
   return (
-    <header className="relative overflow-hidden pt-16 pb-24 px-6">
-      <div className="max-w-7xl mx-auto grid lg:grid-cols-2 gap-16 items-center">
+    <header className="home-section relative overflow-hidden pt-14 md:pt-16">
+      <div className="home-container grid lg:grid-cols-2 gap-10 md:gap-16 items-center">
         <div className="space-y-8">
           <div className="inline-flex items-center gap-2 px-4 py-2 bg-primary-fixed text-on-primary-fixed rounded-full font-medium text-sm">
-            <span className="material-symbols-outlined text-sm" data-icon="auto_awesome">auto_awesome</span>
+            <span className="material-symbols-outlined home-icon-fill text-sm" data-icon="auto_awesome">auto_awesome</span>
             {t("badge")}
           </div>
 
-          <h1 className="text-5xl md:text-7xl font-black text-primary leading-[1.15] tracking-tight font-headline">
+          <h1 className="text-4xl sm:text-5xl md:text-7xl font-black text-primary leading-[1.15] tracking-tight font-headline">
             {t("title")}
           </h1>
 
-          <p className="text-xl text-on-surface-variant max-w-lg leading-relaxed">
+          <p className="text-lg sm:text-xl text-on-surface-variant max-w-lg leading-relaxed">
             {t("description")}
           </p>
 
-          <div className="flex flex-wrap gap-4 pt-4">
+          <div className="flex flex-col sm:flex-row sm:flex-wrap gap-3 sm:gap-4 pt-3 md:pt-4">
             <Link href="/register">
-              <button className="px-8 py-4 bg-primary text-on-primary rounded-xl font-bold text-lg flex items-center gap-3 hover:shadow-xl transition-all">
-                <span className="material-symbols-outlined" data-icon="rocket_launch">rocket_launch</span>
+              <button className="w-full sm:w-auto px-8 py-4 bg-primary text-on-primary rounded-xl font-bold text-base sm:text-lg flex items-center justify-center gap-3 hover:shadow-xl transition-all min-h-[48px]">
+                <span className="material-symbols-outlined home-icon" data-icon="rocket_launch">rocket_launch</span>
                 {t("startToday")}
               </button>
             </Link>
             <Link href="/#demo">
-              <button className="px-8 py-4 bg-surface-container-high text-on-surface rounded-xl font-bold text-lg flex items-center gap-3 hover:bg-surface-dim transition-all">
-                <span className="material-symbols-outlined" data-icon="play_circle">play_circle</span>
+              <button className="w-full sm:w-auto px-8 py-4 bg-surface-container-high text-on-surface rounded-xl font-bold text-base sm:text-lg flex items-center justify-center gap-3 hover:bg-surface-dim transition-all min-h-[48px]">
+                <span className="material-symbols-outlined home-icon" data-icon="play_circle">play_circle</span>
                 {t("howItWorks")}
               </button>
             </Link>
@@ -58,7 +58,7 @@ export function HeroSection() {
               }}>
               <div className="flex items-center gap-4">
                 <div className="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center animate-pulse">
-                  <span className="material-symbols-outlined text-white" style={{ fontVariationSettings: "'FILL' 1" }}>mic</span>
+                  <span className="material-symbols-outlined home-icon-fill text-white">mic</span>
                 </div>
                 <div>
                   <p className="text-white/80 text-sm font-medium">{t("listeningAi")}</p>
