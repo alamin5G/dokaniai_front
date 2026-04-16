@@ -10,6 +10,7 @@ import {
     getUnreadCount,
     deleteNotification,
 } from "@/lib/notificationApi";
+import { useAuthStore } from "@/store/authStore";
 
 // ─── Icons ──────────────────────────────────────────────────
 
@@ -98,6 +99,8 @@ export default function NotificationBell() {
 
     // ─── Load unread count (poll every 60s) ──────────────
     const fetchUnreadCount = useCallback(async () => {
+        // Skip if not authenticated to avoid 401 console noise
+        if (!useAuthStore.getState().accessToken) return;
         try {
             const count = await getUnreadCount();
             setUnreadCount(count);
