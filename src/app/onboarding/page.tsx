@@ -13,7 +13,7 @@ import type { CategoryResponse } from "@/types/category";
 import type { BusinessCreateRequest, BusinessTypeOptionResponse, PaymentMethod } from "@/types/business";
 import { useLocale, useTranslations } from "next-intl";
 import { useRouter, useSearchParams } from "next/navigation";
-import { Suspense, useCallback, useEffect, useState } from "react";
+import { Suspense, useCallback, useEffect, useRef, useState } from "react";
 
 // ---------------------------------------------------------------------------
 // Constants
@@ -292,6 +292,7 @@ function OnboardingPageContent() {
     const [isResuming, setIsResuming] = useState(true);
     const [newFlowInitialized, setNewFlowInitialized] = useState(false);
     const [error, setError] = useState("");
+    const hasDraftRef = useRef(false);
 
     type OnboardingDraft = {
         currentStep: number;
@@ -352,6 +353,7 @@ function OnboardingPageContent() {
         try {
             const raw = localStorage.getItem(ONBOARDING_DRAFT_KEY);
             if (!raw) return;
+            hasDraftRef.current = true;
             const draft = JSON.parse(raw) as OnboardingDraft;
             if (draft.currentStep >= 1 && draft.currentStep <= TOTAL_STEPS) {
                 setCurrentStep(draft.currentStep);
@@ -560,8 +562,10 @@ function OnboardingPageContent() {
                             return;
                         }
 
-                        const nextServerStep = Math.min(onboarding.setupStep + 1, TOTAL_STEPS);
-                        setCurrentStep((prev) => Math.max(prev, nextServerStep));
+                        const serverStep = Math.min(onboarding.setupStep, TOTAL_STEPS);
+                        if (!hasDraftRef.current && serverStep > 1) {
+                            setCurrentStep(serverStep);
+                        }
                         setCreatedBusinessId(bid);
                     } catch (error) {
                         if (!isHttpNotFound(error)) {
