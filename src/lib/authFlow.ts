@@ -100,6 +100,7 @@ export function clearResetContext(): void {
 // --- Subscription upgrade resume helpers ---
 
 const PENDING_UPGRADE_PLAN_KEY = "pending_upgrade_plan";
+const PENDING_PLAN_IS_TRIAL_KEY = "pending_plan_is_trial";
 const REDIRECT_AFTER_LOGIN_KEY = "redirect_after_login";
 
 function isSafeInternalPath(path: string): boolean {
@@ -119,6 +120,13 @@ export function getPendingUpgradePlan(): string | null {
 export function clearPendingUpgradePlan(): void {
   if (typeof window === "undefined") return;
   sessionStorage.removeItem(PENDING_UPGRADE_PLAN_KEY);
+  sessionStorage.removeItem(PENDING_PLAN_IS_TRIAL_KEY);
+}
+
+/** Whether the pending plan is a free trial (vs a paid plan). */
+export function isPendingPlanTrial(): boolean {
+  if (typeof window === "undefined") return false;
+  return sessionStorage.getItem(PENDING_PLAN_IS_TRIAL_KEY) === "true";
 }
 
 export function setRedirectAfterLogin(path: string): void {
@@ -126,9 +134,19 @@ export function setRedirectAfterLogin(path: string): void {
   sessionStorage.setItem(REDIRECT_AFTER_LOGIN_KEY, path);
 }
 
+/**
+ * Consume the stored redirect path after login.
+ *
+ * - Trial plans: return `null` so the caller falls through to the normal
+ *   post-login redirect (onboarding / dashboard).  The trial modal is shown
+ *   by the login page *before* this is consumed.
+ * - Paid plans: return `/subscription/upgrade?plan=...`.
+ * - Explicit redirect: honour it (e.g. from `setRedirectAfterLogin`).
+ */
 export function consumeRedirectAfterLogin(): string | null {
   if (typeof window === "undefined") return null;
 
+  // 1. Explicit redirect takes priority
   const redirectPath = sessionStorage.getItem(REDIRECT_AFTER_LOGIN_KEY);
   if (redirectPath) {
     sessionStorage.removeItem(REDIRECT_AFTER_LOGIN_KEY);
@@ -137,15 +155,38 @@ export function consumeRedirectAfterLogin(): string | null {
     }
   }
 
+  // 2. Pending paid plan → upgrade flow
   const pendingPlanId = getPendingUpgradePlan();
   if (!pendingPlanId) {
     return null;
   }
 
+  // 3. Trial plan → let normal redirect handle it (onboarding)
+  if (isPendingPlanTrial()) {
+    clearPendingUpgradePlan();
+    return null;
+  }
+
+  // 4. Paid plan → upgrade page
+  clearPendingUpgradePlan();
   return `/subscription/upgrade?plan=${encodeURIComponent(pendingPlanId)}`;
 }
 
-export function rememberPendingUpgrade(planId: string): void {
+/**
+ * Remember a plan the user selected before registering/logging in.
+ * @param planId  The plan UUID
+ * @param isTrial Whether the plan is a free trial (default: false)
+ */
+export function rememberPendingUpgrade(planId: string, isTrial: boolean = false): void {
   setPendingUpgradePlan(planId);
-  setRedirectAfterLogin(`/subscription/upgrade?plan=${encodeURIComponent(planId)}`);
+  if (typeof window !== "undefined") {
+    sessionStorage.setItem(PENDING_PLAN_IS_TRIAL_KEY, isTrial ? "true" : "false");
+  }
+
+  if (isTrial) {
+    // Trial plans don't need the upgrade page — clear any stale redirect
+    sessionStorage.removeItem(REDIRECT_AFTER_LOGIN_KEY);
+  } else {
+    setRedirectAfterLogin(`/subscription/upgrade?plan=${encodeURIComponent(planId)}`);
+  }
 }

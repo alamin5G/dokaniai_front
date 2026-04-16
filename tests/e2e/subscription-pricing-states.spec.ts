@@ -112,7 +112,7 @@ test.beforeEach(async ({ page }) => {
   });
 });
 
-test("unauthenticated pricing click stores pending upgrade and redirects to login", async ({ page }) => {
+test("unauthenticated pricing click stores pending upgrade and redirects to register", async ({ page }) => {
   await page.goto("/pricing");
   await expect(page.getByTestId("quick-reference-table")).toBeVisible();
   await expect(page.getByTestId("feature-matrix-table")).toBeVisible();
@@ -120,8 +120,10 @@ test("unauthenticated pricing click stores pending upgrade and redirects to logi
   await expect(page.getByTestId("plan-action-plan-basic")).toContainText("Buy Now");
   await page.getByTestId("plan-action-plan-pro").click();
 
-  await expect(page).toHaveURL(/\/login$/);
+  // Updated: pricing CTA now redirects to /register (not /login) for unauthenticated users
+  await expect(page).toHaveURL(/\/register$/);
   await expect.poll(async () => page.evaluate(() => sessionStorage.getItem("pending_upgrade_plan"))).toBe("plan-pro");
+  await expect.poll(async () => page.evaluate(() => sessionStorage.getItem("pending_plan_is_trial"))).toBe("false");
   await expect.poll(async () => page.evaluate(() => sessionStorage.getItem("redirect_after_login"))).toBe(
     "/subscription/upgrade?plan=plan-pro",
   );
@@ -183,10 +185,11 @@ test("authenticated user sees current plan and upgrade actions", async ({ page }
   await expect(page).toHaveURL(/\/subscription\/downgrade\?plan=plan-ft1/);
 });
 
-test("registered phone user with pending upgrade is redirected to upgrade after OTP verification", async ({ page }) => {
+test("registered phone user with pending upgrade is redirected to upgrade after OTP + login", async ({ page }) => {
   await page.goto("/");
   await page.evaluate(() => {
     sessionStorage.setItem("pending_upgrade_plan", "plan-pro");
+    sessionStorage.setItem("pending_plan_is_trial", "false");
     sessionStorage.setItem("redirect_after_login", "/subscription/upgrade?plan=plan-pro");
     sessionStorage.setItem("dokaniai-auth-contact", "01700000000");
     sessionStorage.setItem("dokaniai-auth-method", "phone");
@@ -276,10 +279,11 @@ test("registered phone user with pending upgrade is redirected to upgrade after 
   await expect(page).toHaveURL(/\/subscription\/upgrade\?plan=plan-pro/);
 });
 
-test("phone OTP authenticated path resumes pending upgrade directly", async ({ page }) => {
+test("phone OTP authenticated path redirects to login (upgrade happens after login)", async ({ page }) => {
   await page.goto("/");
   await page.evaluate(() => {
     sessionStorage.setItem("pending_upgrade_plan", "plan-pro");
+    sessionStorage.setItem("pending_plan_is_trial", "false");
     sessionStorage.setItem("redirect_after_login", "/subscription/upgrade?plan=plan-pro");
     sessionStorage.setItem("dokaniai-auth-contact", "01700000000");
     sessionStorage.setItem("dokaniai-auth-method", "phone");
@@ -320,11 +324,13 @@ test("phone OTP authenticated path resumes pending upgrade directly", async ({ p
     });
   });
 
+  // Updated: AUTHENTICATED status now redirects to /login (not upgrade page directly)
+  // The upgrade redirect happens after the user logs in
   await page.goto("/verify-otp");
   await page.locator("form input").first().fill("123456");
   await page.locator("form button[type='submit']").click();
 
-  await expect(page).toHaveURL(/\/subscription\/upgrade\?plan=plan-pro/);
+  await expect(page).toHaveURL(/\/login/, { timeout: 15_000 });
 });
 
 test("verified email user resumes pending upgrade after login", async ({ page }) => {

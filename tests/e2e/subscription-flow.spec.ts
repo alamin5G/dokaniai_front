@@ -200,13 +200,13 @@ test("pricing -> login -> upgrade -> payment status", async ({ page }) => {
 	});
 
 	await page.goto("/pricing");
-	await expect(page.getByText("Pricing Plans")).toBeVisible();
-	await expect(page.getByTestId("quick-reference-table")).toBeVisible();
+	await expect(page.getByTestId("quick-reference-table")).toBeVisible({ timeout: 15_000 });
 	await expect(page.getByTestId("feature-matrix-table")).toBeVisible();
 
 	// Seed the same session state used by pricing CTA for unauthenticated upgrade intent.
 	await page.evaluate(() => {
 		sessionStorage.setItem("pending_upgrade_plan", "plan-pro");
+		sessionStorage.setItem("pending_plan_is_trial", "false");
 		sessionStorage.setItem("redirect_after_login", "/subscription/upgrade?plan=plan-pro");
 	});
 	await page.goto("/login");

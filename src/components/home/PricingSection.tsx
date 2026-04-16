@@ -246,7 +246,7 @@ export function PricingSection() {
     }
 
     if (!isAuthenticated) {
-      rememberPendingUpgrade(plan.id);
+      rememberPendingUpgrade(plan.id, plan.isTrial);
       router.push("/register");
       return;
     }

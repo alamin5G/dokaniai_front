@@ -4,9 +4,7 @@ import { AuthLayout } from "@/components/layout/AuthLayout";
 import { FormInput, GradientButton } from "@/components/ui/FormPrimitives";
 import apiClient from "@/lib/api";
 import { getApiErrorMessage } from "@/lib/apiError";
-import { clearAuthContact, consumeRedirectAfterLogin, getAuthContact, maskContact } from "@/lib/authFlow";
-import { getClientDeviceContext } from "@/lib/device";
-import { getPreferredWorkspacePath } from "@/lib/shopRouting";
+import { clearAuthContact, getAuthContact, maskContact } from "@/lib/authFlow";
 import { useAuthStore } from "@/store/authStore";
 import { useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
@@ -16,7 +14,6 @@ function VerifyOtpForm() {
   const router = useRouter();
   const { contact, method } = getAuthContact();
   const t = useTranslations("auth.verifyOtp");
-  const setTokens = useAuthStore((state) => state.setTokens);
 
   const [otp, setOtp] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -61,24 +58,38 @@ function VerifyOtpForm() {
     setIsLoading(true);
 
     try {
-      const deviceContext = getClientDeviceContext();
-      const response = await apiClient.post("/auth/verify/phone", {
+      const res = await apiClient.post("/auth/verify/phone", {
         phone: contact,
         otp,
-        ...deviceContext,
       });
 
-      const data = response.data?.data;
-      if (data) {
-        clearAuthContact();
-        setTokens(data.accessToken, data.refreshToken, data.userId, data.status);
+      clearAuthContact();
 
-        if (data.status === "PASSWORD_SETUP_REQUIRED") {
+      const { accessToken, refreshToken, userId, status } = (res.data?.data ?? {}) as {
+        accessToken?: string;
+        refreshToken?: string;
+        userId?: string;
+        status?: string;
+      };
+
+      if (status === "PASSWORD_SETUP_REQUIRED" && accessToken) {
+        // Phone registration without password — auto-login to allow set-password flow.
+        // The user cannot log in through the normal login form yet because they
+        // have no password set, so we must keep the session alive.
+        const setTokens = useAuthStore.getState().setTokens;
+        setTokens(accessToken, refreshToken ?? "", userId ?? "", status);
+        setSuccessText(t("successMessage"));
+        setTimeout(() => {
           router.push("/set-password");
-        } else {
-          const pendingRedirect = consumeRedirectAfterLogin();
-          router.push(pendingRedirect ?? getPreferredWorkspacePath());
-        }
+        }, 2000);
+      } else {
+        // Normal verification (AUTHENTICATED) — redirect to login page.
+        // User must login explicitly so that post-login plan-aware redirect
+        // logic (trial modal / paid upgrade) runs correctly.
+        setSuccessText(t("successMessage"));
+        setTimeout(() => {
+          router.push("/login?verified=true");
+        }, 2000);
       }
     } catch (error: unknown) {
       setErrorText(getApiErrorMessage(error, t("errorVerificationFailed")));
@@ -86,6 +97,17 @@ function VerifyOtpForm() {
       setIsLoading(false);
     }
   };
+
+  // Success state — show BEFORE the !contact check, because clearAuthContact()
+  // already wiped sessionStorage, so contact would be null here
+  if (successText) {
+    return (
+      <div className="text-center space-y-4">
+        <span className="material-symbols-outlined text-primary text-5xl">check_circle</span>
+        <p className="text-primary font-bold text-lg">{successText}</p>
+      </div>
+    );
+  }
 
   if (!contact || method !== "phone") {
     return (

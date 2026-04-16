@@ -943,6 +943,14 @@
     "backToHome": "Back to Home"
   },
   "subscription": {
+    "trialModal": {
+      "title": "Your Free Trial is Active!",
+      "duration": "{days} days free trial",
+      "allFeatures": "Access to all features",
+      "noCreditCard": "No credit card required",
+      "description": "Your free trial has been activated. Explore all features and set up your business. When you're ready, you can upgrade to a paid plan anytime.",
+      "confirm": "শুরু করুন"
+    },
     "pricing": {
       "currentPlan": "Current Plan",
       "upgrade": "Upgrade",
