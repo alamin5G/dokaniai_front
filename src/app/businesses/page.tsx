@@ -4,8 +4,10 @@ import { LanguageSwitcher } from "@/components/ui/LanguageSwitcher";
 import UserProfileSection from "@/components/ui/UserProfileSection";
 import { formatCurrencyBDT } from "@/lib/localeNumber";
 import { buildShopPath } from "@/lib/shopRouting";
+import { getPlanLimits } from "@/lib/subscriptionApi";
 import { useBusinessStore } from "@/store/businessStore";
 import type { BusinessResponse } from "@/types/business";
+import type { PlanLimits } from "@/types/subscription";
 import { useLocale, useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
@@ -42,6 +44,14 @@ function IconStore({ className = "w-6 h-6" }: { className?: string }) {
     return (
         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className={className}>
             <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 21v-7.5a.75.75 0 01.75-.75h3a.75.75 0 01.75.75V21m-4.5 0H2.36m11.14 0H18m0 0h3.64m-1.39 0V9.349m-16.5 11.65V9.35m0 0a3.001 3.001 0 003.75-.615A2.993 2.993 0 009.75 9.75c.896 0 1.7-.393 2.25-1.016a2.993 2.993 0 002.25 1.016c.896 0 1.7-.393 2.25-1.016a3.001 3.001 0 003.75.614m-16.5 0a3.004 3.004 0 01-.621-4.72L4.318 3.44A1.5 1.5 0 015.378 3h13.243a1.5 1.5 0 011.06.44l1.19 1.189a3 3 0 01-.621 4.72m-13.5 8.65h3.75a.75.75 0 00.75-.75V13.5a.75.75 0 00-.75-.75H6.75a.75.75 0 00-.75.75v3.15c0 .415.336.75.75.75z" />
+        </svg>
+    );
+}
+
+function IconExclamationTriangle({ className = "w-5 h-5" }: { className?: string }) {
+    return (
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className={className}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126ZM12 15.75h.007v.008H12v-.008Z" />
         </svg>
     );
 }
@@ -157,7 +167,6 @@ function SkeletonRow() {
             </div>
             <div className="col-span-3 flex justify-end gap-2">
                 <div className="h-9 w-20 rounded-lg bg-surface-container-highest" />
-                <div className="h-9 w-24 rounded-lg bg-surface-container-highest" />
             </div>
         </div>
     );
@@ -181,9 +190,13 @@ export default function BusinessesPage() {
         loadBusinesses,
         loadBusinessStatsMap,
         setActiveBusiness,
-        archiveBusiness,
         deleteBusiness,
     } = useBusinessStore();
+
+    // Subscription / limit state
+    const [planLimits, setPlanLimits] = useState<PlanLimits | null>(null);
+    const [businessLimitReached, setBusinessLimitReached] = useState(false);
+    const [limitError, setLimitError] = useState("");
 
     const renderBusinessType = useCallback(
         (type?: string | null) => {
@@ -217,6 +230,19 @@ export default function BusinessesPage() {
             loadBusinessStatsMap(activeIds);
         }
     }, [businesses, loadBusinessStatsMap]);
+
+    // Check subscription plan limits
+    useEffect(() => {
+        if (!hasToken) return;
+        getPlanLimits()
+            .then((limits) => {
+                setPlanLimits(limits);
+                setBusinessLimitReached(limits.currentBusinesses >= limits.maxBusinesses);
+            })
+            .catch(() => {
+                // If we can't fetch limits, don't block the user
+            });
+    }, [hasToken, businesses]);
 
     // Confirmation dialog state
     const [confirmDialog, setConfirmDialog] = useState<{
@@ -257,27 +283,6 @@ export default function BusinessesPage() {
         [setActiveBusiness, router]
     );
 
-    const handleArchive = useCallback(
-        (business: BusinessResponse) => {
-            setConfirmDialog({
-                open: true,
-                title: t("list.archiveConfirm"),
-                description: t("list.archiveDescription"),
-                confirmLabel: t("danger.archiveConfirm"),
-                confirmColor: "primary",
-                onConfirm: async () => {
-                    setConfirmDialog((prev) => ({ ...prev, open: false }));
-                    try {
-                        await archiveBusiness(business.id);
-                    } catch {
-                        // Error handled silently
-                    }
-                },
-            });
-        },
-        [t, archiveBusiness]
-    );
-
     const handleDelete = useCallback(
         (business: BusinessResponse) => {
             setConfirmDialog({
@@ -304,13 +309,23 @@ export default function BusinessesPage() {
             // For now, restoring means updating status back to ACTIVE
             // This would need a restore API endpoint
             try {
+                const { archiveBusiness } = useBusinessStore.getState();
                 await archiveBusiness(business.id); // Toggle archive
             } catch {
                 // Error handled silently
             }
         },
-        [archiveBusiness]
+        []
     );
+
+    const handleNewBusiness = useCallback(() => {
+        if (businessLimitReached) {
+            setLimitError(t("list.limitReached"));
+            return;
+        }
+        setLimitError("");
+        router.push("/onboarding?mode=new");
+    }, [businessLimitReached, router, t]);
 
     // ---- Render ----
 
@@ -346,14 +361,9 @@ export default function BusinessesPage() {
                     <div className="flex gap-3">
                         <button
                             type="button"
-                            className="px-6 py-3 bg-surface-container-high text-primary font-bold rounded-lg hover:bg-surface-variant transition-colors"
-                        >
-                            {t("ledger.exportAll")}
-                        </button>
-                        <button
-                            type="button"
-                            onClick={() => router.push("/onboarding?mode=new")}
-                            className="px-6 py-3 text-white font-bold rounded-lg hover:opacity-90 transition-opacity flex items-center gap-2"
+                            onClick={handleNewBusiness}
+                            disabled={businessLimitReached}
+                            className="px-6 py-3 text-white font-bold rounded-lg hover:opacity-90 transition-opacity flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
                             style={{ background: "linear-gradient(135deg, #003727 0%, #00503a 100%)" }}
                         >
                             <IconPlus className="w-5 h-5" />
@@ -361,6 +371,36 @@ export default function BusinessesPage() {
                         </button>
                     </div>
                 </section>
+
+                {/* ---- Business Limit Warning ---- */}
+                {businessLimitReached && (
+                    <div className="flex items-center gap-3 bg-tertiary-container/30 text-on-surface rounded-xl px-5 py-4">
+                        <IconExclamationTriangle className="w-5 h-5 text-tertiary shrink-0" />
+                        <div className="flex-1">
+                            <p className="font-bold text-sm">{t("list.limitReached")}</p>
+                            {planLimits && (
+                                <p className="text-xs text-on-surface-variant mt-0.5">
+                                    {t("list.countBadge", { count: planLimits.currentBusinesses, limit: planLimits.maxBusinesses })}
+                                </p>
+                            )}
+                        </div>
+                        <button
+                            type="button"
+                            onClick={() => router.push("/subscription/upgrade")}
+                            className="px-4 py-2 bg-primary text-on-primary font-bold rounded-lg text-sm hover:bg-primary/90 transition-colors"
+                        >
+                            {t("list.upgradeButton")}
+                        </button>
+                    </div>
+                )}
+
+                {/* ---- Limit Error (shown when trying to create while at limit) ---- */}
+                {limitError && !businessLimitReached && (
+                    <div className="flex items-center gap-3 bg-error-container/30 text-error rounded-xl px-5 py-4">
+                        <IconExclamationTriangle className="w-5 h-5 shrink-0" />
+                        <p className="text-sm font-medium">{limitError}</p>
+                    </div>
+                )}
 
                 {/* ---- Active Businesses Table ---- */}
                 <section className="space-y-4">
@@ -395,8 +435,9 @@ export default function BusinessesPage() {
                             </p>
                             <button
                                 type="button"
-                                onClick={() => router.push("/onboarding?mode=new")}
-                                className="inline-flex items-center gap-2 rounded-xl px-8 py-4 font-bold text-white transition-colors active:scale-[0.98]"
+                                onClick={handleNewBusiness}
+                                disabled={businessLimitReached}
+                                className="inline-flex items-center gap-2 rounded-xl px-8 py-4 font-bold text-white transition-colors active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed"
                                 style={{ background: "linear-gradient(135deg, #003727 0%, #00503a 100%)" }}
                             >
                                 <IconPlus className="w-5 h-5" />
@@ -443,7 +484,7 @@ export default function BusinessesPage() {
                                                 {formatCurrencyBDT(salesAmount, locale)}
                                             </p>
                                             <span className="text-xs font-bold text-on-surface-variant flex items-center justify-end gap-1">
-                                                {bizStats ? `${bizStats.totalSales} টি বিক্রয়` : "—"}
+                                                {bizStats ? t("list.totalSales", { count: bizStats.totalSales }) : "—"}
                                             </span>
                                         </div>
 
@@ -466,23 +507,10 @@ export default function BusinessesPage() {
                                         {/* Actions */}
                                         <div className="md:col-span-3 flex justify-end gap-2">
                                             <button
-                                                onClick={(e) => { e.stopPropagation(); handleArchive(business); }}
-                                                className="px-4 py-2 bg-surface-container-high text-on-surface font-bold rounded-lg hover:bg-surface-container-highest transition-colors"
-                                            >
-                                                {t("list.archived")}
-                                            </button>
-                                            <button
                                                 onClick={(e) => { e.stopPropagation(); handleManage(business); }}
                                                 className="px-4 py-2 bg-secondary/10 text-secondary font-bold rounded-lg hover:bg-secondary/20 transition-colors"
                                             >
                                                 {t("ledger.manage")}
-                                            </button>
-                                            <button
-                                                onClick={(e) => { e.stopPropagation(); handleSelectBusiness(business); }}
-                                                className="px-4 py-2 text-white font-bold rounded-lg group-hover:scale-105 transition-transform"
-                                                style={{ background: "linear-gradient(135deg, #003727 0%, #00503a 100%)" }}
-                                            >
-                                                {t("ledger.quickSwitch")}
                                             </button>
                                         </div>
                                     </div>
@@ -548,7 +576,7 @@ export default function BusinessesPage() {
             >
                 <IconSparkles className="w-7 h-7" />
                 <div className="absolute -top-2 -left-2 bg-tertiary text-white text-[10px] px-2 py-0.5 rounded-full font-bold">
-                    AI Active
+                    {t("list.aiActive")}
                 </div>
             </button>
 

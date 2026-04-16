@@ -22,7 +22,7 @@ import { useLocale, useTranslations } from "next-intl";
 import { usePathname, useRouter } from "next/navigation";
 
 type TabKey = "general" | "profile" | "location" | "data" | "danger";
-type Feedback = { type: "success" | "error"; message: string } | null;
+type Feedback = { type: "success" | "error" | "warning"; message: string } | null;
 
 const BUSINESS_TYPES = [
     { value: "GROCERY", labelKey: "grocery" },
@@ -346,7 +346,7 @@ export default function BusinessSettingsPage() {
     const [dangerSaving, setDangerSaving] = useState(false);
     const [archiveName, setArchiveName] = useState("");
 
-    const showFeedback = (type: "success" | "error", message: string) => {
+    const showFeedback = (type: "success" | "error" | "warning", message: string) => {
         setFeedback({ type, message });
         window.setTimeout(() => {
             setFeedback((current) => (current?.message === message ? null : current));
@@ -371,12 +371,19 @@ export default function BusinessSettingsPage() {
             setPageLoading(true);
 
             try {
-                const [business, settings, profile, location] = await Promise.all([
+                const [business, settings, location] = await Promise.all([
                     getBusiness(businessId),
                     getBusinessSettings(businessId),
-                    getBusinessProfile(businessId),
                     getBusinessLocation(businessId),
                 ]);
+
+                let profile = null;
+                let profileLoadFailed = false;
+                try {
+                    profile = await getBusinessProfile(businessId);
+                } catch {
+                    profileLoadFailed = true;
+                }
 
                 if (cancelled) {
                     return;
@@ -389,7 +396,7 @@ export default function BusinessSettingsPage() {
                     name: business.name ?? "",
                     selectedType: typeState.selectedType,
                     customType: typeState.customType,
-                    description: profile.description ?? "",
+                    description: profile?.description ?? "",
                 });
 
                 setSettingsForm({
@@ -420,14 +427,14 @@ export default function BusinessSettingsPage() {
                 });
 
                 setProfileForm({
-                    logoUrl: profile.logoUrl ?? "",
-                    coverImageUrl: profile.coverImageUrl ?? "",
-                    contactPerson: profile.contactPerson ?? "",
-                    phone: profile.phone ?? "",
-                    whatsappNumber: profile.whatsappNumber ?? "",
-                    email: profile.email ?? "",
-                    website: profile.website ?? "",
-                    facebookPage: profile.facebookPage ?? "",
+                    logoUrl: profile?.logoUrl ?? "",
+                    coverImageUrl: profile?.coverImageUrl ?? "",
+                    contactPerson: profile?.contactPerson ?? "",
+                    phone: profile?.phone ?? "",
+                    whatsappNumber: profile?.whatsappNumber ?? "",
+                    email: profile?.email ?? "",
+                    website: profile?.website ?? "",
+                    facebookPage: profile?.facebookPage ?? "",
                 });
 
                 setLocationForm({
@@ -442,6 +449,10 @@ export default function BusinessSettingsPage() {
                 });
 
                 setArchiveName("");
+
+                if (profileLoadFailed) {
+                    showFeedback("warning", t("settings.profileLoadWarning"));
+                }
             } catch {
                 if (!cancelled) {
                     showFeedback("error", t("settings.loadError"));
@@ -796,7 +807,9 @@ export default function BusinessSettingsPage() {
                         <div
                             className={`rounded-[1.25rem] border px-4 py-3 text-sm font-medium ${feedback.type === "success"
                                 ? "border-emerald-200 bg-emerald-50 text-emerald-800"
-                                : "border-rose-200 bg-rose-50 text-rose-800"
+                                : feedback.type === "warning"
+                                    ? "border-amber-200 bg-amber-50 text-amber-800"
+                                    : "border-rose-200 bg-rose-50 text-rose-800"
                                 }`}
                         >
                             {feedback.message}

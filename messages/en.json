@@ -522,9 +522,12 @@
       "deleteDescription": "This action cannot be undone. All data will be permanently deleted.",
       "errorFetch": "Failed to load businesses",
       "errorCreate": "Failed to create business",
+      "errorCreateLimitReached": "Business limit reached for your subscription. Please upgrade your plan to add more businesses.",
       "errorArchive": "Failed to archive business",
       "errorDelete": "Failed to delete business",
-      "limitReached": "Business limit reached. Upgrade your plan to add more."
+      "limitReached": "Business limit reached. Upgrade your plan to add more.",
+      "upgradeButton": "Upgrade Plan",
+      "aiActive": "AI Active"
     },
     "form": {
       "nameLabel": "Business Name",
@@ -580,6 +583,7 @@
       "lowStockAlertLabel": "Low Stock Alerts",
       "saveButton": "Save Settings",
       "loadError": "Failed to load business settings",
+      "profileLoadWarning": "Profile data did not fully load. If description appears empty, please refresh.",
       "noBusinessSelected": "Select a business first to open its settings workspace.",
       "errorSave": "Failed to save settings",
       "successSave": "Settings saved successfully",
@@ -592,6 +596,7 @@
       "customTypePlaceholder": "e.g. Flower Shop",
       "hoursTitle": "Operating hours",
       "is24HoursLabel": "Open 24 hours",
+      "is24HoursDescription": "When enabled, your shop is considered open all day.",
       "operatingHoursStartLabel": "Opening time",
       "operatingHoursEndLabel": "Closing time",
       "operatingDaysLabel": "Operating days",
@@ -674,6 +679,7 @@
     },
     "danger": {
       "heading": "Danger Zone",
+      "description": "Archive or permanently delete this business and all its data.",
       "archiveButton": "Archive Business",
       "deleteButton": "Delete Business",
       "archiveConfirm": "Yes, Archive",
@@ -866,6 +872,12 @@
       "subtitle": "Your digital ledger setup is complete. Best wishes!",
       "goToDashboard": "Go to Dashboard",
       "failed": "Could not complete onboarding right now. Please try again."
+    },
+    "subscriptionRequired": {
+      "title": "Subscription Required",
+      "description": "You need an active subscription to create a business. Please select a plan to continue.",
+      "viewPlans": "View Plans",
+      "continueAnyway": "Continue Anyway"
     }
   },
   "nav": {
@@ -1949,7 +1961,8 @@
         "payments": "Payments",
         "tickets": "Tickets",
         "audit": "Audit Logs",
-        "referral": "Referral"
+        "referral": "Referral",
+        "referralEvents": "Referral Events"
       },
       "dashboard": {
         "error": "Failed to load system statistics.",
@@ -2314,6 +2327,45 @@
         "save": "Save",
         "rewardType": "Reward type",
         "discountType": "Discount type"
+      },
+      "referralEvents": {
+        "stats": {
+          "total": "Total Events",
+          "pending": "Pending",
+          "granted": "Granted",
+          "revoked": "Revoked",
+          "expired": "Expired",
+          "totalReward": "Total Reward Value"
+        },
+        "filter": {
+          "status": "Status",
+          "all": "All"
+        },
+        "table": {
+          "code": "Code",
+          "referrer": "Referrer",
+          "referred": "Referred",
+          "reward": "Reward",
+          "status": "Status",
+          "date": "Date",
+          "actions": "Actions",
+          "freeDays": "free days",
+          "revoke": "Revoke",
+          "revoking": "Revoking...",
+          "loading": "Loading events...",
+          "empty": "No referral events found."
+        },
+        "pagination": {
+          "prev": "Previous",
+          "next": "Next",
+          "page": "Page {current} of {total}"
+        },
+        "messages": {
+          "loadFailed": "Failed to load referral events",
+          "confirmRevoke": "Are you sure you want to revoke this referral reward?",
+          "revoked": "Referral reward revoked successfully",
+          "revokeFailed": "Failed to revoke referral reward"
+        }
       }
     },
     "dataExport": {

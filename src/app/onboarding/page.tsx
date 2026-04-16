@@ -7,6 +7,7 @@ import { createProduct } from "@/lib/productApi";
 import { formatLocalizedNumber, sanitizeNumericInput } from "@/lib/localeNumber";
 import { getSampleProductsByBusinessType } from "@/lib/onboardingSampleProducts";
 import { getFallbackCategoryPreview } from "@/lib/onboardingFallbackCategories";
+import { getCurrentSubscription } from "@/lib/subscriptionApi";
 import { useAuthStore } from "@/store/authStore";
 import { useBusinessStore } from "@/store/businessStore";
 import type { CategoryResponse } from "@/types/category";
@@ -22,6 +23,8 @@ import { Suspense, useCallback, useEffect, useRef, useState } from "react";
 const TOTAL_STEPS = 7;
 const ONBOARDING_DRAFT_KEY = "dokaniai-onboarding-draft";
 const DEFAULT_BUSINESS_DATA: Partial<BusinessCreateRequest> = { currency: "BDT" };
+const PROFILE_VERIFY_MAX_ATTEMPTS = 3;
+const PROFILE_VERIFY_BASE_DELAY_MS = 250;
 
 function isHttpNotFound(error: unknown): boolean {
     if (!error || typeof error !== "object") return false;
@@ -339,6 +342,32 @@ function OnboardingPageContent() {
     // Step 6: Tutorial
     const [tutorialIndex, setTutorialIndex] = useState(0);
 
+    // Subscription check
+    const [showSubscriptionModal, setShowSubscriptionModal] = useState(false);
+
+    // ---------------------------------------------------------------------------
+    // Subscription check on mount
+    // ---------------------------------------------------------------------------
+
+    useEffect(() => {
+        if (!isHydrated || !accessToken || !forceNewBusiness) return;
+
+        let cancelled = false;
+        const checkSubscription = async () => {
+            try {
+                const subscription = await getCurrentSubscription();
+                if (cancelled) return;
+                if (!subscription || !["ACTIVE", "TRIAL"].includes(subscription.status)) {
+                    setShowSubscriptionModal(true);
+                }
+            } catch {
+                // If we can't fetch subscription, don't block the user
+            }
+        };
+        void checkSubscription();
+        return () => { cancelled = true; };
+    }, [isHydrated, accessToken, forceNewBusiness]);
+
     // ---------------------------------------------------------------------------
     // Auth guard + hydration
     // ---------------------------------------------------------------------------
@@ -474,6 +503,35 @@ function OnboardingPageContent() {
             ? store.activeBusinessId
             : null;
     }, [forceNewBusiness]);
+
+    const ensureProfileDescription = useCallback(async (businessId: string, expectedDescription?: string) => {
+        const normalizedExpected = expectedDescription?.trim();
+        if (!normalizedExpected) {
+            return;
+        }
+
+        for (let attempt = 0; attempt < PROFILE_VERIFY_MAX_ATTEMPTS; attempt += 1) {
+            try {
+                const profile = await businessApi.getBusinessProfile(businessId);
+                const currentDescription = profile.description?.trim() ?? "";
+                if (currentDescription === normalizedExpected) {
+                    return;
+                }
+            } catch {
+                // Profile can be briefly unavailable right after business creation.
+            }
+
+            if (attempt < PROFILE_VERIFY_MAX_ATTEMPTS - 1) {
+                await new Promise((resolve) => setTimeout(resolve, PROFILE_VERIFY_BASE_DELAY_MS * (attempt + 1)));
+            }
+        }
+
+        try {
+            await businessApi.updateBusinessProfile(businessId, { description: normalizedExpected });
+        } catch {
+            // Non-blocking fallback; onboarding continues even if profile sync fails.
+        }
+    }, []);
 
     // ---------------------------------------------------------------------------
     // Draft persistence
@@ -634,6 +692,7 @@ function OnboardingPageContent() {
         setIsLoading(true);
         try {
             const existingBusinessId = getExistingBusinessId();
+            let targetBusinessId = createdBusinessId || existingBusinessId || null;
 
             if (!createdBusinessId && !existingBusinessId) {
                 const business = await storeCreateBusiness({
@@ -644,10 +703,21 @@ function OnboardingPageContent() {
                 });
                 setCreatedBusinessId(business.id);
                 useBusinessStore.getState().setActiveBusiness(business);
+                targetBusinessId = business.id;
             }
+
+            if (targetBusinessId) {
+                await ensureProfileDescription(targetBusinessId, businessData.description);
+            }
+
             advanceStep(4);
-        } catch {
-            setError(tb("list.errorCreate"));
+        } catch (err: unknown) {
+            const resp = err && typeof err === "object" && "response" in err
+                ? (err as { response?: { status?: number; data?: { message?: string } } }).response
+                : undefined;
+            const isLimitError = resp?.status === 400
+                || (resp?.data?.message?.toLowerCase().includes("limit"));
+            setError(isLimitError ? tb("list.errorCreateLimitReached") : tb("list.errorCreate"));
         } finally {
             setIsLoading(false);
         }
@@ -1573,6 +1643,42 @@ function OnboardingPageContent() {
                     {currentStep === 7 && renderStep7()}
                 </div>
             </main>
+
+            {/* Subscription Required Modal */}
+            {showSubscriptionModal && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center">
+                    <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" />
+                    <div className="relative bg-surface-container-lowest rounded-2xl p-8 max-w-sm w-full mx-4 text-center">
+                        <div className="mx-auto mb-4 w-16 h-16 rounded-full bg-tertiary-container/30 flex items-center justify-center">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-8 h-8 text-tertiary">
+                                <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126ZM12 15.75h.007v.008H12v-.008Z" />
+                            </svg>
+                        </div>
+                        <h3 className="text-xl font-bold text-on-surface mb-2">
+                            {t("subscriptionRequired.title")}
+                        </h3>
+                        <p className="text-on-surface-variant mb-6">
+                            {t("subscriptionRequired.description")}
+                        </p>
+                        <div className="flex flex-col gap-3">
+                            <button
+                                type="button"
+                                onClick={() => router.push("/subscription/upgrade")}
+                                className="w-full py-3 rounded-xl font-bold text-white bg-primary hover:bg-primary/90 transition-colors"
+                            >
+                                {t("subscriptionRequired.viewPlans")}
+                            </button>
+                            <button
+                                type="button"
+                                onClick={() => setShowSubscriptionModal(false)}
+                                className="w-full py-3 rounded-xl font-bold bg-surface-container-high text-on-surface hover:bg-surface-container-highest transition-colors"
+                            >
+                                {t("subscriptionRequired.continueAnyway")}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 }
