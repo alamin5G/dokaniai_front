@@ -15,7 +15,10 @@ import type {
     InternalNoteRequest,
     ListUsersParams,
     PagedAuditLogs,
+    PagedReferralEvents,
     PagedUsers,
+    ReferralEventsParams,
+    ReferralStats,
     SuspendUserRequest,
     SystemStats,
     TicketResponseRequest,
@@ -156,5 +159,43 @@ export async function getAuditLogs(params?: AuditLogParams): Promise<PagedAuditL
 
 export async function getSystemStats(): Promise<SystemStats> {
     const { data } = await apiClient.get("/api/v1/admin/stats");
+    return data.data;
+}
+
+// ─── Referral Events ─────────────────────────────────────────────────────────
+
+export async function getReferralStats(): Promise<ReferralStats> {
+    const { data } = await apiClient.get("/api/v1/admin/referrals/stats");
+    return data.data;
+}
+
+export async function getReferralEvents(params?: ReferralEventsParams): Promise<PagedReferralEvents> {
+    const query = new URLSearchParams();
+    if (params?.status) query.set("status", params.status);
+    if (params?.page !== undefined) query.set("page", String(params.page));
+    if (params?.size !== undefined) query.set("size", String(params.size));
+
+    const qs = query.toString();
+    const { data } = await apiClient.get(`/api/v1/admin/referrals/events${qs ? `?${qs}` : ""}`);
+    return data.data;
+}
+
+export async function getReferralEventsByUser(
+    userId: string,
+    page = 0,
+    size = 20
+): Promise<PagedReferralEvents> {
+    const { data } = await apiClient.get(
+        `/api/v1/admin/referrals/users/${userId}?page=${page}&size=${size}`
+    );
+    return data.data;
+}
+
+export async function revokeReferralEvent(eventId: string): Promise<void> {
+    await apiClient.patch(`/api/v1/admin/referrals/events/${eventId}/revoke`);
+}
+
+export async function getTopReferrers(limit = 10): Promise<string[]> {
+    const { data } = await apiClient.get(`/api/v1/admin/referrals/top-referrers?limit=${limit}`);
     return data.data;
 }

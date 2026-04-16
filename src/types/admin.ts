@@ -173,3 +173,43 @@ export interface AuditLogParams {
     page?: number;
     size?: number;
 }
+
+// ─── Referral Events ─────────────────────────────────────────────────────────
+
+export interface ReferralEvent {
+    id: string;
+    referrerUserId: string;
+    referredUserId: string;
+    referralCodeUsed: string;
+    rewardType: string;
+    rewardValue: number;
+    rewardStatus: "PENDING" | "GRANTED" | "REVOKED" | "EXPIRED";
+    rewardGrantedAt: string | null;
+    expiresAt: string | null;
+    ipAddress: string | null;
+    deviceFingerprint: string | null;
+    createdAt: string;
+}
+
+export interface PagedReferralEvents {
+    content: ReferralEvent[];
+    totalElements: number;
+    totalPages: number;
+    number: number;
+    size: number;
+}
+
+export interface ReferralStats {
+    totalEvents: number;
+    pendingCount: number;
+    grantedCount: number;
+    revokedCount: number;
+    expiredCount: number;
+    totalGrantedRewardValue: number;
+}
+
+export interface ReferralEventsParams {
+    status?: string;
+    page?: number;
+    size?: number;
+}

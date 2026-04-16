@@ -16,6 +16,7 @@ import CouponsTab from "./CouponsTab";
 import CategoryRequestsTab from "./CategoryRequestsTab";
 import PaymentsTab from "./PaymentsTab";
 import ReferralConfigTab from "./ReferralConfigTab";
+import ReferralEventsTab from "./ReferralEventsTab";
 
 // ─── Icons (inline SVG) ─────────────────────────────────────────────────────
 
@@ -102,7 +103,7 @@ function IconPayment({ className = "w-5 h-5" }: { className?: string }) {
 
 // ─── Tab type ────────────────────────────────────────────────────────────────
 
-type TabKey = "dashboard" | "users" | "coupons" | "categories" | "payments" | "referral" | "tickets" | "audit";
+type TabKey = "dashboard" | "users" | "coupons" | "categories" | "payments" | "referral" | "referralEvents" | "tickets" | "audit";
 
 // ─── Status Badge ───────────────────────────────────────────────────────────
 
@@ -187,6 +188,7 @@ export default function AdminWorkspace() {
         { key: "categories", label: t("tabs.categories"), icon: <IconFolder /> },
         { key: "payments", label: t("tabs.payments"), icon: <IconPayment /> },
         { key: "referral", label: t("tabs.referral"), icon: <IconTag /> },
+        { key: "referralEvents", label: t("tabs.referralEvents"), icon: <IconClipboard /> },
         { key: "tickets", label: t("tabs.tickets"), icon: <IconTicket /> },
         { key: "audit", label: t("tabs.audit"), icon: <IconClipboard />, superAdminOnly: true },
     ];
@@ -228,6 +230,7 @@ export default function AdminWorkspace() {
             {activeTab === "categories" && <CategoryRequestsTab />}
             {activeTab === "payments" && <PaymentsTab />}
             {activeTab === "referral" && <ReferralConfigTab />}
+            {activeTab === "referralEvents" && <ReferralEventsTab />}
             {activeTab === "tickets" && <TicketsTab />}
             {activeTab === "audit" && isSuperAdmin && <AuditTab />}
         </div>
