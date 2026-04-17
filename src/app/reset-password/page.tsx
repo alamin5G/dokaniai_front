@@ -23,15 +23,16 @@ function ResetPasswordForm() {
   const tc = useTranslations("common");
 
   // --- Reload recovery: read reset context on mount ---
+  const [resetDone, setResetDone] = useState(false);
   const resetCtx = getResetContext();
   const expiredOnLoad = isOtpExpired();
 
   // If no context at all, redirect to forgot-password
   useEffect(() => {
-    if (!resetCtx) {
+    if (!resetCtx && !resetDone) {
       router.replace("/forgot-password");
     }
-  }, [resetCtx, router]);
+  }, [resetCtx, resetDone, router]);
 
   // Derive contact from reset context (preferred) or legacy auth contact
   const { contact: authContact } = getAuthContact();
@@ -110,6 +111,7 @@ function ResetPasswordForm() {
       });
 
       clearAuthContact();
+      setResetDone(true);
       clearResetContext();
       router.push("/login?resetSuccess=true");
     } catch (error: unknown) {
