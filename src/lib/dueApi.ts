@@ -15,6 +15,7 @@ import type {
     DueLedgerResponse,
     AgedDuesResponse,
     WhatsAppLink,
+    WhatsAppReminderResponse,
     PagedDueTransactions,
     PagedCustomers,
 } from "@/types/due";
@@ -220,6 +221,16 @@ export async function generateDueReminder(
         { params }
     );
     return unwrap<WhatsAppLink>(data);
+}
+
+export async function generateAiReminder(
+    businessId: string,
+    customerId: string
+): Promise<WhatsAppReminderResponse> {
+    const { data } = await apiClient.post(
+        `/api/v1/businesses/${businessId}/reminders/ai/${customerId}`
+    );
+    return unwrap<WhatsAppReminderResponse>(data);
 }
 
 // ─── Bulk WhatsApp Reminders ────────────────────────────

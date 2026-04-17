@@ -1,17 +1,13 @@
 "use client";
 
 import { useLocale, useTranslations } from "next-intl";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import type { CustomerDueSummary } from "@/types/due";
-import { generateDueReminder } from "@/lib/dueApi";
-
-// ─── Helpers ─────────────────────────────────────────────
+import { generateDueReminder, generateAiReminder } from "@/lib/dueApi";
 
 function resolveLocale(locale?: string): string {
     return locale?.toLowerCase().startsWith("bn") ? "bn-BD" : "en-US";
 }
-
-// ─── Types ───────────────────────────────────────────────
 
 interface ReminderPreviewModalProps {
     businessId: string;
@@ -19,8 +15,6 @@ interface ReminderPreviewModalProps {
     onClose: () => void;
     onSent: () => void;
 }
-
-// ─── Component ───────────────────────────────────────────
 
 export default function ReminderPreviewModal({
     businessId,
@@ -41,18 +35,38 @@ export default function ReminderPreviewModal({
     const [useCustom, setUseCustom] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
     const [previewMessage, setPreviewMessage] = useState<string | null>(null);
+    const [alreadySentToday, setAlreadySentToday] = useState(false);
+    const [resetAt, setResetAt] = useState<string | null>(null);
+    const [aiGenerated, setAiGenerated] = useState(false);
+
+    useEffect(() => {
+        handlePreview();
+    }, []);
 
     async function handlePreview() {
         setIsLoading(true);
         try {
-            const link = await generateDueReminder(
-                businessId,
-                customer.customerId,
-                useCustom && customMessage.trim() ? customMessage.trim() : undefined
-            );
-            setPreviewMessage(link.message);
+            if (useCustom && customMessage.trim()) {
+                const link = await generateDueReminder(
+                    businessId,
+                    customer.customerId,
+                    customMessage.trim()
+                );
+                setPreviewMessage(link.message);
+                setAiGenerated(false);
+            } else {
+                const res = await generateAiReminder(businessId, customer.customerId);
+                setPreviewMessage(res.message);
+                setAiGenerated(res.contextType !== undefined);
+                if (res.alreadySentToday) {
+                    setAlreadySentToday(true);
+                    setResetAt(res.resetAt);
+                }
+            }
         } catch {
-            setPreviewMessage(null);
+            const link = await generateDueReminder(businessId, customer.customerId);
+            setPreviewMessage(link.message);
+            setAiGenerated(false);
         } finally {
             setIsLoading(false);
         }
@@ -61,26 +75,41 @@ export default function ReminderPreviewModal({
     async function handleSend() {
         setIsLoading(true);
         try {
-            const link = await generateDueReminder(
-                businessId,
-                customer.customerId,
-                useCustom && customMessage.trim() ? customMessage.trim() : undefined
-            );
-            if (link.link) {
-                window.open(link.link, "_blank");
+            if (useCustom && customMessage.trim()) {
+                const link = await generateDueReminder(
+                    businessId,
+                    customer.customerId,
+                    customMessage.trim()
+                );
+                if (link.link) window.open(link.link, "_blank");
+            } else {
+                const res = await generateAiReminder(businessId, customer.customerId);
+                if (res.link) window.open(res.link, "_blank");
+                if (res.alreadySentToday) {
+                    setAlreadySentToday(true);
+                    setResetAt(res.resetAt);
+                }
             }
             onSent();
         } catch {
-            // Error handled by parent toast
         } finally {
             setIsLoading(false);
         }
     }
 
+    function formatResetTime(iso: string | null): string {
+        if (!iso) return "";
+        const d = new Date(iso);
+        const now = new Date();
+        const hours = Math.max(1, Math.ceil((d.getTime() - now.getTime()) / (1000 * 60 * 60)));
+        return locale?.startsWith("bn")
+            ? `কাল সকালে আবার পাঠাতে পারবেন (${hours} ঘণ্টা বাকি)`
+            : `Available tomorrow morning (${hours}h remaining)`;
+    }
+
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30 backdrop-blur-sm">
             <div className="w-full max-w-lg rounded-2xl bg-surface-container-lowest p-6 shadow-2xl space-y-5">
-                {/* Header */}
                 <div className="flex items-center justify-between">
                     <h3 className="text-lg font-bold text-on-surface flex items-center gap-2">
                         <svg className="w-6 h-6 fill-[#25D366]" viewBox="0 0 24 24">
@@ -96,7 +125,6 @@ export default function ReminderPreviewModal({
                     </button>
                 </div>
 
-                {/* Customer Info */}
                 <div className="rounded-xl bg-surface-container p-4 space-y-2">
                     <div className="flex justify-between items-center">
                         <span className="text-sm font-bold text-on-surface-variant">
@@ -116,7 +144,6 @@ export default function ReminderPreviewModal({
                     </div>
                 </div>
 
-                {/* MFS Info */}
                 <div className="rounded-xl bg-primary-container/30 p-4 flex items-start gap-3">
                     <span className="material-symbols-outlined text-primary mt-0.5">info</span>
                     <div>
@@ -129,17 +156,19 @@ export default function ReminderPreviewModal({
                     </div>
                 </div>
 
-                {/* Custom Message Toggle */}
                 <div className="flex items-center gap-3">
                     <button
                         type="button"
-                        onClick={() => setUseCustom(false)}
+                        onClick={() => { setUseCustom(false); setAlreadySentToday(false); }}
                         className={`flex-1 rounded-xl px-4 py-3 text-sm font-bold transition-colors ${!useCustom
                                 ? "bg-primary text-white"
                                 : "bg-surface-container text-on-surface-variant hover:bg-surface-container-high"
                             }`}
                     >
-                        {t("reminder.defaultMessage")}
+                        <span className="flex items-center justify-center gap-1.5">
+                            <span className="material-symbols-outlined text-base">smart_toy</span>
+                            {locale?.startsWith("bn") ? "AI রিমাইন্ডার" : "AI Reminder"}
+                        </span>
                     </button>
                     <button
                         type="button"
@@ -153,7 +182,6 @@ export default function ReminderPreviewModal({
                     </button>
                 </div>
 
-                {/* Custom Message Input */}
                 {useCustom && (
                     <textarea
                         value={customMessage}
@@ -163,22 +191,36 @@ export default function ReminderPreviewModal({
                     />
                 )}
 
-                {/* Preview */}
+                {alreadySentToday && !useCustom && (
+                    <div className="rounded-xl bg-amber-50 border border-amber-200 p-3 flex items-center gap-2">
+                        <span className="material-symbols-outlined text-amber-600 text-base">schedule</span>
+                        <p className="text-xs text-amber-800">
+                            {locale?.startsWith("bn")
+                                ? "আজ ইতিমধ্যে এই গ্রাহককে রিমাইন্ডার পাঠানো হয়েছে। তবে WhatsApp এ যেতে পারবেন।"
+                                : "Already sent today. You can still open WhatsApp."}
+                        </p>
+                    </div>
+                )}
+
                 <div className="space-y-2">
                     <div className="flex items-center justify-between">
                         <span className="text-sm font-bold text-on-surface-variant">
                             {t("reminder.preview")}
                         </span>
-                        {!previewMessage && (
-                            <button
-                                onClick={handlePreview}
-                                disabled={isLoading}
-                                className="text-xs font-bold text-primary hover:underline disabled:opacity-50"
-                            >
-                                {isLoading ? "..." : "Generate Preview"}
-                            </button>
+                        {aiGenerated && previewMessage && (
+                            <span className="text-[10px] font-bold text-primary bg-primary-container/50 rounded-full px-2 py-0.5">
+                                AI
+                            </span>
                         )}
                     </div>
+                    {isLoading && !previewMessage && (
+                        <div className="rounded-xl bg-surface-container p-4 flex items-center justify-center gap-2">
+                            <span className="material-symbols-outlined animate-spin text-primary text-base">progress_activity</span>
+                            <span className="text-xs text-on-surface-variant">
+                                {locale?.startsWith("bn") ? "AI মেসেজ তৈরি হচ্ছে..." : "Generating AI message..."}
+                            </span>
+                        </div>
+                    )}
                     {previewMessage && (
                         <div className="rounded-xl bg-[#25D366]/10 border border-[#25D366]/20 p-4">
                             <p className="text-sm text-on-surface whitespace-pre-wrap">{previewMessage}</p>
@@ -186,7 +228,6 @@ export default function ReminderPreviewModal({
                     )}
                 </div>
 
-                {/* Actions */}
                 <div className="flex gap-3 pt-2">
                     <button
                         type="button"

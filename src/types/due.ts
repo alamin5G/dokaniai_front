@@ -150,6 +150,18 @@ export interface WhatsAppLink {
     encodedMessage: string;
 }
 
+export interface WhatsAppReminderResponse {
+    customerId: string;
+    customerName: string;
+    phone: string;
+    link: string;
+    message: string;
+    encodedMessage: string;
+    contextType: string;
+    alreadySentToday: boolean;
+    resetAt: string | null;
+}
+
 // ─── Paged Response ──────────────────────────────────────
 
 export interface PagedDueTransactions {

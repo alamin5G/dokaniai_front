@@ -56,13 +56,22 @@ export default function AccountProfilePage() {
   }, []);
 
   const saveProfile = async () => {
-    setSavingProfile(true);
     setError(null);
     setNotice(null);
+    if (!name.trim()) {
+      setError(isBn ? "নাম দিন।" : "Name is required.");
+      return;
+    }
+    const trimmedEmail = email.trim();
+    if (trimmedEmail && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(trimmedEmail)) {
+      setError(isBn ? "সঠিক ইমেইল দিন।" : "Enter a valid email address.");
+      return;
+    }
+    setSavingProfile(true);
     try {
       await updateCurrentUser({
         name: name.trim(),
-        email: email.trim() || undefined,
+        email: trimmedEmail || undefined,
       });
       setNotice(isBn ? "প্রোফাইল আপডেট হয়েছে।" : "Profile updated.");
     } catch (e) {
@@ -161,7 +170,7 @@ export default function AccountProfilePage() {
         <h2 className="text-lg font-semibold text-on-surface">{isBn ? "বেসিক তথ্য" : "Basic info"}</h2>
         <div className="grid gap-4 md:grid-cols-2">
           <FormInput label={isBn ? "নাম" : "Name"} value={name} onChange={(e) => setName(e.target.value)} />
-          <FormInput label={isBn ? "ইমেইল" : "Email"} value={email} onChange={(e) => setEmail(e.target.value)} />
+          <FormInput label={isBn ? "ইমেইল" : "Email"} type="email" value={email} onChange={(e) => setEmail(e.target.value)} />
           <FormInput label={isBn ? "বর্তমান ফোন" : "Current phone"} value={phone} readOnly />
         </div>
         <button
