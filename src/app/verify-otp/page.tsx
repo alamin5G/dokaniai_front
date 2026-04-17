@@ -29,7 +29,7 @@ function VerifyOtpForm() {
   }, [countdown]);
 
   const handleResendOtp = async () => {
-    if (!contact || method !== "phone") {
+  if (!contact) {
       setErrorText(t("errorNoContact"));
       return;
     }

@@ -85,7 +85,7 @@ function VerifyEmailForm() {
   }
 
   // No contact found — redirect to register
-  if (!contact || method !== "email") {
+  if (!contact) {
     return (
       <div className="text-center space-y-4">
         <p className="text-on-surface-variant">{t("errorVerificationFailed")}</p>

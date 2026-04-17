@@ -24,7 +24,12 @@
       "errorEmptyFields": "Please enter your ID and password",
       "errorInvalid": "Invalid login credentials",
       "newAccount": "Want to create a new account?",
-      "registerHere": "Click here"
+      "registerHere": "Click here",
+      "emailNotVerified": "Email is not verified. Please verify your email first.",
+      "phoneNotVerified": "Phone number is not verified. Please verify your phone first.",
+      "passwordNotSet": "You haven't set a password yet.",
+      "setPasswordViaOtp": "Set password via OTP",
+      "resendVerification": "Resend verification code"
     },
     "register": {
       "heading": "Create New Account",
@@ -101,7 +106,8 @@
       "sendOtp": "Send OTP",
       "errorEmpty": "Enter your mobile number or email",
       "errorSendFailed": "Failed to send OTP",
-      "backToLogin": "Back to Login"
+      "backToLogin": "Back to Login",
+      "loading": "Loading..."
     },
     "resetPassword": {
       "heading": "Reset Password",

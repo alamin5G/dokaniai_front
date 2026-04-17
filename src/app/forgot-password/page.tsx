@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { Suspense } from "react";
 import { useTranslations } from "next-intl";
 import apiClient from "@/lib/api";
 import { getApiErrorMessage } from "@/lib/apiError";
@@ -9,10 +10,10 @@ import { setAuthContact, setResetContext } from "@/lib/authFlow";
 import { AuthLayout } from "@/components/layout/AuthLayout";
 import { FormInput, GradientButton } from "@/components/ui/FormPrimitives";
 
-export default function ForgotPasswordPage() {
+function ForgotPasswordForm() {
   const router = useRouter();
   const t = useTranslations("auth.forgotPassword");
-  
+
   const [identifier, setIdentifier] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [errorText, setErrorText] = useState("");
@@ -74,5 +75,15 @@ export default function ForgotPasswordPage() {
         </button>
       </div>
     </AuthLayout>
+  );
+}
+
+export default function ForgotPasswordPage() {
+  const t = useTranslations("auth.forgotPassword");
+
+  return (
+    <Suspense fallback={<div className="text-center text-on-surface-variant">{t("loading")}</div>}>
+      <ForgotPasswordForm />
+    </Suspense>
   );
 }

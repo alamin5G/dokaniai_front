@@ -24,7 +24,12 @@
       "errorEmptyFields": "অনুগ্রহ করে আপনার আইডি এবং পাসওয়ার্ড দিন",
       "errorInvalid": "লগইন তথ্য ভুল হয়েছে",
       "newAccount": "নতুন অ্যাকাউন্ট খুলতে চান?",
-      "registerHere": "এখানে ক্লিক করুন"
+      "registerHere": "এখানে ক্লিক করুন",
+      "emailNotVerified": "ইমেইল যাচাই হয়নি। অনুগ্রহ করে প্রথমে ইমেইল যাচাই করুন।",
+      "phoneNotVerified": "ফোন নম্বর যাচাই হয়নি। অনুগ্রহ করে প্রথমে ফোন নম্বর যাচাই করুন।",
+      "passwordNotSet": "আপনি এখনো পাসওয়ার্ড সেট করেননি।",
+      "setPasswordViaOtp": "OTP দিয়ে পাসওয়ার্ড সেট করুন",
+      "resendVerification": "যাচাই কোড আবার পাঠান"
     },
     "register": {
       "heading": "নতুন অ্যাকাউন্ট তৈরি করুন",
@@ -101,7 +106,8 @@
       "sendOtp": "OTP পাঠান",
       "errorEmpty": "মোবাইল নম্বর বা ইমেইল দিন",
       "errorSendFailed": "OTP পাঠাতে সমস্যা হয়েছে",
-      "backToLogin": "লগইন পেজে ফিরে যান"
+      "backToLogin": "লগইন পেজে ফিরে যান",
+      "loading": "লোড হচ্ছে..."
     },
     "resetPassword": {
       "heading": "পাসওয়ার্ড রিসেট করুন",

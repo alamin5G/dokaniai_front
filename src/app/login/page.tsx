@@ -114,7 +114,8 @@ export default function LoginPage() {
         }
       }
     } catch (error: unknown) {
-      setErrorText(getApiErrorMessage(error, t("errorInvalid")));
+      const msg = getApiErrorMessage(error, t("errorInvalid"));
+      setErrorText(msg);
     } finally {
       setIsLoading(false);
     }
