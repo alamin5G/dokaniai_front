@@ -139,7 +139,9 @@ export default function DashboardLayout({ children, title, businessId }: Dashboa
       //    Skip this guard if we're already on /onboarding or /businesses
       const currentPath = window.location.pathname;
       const skipOnboardingGuard =
-        currentPath === "/onboarding" || currentPath === "/businesses";
+        currentPath === "/onboarding" ||
+        currentPath === "/businesses" ||
+        currentPath.startsWith("/subscription");
 
       if (!skipOnboardingGuard && updatedState.businesses.length === 0) {
         // Brand new user — no businesses at all

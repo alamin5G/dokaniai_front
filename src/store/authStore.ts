@@ -15,8 +15,14 @@ interface AuthState {
 }
 
 function normalizeStatus(status: string): AuthStatus {
-  if (status === 'AUTHENTICATED' || status === 'PASSWORD_SETUP_REQUIRED') {
+  if (status === 'PASSWORD_SETUP_REQUIRED') {
     return status;
+  }
+  if (status === 'AUTHENTICATED' || status === 'SUCCESS') {
+    return 'AUTHENTICATED';
+  }
+  if (status && status !== 'UNAUTHENTICATED') {
+    return 'AUTHENTICATED';
   }
   return 'UNAUTHENTICATED';
 }
