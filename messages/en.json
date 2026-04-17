@@ -69,7 +69,8 @@
       "errorNoContact": "Verification session not found. Please register again.",
       "backToRegister": "Back to Register",
       "errorInvalidOtp": "Please enter a valid OTP",
-      "errorVerificationFailed": "OTP verification failed"
+      "errorVerificationFailed": "OTP verification failed",
+      "successMessage": "OTP verified successfully!"
     },
     "verifyEmail": {
       "heading": "Email Verification",
