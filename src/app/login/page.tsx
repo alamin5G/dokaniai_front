@@ -102,13 +102,7 @@ export default function LoginPage() {
           if (dbPendingPlan?.planId) {
             setTokens(tokens.accessToken, tokens.refreshToken, tokens.userId, tokens.status);
             setUserRole(role);
-            if (dbPendingPlan.isTrial) {
-              deferredTokens.current = tokens;
-              setUserRole(role);
-              setShowTrialModal(true);
-            } else {
-              router.push(`/subscription/upgrade?plan=${dbPendingPlan.planId}`);
-            }
+            router.push(`/subscription/upgrade?plan=${dbPendingPlan.planId}`);
           } else {
             try {
               const bizRes = await apiClient.get("/businesses", {

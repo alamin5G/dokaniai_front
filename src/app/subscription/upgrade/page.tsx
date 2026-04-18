@@ -6,7 +6,6 @@ import {
   getCurrentSubscription,
   getReferralStatus,
   initializePaymentIntent,
-  savePendingPlan,
   clearPendingPlan,
 } from "@/lib/subscriptionApi";
 import {
@@ -115,7 +114,6 @@ function SubscriptionUpgradeContent() {
           "";
         setSelectedPlanId(selected);
         if (pendingPlan && pendingPlan === selected) clearPendingUpgradePlan();
-        if (selected) savePendingPlan(selected).catch(() => {});
       } catch (error) {
         setNotice(error instanceof Error ? error.message : t("upgrade.errors.loadFailed"));
       } finally {
@@ -239,7 +237,7 @@ function SubscriptionUpgradeContent() {
                 return (
                   <button
                     key={plan.id}
-                    onClick={() => { setSelectedPlanId(plan.id); setAppliedCoupon(null); savePendingPlan(plan.id).catch(() => {}); }}
+                    onClick={() => { setSelectedPlanId(plan.id); setAppliedCoupon(null); }}
                     className={`min-w-[150px] flex-1 p-4 rounded-xl transition-all snap-start cursor-pointer relative overflow-hidden
                       ${isSelected
                         ? "bg-[#00503a] shadow-lg scale-[1.02]"
