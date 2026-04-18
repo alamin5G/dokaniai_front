@@ -9,9 +9,9 @@ import {
 import type { DowngradeValidation, Plan, Subscription } from "@/types/subscription";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useLocale, useTranslations } from "next-intl";
-import { useEffect, useMemo, useState } from "react";
+import { Suspense, useEffect, useMemo, useState } from "react";
 
-export default function SubscriptionDowngradePage() {
+function SubscriptionDowngradeContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const locale = useLocale();
@@ -244,5 +244,13 @@ export default function SubscriptionDowngradePage() {
         </div>
       )}
     </section>
+  );
+}
+
+export default function SubscriptionDowngradePage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen flex items-center justify-center"><div className="w-8 h-8 border-3 border-gray-200 border-t-gray-800 rounded-full animate-spin" /></div>}>
+      <SubscriptionDowngradeContent />
+    </Suspense>
   );
 }

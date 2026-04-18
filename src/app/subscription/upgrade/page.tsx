@@ -17,7 +17,7 @@ import {
 import type { AppliedCoupon, MfsType, Plan, ReferralStatus, Subscription } from "@/types/subscription";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useLocale, useTranslations } from "next-intl";
-import { useEffect, useMemo, useState } from "react";
+import { Suspense, useEffect, useMemo, useState } from "react";
 
 const MFS_OPTIONS: { key: MfsType; labelBn: string; labelEn: string; color: string }[] = [
   { key: "BKASH", labelBn: "বিকাশ", labelEn: "bKash", color: "#E2136E" },
@@ -53,7 +53,7 @@ function getFeatureList(plan: Plan, isBn: boolean): { icon: string; label: strin
   return features;
 }
 
-export default function SubscriptionUpgradePage() {
+function SubscriptionUpgradeContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const locale = useLocale();
@@ -526,5 +526,13 @@ export default function SubscriptionUpgradePage() {
         </div>
       </main>
     </div>
+  );
+}
+
+export default function SubscriptionUpgradePage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen bg-[#f8faf6] flex items-center justify-center"><div className="w-8 h-8 border-3 border-[#003727]/20 border-t-[#003727] rounded-full animate-spin" /></div>}>
+      <SubscriptionUpgradeContent />
+    </Suspense>
   );
 }

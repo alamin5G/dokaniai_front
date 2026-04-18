@@ -14,6 +14,7 @@ import type {
     MfsNumberRegistrationRequest,
     PaymentSettingsResponse,
     PaymentSettingsRequest,
+    AdminDeviceBootstrapResponse,
 } from "@/types/paymentAdmin";
 import type { PaymentIntentStatusResponse } from "@/types/subscription";
 
@@ -194,5 +195,16 @@ export async function updatePaymentSettings(
         return data.data;
     } catch (error) {
         throw new Error(getApiErrorMessage(error, "Failed to update payment settings."));
+    }
+}
+
+// ─── Device Bootstrap ────────────────────────────────────────────────────
+
+export async function createBootstrap(): Promise<AdminDeviceBootstrapResponse> {
+    try {
+        const { data } = await apiClient.post("/admin/payment-helper/bootstrap");
+        return data.data;
+    } catch (error) {
+        throw new Error(getApiErrorMessage(error, "Failed to create bootstrap token."));
     }
 }

@@ -1,7 +1,8 @@
 "use client";
 
 import { useTranslations } from "next-intl";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import QRCode from "qrcode";
 import type {
     ManualReviewPaymentItem,
     AdminDevice,
@@ -24,6 +25,7 @@ import {
     rejectMfsNumber,
     getPaymentSettings,
     updatePaymentSettings,
+    createBootstrap,
 } from "@/lib/paymentAdminApi";
 
 // ─── Internal Tab Type ────────────────────────────────────
@@ -107,6 +109,15 @@ export default function PaymentsTab() {
     const [selectedSmsId, setSelectedSmsId] = useState<string | null>(null);
     const [rejectReason, setRejectReason] = useState("");
     const [revokeReason, setRevokeReason] = useState("");
+
+    // Bootstrap
+    const [showBootstrapModal, setShowBootstrapModal] = useState(false);
+    const [bootstrapQrDataUrl, setBootstrapQrDataUrl] = useState<string | null>(null);
+    const [bootstrapDeepLink, setBootstrapDeepLink] = useState<string | null>(null);
+    const [bootstrapExpiresAt, setBootstrapExpiresAt] = useState<Date | null>(null);
+    const [bootstrapCountdown, setBootstrapCountdown] = useState<string | null>(null);
+    const [bootstrapLoading, setBootstrapLoading] = useState(false);
+    const bootstrapTimerRef = useRef<ReturnType<typeof setInterval> | null>(null);
     const [smsSearch, setSmsSearch] = useState("");
 
     // SMS filter
@@ -234,6 +245,68 @@ export default function PaymentsTab() {
             setActionLoading(false);
         }
     }
+
+    // ─── Bootstrap Device ────────────────────────────────────
+    function startBootstrapCountdown(expiresAt: Date) {
+        if (bootstrapTimerRef.current) clearInterval(bootstrapTimerRef.current);
+
+        function tick() {
+            const now = Date.now();
+            const diff = new Date(expiresAt).getTime() - now;
+            if (diff <= 0) {
+                setBootstrapCountdown(t("modal.bootstrapExpired"));
+                if (bootstrapTimerRef.current) clearInterval(bootstrapTimerRef.current);
+                return;
+            }
+            const mins = Math.floor(diff / 60000);
+            const secs = Math.floor((diff % 60000) / 1000);
+            setBootstrapCountdown(`${mins.toString().padStart(2, "0")}:${secs.toString().padStart(2, "0")}`);
+        }
+
+        tick();
+        bootstrapTimerRef.current = setInterval(tick, 1000);
+    }
+
+    function closeBootstrapModal() {
+        setShowBootstrapModal(false);
+        setBootstrapQrDataUrl(null);
+        setBootstrapDeepLink(null);
+        setBootstrapExpiresAt(null);
+        setBootstrapCountdown(null);
+        if (bootstrapTimerRef.current) {
+            clearInterval(bootstrapTimerRef.current);
+            bootstrapTimerRef.current = null;
+        }
+    }
+
+    async function handleBootstrapDevice() {
+        setBootstrapLoading(true);
+        setError(null);
+        try {
+            const res = await createBootstrap();
+            const qrDataUrl = await QRCode.toDataURL(res.deepLinkUrl, {
+                width: 280,
+                margin: 2,
+                color: { dark: "#24389C", light: "#FFFFFF" },
+            });
+            const expires = new Date(res.expiresAt);
+            setBootstrapQrDataUrl(qrDataUrl);
+            setBootstrapDeepLink(res.deepLinkUrl);
+            setBootstrapExpiresAt(expires);
+            setShowBootstrapModal(true);
+            startBootstrapCountdown(expires);
+        } catch {
+            setError(t("messages.bootstrapFailed"));
+        } finally {
+            setBootstrapLoading(false);
+        }
+    }
+
+    useEffect(() => {
+        return () => {
+            if (bootstrapTimerRef.current) clearInterval(bootstrapTimerRef.current);
+        };
+    }, []);
 
     // ─── Internal Tabs Config ──────────────────────────────
     const internalTabs: { key: InternalTab; label: string }[] = [
@@ -486,12 +559,22 @@ export default function PaymentsTab() {
 
                     {/* ─── Devices Tab ───────────────────────────────── */}
                     {activeInternalTab === "devices" && (
-                        <div className="overflow-hidden rounded-2xl bg-surface-container-lowest shadow-sm">
-                            <div className="overflow-x-auto">
-                                <table className="min-w-full text-left">
-                                    <thead className="bg-surface-container-low text-sm font-bold text-on-surface-variant">
-                                        <tr>
-                                            <th className="px-6 py-4">{t("table.deviceName")}</th>
+                        <>
+                            <div className="mb-4 flex justify-end">
+                                <button
+                                    onClick={handleBootstrapDevice}
+                                    disabled={bootstrapLoading}
+                                    className="inline-flex items-center gap-2 rounded-xl bg-primary px-5 py-2.5 text-sm font-bold text-white hover:opacity-90 disabled:opacity-50 transition-opacity"
+                                >
+                                    {bootstrapLoading ? "…" : t("actions.bootstrapDevice")}
+                                </button>
+                            </div>
+                            <div className="overflow-hidden rounded-2xl bg-surface-container-lowest shadow-sm">
+                                <div className="overflow-x-auto">
+                                    <table className="min-w-full text-left">
+                                        <thead className="bg-surface-container-low text-sm font-bold text-on-surface-variant">
+                                            <tr>
+                                                <th className="px-6 py-4">{t("table.deviceName")}</th>
                                             <th className="px-6 py-4">{t("table.user")}</th>
                                             <th className="px-6 py-4">{t("table.appVariant")}</th>
                                             <th className="px-6 py-4">{t("table.status")}</th>
@@ -551,6 +634,7 @@ export default function PaymentsTab() {
                                 </table>
                             </div>
                         </div>
+                        </>
                     )}
 
                     {/* ─── SMS Pool Tab ──────────────────────────────── */}
@@ -1024,6 +1108,68 @@ export default function PaymentsTab() {
                                 className="rounded-xl bg-red-600 px-5 py-2.5 text-sm font-bold text-white hover:opacity-90 disabled:opacity-50 transition-opacity"
                             >
                                 {actionLoading ? "…" : t("modal.confirmRevoke")}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* ─── Bootstrap Device Modal ─────────────────────── */}
+            {showBootstrapModal && bootstrapQrDataUrl && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
+                    <div className="w-full max-w-md max-h-[90vh] overflow-y-auto rounded-2xl bg-surface-container-lowest p-6 shadow-xl text-center">
+                        <h3 className="text-lg font-bold text-on-surface">
+                            {t("modal.bootstrapTitle")}
+                        </h3>
+                        <p className="mt-2 text-sm text-on-surface-variant">
+                            {t("modal.bootstrapDesc")}
+                        </p>
+
+                        {/* QR Code */}
+                        <div className="mt-6 flex justify-center">
+                            <div className="rounded-2xl border-2 border-outline-variant/20 p-4 bg-white">
+                                <img src={bootstrapQrDataUrl} alt="Bootstrap QR" className="w-70 h-70" />
+                            </div>
+                        </div>
+
+                        {/* Countdown */}
+                        {bootstrapCountdown && (
+                            <p className="mt-4 text-sm font-medium text-on-surface-variant">
+                                {t("modal.bootstrapExpiry")}:{" "}
+                                <span className={`font-mono text-base ${bootstrapCountdown === t("modal.bootstrapExpired") ? "text-red-600" : "text-primary"}`}>
+                                    {bootstrapCountdown}
+                                </span>
+                            </p>
+                        )}
+
+                        {/* Deep Link Fallback */}
+                        {bootstrapDeepLink && (
+                            <div className="mt-4 rounded-xl bg-surface-container-low p-3 text-left">
+                                <p className="text-xs font-medium text-on-surface-variant mb-1">{t("modal.bootstrapDeepLink")}</p>
+                                <div className="flex items-center gap-2">
+                                    <code className="flex-1 truncate text-xs font-mono text-on-surface bg-white rounded-lg px-2 py-1">
+                                        {bootstrapDeepLink}
+                                    </code>
+                                    <button
+                                        onClick={() => {
+                                            navigator.clipboard.writeText(bootstrapDeepLink);
+                                            setNotice(t("modal.bootstrapCopied"));
+                                        }}
+                                        className="shrink-0 rounded-lg bg-primary/10 px-2.5 py-1 text-xs font-semibold text-primary hover:bg-primary/20 transition-colors"
+                                    >
+                                        Copy
+                                    </button>
+                                </div>
+                            </div>
+                        )}
+
+                        {/* Close */}
+                        <div className="mt-6 flex justify-end">
+                            <button
+                                onClick={closeBootstrapModal}
+                                className="rounded-xl px-5 py-2.5 text-sm font-medium text-on-surface-variant hover:bg-surface-container-low transition-colors"
+                            >
+                                {t("modal.close")}
                             </button>
                         </div>
                     </div>

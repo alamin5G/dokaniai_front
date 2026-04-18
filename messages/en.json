@@ -137,7 +137,8 @@
       "pricing": "Pricing",
       "about": "About",
       "login": "Login",
-      "getStarted": "Get Started"
+      "getStarted": "Get Started",
+      "dashboard": "Dashboard"
     },
     "hero": {
       "badge": "✨ Bengali AI Voice Assistant",
@@ -2303,7 +2304,8 @@
             "revoke": "Revoke",
             "confirm": "Confirm",
             "cancel": "Cancel",
-            "search": "Search..."
+            "search": "Search...",
+            "bootstrapDevice": "Bootstrap New Device"
           },
           "status": {
             "ACTIVE": "Active",
@@ -2330,7 +2332,14 @@
             "confirmReject": "Confirm Rejection",
             "confirmRevoke": "Confirm Revocation",
             "paymentDetails": "Payment Details",
-            "noSmsFound": "No unmatched SMS reports found"
+            "noSmsFound": "No unmatched SMS reports found",
+            "bootstrapTitle": "Bootstrap New Device",
+            "bootstrapDesc": "Scan this QR code with the DokaniAI Admin app on the Android device you want to register. The token expires in 10 minutes.",
+            "bootstrapExpiry": "Expires in",
+            "bootstrapExpired": "Token expired. Generate a new one.",
+            "bootstrapCopied": "Deep link copied to clipboard!",
+            "bootstrapDeepLink": "Deep Link (fallback)",
+            "close": "Close"
           },
           "messages": {
             "verifySuccess": "Payment verified successfully",
@@ -2341,7 +2350,9 @@
             "noPayments": "No payments in review queue",
             "noFraud": "No fraud-flagged payments",
             "noDevices": "No registered devices",
-            "noSms": "No unmatched SMS reports"
+            "noSms": "No unmatched SMS reports",
+            "bootstrapSuccess": "Device bootstrap token generated. Scan the QR with your Android app.",
+            "bootstrapFailed": "Failed to generate bootstrap token"
           },
           "mfsNumbers": {
             "pending": "pending",

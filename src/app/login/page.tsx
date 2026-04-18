@@ -6,6 +6,7 @@ import { FormInput, GradientButton } from "@/components/ui/FormPrimitives";
 import { useRedirectIfAuthenticated } from "@/hooks/useAuthRedirect";
 import apiClient from "@/lib/api";
 import { getApiErrorMessage } from "@/lib/apiError";
+import axios from "axios";
 import { clearPendingUpgradePlan, consumeRedirectAfterLogin, isPendingPlanTrial, setRedirectAfterLogin } from "@/lib/authFlow";
 import { getClientDeviceContext } from "@/lib/device";
 import { getPreferredWorkspacePath } from "@/lib/shopRouting";
@@ -132,7 +133,13 @@ export default function LoginPage() {
         }
       }
     } catch (error: unknown) {
-      const msg = getApiErrorMessage(error, t("errorInvalid"));
+      const errorCode = axios.isAxiosError(error) && typeof error.response?.data === "object" && error.response?.data !== null
+        ? (error.response.data as Record<string, unknown>).error != null && typeof (error.response.data as Record<string, unknown>).error === "object"
+          ? ((error.response.data as Record<string, unknown>).error as Record<string, unknown>)?.code
+          : null
+        : null;
+      const useTranslated = errorCode === "AUTH_001" || errorCode === "AUTH_002";
+      const msg = useTranslated ? t("errorInvalid") : getApiErrorMessage(error, t("errorInvalid"));
       setErrorText(msg);
     } finally {
       setIsLoading(false);

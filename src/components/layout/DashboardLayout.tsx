@@ -4,6 +4,7 @@ import BottomNavBar from "@/components/layout/BottomNavBar";
 import SideNavBar from "@/components/layout/SideNavBar";
 import TopAppBar from "@/components/layout/TopAppBar";
 import * as businessApi from "@/lib/businessApi";
+import { getCurrentSubscription } from "@/lib/subscriptionApi";
 import { useBusinessStore } from "@/store/businessStore";
 import { useWebPush } from "@/hooks/useWebPush";
 import { useRouter } from "next/navigation";
@@ -115,6 +116,28 @@ export default function DashboardLayout({ children, title, businessId }: Dashboa
         return;
       }
 
+      // 1b. Subscription guard — no active sub = no access
+      //    Only /subscription and /billing routes are exempt (user picks plan there)
+      const currentPath = window.location.pathname;
+      const isAuthOnlyRoute =
+        currentPath.startsWith("/subscription") ||
+        currentPath.startsWith("/billing");
+
+      if (!isAuthOnlyRoute) {
+        try {
+          const sub = await getCurrentSubscription();
+          if (!["ACTIVE", "TRIAL", "GRACE"].includes(sub.status)) {
+            clearTimeout(timeoutId);
+            router.replace("/subscription/upgrade");
+            return;
+          }
+        } catch {
+          clearTimeout(timeoutId);
+          router.replace("/subscription/upgrade");
+          return;
+        }
+      }
+
       // 2. Read latest state from store (bypasses stale React closure).
       const state = useBusinessStore.getState();
 
@@ -136,8 +159,7 @@ export default function DashboardLayout({ children, title, businessId }: Dashboa
       // 5. Onboarding guard — redirect to /onboarding if:
       //    a) No businesses at all (brand new user)
       //    b) User has active businesses but none completed onboarding
-      //    Skip this guard if we're already on /onboarding or /businesses
-      const currentPath = window.location.pathname;
+      //    Skip this guard if we're already on /onboarding, /businesses, or /subscription
       const skipOnboardingGuard =
         currentPath === "/onboarding" ||
         currentPath === "/businesses" ||

@@ -99,3 +99,12 @@ export interface PaymentSettingsRequest {
     nagad: string;
     rocket: string;
 }
+
+// ─── Device Bootstrap ────────────────────────────────────────────────────
+
+export interface AdminDeviceBootstrapResponse {
+    bootstrapToken: string;
+    deepLinkUrl: string;
+    expiresAt: string;
+    appVariant: string;
+}

@@ -3,9 +3,13 @@
 import { consumeRedirectAfterLogin } from "@/lib/authFlow";
 import { listBusinesses } from "@/lib/businessApi";
 import { buildShopPath } from "@/lib/shopRouting";
+import { getCurrentSubscription } from "@/lib/subscriptionApi";
+import { useAuthStore } from "@/store/authStore";
 import { useEffect, useSyncExternalStore } from "react";
 
 const AUTH_STORAGE_KEY = "dokaniai-auth-storage";
+
+const ACTIVE_SUBSCRIPTION_STATUSES = new Set(["ACTIVE", "TRIAL", "GRACE"]);
 
 /**
  * Read accessToken directly from localStorage (bypasses Zustand hydration timing).
@@ -40,11 +44,11 @@ function getStoredUserRoleRaw(): string | null {
  *
  * SRS §8.2 — Post-Login Redirect:
  *   1. pending_upgrade_plan → /subscription/upgrade?plan=[planId]
- *   2. businesses.length === 0 → /onboarding
+ *   2. businesses.length === 0 → /onboarding (if active subscription) or /subscription/upgrade
  *   3. businesses.length === 1 → /shop/[businessId] (skip overview)
  *   4. businesses.length > 1 → /businesses (show overview)
  */
-async function resolvePostLoginTarget(role: string): Promise<string> {
+async function resolvePostLoginTarget(role: string): Promise<string | null> {
   // Admin roles always go to /admin
   if (role === "ADMIN" || role === "SUPER_ADMIN") {
     return "/admin";
@@ -62,6 +66,15 @@ async function resolvePostLoginTarget(role: string): Promise<string> {
     const businesses = response.businesses ?? [];
 
     if (businesses.length === 0) {
+      // Before sending to onboarding, verify the user has an active subscription.
+      try {
+        const subscription = await getCurrentSubscription();
+        if (!ACTIVE_SUBSCRIPTION_STATUSES.has(subscription.status)) {
+          return "/subscription/upgrade";
+        }
+      } catch {
+        return "/subscription/upgrade";
+      }
       return "/onboarding";
     }
 
@@ -72,18 +85,12 @@ async function resolvePostLoginTarget(role: string): Promise<string> {
     // Multiple businesses → show overview
     return "/businesses";
   } catch {
-    // API call failed — fall back to localStorage-based path
-    const storedId = typeof window !== "undefined"
-      ? localStorage.getItem("dokaniai-business-storage")
-      : null;
-    if (storedId) {
-      try {
-        const parsed = JSON.parse(storedId);
-        const activeId = parsed?.state?.activeBusinessId;
-        if (activeId) return buildShopPath(activeId);
-      } catch { /* ignore */ }
-    }
-    return "/businesses";
+    // API call failed (likely 401 from stale token) — clear tokens and stay put
+    try {
+      const { clearTokens } = useAuthStore.getState();
+      clearTokens();
+    } catch { /* ignore */ }
+    return null;
   }
 }
 
@@ -121,7 +128,7 @@ export function useRedirectIfAuthenticated(redirectTo?: string) {
       }
 
       const target = await resolvePostLoginTarget(role ?? "");
-      if (!cancelled) {
+      if (!cancelled && target) {
         window.location.replace(target);
       }
     }

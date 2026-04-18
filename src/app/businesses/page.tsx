@@ -5,6 +5,7 @@ import UserProfileSection from "@/components/ui/UserProfileSection";
 import { formatCurrencyBDT } from "@/lib/localeNumber";
 import { buildShopPath } from "@/lib/shopRouting";
 import { getPlanLimits } from "@/lib/subscriptionApi";
+import { useSubscriptionGuard } from "@/hooks/useSubscriptionGuard";
 import { useBusinessStore } from "@/store/businessStore";
 import type { BusinessResponse } from "@/types/business";
 import type { PlanLimits } from "@/types/subscription";
@@ -183,6 +184,7 @@ export default function BusinessesPage() {
     const t = useTranslations("business");
     const tc = useTranslations("common");
     const hasToken = getAccessTokenRaw() != null;
+    const { loading: subLoading, hasSubscription } = useSubscriptionGuard();
     const {
         businesses,
         businessStatsMap,
@@ -213,6 +215,14 @@ export default function BusinessesPage() {
             router.replace("/login");
         }
     }, [hasToken, router]);
+
+    // Subscription guard — redirect to plan selection if no active subscription
+    useEffect(() => {
+        if (!hasToken || subLoading) return;
+        if (!hasSubscription) {
+            router.replace("/subscription/upgrade");
+        }
+    }, [hasToken, subLoading, hasSubscription, router]);
 
     // Load businesses on mount
     useEffect(() => {
