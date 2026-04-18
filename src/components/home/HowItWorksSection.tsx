@@ -1,7 +1,7 @@
 "use client";
 
-import Link from "next/link";
 import { useTranslations } from "next-intl";
+import { CtaButton } from "@/components/home/CtaButton";
 
 export function HowItWorksSection() {
   const t = useTranslations("home.howItWorks");
@@ -44,15 +44,7 @@ export function HowItWorksSection() {
         </div>
 
         <div className="flex justify-center pt-2">
-          <Link href="/register">
-            <button
-              className="w-full sm:w-auto px-8 py-4 text-on-primary rounded-xl font-bold text-base sm:text-lg flex items-center justify-center gap-3 hover:shadow-xl transition-all mx-auto min-h-[48px]"
-              style={{ background: "linear-gradient(135deg, #00503a 0%, #006a4e 100%)" }}
-            >
-              <span className="material-symbols-outlined home-icon">rocket_launch</span>
-              {t("cta")}
-            </button>
-          </Link>
+          <CtaButton />
         </div>
       </div>
     </section>

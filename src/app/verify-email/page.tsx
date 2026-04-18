@@ -4,6 +4,7 @@ import { AuthLayout } from "@/components/layout/AuthLayout";
 import { FormInput, GradientButton } from "@/components/ui/FormPrimitives";
 import apiClient from "@/lib/api";
 import { getApiErrorMessage } from "@/lib/apiError";
+import axios from "axios";
 import { clearAuthContact, getAuthContact, maskContact } from "@/lib/authFlow";
 import { useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
@@ -67,7 +68,13 @@ function VerifyEmailForm() {
         router.push("/login?verified=true");
       }, 2000);
     } catch (error: unknown) {
-      setErrorText(getApiErrorMessage(error, t("errorVerificationFailed")));
+      const errorCode = axios.isAxiosError(error) && typeof error.response?.data === "object" && error.response?.data !== null
+        ? (error.response.data as Record<string, unknown>).error != null && typeof (error.response.data as Record<string, unknown>).error === "object"
+          ? ((error.response.data as Record<string, unknown>).error as Record<string, unknown>)?.code
+          : null
+        : null;
+      const useTranslated = errorCode === "AUTH_003" || errorCode === "AUTH_004" || errorCode === "TOKEN_EXPIRED" || errorCode === "INVALID_TOKEN";
+      setErrorText(useTranslated ? t("errorVerificationFailed") : getApiErrorMessage(error, t("errorVerificationFailed")));
     } finally {
       setIsLoading(false);
     }

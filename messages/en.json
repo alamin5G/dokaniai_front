@@ -51,7 +51,10 @@
       "terms": "Terms of Service",
       "privacy": "Privacy Policy",
       "errorAgree": "Please agree to the terms and conditions",
-      "errorGeneric": "An error occurred",
+      "errorGeneric": "Registration failed. Please try again.",
+      "errorInvalidReferral": "Invalid referral code. Please check and try again.",
+      "errorPhoneExists": "An account with this phone number already exists.",
+      "errorEmailExists": "An account with this email already exists.",
       "alreadyHaveAccount": "Already have an account?",
       "loginHere": "Login"
     },
@@ -139,6 +142,12 @@
       "login": "Login",
       "getStarted": "Get Started",
       "dashboard": "Dashboard"
+    },
+    "cta": {
+      "getStarted": "Get Started",
+      "dashboard": "Go to Dashboard",
+      "selectPlan": "Select a Plan",
+      "admin": "Admin Panel"
     },
     "hero": {
       "badge": "✨ Bengali AI Voice Assistant",

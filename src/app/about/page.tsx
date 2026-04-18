@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useTranslations } from "next-intl";
 import { Footer } from "@/components/home/Footer";
+import { CtaButton } from "@/components/home/CtaButton";
 import { NavBar } from "@/components/home/NavBar";
 
 export default function AboutPage() {
@@ -171,12 +172,9 @@ export default function AboutPage() {
                                 </div>
                                 <h3 className="text-2xl font-black text-primary font-headline">{t("why.ctaTitle")}</h3>
                                 <p className="text-on-surface-variant">{t("why.ctaDesc")}</p>
-                                <Link href="/register">
-                                    <button className="px-8 py-4 bg-primary text-on-primary rounded-xl font-bold text-lg flex items-center gap-3 hover:shadow-xl transition-all mx-auto">
-                                        <span className="material-symbols-outlined">rocket_launch</span>
-                                        {t("why.ctaButton")}
-                                    </button>
-                                </Link>
+                                <div className="flex justify-center">
+                                    <CtaButton />
+                                </div>
                                 <p className="text-xs text-on-surface-variant/60">{t("why.ctaSubtext")}</p>
                             </div>
                         </div>
@@ -189,12 +187,7 @@ export default function AboutPage() {
                         <h2 className="text-4xl font-black text-on-primary font-headline">{t("cta.title")}</h2>
                         <p className="text-on-primary/80 text-lg max-w-2xl mx-auto">{t("cta.description")}</p>
                         <div className="flex flex-wrap gap-4 justify-center">
-                            <Link href="/register">
-                                <button className="px-8 py-4 bg-on-primary text-primary rounded-xl font-bold text-lg hover:shadow-xl transition-all flex items-center gap-3">
-                                    <span className="material-symbols-outlined">rocket_launch</span>
-                                    {t("cta.startFree")}
-                                </button>
-                            </Link>
+                            <CtaButton variant="white" />
                             <Link href="/pricing">
                                 <button className="px-8 py-4 bg-white/20 text-on-primary rounded-xl font-bold text-lg hover:bg-white/30 transition-all flex items-center gap-3 border border-on-primary/30">
                                     <span className="material-symbols-outlined">visibility</span>

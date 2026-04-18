@@ -61,7 +61,16 @@ export default function RegisterPage() {
         router.push("/verify-email");
       }
     } catch (error: unknown) {
-      setErrorText(getApiErrorMessage(error, t("errorGeneric")));
+      const rawMsg = getApiErrorMessage(error, t("errorGeneric")).toLowerCase();
+      if (rawMsg.includes("referral")) {
+        setErrorText(t("errorInvalidReferral"));
+      } else if (rawMsg.includes("phone") || rawMsg.includes("already exists")) {
+        setErrorText(t("errorPhoneExists"));
+      } else if (rawMsg.includes("email")) {
+        setErrorText(t("errorEmailExists"));
+      } else {
+        setErrorText(t("errorGeneric"));
+      }
     } finally {
       setIsLoading(false);
     }

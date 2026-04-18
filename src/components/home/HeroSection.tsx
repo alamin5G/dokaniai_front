@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useTranslations } from "next-intl";
+import { CtaButton } from "@/components/home/CtaButton";
 
 export function HeroSection() {
   const t = useTranslations("home.hero");
@@ -24,12 +25,7 @@ export function HeroSection() {
           </p>
 
           <div className="flex flex-col sm:flex-row sm:flex-wrap gap-3 sm:gap-4 pt-3 md:pt-4">
-            <Link href="/register">
-              <button className="w-full sm:w-auto px-8 py-4 bg-primary text-on-primary rounded-xl font-bold text-base sm:text-lg flex items-center justify-center gap-3 hover:shadow-xl transition-all min-h-[48px]">
-                <span className="material-symbols-outlined home-icon" data-icon="rocket_launch">rocket_launch</span>
-                {t("startToday")}
-              </button>
-            </Link>
+            <CtaButton size="lg" />
             <Link href="/#demo">
               <button className="w-full sm:w-auto px-8 py-4 bg-surface-container-high text-on-surface rounded-xl font-bold text-base sm:text-lg flex items-center justify-center gap-3 hover:bg-surface-dim transition-all min-h-[48px]">
                 <span className="material-symbols-outlined home-icon" data-icon="play_circle">play_circle</span>

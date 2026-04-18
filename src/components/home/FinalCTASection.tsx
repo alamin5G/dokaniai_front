@@ -1,7 +1,7 @@
 "use client";
 
-import Link from "next/link";
 import { useTranslations } from "next-intl";
+import { CtaButton } from "@/components/home/CtaButton";
 
 export function FinalCTASection() {
   const t = useTranslations("home.finalCta");
@@ -25,15 +25,9 @@ export function FinalCTASection() {
       >
         <h2 className="text-3xl sm:text-4xl md:text-5xl font-black text-on-primary font-headline leading-tight">{t("title")}</h2>
         <p className="text-base sm:text-lg text-on-primary/85 max-w-2xl mx-auto leading-relaxed">{t("description")}</p>
-        <Link href="/register">
-          <button
-            className="w-full sm:w-auto px-10 py-5 rounded-xl font-bold text-lg sm:text-xl hover:brightness-110 transition-all flex items-center justify-center gap-3 mx-auto min-h-[48px]"
-            style={{ background: "linear-gradient(135deg, #ffffff 0%, #e9f5ef 100%)", color: "#00503a" }}
-          >
-            <span className="material-symbols-outlined home-icon">rocket_launch</span>
-            {t("button")}
-          </button>
-        </Link>
+        <div className="flex justify-center">
+          <CtaButton variant="white" size="lg" />
+        </div>
       </div>
     </section>
   );
