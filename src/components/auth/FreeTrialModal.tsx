@@ -1,34 +1,36 @@
 "use client";
 
 import { clearPendingUpgradePlan } from "@/lib/authFlow";
+import { clearPendingPlan, consentTrialPlan } from "@/lib/subscriptionApi";
 import { useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
+import { useState } from "react";
 
 interface FreeTrialModalProps {
-    /** Duration in days (default: 65) */
     trialDays?: number;
-    /** Optional confirm handler — overrides the default navigation. */
+    pendingPlanId?: string | null;
     onConfirm?: () => void;
 }
 
-/**
- * Free Trial acknowledgment modal.
- * Shown after a new user logs in for the first time when they selected
- * the free trial plan during registration.
- *
- * SRS §6.1 Scenario A Step 4: Show modal for acknowledge and confirmation.
- */
-export function FreeTrialModal({ trialDays = 65, onConfirm }: FreeTrialModalProps) {
+export function FreeTrialModal({ trialDays = 65, pendingPlanId, onConfirm }: FreeTrialModalProps) {
     const router = useRouter();
     const t = useTranslations("subscription.trialModal");
+    const [isConfirming, setIsConfirming] = useState(false);
 
-    const handleConfirm = () => {
+    const handleConfirm = async () => {
+        setIsConfirming(true);
+        try {
+            if (pendingPlanId) {
+                await consentTrialPlan(pendingPlanId);
+            }
+        } catch { /* non-critical */ }
         if (onConfirm) {
             onConfirm();
         } else {
             clearPendingUpgradePlan();
             router.push("/onboarding");
         }
+        setIsConfirming(false);
     };
 
     return (
@@ -76,7 +78,8 @@ export function FreeTrialModal({ trialDays = 65, onConfirm }: FreeTrialModalProp
                 {/* Confirm button */}
                 <button
                     onClick={handleConfirm}
-                    className="w-full py-3.5 bg-primary text-on-primary rounded-xl font-bold text-lg hover:bg-primary/90 active:scale-[0.98] transition-all flex items-center justify-center gap-2"
+                    disabled={isConfirming}
+                    className="w-full py-3.5 bg-primary text-on-primary rounded-xl font-bold text-lg hover:bg-primary/90 active:scale-[0.98] transition-all flex items-center justify-center gap-2 disabled:opacity-60"
                 >
                     <span>{t("confirm")}</span>
                     <span className="material-symbols-outlined text-xl">arrow_forward</span>

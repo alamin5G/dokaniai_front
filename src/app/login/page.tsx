@@ -6,9 +6,10 @@ import { FormInput, GradientButton } from "@/components/ui/FormPrimitives";
 import { useRedirectIfAuthenticated } from "@/hooks/useAuthRedirect";
 import apiClient from "@/lib/api";
 import { getApiErrorMessage } from "@/lib/apiError";
-import { clearPendingUpgradePlan, consumeRedirectAfterLogin, isPendingPlanTrial } from "@/lib/authFlow";
+import { clearPendingUpgradePlan, consumeRedirectAfterLogin, isPendingPlanTrial, setRedirectAfterLogin } from "@/lib/authFlow";
 import { getClientDeviceContext } from "@/lib/device";
 import { getPreferredWorkspacePath } from "@/lib/shopRouting";
+import { getPendingPlan as getPendingPlanFromDb } from "@/lib/subscriptionApi";
 import { useAuthStore } from "@/store/authStore";
 import { useTranslations } from "next-intl";
 import Link from "next/link";
@@ -92,24 +93,41 @@ export default function LoginPage() {
           setUserRole(role);
           router.push(pendingRedirect);
         } else {
+          let dbPendingPlan: { planId?: string; isTrial?: boolean } | null = null;
           try {
-            const bizRes = await apiClient.get("/businesses", {
-              headers: { Authorization: `Bearer ${tokens.accessToken}` },
-            });
-            const businesses: Array<{ id: string }> = bizRes.data?.data?.businesses ?? [];
-            if (businesses.length === 0) {
+            dbPendingPlan = await getPendingPlanFromDb();
+          } catch { /* ignore */ }
+
+          if (dbPendingPlan?.planId) {
+            setTokens(tokens.accessToken, tokens.refreshToken, tokens.userId, tokens.status);
+            setUserRole(role);
+            if (dbPendingPlan.isTrial) {
               deferredTokens.current = tokens;
               setUserRole(role);
               setShowTrialModal(true);
             } else {
+              router.push(`/subscription/upgrade?plan=${dbPendingPlan.planId}`);
+            }
+          } else {
+            try {
+              const bizRes = await apiClient.get("/businesses", {
+                headers: { Authorization: `Bearer ${tokens.accessToken}` },
+              });
+              const businesses: Array<{ id: string }> = bizRes.data?.data?.businesses ?? [];
+              if (businesses.length === 0) {
+                deferredTokens.current = tokens;
+                setUserRole(role);
+                setShowTrialModal(true);
+              } else {
+                setTokens(tokens.accessToken, tokens.refreshToken, tokens.userId, tokens.status);
+                setUserRole(role);
+                router.push(getPreferredWorkspacePath());
+              }
+            } catch {
               setTokens(tokens.accessToken, tokens.refreshToken, tokens.userId, tokens.status);
               setUserRole(role);
               router.push(getPreferredWorkspacePath());
             }
-          } catch {
-            setTokens(tokens.accessToken, tokens.refreshToken, tokens.userId, tokens.status);
-            setUserRole(role);
-            router.push(getPreferredWorkspacePath());
           }
         }
       }
@@ -136,7 +154,7 @@ export default function LoginPage() {
   // over the authenticated redirect, otherwise isAuthenticated=true causes
   // an early return null and the modal never renders.
   if (showTrialModal) {
-    return <FreeTrialModal onConfirm={handleTrialConfirm} />;
+    return <FreeTrialModal onConfirm={handleTrialConfirm} pendingPlanId={sessionStorage.getItem("pending_upgrade_plan")} />;
   }
 
   // Wait for hydration, or redirect if authenticated

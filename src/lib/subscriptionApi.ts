@@ -160,3 +160,24 @@ export async function getReferralStatus(): Promise<ReferralStatus> {
   const response = await apiClient.get<ApiSuccess<ReferralStatus>>("/subscriptions/referral-status");
   return unwrap(response);
 }
+
+export async function savePendingPlan(planId: string): Promise<void> {
+  await apiClient.post("/subscriptions/pending-plan", { planId });
+}
+
+export async function getPendingPlan(): Promise<{ planId?: string; isTrial?: boolean } | null> {
+  try {
+    const response = await apiClient.get<ApiSuccess<{ planId?: string; isTrial?: boolean }>>("/subscriptions/pending-plan");
+    return unwrap(response);
+  } catch {
+    return null;
+  }
+}
+
+export async function consentTrialPlan(planId: string): Promise<void> {
+  await apiClient.post("/subscriptions/consent-trial", { planId });
+}
+
+export async function clearPendingPlan(): Promise<void> {
+  await apiClient.delete("/subscriptions/pending-plan");
+}

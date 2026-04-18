@@ -11,7 +11,8 @@ import type {
     SmsReportItem,
     PaymentSummary,
     MfsNumberResponse,
-    MfsNumberRegistrationRequest,
+    PaymentSettingsResponse,
+    PaymentSettingsRequest,
 } from "@/types/paymentAdmin";
 import type { PaymentIntentStatusResponse } from "@/types/subscription";
 
@@ -172,5 +173,25 @@ export async function rejectMfsNumber(
         return data.data;
     } catch (error) {
         throw new Error(getApiErrorMessage(error, "Failed to reject MFS number."));
+    }
+}
+
+export async function getPaymentSettings(): Promise<PaymentSettingsResponse> {
+    try {
+        const { data } = await apiClient.get("/payments/admin/settings");
+        return data.data;
+    } catch (error) {
+        throw new Error(getApiErrorMessage(error, "Failed to get payment settings."));
+    }
+}
+
+export async function updatePaymentSettings(
+    request: PaymentSettingsRequest,
+): Promise<PaymentSettingsResponse> {
+    try {
+        const { data } = await apiClient.put("/payments/admin/settings", request);
+        return data.data;
+    } catch (error) {
+        throw new Error(getApiErrorMessage(error, "Failed to update payment settings."));
     }
 }

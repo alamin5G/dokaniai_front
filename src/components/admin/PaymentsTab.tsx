@@ -8,6 +8,7 @@ import type {
     SmsReportItem,
     PaymentSummary,
     MfsNumberResponse,
+    PaymentSettingsResponse,
 } from "@/types/paymentAdmin";
 import {
     getManualReviewQueue,
@@ -21,11 +22,13 @@ import {
     getPendingMfsNumbers,
     approveMfsNumber,
     rejectMfsNumber,
+    getPaymentSettings,
+    updatePaymentSettings,
 } from "@/lib/paymentAdminApi";
 
 // ─── Internal Tab Type ────────────────────────────────────
 
-type InternalTab = "review" | "fraud" | "devices" | "smsPool" | "mfsNumbers";
+type InternalTab = "review" | "fraud" | "devices" | "smsPool" | "mfsNumbers" | "settings";
 
 // ─── MFS Badge ────────────────────────────────────────────
 
@@ -109,6 +112,12 @@ export default function PaymentsTab() {
     // SMS filter
     const [mfsFilter, setMfsFilter] = useState<string>("ALL");
 
+    // Payment settings
+    const [paymentSettings, setPaymentSettings] = useState<PaymentSettingsResponse | null>(null);
+    const [settingsForm, setSettingsForm] = useState({ bkash: "", nagad: "", rocket: "" });
+    const [settingsLoading, setSettingsLoading] = useState(false);
+    const [settingsSaved, setSettingsSaved] = useState(false);
+
     // Notices
     const [notice, setNotice] = useState<string | null>(null);
     const [error, setError] = useState<string | null>(null);
@@ -118,13 +127,14 @@ export default function PaymentsTab() {
         setLoading(true);
         setError(null);
         try {
-            const [review, fraud, dev, sms, sum, mfs] = await Promise.all([
+            const [review, fraud, dev, sms, sum, mfs, settings] = await Promise.all([
                 getManualReviewQueue(),
                 getFraudFlaggedPayments(),
                 getAllDevices(),
                 getUnmatchedSmsPool(),
                 getPaymentSummary(),
                 getPendingMfsNumbers(),
+                getPaymentSettings(),
             ]);
             setReviewQueue(review);
             setFraudFlags(fraud);
@@ -132,6 +142,8 @@ export default function PaymentsTab() {
             setSmsPool(sms);
             setSummary(sum);
             setMfsNumbers(mfs);
+            setPaymentSettings(settings);
+            setSettingsForm({ bkash: settings.bkash, nagad: settings.nagad, rocket: settings.rocket });
         } catch {
             setError(t("messages.loadFailed"));
         } finally {
@@ -230,6 +242,7 @@ export default function PaymentsTab() {
         { key: "devices", label: t("tabs.devices") },
         { key: "smsPool", label: t("tabs.smsPool") },
         { key: "mfsNumbers", label: t("tabs.mfsNumbers") },
+        { key: "settings", label: t("tabs.settings") },
     ];
 
     // ─── Render ────────────────────────────────────────────
@@ -702,6 +715,99 @@ export default function PaymentsTab() {
                             </table>
                         </div>
                     )}
+                </section>
+            )}
+
+            {/* ─── Payment Settings Tab ──────────────────────────── */}
+            {activeInternalTab === "settings" && (
+                <section className="space-y-6">
+                    <div>
+                        <h3 className="text-sm font-bold text-on-surface-variant uppercase tracking-wider">
+                            {t("settings.title")}
+                        </h3>
+                        <p className="text-xs text-on-surface-variant mt-1">{t("settings.subtitle")}</p>
+                    </div>
+
+                    {settingsSaved && (
+                        <div className="rounded-xl bg-emerald-50 px-4 py-3 text-sm font-medium text-emerald-700">
+                            {t("settings.saved")}
+                        </div>
+                    )}
+
+                    <div className="space-y-4">
+                        <div className="rounded-2xl bg-surface-container-lowest p-5 shadow-sm space-y-4">
+                            <div className="flex items-center gap-3">
+                                <div className="w-10 h-10 rounded-full bg-pink-100 flex items-center justify-center">
+                                    <span className="text-xs font-bold text-pink-800">bK</span>
+                                </div>
+                                <div className="flex-1">
+                                    <label className="text-sm font-semibold text-on-surface">bKash {t("settings.receiverNumber")}</label>
+                                    <input
+                                        type="tel"
+                                        value={settingsForm.bkash}
+                                        onChange={(e) => { setSettingsForm({ ...settingsForm, bkash: e.target.value }); setSettingsSaved(false); }}
+                                        placeholder="01XXXXXXXXX"
+                                        className="mt-1 w-full rounded-xl border border-outline-variant/30 bg-surface-container-low px-4 py-2.5 text-sm text-on-surface placeholder:text-on-surface-variant/50 focus:border-primary focus:ring-1 focus:ring-primary outline-none"
+                                    />
+                                </div>
+                            </div>
+
+                            <div className="flex items-center gap-3">
+                                <div className="w-10 h-10 rounded-full bg-orange-100 flex items-center justify-center">
+                                    <span className="text-xs font-bold text-orange-800">Ng</span>
+                                </div>
+                                <div className="flex-1">
+                                    <label className="text-sm font-semibold text-on-surface">Nagad {t("settings.receiverNumber")}</label>
+                                    <input
+                                        type="tel"
+                                        value={settingsForm.nagad}
+                                        onChange={(e) => { setSettingsForm({ ...settingsForm, nagad: e.target.value }); setSettingsSaved(false); }}
+                                        placeholder="01XXXXXXXXX"
+                                        className="mt-1 w-full rounded-xl border border-outline-variant/30 bg-surface-container-low px-4 py-2.5 text-sm text-on-surface placeholder:text-on-surface-variant/50 focus:border-primary focus:ring-1 focus:ring-primary outline-none"
+                                    />
+                                </div>
+                            </div>
+
+                            <div className="flex items-center gap-3">
+                                <div className="w-10 h-10 rounded-full bg-purple-100 flex items-center justify-center">
+                                    <span className="text-xs font-bold text-purple-800">Rk</span>
+                                </div>
+                                <div className="flex-1">
+                                    <label className="text-sm font-semibold text-on-surface">Rocket {t("settings.receiverNumber")}</label>
+                                    <input
+                                        type="tel"
+                                        value={settingsForm.rocket}
+                                        onChange={(e) => { setSettingsForm({ ...settingsForm, rocket: e.target.value }); setSettingsSaved(false); }}
+                                        placeholder="01XXXXXXXXX"
+                                        className="mt-1 w-full rounded-xl border border-outline-variant/30 bg-surface-container-low px-4 py-2.5 text-sm text-on-surface placeholder:text-on-surface-variant/50 focus:border-primary focus:ring-1 focus:ring-primary outline-none"
+                                    />
+                                </div>
+                            </div>
+                        </div>
+
+                        <button
+                            type="button"
+                            onClick={async () => {
+                                setSettingsLoading(true);
+                                setSettingsSaved(false);
+                                setError(null);
+                                try {
+                                    const updated = await updatePaymentSettings(settingsForm);
+                                    setPaymentSettings(updated);
+                                    setSettingsSaved(true);
+                                    setNotice(t("settings.saved"));
+                                } catch {
+                                    setError(t("settings.saveFailed"));
+                                } finally {
+                                    setSettingsLoading(false);
+                                }
+                            }}
+                            disabled={settingsLoading}
+                            className="rounded-full bg-primary px-6 py-2.5 text-sm font-bold text-white hover:bg-primary/90 disabled:opacity-50 transition-opacity"
+                        >
+                            {settingsLoading ? t("settings.saving") : t("settings.save")}
+                        </button>
+                    </div>
                 </section>
             )}
 

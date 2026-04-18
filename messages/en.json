@@ -2233,7 +2233,8 @@
             "fraud": "Fraud Flags",
             "devices": "Devices",
             "smsPool": "SMS Pool",
-            "mfsNumbers": "MFS Numbers"
+            "mfsNumbers": "MFS Numbers",
+            "settings": "Settings"
           },
           "summary": {
             "todayRevenue": "Today Revenue",
@@ -2326,6 +2327,15 @@
               "simSlot": "SIM Slot",
               "submittedAt": "Submitted"
             }
+          },
+          "settings": {
+            "title": "Payment Settings",
+            "subtitle": "Configure MFS receiver numbers. Users will send money to these numbers.",
+            "receiverNumber": "Receiver Number",
+            "save": "Save Settings",
+            "saving": "Saving...",
+            "saved": "Payment settings updated successfully",
+            "saveFailed": "Failed to update settings"
           }
         }
       },

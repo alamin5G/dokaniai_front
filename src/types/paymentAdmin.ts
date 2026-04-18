@@ -87,3 +87,15 @@ export interface MfsNumberRegistrationRequest {
     mfsNumber: string;
     simSlot?: number;
 }
+
+export interface PaymentSettingsResponse {
+    bkash: string;
+    nagad: string;
+    rocket: string;
+}
+
+export interface PaymentSettingsRequest {
+    bkash: string;
+    nagad: string;
+    rocket: string;
+}

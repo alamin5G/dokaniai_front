@@ -1,12 +1,13 @@
 "use client";
 
-import { FormInput } from "@/components/ui/FormPrimitives";
 import {
   applyCoupon,
   getAvailablePlans,
   getCurrentSubscription,
   getReferralStatus,
   initializePaymentIntent,
+  savePendingPlan,
+  clearPendingPlan,
 } from "@/lib/subscriptionApi";
 import {
   clearPendingUpgradePlan,
@@ -18,10 +19,38 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { useLocale, useTranslations } from "next-intl";
 import { useEffect, useMemo, useState } from "react";
 
-const MFS_OPTIONS: MfsType[] = ["BKASH", "NAGAD", "ROCKET"];
+const MFS_OPTIONS: { key: MfsType; labelBn: string; labelEn: string; color: string }[] = [
+  { key: "BKASH", labelBn: "বিকাশ", labelEn: "bKash", color: "#E2136E" },
+  { key: "NAGAD", labelBn: "নগদ", labelEn: "Nagad", color: "#ED1C24" },
+  { key: "ROCKET", labelBn: "রকেট", labelEn: "Rocket", color: "#8B2F8B" },
+];
 
 function formatPrice(value: number, locale: string): string {
   return new Intl.NumberFormat(locale.startsWith("bn") ? "bn-BD" : "en-US").format(value);
+}
+
+function getPlanDisplayName(plan: Plan, isBn: boolean): string {
+  return isBn ? plan.displayNameBn : plan.displayNameEn;
+}
+
+function getFeatureList(plan: Plan, isBn: boolean): { icon: string; label: string }[] {
+  const features: { icon: string; label: string }[] = [];
+  if (plan.maxBusinesses > 0) {
+      features.push({ icon: "store", label: isBn ? `সর্বোচ্চ ব্যবসা: ${formatPrice(plan.maxBusinesses, isBn ? "bn-BD" : "en-US")}` : `Max businesses: ${plan.maxBusinesses}` });
+  }
+    if (plan.maxProductsPerBusiness != null) {
+      const val = plan.maxProductsPerBusiness === -1
+        ? (isBn ? "আনলিমিটেড" : "Unlimited")
+        : formatPrice(plan.maxProductsPerBusiness, isBn ? "bn-BD" : "en-US");
+      features.push({ icon: "inventory_2", label: isBn ? `প্রতি ব্যবসায় পণ্য: ${val}` : `Products/business: ${val}` });
+  }
+  if (plan.aiQueriesPerDay != null) {
+    const val = plan.aiQueriesPerDay === -1
+      ? (isBn ? "আনলিমিটেড" : "Unlimited")
+      : formatPrice(plan.aiQueriesPerDay, isBn ? "bn-BD" : "en-US");
+    features.push({ icon: "auto_awesome", label: isBn ? `AI/দিন: ${val}` : `AI/day: ${val}` });
+  }
+  return features;
 }
 
 export default function SubscriptionUpgradePage() {
@@ -43,15 +72,11 @@ export default function SubscriptionUpgradePage() {
   const [notice, setNotice] = useState<string | null>(null);
 
   useEffect(() => {
-    if (typeof window === "undefined") {
-      return;
-    }
-
+    if (typeof window === "undefined") return;
     try {
       const rawAuth = localStorage.getItem("dokaniai-auth-storage");
       const parsed = rawAuth ? JSON.parse(rawAuth) : null;
-      const hasToken = Boolean(parsed?.state?.accessToken);
-      if (!hasToken) {
+      if (!parsed?.state?.accessToken) {
         const planFromUrl = searchParams.get("plan");
         const target = planFromUrl
           ? `/subscription/upgrade?plan=${encodeURIComponent(planFromUrl)}`
@@ -66,7 +91,6 @@ export default function SubscriptionUpgradePage() {
 
   useEffect(() => {
     let cancelled = false;
-
     const loadData = async () => {
       setIsLoading(true);
       try {
@@ -75,73 +99,43 @@ export default function SubscriptionUpgradePage() {
           getCurrentSubscription().catch(() => null),
           getReferralStatus().catch(() => null),
         ]);
-
-        if (cancelled) {
-          return;
-        }
-
-        const activePlans = allPlans.filter((plan) => plan.isActive).sort((a, b) => a.tierLevel - b.tierLevel);
+        if (cancelled) return;
+        const activePlans = allPlans.filter((p) => p.isActive && !p.isTrial && !p.customPricing).sort((a, b) => a.tierLevel - b.tierLevel);
         setPlans(activePlans);
         setCurrentSubscription(current);
         setReferralStatus(referral);
-
         const planFromUrl = searchParams.get("plan");
         const pendingPlan = getPendingUpgradePlan();
         const selected =
-          activePlans.find((plan) => plan.id === planFromUrl)?.id ??
-          activePlans.find((plan) => plan.id === pendingPlan)?.id ??
+          activePlans.find((p) => p.id === planFromUrl)?.id ??
+          activePlans.find((p) => p.id === pendingPlan)?.id ??
           current?.planId ??
-          activePlans.find((plan) => !plan.isTrial)?.id ??
+          activePlans.find((p) => !p.isTrial)?.id ??
           activePlans[0]?.id ??
           "";
-
         setSelectedPlanId(selected);
-
-        if (pendingPlan && pendingPlan === selected) {
-          clearPendingUpgradePlan();
-        }
+        if (pendingPlan && pendingPlan === selected) clearPendingUpgradePlan();
+        if (selected) savePendingPlan(selected).catch(() => {});
       } catch (error) {
-        setNotice(
-          error instanceof Error
-            ? error.message
-            : t("upgrade.errors.loadFailed"),
-        );
+        setNotice(error instanceof Error ? error.message : t("upgrade.errors.loadFailed"));
       } finally {
-        if (!cancelled) {
-          setIsLoading(false);
-        }
+        if (!cancelled) setIsLoading(false);
       }
     };
-
     void loadData();
-
-    return () => {
-      cancelled = true;
-    };
+    return () => { cancelled = true; };
   }, [isBn, searchParams]);
 
-  const selectedPlan = useMemo(
-    () => plans.find((plan) => plan.id === selectedPlanId) ?? null,
-    [plans, selectedPlanId],
-  );
-
-  const currentPlan = useMemo(
-    () => plans.find((plan) => plan.id === currentSubscription?.planId) ?? null,
-    [plans, currentSubscription?.planId],
-  );
+  const selectedPlan = useMemo(() => plans.find((p) => p.id === selectedPlanId) ?? null, [plans, selectedPlanId]);
+  const currentPlan = useMemo(() => plans.find((p) => p.id === currentSubscription?.planId) ?? null, [plans, currentSubscription?.planId]);
 
   const billingCycle = searchParams.get("billing") === "ANNUAL" ? "ANNUAL" as const : "MONTHLY" as const;
   const planPrice = billingCycle === "ANNUAL" && selectedPlan?.annualPriceBdt != null
-    ? selectedPlan.annualPriceBdt
-    : selectedPlan?.priceBdt ?? 0;
+    ? selectedPlan.annualPriceBdt : selectedPlan?.priceBdt ?? 0;
   const payableAmount = appliedCoupon?.finalAmount ?? planPrice;
 
   const handleApplyCoupon = async () => {
-    if (!selectedPlan || !couponCode.trim()) {
-      setNotice(t("upgrade.errors.enterCoupon"));
-      return;
-    }
-
+    if (!selectedPlan || !couponCode.trim()) { setNotice(t("upgrade.errors.enterCoupon")); return; }
     setIsSubmitting(true);
     try {
       const result = await applyCoupon(couponCode.trim(), selectedPlan.id, planPrice);
@@ -150,149 +144,387 @@ export default function SubscriptionUpgradePage() {
     } catch (error) {
       setAppliedCoupon(null);
       setNotice(error instanceof Error ? error.message : t("upgrade.errors.couponFailed"));
-    } finally {
-      setIsSubmitting(false);
-    }
+    } finally { setIsSubmitting(false); }
   };
 
   const handleContinueToPayment = async () => {
-    if (!selectedPlan) {
-      return;
-    }
-
+    if (!selectedPlan) return;
     setIsSubmitting(true);
     try {
       const intent = await initializePaymentIntent({
-        planId: selectedPlan.id,
-        amount: payableAmount,
-        mfsMethod: checkoutMethod,
-        couponCode: appliedCoupon?.code ?? (couponCode.trim() || undefined),
-        billingCycle,
+        planId: selectedPlan.id, amount: payableAmount, mfsMethod: checkoutMethod,
+        couponCode: appliedCoupon?.code ?? (couponCode.trim() || undefined), billingCycle,
       });
       clearPendingUpgradePlan();
+      clearPendingPlan().catch(() => {});
+      sessionStorage.setItem("payment_checkout", JSON.stringify({
+        receiverNumber: intent.receiverNumber,
+        amount: intent.amount,
+        mfsMethod: checkoutMethod,
+        expiresAt: intent.expiresAt,
+      }));
       router.push(`/subscription/payment/${intent.paymentIntentId}`);
     } catch (error) {
       setNotice(error instanceof Error ? error.message : t("upgrade.errors.paymentInitFailed"));
-    } finally {
-      setIsSubmitting(false);
-    }
+    } finally { setIsSubmitting(false); }
   };
 
   const isCurrentPlan = selectedPlan != null && selectedPlan.id === currentSubscription?.planId;
 
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-[#f8faf6] flex items-center justify-center">
+        <div className="flex flex-col items-center gap-4">
+          <div className="w-10 h-10 border-3 border-[#003727]/20 border-t-[#003727] rounded-full animate-spin" />
+          <p className="text-[#404944] font-['Hind_Siliguri','Manrope',sans-serif]">{t("upgrade.loading")}</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
-    <section className="space-y-6">
-      <header className="rounded-[1.75rem] border border-outline-variant/30 bg-surface p-6">
-        <h1 data-testid="subscription-upgrade-title" className="text-2xl font-bold text-on-surface">{t("upgrade.title")}</h1>
-        <p className="mt-2 text-sm text-on-surface-variant">
-          {t("upgrade.subtitle")}
-        </p>
+    <div className="min-h-screen bg-[#f8faf6] font-['Hind_Siliguri','Manrope',sans-serif] antialiased">
+      {/* Top Bar */}
+      <header className="sticky top-0 z-40 bg-[#f2f4f0] flex items-center justify-between px-4 sm:px-6 py-3">
+        <div className="flex items-center gap-3">
+          <button
+            onClick={() => router.back()}
+            className="w-10 h-10 rounded-full bg-white flex items-center justify-center text-[#191c1a] hover:bg-[#ecefeb] transition-colors shadow-sm"
+          >
+            <span className="material-symbols-outlined" style={{ fontVariationSettings: "'FILL' 0" }}>arrow_back</span>
+          </button>
+          <span className="font-['Manrope',sans-serif] font-bold text-xl text-[#003727]">DokaniAI</span>
+        </div>
+        <span className="text-sm font-semibold text-[#404944]">
+          {isBn ? "ধাপ ২ / ৩" : "Step 2 of 3"}
+        </span>
       </header>
 
-      {notice ? (
-        <div className="rounded-[1rem] border border-outline-variant/30 bg-surface-container px-4 py-3 text-sm text-on-surface">
-          {notice}
-        </div>
-      ) : null}
+      <main className="max-w-6xl mx-auto px-4 sm:px-6 py-6 sm:py-10">
+        {/* Notice */}
+        {notice && (
+          <div className="mb-6 rounded-xl bg-[#ecefeb] px-5 py-3 text-sm text-[#191c1a]">{notice}</div>
+        )}
 
-      {/* Referral discount banner for referred users */}
-      {referralStatus?.referredBy && referralStatus.referredDiscountType && referralStatus.referredDiscountValue && !isLoading ? (
-        <div className="rounded-[1.25rem] border border-primary/20 bg-primary-container/10 px-5 py-4 space-y-1">
-          <p className="text-sm font-semibold text-primary">
-            🎁 {referralStatus.referredDiscountType === "DISCOUNT_PERCENT"
-              ? t("upgrade.referralDiscount", { value: referralStatus.referredDiscountValue })
-              : referralStatus.referredDiscountType === "FLAT_AMOUNT"
-                ? t("upgrade.referralDiscountFlat", { value: referralStatus.referredDiscountValue })
-                : t("upgrade.referralDiscountFreeDays", { value: referralStatus.referredDiscountValue })}
-          </p>
-          {selectedPlan && referralStatus.referredDiscountType === "DISCOUNT_PERCENT" && (
-            <p className="text-xs text-on-surface-variant">
-              ৳{formatPrice(planPrice, locale)} → ৳{formatPrice(Math.round(planPrice * (1 - referralStatus.referredDiscountValue / 100)), locale)}
+        {/* Referral Banner */}
+        {referralStatus?.referredBy && referralStatus.referredDiscountType && referralStatus.referredDiscountValue && (
+          <div className="mb-6 rounded-xl bg-[#00503a]/10 px-5 py-4">
+            <p className="text-sm font-semibold text-[#003727]">
+              {referralStatus.referredDiscountType === "DISCOUNT_PERCENT"
+                ? t("upgrade.referralDiscount", { value: referralStatus.referredDiscountValue })
+                : referralStatus.referredDiscountType === "FLAT_AMOUNT"
+                  ? t("upgrade.referralDiscountFlat", { value: referralStatus.referredDiscountValue })
+                  : t("upgrade.referralDiscountFreeDays", { value: referralStatus.referredDiscountValue })}
             </p>
-          )}
-          {selectedPlan && referralStatus.referredDiscountType === "FLAT_AMOUNT" && (
-            <p className="text-xs text-on-surface-variant">
-              ৳{formatPrice(planPrice, locale)} → ৳{formatPrice(Math.max(0, planPrice - referralStatus.referredDiscountValue), locale)}
-            </p>
-          )}
-          <p className="text-xs text-on-surface-variant">{t("upgrade.bestDiscountNote")}</p>
-        </div>
-      ) : null}
+            <p className="text-xs text-[#404944] mt-1">{t("upgrade.bestDiscountNote")}</p>
+          </div>
+        )}
 
-      {isLoading ? (
-        <div className="rounded-[1rem] border border-outline-variant/30 bg-surface p-5 text-sm text-on-surface-variant">
-          {t("upgrade.loading")}
-        </div>
-      ) : (
-        <div className="grid gap-6 lg:grid-cols-2">
-          <section className="rounded-[1.5rem] border border-outline-variant/30 bg-surface p-5 space-y-4">
-            <h2 className="text-lg font-semibold text-on-surface">{t("upgrade.planSelection")}</h2>
-            <select
-              value={selectedPlanId}
-              onChange={(event) => {
-                setSelectedPlanId(event.target.value);
-                setAppliedCoupon(null);
-              }}
-              className="w-full rounded-[1rem] bg-surface-container-highest px-4 py-3"
-            >
-              {plans.map((plan) => (
-                <option key={plan.id} value={plan.id}>
-                  {(isBn ? plan.displayNameBn : plan.displayNameEn)} - ৳{formatPrice(plan.priceBdt, locale)}
-                </option>
-              ))}
-            </select>
-
-            <p className="text-sm text-on-surface-variant">
-              {t("upgrade.currentPlan")}: {currentPlan ? (isBn ? currentPlan.displayNameBn : currentPlan.displayNameEn) : "-"}
-            </p>
-
-            <FormInput
-              label={t("upgrade.couponLabel")}
-              value={couponCode}
-              onChange={(event) => setCouponCode(event.target.value.toUpperCase())}
-              placeholder={t("upgrade.couponPlaceholder")}
-            />
-            <button
-              type="button"
-              onClick={handleApplyCoupon}
-              disabled={isSubmitting || !couponCode.trim() || !selectedPlan}
-              className="rounded-full bg-surface-container-high px-5 py-3 text-sm font-semibold text-on-surface disabled:opacity-50"
-            >
-              {t("upgrade.applyCoupon")}
-            </button>
-
-            <div className="rounded-[1rem] bg-surface-container px-4 py-4">
-              <p className="text-sm text-on-surface-variant">{t("upgrade.payable")}</p>
-              <p className="text-2xl font-bold text-primary mt-2">৳{formatPrice(payableAmount, locale)}</p>
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12">
+          {/* Left Column: Plan Selection + Comparison */}
+          <div className="lg:col-span-7 flex flex-col gap-8">
+            {/* Title */}
+            <div>
+              <h1 className="text-3xl sm:text-4xl font-bold text-[#191c1a] leading-tight mb-2">
+                {selectedPlan ? getPlanDisplayName(selectedPlan, isBn) : t("upgrade.title")}
+              </h1>
+              <p className="text-base sm:text-lg text-[#404944] leading-relaxed">{t("upgrade.subtitle")}</p>
             </div>
-          </section>
 
-          <section className="rounded-[1.5rem] border border-outline-variant/30 bg-surface p-5 space-y-4">
-            <h2 className="text-lg font-semibold text-on-surface">{t("upgrade.paymentChannel")}</h2>
-            <select
-              value={checkoutMethod}
-              onChange={(event) => setCheckoutMethod(event.target.value as MfsType)}
-              className="w-full rounded-[1rem] bg-surface-container-highest px-4 py-3"
-            >
-              {MFS_OPTIONS.map((method) => (
-                <option key={method} value={method}>{method}</option>
-              ))}
-            </select>
+            {/* Plan Selector Cards */}
+            <div className="flex gap-3 overflow-x-auto pb-2 snap-x">
+              {plans.map((plan) => {
+                const isSelected = plan.id === selectedPlanId;
+                const isCurrent = plan.id === currentSubscription?.planId;
+                return (
+                  <button
+                    key={plan.id}
+                    onClick={() => { setSelectedPlanId(plan.id); setAppliedCoupon(null); savePendingPlan(plan.id).catch(() => {}); }}
+                    className={`min-w-[150px] flex-1 p-4 rounded-xl transition-all snap-start cursor-pointer relative overflow-hidden
+                      ${isSelected
+                        ? "bg-[#00503a] shadow-lg scale-[1.02]"
+                        : "bg-white shadow-sm hover:shadow-md hover:bg-[#f2f4f0]"
+                      }`}
+                  >
+                    {isSelected && (
+                      <div className="absolute -right-4 -top-4 w-16 h-16 bg-[#003727] opacity-20 rounded-full blur-xl" />
+                    )}
+                    <div className={`text-xs font-semibold mb-1 flex items-center justify-between ${isSelected ? "text-[#91d4b7]" : "text-[#404944]"}`}>
+                      <span>{getPlanDisplayName(plan, isBn)}</span>
+                      {isSelected && <span className="material-symbols-outlined text-sm" style={{ fontVariationSettings: "'FILL' 1" }}>check_circle</span>}
+                    </div>
+                    <div className={`text-xl font-bold ${isSelected ? "text-white" : "text-[#191c1a]"}`}>
+                      {plan.customPricing
+                        ? (isBn ? "কাস্টম" : "Custom")
+                        : `৳${formatPrice(plan.priceBdt, locale)}`}
+                      <span className={`text-xs font-normal ${isSelected ? "text-white/70" : "text-[#404944]"}`}>
+                        {plan.customPricing ? "" : `/${isBn ? "মাস" : "mo"}`}
+                      </span>
+                    </div>
+                    {isCurrent && (
+                      <div className={`text-[10px] mt-1 font-medium ${isSelected ? "text-[#91d4b7]" : "text-[#003727]"}`}>
+                        {t("pricing.currentPlan")}
+                      </div>
+                    )}
+                  </button>
+                );
+              })}
+            </div>
 
-            <button
-              data-testid="continue-to-payment"
-              type="button"
-              onClick={handleContinueToPayment}
-              disabled={isSubmitting || !selectedPlan || isCurrentPlan}
-              className="w-full rounded-full bg-primary px-5 py-3 text-sm font-semibold text-white disabled:opacity-50"
-            >
-              {isCurrentPlan
-                ? t("pricing.currentPlan")
-                : t("upgrade.continueToPayment")}
-            </button>
-          </section>
+            {/* Plan Comparison: Current → New */}
+            {selectedPlan && currentPlan && selectedPlan.id !== currentPlan.id && (
+              <div className="grid grid-cols-2 gap-4 relative">
+                {/* Current Plan */}
+                <div className="bg-[#ecefeb] rounded-xl p-5 flex flex-col gap-4">
+                  <div>
+                    <span className="text-xs text-[#404944] mb-1 block">{t("upgrade.currentPlan")}</span>
+                    <h2 className="text-xl font-semibold text-[#191c1a]">{getPlanDisplayName(currentPlan, isBn)}</h2>
+                  </div>
+                  <div className="space-y-3">
+                    <div>
+                      <span className="text-[11px] text-[#404944]">{isBn ? "ব্যবসা" : "Businesses"}</span>
+                      <div className="text-2xl font-bold text-[#191c1a] font-['Manrope',sans-serif]">{currentPlan.maxBusinesses}</div>
+                    </div>
+                    <div>
+                      <span className="text-[11px] text-[#404944]">{isBn ? "পণ্য/ব্যবসা" : "Products/biz"}</span>
+                      <div className="text-2xl font-bold text-[#191c1a] font-['Manrope',sans-serif]">
+                        {currentPlan.maxProductsPerBusiness === -1
+                          ? (isBn ? "∞" : "∞")
+                          : currentPlan.maxProductsPerBusiness}
+                      </div>
+                    </div>
+                    <div>
+                      <span className="text-[11px] text-[#404944]">AI/{isBn ? "দিন" : "day"}</span>
+                      <div className="text-2xl font-bold text-[#191c1a] font-['Manrope',sans-serif]">
+                        {currentPlan.aiQueriesPerDay === -1 ? "∞" : currentPlan.aiQueriesPerDay}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Arrow */}
+                <div className="hidden sm:flex absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-20 w-9 h-9 bg-white rounded-full items-center justify-center shadow-[0_4px_24px_rgba(25,28,26,0.08)]">
+                  <span className="material-symbols-outlined text-[#003727] text-lg" style={{ fontVariationSettings: "'FILL' 1" }}>arrow_forward</span>
+                </div>
+
+                {/* New Plan */}
+                <div className="bg-white rounded-xl p-5 flex flex-col gap-4 shadow-[0_8px_30px_rgba(25,28,26,0.04)] relative">
+                  <div>
+                    <span className="text-xs font-medium text-[#003727] mb-1 block">{isBn ? "নতুন প্ল্যান" : "New Plan"}</span>
+                    <h2 className="text-xl font-bold bg-gradient-to-r from-[#003727] to-[#00503a] bg-clip-text text-transparent">
+                      {getPlanDisplayName(selectedPlan, isBn)}
+                    </h2>
+                  </div>
+                  <div className="space-y-3">
+                    {(() => {
+                      const diffBiz = selectedPlan.maxBusinesses - currentPlan.maxBusinesses;
+                      const diffProd = (selectedPlan.maxProductsPerBusiness ?? 0) - (currentPlan.maxProductsPerBusiness ?? 0);
+                      const diffAi = (selectedPlan.aiQueriesPerDay ?? 0) - (currentPlan.aiQueriesPerDay ?? 0);
+                      return (
+                        <>
+                          <div>
+                            <span className="text-[11px] text-[#404944]">{isBn ? "ব্যবসা" : "Businesses"}</span>
+                            <div className="flex items-end gap-1.5">
+                              <span className="text-2xl font-bold text-[#003727] font-['Manrope',sans-serif]">{selectedPlan.maxBusinesses}</span>
+                              {diffBiz > 0 && <span className="text-xs text-[#003727] mb-0.5 flex items-center gap-0.5"><span className="material-symbols-outlined text-[14px]">arrow_upward</span>+{diffBiz}</span>}
+                            </div>
+                          </div>
+                          <div>
+                            <span className="text-[11px] text-[#404944]">{isBn ? "পণ্য/ব্যবসা" : "Products/biz"}</span>                            <div className="flex items-end gap-1.5">
+                              <span className="text-2xl font-bold text-[#003727] font-['Manrope',sans-serif]">
+                                {selectedPlan.maxProductsPerBusiness === -1 ? "∞" : selectedPlan.maxProductsPerBusiness}
+                              </span>
+                              {diffProd > 0 && <span className="text-xs text-[#003727] mb-0.5 flex items-center gap-0.5"><span className="material-symbols-outlined text-[14px]">arrow_upward</span>+{diffProd}</span>}
+                            </div>
+                          </div>
+                          <div>
+                            <span className="text-[11px] text-[#404944]">AI/{isBn ? "দিন" : "day"}</span>
+                            <div className="flex items-end gap-1.5">
+                              <span className="text-2xl font-bold text-[#003727] font-['Manrope',sans-serif]">
+                                {selectedPlan.aiQueriesPerDay === -1 ? "∞" : selectedPlan.aiQueriesPerDay}
+                              </span>
+                              {diffAi > 0 && <span className="text-xs text-[#003727] mb-0.5 flex items-center gap-0.5"><span className="material-symbols-outlined text-[14px]">arrow_upward</span>+{diffAi}</span>}
+                            </div>
+                          </div>
+                        </>
+                      );
+                    })()}
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Features List */}
+            {selectedPlan && (
+              <div className="bg-[#f2f4f0] rounded-xl p-6">
+                <h3 className="text-base font-semibold text-[#191c1a] mb-4">
+                  {isBn ? "এই প্ল্যানে যা যা পাবেন:" : "Everything in this plan:"}
+                </h3>
+                <ul className="space-y-3">
+                  {getFeatureList(selectedPlan, isBn).map((feat, i) => (
+                    <li key={i} className="flex items-start gap-3">
+                      <span className="material-symbols-outlined text-[#003727] mt-0.5 text-[20px]" style={{ fontVariationSettings: "'FILL' 1" }}>{feat.icon}</span>
+                      <span className="text-[#404944]">{feat.label}</span>
+                    </li>
+                  ))}
+                  {selectedPlan.features && Object.entries(selectedPlan.features).map(([key, val]) =>
+                    val ? (
+                      <li key={key} className="flex items-start gap-3">
+                        <span className="material-symbols-outlined text-[#003727] mt-0.5 text-[20px]" style={{ fontVariationSettings: "'FILL' 1" }}>check_circle</span>
+                        <span className="text-[#404944]">{key.replace(/_/g, " ").replace(/\b\w/g, c => c.toUpperCase())}</span>
+                      </li>
+                    ) : null
+                  )}
+                </ul>
+              </div>
+            )}
+
+            {selectedPlan && (
+            <div className="rounded-xl p-6 flex items-start gap-4 relative overflow-hidden" style={{ background: "rgba(225,227,223,0.6)", backdropFilter: "blur(20px)", WebkitBackdropFilter: "blur(20px)" }}>
+              <div className="absolute -right-4 -top-4 w-24 h-24 bg-[#adf1d2] rounded-full blur-3xl opacity-30 pointer-events-none" />
+              <div className="w-11 h-11 rounded-full bg-[#d1e4ff] flex items-center justify-center text-[#001d36] shrink-0 shadow-[0_8px_24px_rgba(25,28,26,0.08)]">
+                <span className="material-symbols-outlined text-xl" style={{ fontVariationSettings: "'FILL' 1" }}>auto_awesome</span>
+              </div>
+              <div>
+                <h3 className="font-semibold text-base text-[#191c1a] mb-1">{isBn ? "AI ইনসাইট" : "AI Insight"}</h3>
+                <p className="text-sm text-[#404944] leading-relaxed">
+                  {isBn
+                    ? `${getPlanDisplayName(selectedPlan, true)} প্ল্যানে আপগ্রেড করলে আপনার ব্যবসার হিসাব রাখা আরও সহজ ও দ্রুত হবে। AI দিয়ে স্মার্ট রিপোর্ট পান।`
+                    : `Upgrade to ${getPlanDisplayName(selectedPlan, false)} for smarter business insights and faster bookkeeping.`}
+                </p>
+              </div>
+            </div>
+            )}
+          </div>
+
+          {/* Right Column: Order Summary + Payment */}
+          <div className="lg:col-span-5 flex flex-col gap-6">
+            {/* Order Summary */}
+            <div className="bg-white rounded-xl p-6 shadow-[0_8px_30px_rgba(25,28,26,0.06)] relative overflow-hidden">
+              <div className="absolute -top-10 -right-10 w-36 h-36 bg-[#9fcaff] rounded-full blur-3xl opacity-30 pointer-events-none" />
+
+              <h3 className="text-lg font-semibold text-[#191c1a] mb-5">{isBn ? "অর্ডার সামারি" : "Order Summary"}</h3>
+
+              {/* Line Items */}
+              <div className="space-y-3 mb-5">
+                <div className="flex justify-between items-baseline">
+                  <span className="text-sm text-[#404944]">{selectedPlan ? getPlanDisplayName(selectedPlan, isBn) : ""} ({isBn ? "মাসিক" : "Monthly"})</span>
+                  <span className="text-base font-medium text-[#191c1a] font-['Manrope',sans-serif]">৳{formatPrice(planPrice, locale)}</span>
+                </div>
+                {appliedCoupon && (
+                  <div className="flex justify-between items-baseline">
+                    <span className="text-sm text-[#003727]">{isBn ? "কুপন ছাড়" : "Coupon discount"}</span>
+                    <span className="text-base font-medium text-[#003727] font-['Manrope',sans-serif]">-৳{formatPrice(appliedCoupon.discountAmount, locale)}</span>
+                  </div>
+                )}
+              </div>
+
+              {/* Coupon Input */}
+              <div className="mb-5">
+                <div className="bg-[#ecefeb] rounded-full flex items-center pl-1 pr-1 focus-within:ring-2 focus-within:ring-[#91d4b7] transition-all">
+                  <span className="material-symbols-outlined text-[#404944] pl-3 pr-2 text-[18px]">local_offer</span>
+                  <input
+                    value={couponCode}
+                    onChange={(e) => setCouponCode(e.target.value.toUpperCase())}
+                    placeholder={t("upgrade.couponPlaceholder")}
+                    className="bg-transparent border-none focus:ring-0 focus:outline-none text-[#191c1a] w-full py-2.5 text-sm placeholder:text-[#707974]"
+                  />
+                  <button
+                    type="button"
+                    onClick={handleApplyCoupon}
+                    disabled={isSubmitting || !couponCode.trim() || !selectedPlan}
+                    className="bg-white text-[#003727] font-semibold text-xs px-4 py-2 rounded-full shadow-sm hover:bg-[#f2f4f0] transition-colors whitespace-nowrap disabled:opacity-40"
+                  >
+                    {t("upgrade.applyCoupon")}
+                  </button>
+                </div>
+              </div>
+
+              {/* Total */}
+              <div className="bg-[#f2f4f0] rounded-xl p-4 flex justify-between items-end mb-6">
+                <span className="text-xs font-semibold text-[#404944] uppercase tracking-wider">{isBn ? "সর্বমোট" : "Total Due"}</span>
+                <div className="text-right">
+                  <span className="text-xs text-[#404944] mr-1 font-['Manrope',sans-serif]">{isBn ? "টাকা" : "BDT"}</span>
+                  <span className="text-3xl font-bold text-[#191c1a] font-['Manrope',sans-serif]">৳{formatPrice(payableAmount, locale)}</span>
+                </div>
+              </div>
+
+              {/* Payment Methods */}
+              <div className="space-y-3">
+                <span className="text-[11px] text-[#404944] uppercase tracking-wider mb-2 block font-semibold">
+                  {isBn ? "পেমেন্ট মাধ্যম নির্বাচন করুন" : "Select Payment Method"}
+                </span>
+                {MFS_OPTIONS.map((mfs) => {
+                  const isSelected = checkoutMethod === mfs.key;
+                  return (
+                    <button
+                      key={mfs.key}
+                      type="button"
+                      onClick={() => setCheckoutMethod(mfs.key)}
+                      className={`w-full flex items-center p-4 rounded-xl transition-all relative overflow-hidden cursor-pointer
+                        ${isSelected
+                          ? "bg-[#ecefeb]"
+                          : "bg-white hover:bg-[#f8faf6]"
+                        }`}
+                    >
+                      {isSelected && <div className="absolute inset-0 bg-[#91d4b7]/10 pointer-events-none" />}
+                      <div className={`w-5 h-5 rounded-full border-2 mr-4 flex items-center justify-center transition-all ${isSelected ? "border-[#003727]" : "border-[#bfc9c2]"}`}>
+                        {isSelected && <div className="w-2.5 h-2.5 rounded-full bg-[#003727]" />}
+                      </div>
+                      <div className="flex-1 flex items-center justify-between">
+                        <span className={`font-semibold ${isSelected ? "text-[#191c1a]" : "text-[#404944]"}`}>
+                          {isBn ? mfs.labelBn : mfs.labelEn}
+                        </span>
+                        <div className="h-8 w-14 rounded flex items-center justify-center" style={{ backgroundColor: `${mfs.color}15` }}>
+                          <span className="font-bold text-sm tracking-wide" style={{ color: mfs.color }}>{mfs.labelEn}</span>
+                        </div>
+                      </div>
+                    </button>
+                  );
+                })}
+              </div>
+
+              {/* CTA Button */}
+              <button
+                data-testid="continue-to-payment"
+                type="button"
+                onClick={handleContinueToPayment}
+                disabled={isSubmitting || !selectedPlan || isCurrentPlan}
+                className="w-full mt-6 text-white font-bold text-base py-4 rounded-full shadow-[0_4px_14px_rgba(0,55,39,0.25)] hover:shadow-[0_6px_20px_rgba(0,55,39,0.3)] transition-all flex justify-center items-center gap-2 disabled:opacity-40 disabled:cursor-not-allowed"
+                style={{ background: "linear-gradient(135deg, #003727, #00503a)" }}
+              >
+                {isSubmitting ? (
+                  <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                ) : isCurrentPlan ? (
+                  t("pricing.currentPlan")
+                ) : (
+                  <>
+                    <span>{isBn ? `৳${formatPrice(payableAmount, locale)} নিরাপদে পরিশোধ করুন` : `Pay ৳${formatPrice(payableAmount, locale)} Securely`}</span>
+                    <span className="material-symbols-outlined text-[18px]">lock</span>
+                  </>
+                )}
+              </button>
+
+              <p className="text-center text-[11px] text-[#404944] mt-3 flex items-center justify-center gap-1">
+                <span className="material-symbols-outlined text-[13px]">verified_user</span>
+                {isBn ? "২৫৬-বিট এনক্রিপ্টেড · ১০০% নিরাপদ" : "256-bit Encrypted · 100% Secure"}
+              </p>
+            </div>
+
+            {/* Trust Indicators */}
+            <div className="flex justify-center gap-6 opacity-50">
+              <div className="flex items-center gap-1">
+                <span className="material-symbols-outlined text-[#404944] text-[14px]">verified_user</span>
+                <span className="text-[11px] text-[#404944]">{isBn ? "এনক্রিপ্টেড" : "Encrypted"}</span>
+              </div>
+              <div className="flex items-center gap-1">
+                <span className="material-symbols-outlined text-[#404944] text-[14px]">support_agent</span>
+                <span className="text-[11px] text-[#404944]">{isBn ? "২৪/৭ সাপোর্ট" : "24/7 Support"}</span>
+              </div>
+            </div>
+          </div>
         </div>
-      )}
-    </section>
+      </main>
+    </div>
   );
 }
