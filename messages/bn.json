@@ -645,7 +645,33 @@
       "stepAiSync": "AI সহকারী সিঙ্ক",
       "stepAiSyncDesc": "দোকান পরিচালনার জন্য ভয়েস কমান্ড সক্রিয় করুন।",
       "tabData": "ডেটা এক্সপোর্ট",
-      "tabDataDesc": "OTP যাচাইকরণসহ আপনার ব্যবসার ডেটা ডাউনলোড করুন (ZIP/CSV)"
+      "tabDataDesc": "OTP যাচাইকরণসহ আপনার ব্যবসার ডেটা ডাউনলোড করুন (ZIP/CSV)",
+      "tabMfsNumbers": "MFS নম্বর",
+      "tabMfsNumbersDesc": "অটো বকেয়া সংগ্রহের জন্য বিকাশ, নগদ, রকেট নম্বর নিবন্ধন করুন",
+      "mfsNumbers": {
+        "title": "MFS পেমেন্ট নম্বর",
+        "subtitle": "আপনার মোবাইল ফাইন্যান্সিয়াল সার্ভিস নম্বর নিবন্ধন করুন। অনুমোদিত নম্বরগুলো SMS এর মাধ্যমে কাস্টমার পেমেন্ট অটো-ম্যাচ করবে।",
+        "registerTitle": "নতুন MFS নম্বর নিবন্ধন",
+        "mfsTypeLabel": "MFS ধরন",
+        "mfsNumberLabel": "MFS নম্বর",
+        "mfsNumberPlaceholder": "01XXXXXXXXX",
+        "simSlotLabel": "SIM স্লট (ঐচ্ছিক)",
+        "simSlot0": "SIM ১",
+        "simSlot1": "SIM ২",
+        "registerButton": "নিবন্ধন করুন",
+        "registering": "নিবন্ধন হচ্ছে...",
+        "myNumbersTitle": "আমার নিবন্ধিত নম্বর",
+        "noNumbers": "এখনো কোনো MFS নম্বর নিবন্ধন করা হয়নি। অটো বকেয়া সংগ্রহ সক্রিয় করতে একটি নিবন্ধন করুন।",
+        "statusPending": "অপেক্ষমান",
+        "statusApproved": "অনুমোদিত",
+        "statusRejected": "প্রত্যাখ্যাত",
+        "rejectionReason": "প্রত্যাখ্যারের কারণ",
+        "maxNumbersWarning": "প্রতি MFS ধরনে সর্বোচ্চ ২টি নম্বর অনুমোদিত।",
+        "duplicateWarning": "এই নম্বরটি আগে থেকেই নিবন্ধিত।",
+        "registerSuccess": "MFS নম্বর অনুমোদনের জন্য জমা দেওয়া হয়েছে।",
+        "registerError": "MFS নম্বর নিবন্ধন করতে ব্যর্থ।",
+        "loadError": "MFS নম্বর লোড করতে ব্যর্থ।"
+      }
     },
     "profile": {
       "descriptionLabel": "বিবরণ",
@@ -1638,6 +1664,12 @@
       "voice": {
         "placeholder": "যেমন: রহিমার কাছে ৫০০ টাকা বাকী",
         "tooltip": "AI-পাওয়ার্ড ভয়েস/টেক্সট কমান্ড"
+      },
+      "autoMfs": {
+        "badge": "অটো",
+        "badgeTooltip": "MFS SMS এর মাধ্যমে অটো-ক্রেডিট",
+        "filter": "অটো MFS",
+        "description": "{method} এর মাধ্যমে অটো-ক্রেডিট (TrxID: {trxId})"
       },
       "reports": {
         "title": "রিপোর্ট",

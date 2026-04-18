@@ -11,6 +11,7 @@ import type {
     SmsReportItem,
     PaymentSummary,
     MfsNumberResponse,
+    MfsNumberRegistrationRequest,
     PaymentSettingsResponse,
     PaymentSettingsRequest,
 } from "@/types/paymentAdmin";

@@ -1,7 +1,7 @@
 "use client";
 
 import type { ReactNode } from "react";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 
 import DataExportPanel from "@/components/settings/DataExportPanel";
 import { FormInput, GradientButton } from "@/components/ui/FormPrimitives";
@@ -20,8 +20,10 @@ import { useBusinessStore } from "@/store/businessStore";
 import type { PaymentMethod } from "@/types/business";
 import { useLocale, useTranslations } from "next-intl";
 import { usePathname, useRouter } from "next/navigation";
+import { getMyMfsNumbers, registerMfsNumber } from "@/lib/paymentAdminApi";
+import type { MfsNumberResponse } from "@/types/paymentAdmin";
 
-type TabKey = "general" | "profile" | "location" | "data" | "danger";
+type TabKey = "general" | "profile" | "location" | "mfsNumbers" | "data" | "danger";
 type Feedback = { type: "success" | "error" | "warning"; message: string } | null;
 
 const BUSINESS_TYPES = [
@@ -97,6 +99,7 @@ const TAB_ITEMS: { key: TabKey; titleKey: string; descriptionKey: string }[] = [
     { key: "general", titleKey: "settings.tabGeneral", descriptionKey: "settings.tabGeneralDesc" },
     { key: "profile", titleKey: "settings.tabProfile", descriptionKey: "settings.tabProfileDesc" },
     { key: "location", titleKey: "settings.tabLocation", descriptionKey: "settings.tabLocationDesc" },
+    { key: "mfsNumbers", titleKey: "settings.tabMfsNumbers", descriptionKey: "settings.tabMfsNumbersDesc" },
     { key: "data", titleKey: "settings.tabData", descriptionKey: "settings.tabDataDesc" },
     { key: "danger", titleKey: "danger.heading", descriptionKey: "danger.description" },
 ];
@@ -345,6 +348,12 @@ export default function BusinessSettingsPage() {
     const [locationSaving, setLocationSaving] = useState(false);
     const [dangerSaving, setDangerSaving] = useState(false);
     const [archiveName, setArchiveName] = useState("");
+
+    const [mfsNumbers, setMfsNumbers] = useState<MfsNumberResponse[]>([]);
+    const [mfsNumbersLoading, setMfsNumbersLoading] = useState(false);
+    const [mfsRegistering, setMfsRegistering] = useState(false);
+    const [mfsForm, setMfsForm] = useState({ mfsType: "BKASH" as "BKASH" | "NAGAD" | "ROCKET", mfsNumber: "", simSlot: 0 });
+    const [mfsMessage, setMfsMessage] = useState<{ type: "success" | "error"; text: string } | null>(null);
 
     const showFeedback = (type: "success" | "error" | "warning", message: string) => {
         setFeedback({ type, message });
@@ -707,6 +716,55 @@ export default function BusinessSettingsPage() {
             setDangerSaving(false);
         }
     };
+
+    const loadMfsNumbers = useCallback(async () => {
+        setMfsNumbersLoading(true);
+        try {
+            const numbers = await getMyMfsNumbers();
+            setMfsNumbers(numbers);
+        } catch {
+            setMfsMessage({ type: "error", text: t("settings.mfsNumbers.loadError") });
+        } finally {
+            setMfsNumbersLoading(false);
+        }
+    }, [t]);
+
+    useEffect(() => {
+        if (activeTab === "mfsNumbers") {
+            loadMfsNumbers();
+        }
+    }, [activeTab, loadMfsNumbers]);
+
+    const handleMfsRegister = async (e: React.FormEvent) => {
+        e.preventDefault();
+        if (!mfsForm.mfsNumber.trim()) return;
+
+        setMfsRegistering(true);
+        setMfsMessage(null);
+
+        try {
+            await registerMfsNumber({
+                mfsType: mfsForm.mfsType,
+                mfsNumber: mfsForm.mfsNumber.trim(),
+                simSlot: mfsForm.simSlot,
+            });
+            setMfsMessage({ type: "success", text: t("settings.mfsNumbers.registerSuccess") });
+            setMfsForm({ mfsType: "BKASH", mfsNumber: "", simSlot: 0 });
+            await loadMfsNumbers();
+        } catch (err: unknown) {
+            const msg = err instanceof Error ? err.message : t("settings.mfsNumbers.registerError");
+            setMfsMessage({ type: "error", text: msg });
+        } finally {
+            setMfsRegistering(false);
+        }
+    };
+
+    useEffect(() => {
+        if (mfsMessage) {
+            const timer = setTimeout(() => setMfsMessage(null), 4000);
+            return () => clearTimeout(timer);
+        }
+    }, [mfsMessage]);
 
     if (pageLoading) {
         return (
@@ -1371,6 +1429,106 @@ export default function BusinessSettingsPage() {
                             <GradientButton loading={locationSaving} onClick={handleSaveLocation}>
                                 {t("location.saveButton")}
                             </GradientButton>
+                        </>
+                    ) : null}
+
+                    {activeTab === "data" ? (
+                        <DataExportPanel />
+                    ) : null}
+
+                    {activeTab === "mfsNumbers" ? (
+                        <>
+                            <SectionCard title={t("settings.mfsNumbers.title")}>
+                                <p className="text-sm text-on-surface-variant mb-5">{t("settings.mfsNumbers.subtitle")}</p>
+
+                                {mfsMessage ? (
+                                    <div className={`mb-4 rounded-[1.25rem] border px-4 py-3 text-sm font-medium ${mfsMessage.type === "success"
+                                        ? "border-emerald-200 bg-emerald-50 text-emerald-800"
+                                        : "border-rose-200 bg-rose-50 text-rose-800"
+                                        }`}>
+                                        {mfsMessage.text}
+                                    </div>
+                                ) : null}
+
+                                <form onSubmit={handleMfsRegister} className="space-y-4">
+                                    <div className="grid gap-4 lg:grid-cols-3">
+                                        <SelectField
+                                            label={t("settings.mfsNumbers.mfsTypeLabel")}
+                                            value={mfsForm.mfsType}
+                                            onChange={(value) => setMfsForm((f) => ({ ...f, mfsType: value as "BKASH" | "NAGAD" | "ROCKET" }))}
+                                        >
+                                            <option value="BKASH">bKash</option>
+                                            <option value="NAGAD">Nagad</option>
+                                            <option value="ROCKET">Rocket</option>
+                                        </SelectField>
+                                        <FormInput
+                                            label={t("settings.mfsNumbers.mfsNumberLabel")}
+                                            value={mfsForm.mfsNumber}
+                                            onChange={(e) => setMfsForm((f) => ({ ...f, mfsNumber: e.target.value }))}
+                                            placeholder={t("settings.mfsNumbers.mfsNumberPlaceholder")}
+                                        />
+                                        <SelectField
+                                            label={t("settings.mfsNumbers.simSlotLabel")}
+                                            value={String(mfsForm.simSlot)}
+                                            onChange={(value) => setMfsForm((f) => ({ ...f, simSlot: Number(value) }))}
+                                        >
+                                            <option value="0">{t("settings.mfsNumbers.simSlot0")}</option>
+                                            <option value="1">{t("settings.mfsNumbers.simSlot1")}</option>
+                                        </SelectField>
+                                    </div>
+                                    <button
+                                        type="submit"
+                                        disabled={mfsRegistering}
+                                        className="inline-flex rounded-full bg-gradient-to-r from-primary to-primary-container px-6 py-3 text-sm font-bold text-white shadow-md transition disabled:opacity-50"
+                                    >
+                                        {mfsRegistering ? t("settings.mfsNumbers.registering") : t("settings.mfsNumbers.registerButton")}
+                                    </button>
+                                </form>
+                            </SectionCard>
+
+                            <SectionCard title={t("settings.mfsNumbers.myNumbersTitle")}>
+                                {mfsNumbersLoading ? (
+                                    <div className="flex items-center justify-center py-10">
+                                        <span className="material-symbols-outlined animate-spin text-primary">progress_activity</span>
+                                    </div>
+                                ) : mfsNumbers.length === 0 ? (
+                                    <p className="text-sm text-on-surface-variant py-4 text-center">{t("settings.mfsNumbers.noNumbers")}</p>
+                                ) : (
+                                    <div className="space-y-3">
+                                        {mfsNumbers.map((item) => (
+                                            <div
+                                                key={item.id}
+                                                className="flex items-center justify-between rounded-xl border border-outline-variant/30 bg-surface-container-low px-5 py-4"
+                                            >
+                                                <div className="flex items-center gap-4">
+                                                    <span className={`inline-block rounded-full px-3 py-1 text-xs font-bold ${item.mfsType === "BKASH"
+                                                        ? "bg-pink-100 text-pink-800"
+                                                        : item.mfsType === "NAGAD"
+                                                            ? "bg-orange-100 text-orange-800"
+                                                            : "bg-purple-100 text-purple-800"
+                                                        }`}>
+                                                        {item.mfsType}
+                                                    </span>
+                                                    <div>
+                                                        <p className="font-semibold text-on-surface">{item.mfsNumber}</p>
+                                                        {item.simSlot != null && (
+                                                            <p className="text-xs text-on-surface-variant">SIM {item.simSlot + 1}</p>
+                                                        )}
+                                                    </div>
+                                                </div>
+                                                <span className={`rounded-full px-3 py-1 text-xs font-bold ${item.status === "APPROVED"
+                                                    ? "bg-emerald-100 text-emerald-800"
+                                                    : item.status === "PENDING"
+                                                        ? "bg-amber-100 text-amber-800"
+                                                        : "bg-rose-100 text-rose-800"
+                                                    }`}>
+                                                    {t(`settings.mfsNumbers.status${item.status.charAt(0)}${item.status.slice(1).toLowerCase()}` as "settings.mfsNumbers.statusPending")}
+                                                </span>
+                                            </div>
+                                        ))}
+                                    </div>
+                                )}
+                            </SectionCard>
                         </>
                     ) : null}
 

@@ -103,6 +103,7 @@ export default function DueLedgerWorkspace({
     // ── UI state ──
     const [searchQuery, setSearchQuery] = useState("");
     const [filterPriority, setFilterPriority] = useState<"all" | "urgent" | "regular" | "new">("all");
+    const [filterAutoMfs, setFilterAutoMfs] = useState(false);
     const [showTxForm, setShowTxForm] = useState(false);
     const [showCustomerForm, setShowCustomerForm] = useState(false);
     const [selectedCustomerId, setSelectedCustomerId] = useState<string | null>(null);
@@ -152,6 +153,16 @@ export default function DueLedgerWorkspace({
         }
         return list;
     }, [customersWithDue, searchQuery, filterPriority]);
+
+    // ── Filtered ledger transactions ──
+    const filteredLedgerTransactions = useMemo(() => {
+        if (!ledgerData) return [];
+        let txs = ledgerData.transactions;
+        if (filterAutoMfs) {
+            txs = txs.filter((tx) => tx.recordedVia === "AUTO_MFS");
+        }
+        return txs;
+    }, [ledgerData, filterAutoMfs]);
 
     // ── Load data ──
     const loadData = useCallback(async () => {
@@ -344,16 +355,29 @@ export default function DueLedgerWorkspace({
                 )}
 
                 {/* Back button */}
-                <button
-                    onClick={() => {
-                        setLedgerData(null);
-                        setSelectedCustomerId(null);
-                    }}
-                    className="flex items-center gap-2 text-sm font-bold text-primary hover:text-on-primary-container transition-colors"
-                >
-                    <span className="material-symbols-outlined">arrow_back</span>
-                    {t("ledger.back")}
-                </button>
+                <div className="flex items-center justify-between">
+                    <button
+                        onClick={() => {
+                            setLedgerData(null);
+                            setSelectedCustomerId(null);
+                            setFilterAutoMfs(false);
+                        }}
+                        className="flex items-center gap-2 text-sm font-bold text-primary hover:text-on-primary-container transition-colors"
+                    >
+                        <span className="material-symbols-outlined">arrow_back</span>
+                        {t("ledger.back")}
+                    </button>
+                    <button
+                        onClick={() => setFilterAutoMfs((f) => !f)}
+                        className={`flex items-center gap-1.5 rounded-full px-4 py-2 text-xs font-bold transition-colors ${filterAutoMfs
+                            ? "bg-primary text-white"
+                            : "bg-surface-container text-on-surface-variant hover:bg-surface-container-high"
+                            }`}
+                    >
+                        <span className="material-symbols-outlined text-sm">sync</span>
+                        {t("autoMfs.filter")}
+                    </button>
+                </div>
 
                 {/* Customer header */}
                 <div className="bg-surface-container-lowest rounded-2xl p-6 shadow-sm">
@@ -409,14 +433,14 @@ export default function DueLedgerWorkspace({
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-surface-container">
-                            {ledgerData.transactions.length === 0 ? (
+                            {filteredLedgerTransactions.length === 0 ? (
                                 <tr>
-                                    <td colSpan={5} className="px-6 py-12 text-center text-on-surface-variant">
+                                    <td colSpan={6} className="px-6 py-12 text-center text-on-surface-variant">
                                         No transactions found.
                                     </td>
                                 </tr>
                             ) : (
-                                ledgerData.transactions.map((tx: DueTransaction) => (
+                                filteredLedgerTransactions.map((tx: DueTransaction) => (
                                     <tr
                                         key={tx.id}
                                         className="hover:bg-surface-container-low transition-colors"
@@ -425,16 +449,27 @@ export default function DueLedgerWorkspace({
                                             {new Date(tx.date).toLocaleDateString(loc)}
                                         </td>
                                         <td className="px-6 py-4">
-                                            <span
-                                                className={`inline-block rounded-full px-3 py-1 text-xs font-bold ${tx.type === "BAKI"
-                                                    ? "bg-tertiary-container text-on-tertiary-container"
-                                                    : tx.type === "JOMA"
-                                                        ? "bg-primary-container text-on-primary-container"
-                                                        : "bg-surface-container-high text-on-surface-variant"
-                                                    }`}
-                                            >
-                                                {tx.type}
-                                            </span>
+                                            <div className="flex items-center gap-2">
+                                                <span
+                                                    className={`inline-block rounded-full px-3 py-1 text-xs font-bold ${tx.type === "BAKI"
+                                                        ? "bg-tertiary-container text-on-tertiary-container"
+                                                        : tx.type === "JOMA"
+                                                            ? "bg-primary-container text-on-primary-container"
+                                                            : "bg-surface-container-high text-on-surface-variant"
+                                                        }`}
+                                                >
+                                                    {tx.type}
+                                                </span>
+                                                {tx.recordedVia === "AUTO_MFS" && (
+                                                    <span
+                                                        className="inline-flex items-center gap-1 rounded-full bg-blue-100 px-2.5 py-0.5 text-[10px] font-bold text-blue-800"
+                                                        title={t("autoMfs.badgeTooltip")}
+                                                    >
+                                                        <span className="material-symbols-outlined text-xs">sync</span>
+                                                        {t("autoMfs.badge")}
+                                                    </span>
+                                                )}
+                                            </div>
                                         </td>
                                         <td className="px-6 py-4 text-sm text-on-surface">
                                             {tx.description || "—"}
@@ -735,6 +770,16 @@ export default function DueLedgerWorkspace({
                                     {t(`filter.${f}`)}
                                 </button>
                             ))}
+                            <button
+                                onClick={() => setFilterAutoMfs((f) => !f)}
+                                className={`flex items-center gap-1 rounded-full px-3 py-1.5 text-xs font-bold transition-colors ${filterAutoMfs
+                                    ? "bg-blue-600 text-white"
+                                    : "bg-surface-container text-on-surface-variant hover:bg-surface-container-high"
+                                    }`}
+                            >
+                                <span className="material-symbols-outlined text-xs">sync</span>
+                                {t("autoMfs.filter")}
+                            </button>
                         </div>
                     </div>
                 </div>

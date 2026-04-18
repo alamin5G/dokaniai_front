@@ -8,9 +8,9 @@
 
 export type DueTransactionType = "BAKI" | "JOMA" | "RETURN" | "ADJUSTMENT";
 
-export type ReferenceType = "SALE" | "SALE_RETURN" | "DISCOUNT" | "MANUAL" | "PAYMENT";
+export type ReferenceType = "SALE" | "SALE_RETURN" | "DISCOUNT" | "MANUAL" | "PAYMENT" | "MFS_SMS";
 
-export type EntryMode = "MANUAL" | "VOICE" | "AI_PARSED" | "IMPORTED";
+export type EntryMode = "MANUAL" | "VOICE" | "AI_PARSED" | "IMPORTED" | "AUTO_MFS";
 
 export type PaymentMethod = "CASH" | "BKASH" | "NAGAD" | "ROCKET" | "BANK_TRANSFER" | "OTHER";
 

@@ -645,7 +645,33 @@
       "stepAiSync": "AI Assistant Sync",
       "stepAiSyncDesc": "Enable voice commands for shop management.",
       "tabData": "Data Export",
-      "tabDataDesc": "Download your business data (ZIP/CSV) with OTP verification"
+      "tabDataDesc": "Download your business data (ZIP/CSV) with OTP verification",
+      "tabMfsNumbers": "MFS Numbers",
+      "tabMfsNumbersDesc": "Register bKash, Nagad, Rocket numbers for auto due collection",
+      "mfsNumbers": {
+        "title": "MFS Payment Numbers",
+        "subtitle": "Register your mobile financial service numbers. Approved numbers will auto-match customer payments via SMS.",
+        "registerTitle": "Register New MFS Number",
+        "mfsTypeLabel": "MFS Type",
+        "mfsNumberLabel": "MFS Number",
+        "mfsNumberPlaceholder": "01XXXXXXXXX",
+        "simSlotLabel": "SIM Slot (Optional)",
+        "simSlot0": "SIM 1",
+        "simSlot1": "SIM 2",
+        "registerButton": "Register",
+        "registering": "Registering...",
+        "myNumbersTitle": "My Registered Numbers",
+        "noNumbers": "No MFS numbers registered yet. Register one to enable auto due collection.",
+        "statusPending": "Pending",
+        "statusApproved": "Approved",
+        "statusRejected": "Rejected",
+        "rejectionReason": "Rejection reason",
+        "maxNumbersWarning": "Maximum 2 numbers per MFS type allowed.",
+        "duplicateWarning": "This number is already registered.",
+        "registerSuccess": "MFS number submitted for approval.",
+        "registerError": "Failed to register MFS number.",
+        "loadError": "Failed to load MFS numbers."
+      }
     },
     "profile": {
       "descriptionLabel": "Description",
@@ -1638,6 +1664,12 @@
       "voice": {
         "placeholder": "e.g. Rahima 500 taka due",
         "tooltip": "AI-powered voice/text command"
+      },
+      "autoMfs": {
+        "badge": "Auto",
+        "badgeTooltip": "Auto-credited via MFS SMS",
+        "filter": "Auto MFS",
+        "description": "Auto-credited via {method} (TrxID: {trxId})"
       },
       "reports": {
         "title": "Reports",
