@@ -6,6 +6,9 @@ import type { Plan, Subscription } from "@/types/subscription";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { useEffect, useMemo, useState, useSyncExternalStore } from "react";
+import axios from "axios";
+
+const PUBLIC_PLANS_URL = `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:8082/api/v1"}/subscriptions/plans`;
 
 
 function formatPrice(value: number): string {
@@ -159,9 +162,11 @@ export function PricingSection() {
 
     const loadPlans = async () => {
       try {
-        const data = await getAvailablePlans();
+        const { data } = await axios.get(PUBLIC_PLANS_URL, {
+          headers: { "Accept-Language": typeof navigator !== "undefined" ? navigator.language : "en" },
+        });
         if (cancelled) return;
-        const active = data.filter((plan) => plan.isActive).sort((a, b) => a.tierLevel - b.tierLevel);
+        const active: Plan[] = (data?.data ?? []).filter((plan: Plan) => plan.isActive).sort((a: Plan, b: Plan) => a.tierLevel - b.tierLevel);
         if (active.length > 0) {
           setPlans(active);
         }

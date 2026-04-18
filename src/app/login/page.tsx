@@ -1,13 +1,12 @@
 "use client";
 
-import { FreeTrialModal } from "@/components/auth/FreeTrialModal";
 import { AuthLayout } from "@/components/layout/AuthLayout";
 import { FormInput, GradientButton } from "@/components/ui/FormPrimitives";
 import { useRedirectIfAuthenticated } from "@/hooks/useAuthRedirect";
 import apiClient from "@/lib/api";
 import { getApiErrorMessage } from "@/lib/apiError";
 import axios from "axios";
-import { clearPendingUpgradePlan, consumeRedirectAfterLogin, isPendingPlanTrial, setRedirectAfterLogin } from "@/lib/authFlow";
+import { consumeRedirectAfterLogin, getPendingUpgradePlan, isPendingPlanTrial, setRedirectAfterLogin } from "@/lib/authFlow";
 import { getClientDeviceContext } from "@/lib/device";
 import { getPreferredWorkspacePath } from "@/lib/shopRouting";
 import { getPendingPlan as getPendingPlanFromDb } from "@/lib/subscriptionApi";
@@ -15,7 +14,7 @@ import { useAuthStore } from "@/store/authStore";
 import { useTranslations } from "next-intl";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useRef, useState } from "react";
+import { useState } from "react";
 
 /** Shape of the token data returned by the login API. */
 interface TokenData {
@@ -38,13 +37,6 @@ export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [errorText, setErrorText] = useState("");
-  const [showTrialModal, setShowTrialModal] = useState(false);
-
-  // Deferred token data — stored here when trial modal is needed so that
-  // setTokens is NOT called until the user confirms the modal.  This
-  // prevents useRedirectIfAuthenticated from detecting isAuthenticated=true
-  // and redirecting away before the modal can render.
-  const deferredTokens = useRef<TokenData | null>(null);
 
   const handleLoginSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -81,12 +73,10 @@ export default function LoginPage() {
         setUserRole(role);
         router.push("/admin");
       } else if (isPendingPlanTrial()) {
-        // Trial plan — DEFER setTokens to prevent useRedirectIfAuthenticated
-        // from redirecting before the modal renders.  The modal's onConfirm
-        // will commit the tokens and navigate to /onboarding.
-        deferredTokens.current = tokens;
+        setTokens(tokens.accessToken, tokens.refreshToken, tokens.userId, tokens.status);
         setUserRole(role);
-        setShowTrialModal(true);
+        const pendingPlan = getPendingUpgradePlan();
+        router.push(pendingPlan ? `/subscription/upgrade?plan=${encodeURIComponent(pendingPlan)}` : "/subscription/upgrade");
       } else {
         const pendingRedirect = consumeRedirectAfterLogin();
         if (pendingRedirect) {
@@ -105,17 +95,32 @@ export default function LoginPage() {
             router.push(`/subscription/upgrade?plan=${dbPendingPlan.planId}`);
           } else {
             try {
+              const subRes = await apiClient.get("/subscriptions/current", {
+                headers: { Authorization: `Bearer ${tokens.accessToken}` },
+              });
+              const subStatus = subRes.data?.data?.status;
+              if (!["ACTIVE", "TRIAL", "GRACE"].includes(subStatus)) {
+                setTokens(tokens.accessToken, tokens.refreshToken, tokens.userId, tokens.status);
+                setUserRole(role);
+                router.push("/subscription/upgrade");
+                return;
+              }
+            } catch {
+              setTokens(tokens.accessToken, tokens.refreshToken, tokens.userId, tokens.status);
+              setUserRole(role);
+              router.push("/subscription/upgrade");
+              return;
+            }
+            try {
               const bizRes = await apiClient.get("/businesses", {
                 headers: { Authorization: `Bearer ${tokens.accessToken}` },
               });
               const businesses: Array<{ id: string }> = bizRes.data?.data?.businesses ?? [];
+              setTokens(tokens.accessToken, tokens.refreshToken, tokens.userId, tokens.status);
+              setUserRole(role);
               if (businesses.length === 0) {
-                deferredTokens.current = tokens;
-                setUserRole(role);
-                setShowTrialModal(true);
+                router.push("/onboarding");
               } else {
-                setTokens(tokens.accessToken, tokens.refreshToken, tokens.userId, tokens.status);
-                setUserRole(role);
                 router.push(getPreferredWorkspacePath());
               }
             } catch {
@@ -139,24 +144,6 @@ export default function LoginPage() {
       setIsLoading(false);
     }
   };
-
-  /** Called when the user confirms the FreeTrialModal. */
-  const handleTrialConfirm = () => {
-    const tokens = deferredTokens.current;
-    if (tokens) {
-      setTokens(tokens.accessToken, tokens.refreshToken, tokens.userId, tokens.status);
-      deferredTokens.current = null;
-    }
-    clearPendingUpgradePlan();
-    router.push("/onboarding");
-  };
-
-  // Show trial modal overlay after successful login — must take priority
-  // over the authenticated redirect, otherwise isAuthenticated=true causes
-  // an early return null and the modal never renders.
-  if (showTrialModal) {
-    return <FreeTrialModal onConfirm={handleTrialConfirm} pendingPlanId={sessionStorage.getItem("pending_upgrade_plan")} />;
-  }
 
   // Wait for hydration, or redirect if authenticated
   if (!hydrated || isAuthenticated) {

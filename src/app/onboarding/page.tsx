@@ -1,6 +1,7 @@
 "use client";
 
 import { FormInput, GradientButton } from "@/components/ui/FormPrimitives";
+import { TrialExpiryBanner } from "@/components/subscription/TrialExpiryBanner";
 import * as businessApi from "@/lib/businessApi";
 import { getCategoriesByBusinessType } from "@/lib/categoryApi";
 import { createProduct } from "@/lib/productApi";
@@ -12,6 +13,7 @@ import { useAuthStore } from "@/store/authStore";
 import { useBusinessStore } from "@/store/businessStore";
 import type { CategoryResponse } from "@/types/category";
 import type { BusinessCreateRequest, BusinessTypeOptionResponse, PaymentMethod } from "@/types/business";
+import type { Subscription } from "@/types/subscription";
 import { useLocale, useTranslations } from "next-intl";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Suspense, useCallback, useEffect, useRef, useState } from "react";
@@ -344,6 +346,7 @@ function OnboardingPageContent() {
 
     // Subscription check
     const [showSubscriptionModal, setShowSubscriptionModal] = useState(false);
+    const [subscription, setSubscription] = useState<Subscription | null>(null);
 
     // ---------------------------------------------------------------------------
     // Subscription check on mount
@@ -355,9 +358,10 @@ function OnboardingPageContent() {
         let cancelled = false;
         const checkSubscription = async () => {
             try {
-                const subscription = await getCurrentSubscription();
+                const sub = await getCurrentSubscription();
                 if (cancelled) return;
-                if (!subscription || !["ACTIVE", "TRIAL"].includes(subscription.status)) {
+                setSubscription(sub);
+                if (!sub || !["ACTIVE", "TRIAL"].includes(sub.status)) {
                     setShowSubscriptionModal(true);
                 }
             } catch {
@@ -1626,6 +1630,16 @@ function OnboardingPageContent() {
                     DokaniAI
                 </h1>
             </header>
+
+            {/* Trial Expiry Banner */}
+            {subscription?.status === "TRIAL" && subscription.currentPeriodEnd && (
+              (() => {
+                const daysLeft = Math.max(0, Math.ceil(Math.abs(
+                  new Date(subscription.currentPeriodEnd).getTime() - Date.now()
+                ) / (1000 * 60 * 60 * 24)));
+                return daysLeft <= 7 ? <TrialExpiryBanner daysRemaining={daysLeft} /> : null;
+              })()
+            )}
 
             {/* Main wizard card */}
             <main className="flex-1 flex items-start justify-center px-4 pb-8">

@@ -178,6 +178,10 @@ export async function consentTrialPlan(planId: string): Promise<void> {
   await apiClient.post("/subscriptions/consent-trial", { planId });
 }
 
+export async function acceptTrial2(): Promise<void> {
+  await apiClient.post("/subscriptions/accept-trial-2");
+}
+
 export async function clearPendingPlan(): Promise<void> {
   await apiClient.delete("/subscriptions/pending-plan");
 }

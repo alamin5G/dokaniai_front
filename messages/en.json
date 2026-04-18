@@ -994,6 +994,13 @@
       "description": "Activate your free trial to explore all features and set up your business. You can upgrade to a paid plan anytime.",
       "confirm": "Activate Trial"
     },
+    "trialExpiry": {
+      "bannerTitle": "Your trial expires in {days} days",
+      "bannerTitleLastDay": "Your trial expires today!",
+      "bannerDesc": "Claim Free Trial 2 to get 35 more days with 2 businesses.",
+      "dismiss": "Dismiss",
+      "claimFt2": "Claim Free Trial 2"
+    },
     "pricing": {
       "currentPlan": "Current Plan",
       "upgrade": "Upgrade",

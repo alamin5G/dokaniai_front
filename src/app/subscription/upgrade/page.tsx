@@ -7,6 +7,7 @@ import {
   getReferralStatus,
   initializePaymentIntent,
   clearPendingPlan,
+  consentTrialPlan,
 } from "@/lib/subscriptionApi";
 import {
   clearPendingUpgradePlan,
@@ -99,7 +100,10 @@ function SubscriptionUpgradeContent() {
           getReferralStatus().catch(() => null),
         ]);
         if (cancelled) return;
-        const activePlans = allPlans.filter((p) => p.isActive && !p.isTrial && !p.customPricing).sort((a, b) => a.tierLevel - b.tierLevel);
+        const hasSubscription = current != null && ["ACTIVE", "TRIAL", "GRACE"].includes(current.status);
+        const activePlans = allPlans
+          .filter((p) => p.isActive && !p.customPricing && (hasSubscription ? !p.isTrial : true))
+          .sort((a, b) => a.tierLevel - b.tierLevel);
         setPlans(activePlans);
         setCurrentSubscription(current);
         setReferralStatus(referral);
@@ -167,7 +171,31 @@ function SubscriptionUpgradeContent() {
     } finally { setIsSubmitting(false); }
   };
 
+  const isTrialPlan = selectedPlan?.isTrial === true;
   const isCurrentPlan = selectedPlan != null && selectedPlan.id === currentSubscription?.planId;
+  const [showTrialConfirm, setShowTrialConfirm] = useState(false);
+
+  const handleCtaClick = () => {
+    if (isTrialPlan) {
+      setShowTrialConfirm(true);
+    } else {
+      handleContinueToPayment();
+    }
+  };
+
+  const handleTrialConfirm = async () => {
+    if (!selectedPlan) return;
+    setIsSubmitting(true);
+    try {
+      await consentTrialPlan(selectedPlan.id);
+      clearPendingUpgradePlan();
+      clearPendingPlan().catch(() => {});
+      setShowTrialConfirm(false);
+      router.push("/onboarding");
+    } catch (error) {
+      setNotice(error instanceof Error ? error.message : t("upgrade.errors.paymentInitFailed"));
+    } finally { setIsSubmitting(false); }
+  };
 
   if (isLoading) {
     return (
@@ -486,7 +514,7 @@ function SubscriptionUpgradeContent() {
               <button
                 data-testid="continue-to-payment"
                 type="button"
-                onClick={handleContinueToPayment}
+                onClick={handleCtaClick}
                 disabled={isSubmitting || !selectedPlan || isCurrentPlan}
                 className="w-full mt-6 text-white font-bold text-base py-4 rounded-full shadow-[0_4px_14px_rgba(0,55,39,0.25)] hover:shadow-[0_6px_20px_rgba(0,55,39,0.3)] transition-all flex justify-center items-center gap-2 disabled:opacity-40 disabled:cursor-not-allowed"
                 style={{ background: "linear-gradient(135deg, #003727, #00503a)" }}
@@ -495,6 +523,8 @@ function SubscriptionUpgradeContent() {
                   <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
                 ) : isCurrentPlan ? (
                   t("pricing.currentPlan")
+                ) : isTrialPlan ? (
+                  t("pricing.startTrial")
                 ) : (
                   <>
                     <span>{isBn ? `৳${formatPrice(payableAmount, locale)} নিরাপদে পরিশোধ করুন` : `Pay ৳${formatPrice(payableAmount, locale)} Securely`}</span>
@@ -523,6 +553,42 @@ function SubscriptionUpgradeContent() {
           </div>
         </div>
       </main>
+
+      {/* Free Trial Confirmation Modal */}
+      {showTrialConfirm && selectedPlan && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
+          <div className="w-full max-w-sm rounded-2xl bg-white p-6 shadow-xl text-center space-y-4">
+            <div className="w-14 h-14 bg-[#00503a]/10 rounded-full flex items-center justify-center mx-auto">
+              <span className="material-symbols-outlined text-[#00503a] text-3xl">rocket_launch</span>
+            </div>
+            <h3 className="text-lg font-bold text-[#003727]">{t("trialModal.title")}</h3>
+            <p className="text-sm text-[#404944]">
+              {selectedPlan.durationDays
+                ? (isBn ? `${selectedPlan.durationDays} দিনের ফ্রি ট্রায়াল শুরু করতে চান?` : `Start your ${selectedPlan.durationDays}-day free trial?`)
+                : t("trialModal.description")}
+            </p>
+            <div className="flex gap-3 pt-2">
+              <button
+                type="button"
+                onClick={() => setShowTrialConfirm(false)}
+                disabled={isSubmitting}
+                className="flex-1 py-3 rounded-xl border border-[#003727]/20 text-[#404944] font-semibold text-sm hover:bg-gray-50 transition-colors disabled:opacity-50"
+              >
+                {isBn ? "বাতিল" : "Cancel"}
+              </button>
+              <button
+                type="button"
+                onClick={handleTrialConfirm}
+                disabled={isSubmitting}
+                className="flex-1 py-3 rounded-xl text-white font-semibold text-sm flex items-center justify-center gap-2 disabled:opacity-50"
+                style={{ background: "linear-gradient(135deg, #003727, #00503a)" }}
+              >
+                {isSubmitting ? <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" /> : t("trialModal.confirm")}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
