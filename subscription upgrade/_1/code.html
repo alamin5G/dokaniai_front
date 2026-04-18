@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Subscription Payment Flow</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&amp;family=Manrope:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "surface-container-low": "#f2f4f0",
+                        "secondary-fixed": "#d1e4ff",
+                        "background": "#f8faf6",
+                        "on-primary-container": "#7fc1a5",
+                        "on-primary": "#ffffff",
+                        "surface-container-highest": "#e1e3df",
+                        "surface-bright": "#f8faf6",
+                        "tertiary-container": "#6f342e",
+                        "primary-fixed-dim": "#91d4b7",
+                        "on-tertiary-container": "#f09e95",
+                        "tertiary": "#531e1a",
+                        "surface-container": "#ecefeb",
+                        "outline-variant": "#bfc9c2",
+                        "surface-container-high": "#e6e9e5",
+                        "primary-fixed": "#adf1d2",
+                        "on-secondary-fixed-variant": "#00497d",
+                        "on-primary-fixed": "#002116",
+                        "inverse-on-surface": "#eff1ee",
+                        "on-secondary-fixed": "#001d36",
+                        "on-background": "#191c1a",
+                        "primary-container": "#00503a",
+                        "tertiary-fixed": "#ffdad6",
+                        "on-tertiary-fixed-variant": "#70352f",
+                        "surface": "#f8faf6",
+                        "inverse-primary": "#91d4b7",
+                        "on-surface-variant": "#404944",
+                        "surface-tint": "#276a52",
+                        "secondary-fixed-dim": "#9fcaff",
+                        "on-secondary": "#ffffff",
+                        "on-error": "#ffffff",
+                        "on-tertiary-fixed": "#390b08",
+                        "on-secondary-container": "#00477b",
+                        "on-error-container": "#93000a",
+                        "surface-container-lowest": "#ffffff",
+                        "tertiary-fixed-dim": "#ffb4ab",
+                        "error-container": "#ffdad6",
+                        "on-surface": "#191c1a",
+                        "inverse-surface": "#2e312f",
+                        "surface-dim": "#d8dbd7",
+                        "secondary": "#0061a4",
+                        "on-tertiary": "#ffffff",
+                        "error": "#ba1a1a",
+                        "surface-variant": "#e1e3df",
+                        "on-primary-fixed-variant": "#02513b",
+                        "outline": "#707974",
+                        "secondary-container": "#77b7ff",
+                        "primary": "#003727"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "1rem",
+                        "lg": "2rem",
+                        "xl": "3rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {},
+                    "fontFamily": {
+                        "headline": ["Hind Siliguri", "sans-serif"],
+                        "body": ["Hind Siliguri", "sans-serif"],
+                        "label": ["Hind Siliguri", "sans-serif"],
+                        "numeral": ["Manrope", "sans-serif"]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        body {
+            background-color: theme('colors.background');
+            color: theme('colors.on-background');
+            font-family: theme('fontFamily.body');
+            -webkit-font-smoothing: antialiased;
+        }
+        
+        .glass-panel {
+            background-color: rgba(225, 227, 223, 0.6); /* surface-variant at 60% */
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+        }
+        
+        .gradient-text {
+            background: linear-gradient(135deg, theme('colors.primary'), theme('colors.primary-container'));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .primary-gradient-bg {
+            background: linear-gradient(135deg, theme('colors.primary'), theme('colors.primary-container'));
+        }
+        
+        /* Utility for outline-variant at 15% opacity */
+        .border-ghost {
+            border-color: rgba(191, 201, 194, 0.15);
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+<!-- TopAppBar - Linear flow, so no trailing actions, just brand and close -->
+<header class="fixed top-0 left-0 w-full bg-[#f2f4f0] flex justify-between items-center px-6 py-4 z-40">
+<div class="flex items-center gap-3">
+<!-- Close action implying departure from main flow -->
+<button class="p-2 rounded-full bg-surface-container-lowest text-on-surface hover:bg-surface-container transition-colors shadow-sm flex items-center justify-center">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">close</span>
+</button>
+<div class="font-['Manrope'] font-bold tracking-tight text-2xl font-black text-emerald-900">
+                DokaniAI
+            </div>
+</div>
+<div class="text-sm font-semibold text-on-surface-variant font-numeral">
+            Step 2 of 3
+        </div>
+</header>
+<main class="w-full max-w-6xl mt-16 grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12">
+<!-- Left Column: Plan Comparison -->
+<section class="lg:col-span-7 flex flex-col gap-8">
+<div>
+<h1 class="text-4xl lg:text-5xl font-headline font-bold text-on-surface leading-tight mb-2">Upgrade to Pro</h1>
+<p class="text-lg text-on-surface-variant font-body leading-relaxed">Expand your ledger's capabilities and unlock deeper AI insights.</p>
+</div>
+<!-- Bento-style Comparison -->
+<div class="grid grid-cols-1 md:grid-cols-2 gap-6 relative">
+<!-- Current Plan Card -->
+<div class="bg-surface-container rounded-DEFAULT p-6 flex flex-col gap-6 relative z-10">
+<div class="flex justify-between items-start">
+<div>
+<span class="text-sm font-label text-on-surface-variant mb-1 block">Current Plan</span>
+<h2 class="text-2xl font-headline font-semibold text-on-surface">Free Trial</h2>
+</div>
+<span class="material-symbols-outlined text-outline" style="font-variation-settings: 'FILL' 0;">hourglass_empty</span>
+</div>
+<div class="space-y-4">
+<div class="flex flex-col gap-1">
+<span class="text-xs font-label text-on-surface-variant">Businesses</span>
+<div class="flex items-end gap-2">
+<span class="text-3xl font-numeral font-bold text-on-surface">1</span>
+</div>
+</div>
+<div class="flex flex-col gap-1">
+<span class="text-xs font-label text-on-surface-variant">AI Queries / mo</span>
+<div class="flex items-end gap-2">
+<span class="text-3xl font-numeral font-bold text-on-surface">5</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Arrow indicator (desktop) -->
+<div class="hidden md:flex absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-20 w-10 h-10 bg-surface-container-lowest rounded-full items-center justify-center shadow-[0_4px_24px_rgba(25,28,26,0.08)]">
+<span class="material-symbols-outlined text-primary" style="font-variation-settings: 'FILL' 1;">arrow_forward</span>
+</div>
+<!-- New Plan Card (Elevated) -->
+<div class="bg-surface-container-lowest rounded-DEFAULT p-6 flex flex-col gap-6 relative z-10 shadow-[0_8px_30px_rgba(25,28,26,0.04)] border border-solid border-ghost">
+<div class="flex justify-between items-start">
+<div>
+<span class="text-sm font-label text-primary mb-1 block font-medium">New Plan</span>
+<h2 class="text-2xl font-headline font-bold gradient-text">Pro Plan</h2>
+</div>
+<div class="w-10 h-10 rounded-full bg-secondary-fixed flex items-center justify-center">
+<span class="material-symbols-outlined text-secondary" style="font-variation-settings: 'FILL' 1;">workspace_premium</span>
+</div>
+</div>
+<div class="space-y-4">
+<div class="flex flex-col gap-1">
+<span class="text-xs font-label text-on-surface-variant">Businesses</span>
+<div class="flex items-end gap-2">
+<span class="text-4xl font-numeral font-bold text-primary">3</span>
+<span class="text-sm text-primary mb-1 flex items-center gap-1"><span class="material-symbols-outlined text-[16px]">arrow_upward</span> +2</span>
+</div>
+</div>
+<div class="flex flex-col gap-1">
+<span class="text-xs font-label text-on-surface-variant">AI Queries / mo</span>
+<div class="flex items-end gap-2">
+<span class="text-4xl font-numeral font-bold text-primary">75</span>
+<span class="text-sm text-primary mb-1 flex items-center gap-1"><span class="material-symbols-outlined text-[16px]">arrow_upward</span> +70</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Features List - Divider-less -->
+<div class="bg-surface-container-low rounded-DEFAULT p-6 mt-4">
+<h3 class="text-lg font-headline font-semibold text-on-surface mb-4">Includes everything in Free, plus:</h3>
+<ul class="space-y-3">
+<li class="flex items-start gap-3">
+<span class="material-symbols-outlined text-primary mt-0.5 text-[20px]" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+<span class="text-body text-on-surface-variant">Unlimited transaction logging</span>
+</li>
+<li class="flex items-start gap-3">
+<span class="material-symbols-outlined text-primary mt-0.5 text-[20px]" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+<span class="text-body text-on-surface-variant">Advanced AI business insights</span>
+</li>
+<li class="flex items-start gap-3">
+<span class="material-symbols-outlined text-primary mt-0.5 text-[20px]" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+<span class="text-body text-on-surface-variant">Priority WhatsApp support</span>
+</li>
+</ul>
+</div>
+</section>
+<!-- Right Column: Billing & Checkout -->
+<section class="lg:col-span-5 flex flex-col gap-6">
+<!-- Billing Summary Card -->
+<div class="bg-surface-container-lowest rounded-DEFAULT p-6 shadow-[0_8px_30px_rgba(25,28,26,0.06)] border border-solid border-ghost flex flex-col gap-6 relative overflow-hidden">
+<!-- Decorative blurred shape to suggest premium/AI nature -->
+<div class="absolute -top-10 -right-10 w-40 h-40 bg-secondary-fixed-dim rounded-full blur-3xl opacity-50 z-0 pointer-events-none"></div>
+<div class="relative z-10">
+<h3 class="text-xl font-headline font-semibold text-on-surface mb-4">Order Summary</h3>
+<!-- Line Items -->
+<div class="space-y-4 mb-6">
+<div class="flex justify-between items-baseline">
+<span class="text-base text-on-surface-variant">Pro Plan (Monthly)</span>
+<span class="text-lg font-numeral font-medium text-on-surface">৳399</span>
+</div>
+<div class="flex justify-between items-baseline">
+<span class="text-base text-on-surface-variant">VAT (0%)</span>
+<span class="text-lg font-numeral font-medium text-on-surface">৳0</span>
+</div>
+</div>
+<!-- Coupon Input -->
+<div class="mb-6">
+<div class="bg-surface-container rounded-lg flex items-center p-1 border border-solid border-ghost focus-within:ring-2 focus-within:ring-primary-fixed-dim transition-all">
+<span class="material-symbols-outlined text-on-surface-variant pl-3 pr-2 text-[20px]">local_offer</span>
+<input class="bg-transparent border-none focus:ring-0 text-on-surface w-full py-2 font-body text-sm placeholder:text-outline" placeholder="Promo code" type="text"/>
+<button class="bg-surface-container-lowest text-primary font-semibold text-sm px-4 py-2 rounded-full shadow-sm hover:bg-surface transition-colors whitespace-nowrap">Apply</button>
+</div>
+</div>
+<!-- Total -->
+<div class="pt-4 bg-surface-container-low rounded-lg p-4 flex justify-between items-end mb-6">
+<span class="text-sm font-semibold text-on-surface-variant uppercase tracking-wider">Total Due</span>
+<div class="text-right">
+<span class="text-sm text-on-surface-variant mr-1 font-numeral">BDT</span>
+<span class="text-4xl font-numeral font-bold text-on-surface">৳399</span>
+</div>
+</div>
+<!-- Payment Methods -->
+<div class="space-y-3">
+<span class="text-xs font-label text-on-surface-variant uppercase tracking-wider mb-2 block">Select Payment Method</span>
+<!-- Payment Option 1: bKash (Selected) -->
+<label class="flex items-center p-4 bg-surface-container rounded-DEFAULT cursor-pointer transition-all border border-solid border-primary-fixed-dim relative overflow-hidden">
+<div class="absolute inset-0 bg-primary-fixed opacity-10 pointer-events-none"></div>
+<input checked="" class="sr-only" name="payment_method" type="radio" value="bkash"/>
+<div class="w-6 h-6 rounded-full border-2 border-primary flex items-center justify-center mr-4">
+<div class="w-3 h-3 rounded-full bg-primary"></div>
+</div>
+<div class="flex-1 flex justify-between items-center">
+<span class="font-semibold text-on-surface">bKash</span>
+<div class="h-8 w-16 bg-white rounded flex items-center justify-center p-1 shadow-sm">
+<img alt="bKash" class="h-full object-contain mix-blend-multiply opacity-80" data-alt="abstract pink and white shapes representing a generic mobile payment logo" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCgbetsDa-NA3IinuOdOUT0izFiD39s1Fs6kU7iYHHAuUmOpmI-0HtfLFinHwHHXE4uYfUnSZ5wboKbc2vR0gbI4jhkfeXAPwElpHhEMlNz4bl0tS4fXVEDzxXS2wAtE_bgscu1GqE_5DQC6GGR9hodKMPsqI4ycgaK7-SMgB6mNhcmE1rRKN7Ijd9FvNLAoi4XKDjjq60Mb6ocofps_ahdx71otvaXVvfHSOVYvxg8ipHdiUqoYjWExr7n5Jddb1y6lOsCyFPqdxRm"/>
+</div>
+</div>
+</label>
+<!-- Payment Option 2: Nagad -->
+<label class="flex items-center p-4 bg-surface-container-lowest rounded-DEFAULT cursor-pointer hover:bg-surface transition-all border border-solid border-ghost">
+<input class="sr-only" name="payment_method" type="radio" value="nagad"/>
+<div class="w-6 h-6 rounded-full border-2 border-outline flex items-center justify-center mr-4">
+</div>
+<div class="flex-1 flex justify-between items-center">
+<span class="font-medium text-on-surface-variant">Nagad</span>
+<div class="h-8 w-16 bg-white rounded flex items-center justify-center p-1 shadow-sm border border-solid border-ghost">
+<img alt="Nagad" class="h-full object-contain mix-blend-multiply opacity-80" data-alt="abstract orange and red shapes representing a generic mobile payment logo" src="https://lh3.googleusercontent.com/aida-public/AB6AXuC0wsp6KQNJnJw5gFDUkQmqJ591VsbFSzS8V8W3TbvklUbk8z1mEe1YNcBcA-lNU-DxnZa23i5lQbOOpdb7H_nTYEiUhie0g1E6YFCQwXAlj8WqPAgvD6T2ygo2QIN0g_ExcnvylK78EmZGVbpi3aHYsEZeL7zR63QeCd62jZ9cZqawIINZLxYh7OeBx03E3QrLC7N0YBRPQoqAUEB0BpQXWJEXGqYL-5r48hnHQDf9vB_FaBtCaaNKnxinrxQNKxXeSvMriOy8AFL4"/>
+</div>
+</div>
+</label>
+<!-- Payment Option 3: Rocket -->
+<label class="flex items-center p-4 bg-surface-container-lowest rounded-DEFAULT cursor-pointer hover:bg-surface transition-all border border-solid border-ghost">
+<input class="sr-only" name="payment_method" type="radio" value="rocket"/>
+<div class="w-6 h-6 rounded-full border-2 border-outline flex items-center justify-center mr-4">
+</div>
+<div class="flex-1 flex justify-between items-center">
+<span class="font-medium text-on-surface-variant">Rocket</span>
+<div class="h-8 w-16 bg-white rounded flex items-center justify-center p-1 shadow-sm border border-solid border-ghost">
+<img alt="Rocket" class="h-full object-contain mix-blend-multiply opacity-80" data-alt="abstract purple shapes representing a generic mobile payment logo" src="https://lh3.googleusercontent.com/aida-public/AB6AXuC4ogCzCIWN6ucLkXLcnOq6ZzFzvsHO6ITuUEUwSm4y4sXMvyz6uGcnuPEFRA_DPOYW8B7NrTAyhPB6BNyJcv58-F0-muba8NWgzb-Hv19i9aD462qeyqDTdStVdOVxPz8yVrGkfIZEUfZLQNH1rTPMLozpMTHRwKnm19OqDOqdmhEyonktksJJ3VKt1K9daN-U2aVp3CGCviqVb73V4kM1A4lHsFKGw44R7czYkIOMVfBjSdEAVSqX0rCK8Fk7f8mcs5pNAbXTxB7u"/>
+</div>
+</div>
+</label>
+</div>
+<!-- Checkout Button -->
+<button class="w-full mt-6 primary-gradient-bg text-on-primary font-bold text-lg py-4 rounded-full shadow-[0_4px_14px_rgba(0,55,39,0.25)] hover:shadow-[0_6px_20px_rgba(0,55,39,0.3)] transition-all flex justify-center items-center gap-2">
+<span>Pay ৳399 Securely</span>
+<span class="material-symbols-outlined text-[20px]">lock</span>
+</button>
+<p class="text-center text-xs text-on-surface-variant mt-4 font-body">
+                        By proceeding, you agree to our Terms of Service. Secure connection.
+                    </p>
+</div>
+</div>
+<!-- Trust Indicators -->
+<div class="flex justify-center gap-6 opacity-60">
+<div class="flex items-center gap-1">
+<span class="material-symbols-outlined text-on-surface-variant text-[16px]">verified_user</span>
+<span class="text-xs font-label text-on-surface-variant">256-bit Encrypted</span>
+</div>
+<div class="flex items-center gap-1">
+<span class="material-symbols-outlined text-on-surface-variant text-[16px]">support_agent</span>
+<span class="text-xs font-label text-on-surface-variant">24/7 Support</span>
+</div>
+</div>
+</section>
+</main>
+</body></html>

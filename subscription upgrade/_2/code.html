@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+
+<html lang="bn"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Subscription Payment Flow</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&amp;family=Manrope:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "surface-container-low": "#f2f4f0",
+                    "secondary-fixed": "#d1e4ff",
+                    "background": "#f8faf6",
+                    "on-primary-container": "#7fc1a5",
+                    "on-primary": "#ffffff",
+                    "surface-container-highest": "#e1e3df",
+                    "surface-bright": "#f8faf6",
+                    "tertiary-container": "#6f342e",
+                    "primary-fixed-dim": "#91d4b7",
+                    "on-tertiary-container": "#f09e95",
+                    "tertiary": "#531e1a",
+                    "surface-container": "#ecefeb",
+                    "outline-variant": "#bfc9c2",
+                    "surface-container-high": "#e6e9e5",
+                    "primary-fixed": "#adf1d2",
+                    "on-secondary-fixed-variant": "#00497d",
+                    "on-primary-fixed": "#002116",
+                    "inverse-on-surface": "#eff1ee",
+                    "on-secondary-fixed": "#001d36",
+                    "on-background": "#191c1a",
+                    "primary-container": "#00503a",
+                    "tertiary-fixed": "#ffdad6",
+                    "on-tertiary-fixed-variant": "#70352f",
+                    "surface": "#f8faf6",
+                    "inverse-primary": "#91d4b7",
+                    "on-surface-variant": "#404944",
+                    "surface-tint": "#276a52",
+                    "secondary-fixed-dim": "#9fcaff",
+                    "on-secondary": "#ffffff",
+                    "on-error": "#ffffff",
+                    "on-tertiary-fixed": "#390b08",
+                    "on-secondary-container": "#00477b",
+                    "on-error-container": "#93000a",
+                    "surface-container-lowest": "#ffffff",
+                    "tertiary-fixed-dim": "#ffb4ab",
+                    "error-container": "#ffdad6",
+                    "on-surface": "#191c1a",
+                    "inverse-surface": "#2e312f",
+                    "surface-dim": "#d8dbd7",
+                    "secondary": "#0061a4",
+                    "on-tertiary": "#ffffff",
+                    "error": "#ba1a1a",
+                    "surface-variant": "#e1e3df",
+                    "on-primary-fixed-variant": "#02513b",
+                    "outline": "#707974",
+                    "secondary-container": "#77b7ff",
+                    "primary": "#003727"
+            },
+            "borderRadius": {
+                    "DEFAULT": "1rem",
+                    "lg": "2rem",
+                    "xl": "3rem",
+                    "full": "9999px"
+            },
+            "spacing": {},
+            "fontFamily": {
+                    "headline": ["Hind Siliguri", "Manrope", "sans-serif"],
+                    "body": ["Hind Siliguri", "Manrope", "sans-serif"],
+                    "label": ["Hind Siliguri", "Manrope", "sans-serif"]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        body { font-family: 'Hind Siliguri', 'Manrope', sans-serif; }
+        .material-symbols-outlined { font-variation-settings: 'FILL' 0; }
+        .glass-ai { background: rgba(225, 227, 223, 0.6); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); }
+        .gradient-cta { background: linear-gradient(135deg, #003727, #00503a); }
+        .gradient-fab { background: linear-gradient(135deg, #0061a4, #77b7ff); }
+    </style>
+</head>
+<body class="bg-background text-on-surface min-h-screen flex flex-col antialiased">
+<!-- TopAppBar Container (No Nav Context - Transactional/Linear Page, so Nav is hidden) -->
+<!-- Main Content Area -->
+<main class="flex-grow pt-12 pb-32 px-6 md:px-12 max-w-7xl mx-auto w-full grid grid-cols-1 md:grid-cols-12 gap-8 md:gap-16">
+<!-- Header / Back Action (Transactional Flow) -->
+<div class="md:col-span-12 flex items-center mb-8">
+<button class="w-12 h-12 rounded-full bg-surface-container flex items-center justify-center text-on-surface hover:bg-surface-container-high transition-colors">
+<span class="material-symbols-outlined text-2xl">arrow_back</span>
+</button>
+<h1 class="ml-6 font-headline font-bold text-3xl md:text-4xl tracking-tight text-primary">Pro Plan Upgrade</h1>
+</div>
+<!-- Left Column: Centralized Billing 'Ledger' Card -->
+<div class="md:col-span-7 flex flex-col gap-8">
+<!-- Pro Plan Summary Card -->
+<section class="bg-surface-container-lowest rounded-lg p-8 relative overflow-hidden group">
+<!-- Tonal Lift - No Borders -->
+<div class="absolute inset-0 bg-surface-container-low opacity-0 group-hover:opacity-10 transition-opacity duration-500 pointer-events-none rounded-lg"></div>
+<div class="flex justify-between items-start mb-10">
+<div>
+<h2 class="font-headline font-semibold text-2xl text-on-surface mb-2">Pro Plan - Annual</h2>
+<p class="font-body text-on-surface-variant text-base">১ বছরের জন্য সম্পূর্ণ অ্যাক্সেস</p>
+</div>
+<div class="text-right">
+<div class="font-headline font-bold text-4xl text-primary">৳ ৪,৯৯৯</div>
+<p class="font-body text-on-surface-variant text-sm mt-1">/ বছর</p>
+</div>
+</div>
+<!-- Ledger List (Divider-less) -->
+<div class="flex flex-col gap-6 font-body text-base text-on-surface">
+<div class="flex items-start">
+<div class="w-8 h-8 rounded-sm bg-primary-fixed flex items-center justify-center text-primary-fixed-dim mr-4 shrink-0">
+<span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+</div>
+<div>
+<span class="font-semibold block mb-1">অফলাইন সিঙ্ক</span>
+<span class="text-on-surface-variant text-sm">ইন্টারনেট ছাড়াই হিসাব রাখুন, পরে সিঙ্ক হবে।</span>
+</div>
+</div>
+<div class="flex items-start">
+<div class="w-8 h-8 rounded-sm bg-primary-fixed flex items-center justify-center text-primary-fixed-dim mr-4 shrink-0">
+<span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+</div>
+<div>
+<span class="font-semibold block mb-1">একাধিক ব্যবহারকারী</span>
+<span class="text-on-surface-variant text-sm">কর্মচারীদের জন্য আলাদা অ্যাক্সেস।</span>
+</div>
+</div>
+<div class="flex items-start">
+<div class="w-8 h-8 rounded-sm bg-primary-fixed flex items-center justify-center text-primary-fixed-dim mr-4 shrink-0">
+<span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+</div>
+<div>
+<span class="font-semibold block mb-1">উন্নত এআই রিপোর্ট</span>
+<span class="text-on-surface-variant text-sm">ব্যবসায়িক সিদ্ধান্ত নিতে এআই এর সাহায্য।</span>
+</div>
+</div>
+</div>
+<!-- Spacer to push total down if needed, maintaining asymmetry -->
+<div class="mt-12 pt-8 flex justify-between items-end relative">
+<!-- Subtle tonal shift line instead of solid border -->
+<div class="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-surface-variant to-transparent opacity-50"></div>
+<span class="font-headline font-medium text-lg text-on-surface-variant">সর্বমোট (ভ্যাট সহ)</span>
+<span class="font-headline font-bold text-3xl text-primary">৳ ৪,৯৯৯</span>
+</div>
+</section>
+<!-- Proactive AI Insight Box (Glassmorphism) -->
+<section class="glass-ai rounded-lg p-6 flex items-start relative overflow-hidden">
+<div class="absolute -right-4 -top-4 w-24 h-24 bg-primary-fixed rounded-full blur-3xl opacity-20 pointer-events-none"></div>
+<div class="w-12 h-12 rounded-full bg-secondary-fixed flex items-center justify-center text-on-secondary-fixed mr-5 shrink-0 shadow-[0_8px_24px_rgba(25,28,26,0.08)]">
+<span class="material-symbols-outlined text-2xl" style="font-variation-settings: 'FILL' 1;">auto_awesome</span>
+</div>
+<div class="pt-1">
+<h3 class="font-headline font-semibold text-lg text-on-surface mb-2">AI Insight</h3>
+<p class="font-body text-base text-on-surface-variant leading-relaxed">
+                        Pro প্ল্যানে আপগ্রেড করার পর আপনার ব্যবসায় হিসাব রাখা আগের চেয়ে অনেক সহজ হবে।
+                    </p>
+</div>
+</section>
+</div>
+<!-- Right Column: Payment Methods -->
+<div class="md:col-span-5 flex flex-col">
+<section class="bg-surface-container rounded-lg p-8 h-full">
+<h2 class="font-headline font-semibold text-2xl text-on-surface mb-8">পেমেন্ট মেথড</h2>
+<!-- Payment Tiles Grid (Asymmetric feel achieved through content balance rather than rigid grid) -->
+<div class="flex flex-col gap-4 mb-10">
+<!-- Selected Tile -->
+<label class="cursor-pointer relative">
+<input checked="" class="peer sr-only" name="payment_method" type="radio" value="bkash"/>
+<div class="bg-surface-container-lowest rounded-lg p-6 flex items-center justify-between transition-all duration-300 peer-checked:bg-surface-container-low relative overflow-hidden">
+<!-- Soft focus ring representation -->
+<div class="absolute inset-0 rounded-lg ring-2 ring-primary-fixed-dim opacity-0 peer-checked:opacity-100 transition-opacity pointer-events-none"></div>
+<div class="flex items-center">
+<!-- Placeholder for bKash logo, using a generic icon to represent MFS -->
+<div class="w-14 h-14 rounded-full bg-surface-container flex items-center justify-center mr-5">
+<span class="material-symbols-outlined text-on-surface-variant text-3xl">account_balance_wallet</span>
+</div>
+<span class="font-headline font-semibold text-xl text-on-surface">bKash</span>
+</div>
+<div class="w-6 h-6 rounded-full border-2 border-outline-variant flex items-center justify-center peer-checked:border-primary peer-checked:bg-primary transition-colors">
+<span class="material-symbols-outlined text-white text-sm opacity-0 peer-checked:opacity-100 transition-opacity" style="font-variation-settings: 'FILL' 1;">check</span>
+</div>
+</div>
+</label>
+<!-- Unselected Tile -->
+<label class="cursor-pointer relative">
+<input class="peer sr-only" name="payment_method" type="radio" value="nagad"/>
+<div class="bg-surface-container-lowest rounded-lg p-6 flex items-center justify-between transition-all duration-300 peer-checked:bg-surface-container-low relative overflow-hidden group hover:bg-surface-bright">
+<div class="absolute inset-0 rounded-lg ring-2 ring-primary-fixed-dim opacity-0 peer-checked:opacity-100 transition-opacity pointer-events-none"></div>
+<div class="flex items-center">
+<div class="w-14 h-14 rounded-full bg-surface-container flex items-center justify-center mr-5 group-hover:bg-surface-container-high transition-colors">
+<span class="material-symbols-outlined text-on-surface-variant text-3xl">account_balance_wallet</span>
+</div>
+<span class="font-headline font-semibold text-xl text-on-surface">Nagad</span>
+</div>
+<div class="w-6 h-6 rounded-full border-2 border-outline-variant flex items-center justify-center peer-checked:border-primary peer-checked:bg-primary transition-colors">
+<span class="material-symbols-outlined text-white text-sm opacity-0 peer-checked:opacity-100 transition-opacity" style="font-variation-settings: 'FILL' 1;">check</span>
+</div>
+</div>
+</label>
+<!-- Unselected Tile -->
+<label class="cursor-pointer relative">
+<input class="peer sr-only" name="payment_method" type="radio" value="cards"/>
+<div class="bg-surface-container-lowest rounded-lg p-6 flex items-center justify-between transition-all duration-300 peer-checked:bg-surface-container-low relative overflow-hidden group hover:bg-surface-bright">
+<div class="absolute inset-0 rounded-lg ring-2 ring-primary-fixed-dim opacity-0 peer-checked:opacity-100 transition-opacity pointer-events-none"></div>
+<div class="flex items-center">
+<div class="w-14 h-14 rounded-full bg-surface-container flex items-center justify-center mr-5 group-hover:bg-surface-container-high transition-colors">
+<span class="material-symbols-outlined text-on-surface-variant text-3xl">credit_card</span>
+</div>
+<span class="font-headline font-semibold text-xl text-on-surface">Card Payment</span>
+</div>
+<div class="w-6 h-6 rounded-full border-2 border-outline-variant flex items-center justify-center peer-checked:border-primary peer-checked:bg-primary transition-colors">
+<span class="material-symbols-outlined text-white text-sm opacity-0 peer-checked:opacity-100 transition-opacity" style="font-variation-settings: 'FILL' 1;">check</span>
+</div>
+</div>
+</label>
+</div>
+<!-- Action Button -->
+<div class="mt-auto pt-6">
+<button class="w-full gradient-cta text-on-primary font-headline font-bold text-xl py-5 px-8 rounded-lg flex items-center justify-between hover:opacity-90 transition-opacity shadow-[0_8px_24px_rgba(0,55,39,0.15)] group">
+<span>পেমেন্ট করুন</span>
+<span class="material-symbols-outlined group-hover:translate-x-1 transition-transform">arrow_forward</span>
+</button>
+<p class="text-center font-body text-xs text-on-surface-variant mt-4 flex items-center justify-center gap-1">
+<span class="material-symbols-outlined text-[14px]">lock</span>
+                        নিরাপদ পেমেন্ট গেটওয়ে দ্বারা সুরক্ষিত
+                    </p>
+</div>
+</section>
+</div>
+</main>
+<!-- BottomNavBar and FAB Suppressed as per Semantic Shell Mandate (Transactional Flow) -->
+</body></html>
