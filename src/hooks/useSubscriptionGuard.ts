@@ -35,6 +35,11 @@ export function useSubscriptionGuard(): SubscriptionGuardResult {
       try {
         const sub = await getCurrentSubscription();
         if (cancelled) return;
+        if (!sub) {
+          setHasSubscription(false);
+          setSubscriptionStatus(null);
+          return;
+        }
         const active = ACTIVE_STATUSES.has(sub.status);
         setHasSubscription(active);
         setSubscriptionStatus(sub.status);

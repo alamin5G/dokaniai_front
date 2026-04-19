@@ -60,7 +60,7 @@ async function resolvePostLoginTarget(role: string): Promise<string | null> {
   // Step 2: Check subscription FIRST — /subscriptions/current is excluded from backend interceptor
   try {
     const subscription = await getCurrentSubscription();
-    if (!ACTIVE_SUBSCRIPTION_STATUSES.has(subscription.status)) {
+    if (!subscription || !ACTIVE_SUBSCRIPTION_STATUSES.has(subscription.status)) {
       return "/subscription/upgrade";
     }
   } catch {

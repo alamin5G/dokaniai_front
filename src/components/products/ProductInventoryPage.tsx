@@ -132,6 +132,7 @@ export default function ProductInventoryPage({
                     getAvailablePlans(),
                 ]);
                 if (cancelled) return;
+                if (!subscription) { setCanBulkImport(false); return; }
                 const plan = plans.find((item) => item.id === subscription.planId);
                 const planName = plan?.name?.toUpperCase() ?? "";
                 setCanBulkImport(["PRO", "PLUS", "ENTERPRISE"].includes(planName));

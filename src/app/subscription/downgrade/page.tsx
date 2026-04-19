@@ -58,7 +58,7 @@ function SubscriptionDowngradeContent() {
         }
 
         const activePlans = allPlans.filter((plan) => plan.isActive).sort((a, b) => a.tierLevel - b.tierLevel);
-        const currentPlan = activePlans.find((plan) => plan.id === current.planId) ?? null;
+        const currentPlan = current ? activePlans.find((plan) => plan.id === current.planId) ?? null : null;
         const lowerTierPlans = currentPlan == null
           ? []
           : activePlans.filter((plan) => plan.tierLevel < currentPlan.tierLevel && plan.name !== "ENTERPRISE");

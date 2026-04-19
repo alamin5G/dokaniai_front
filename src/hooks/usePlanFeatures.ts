@@ -95,12 +95,13 @@ export function usePlanFeatures(): PlanFeatures {
 
         async function load() {
             try {
-                const [subscription, plans]: [Subscription, Plan[]] = await Promise.all([
+                const [subscription, plans] = await Promise.all([
                     getCurrentSubscription(),
                     getAvailablePlans(),
                 ]);
 
                 if (cancelled) return;
+                if (!subscription) { setLoaded(true); return; }
 
                 // Find the current plan
                 const currentPlan = plans.find((p) => p.id === subscription.planId);

@@ -1,5 +1,6 @@
 import apiClient from "@/lib/api";
 import { getApiErrorMessage } from "@/lib/apiError";
+import axios from "axios";
 import type {
   AppliedCoupon,
   CouponValidation,
@@ -28,9 +29,16 @@ export async function getAvailablePlans(): Promise<Plan[]> {
   return unwrap(response);
 }
 
-export async function getCurrentSubscription(): Promise<Subscription> {
-  const response = await apiClient.get<ApiSuccess<Subscription>>("/subscriptions/current");
-  return unwrap(response);
+export async function getCurrentSubscription(): Promise<Subscription | null> {
+  try {
+    const response = await apiClient.get<ApiSuccess<Subscription>>("/subscriptions/current");
+    return unwrap(response);
+  } catch (error: unknown) {
+    if (axios.isAxiosError(error) && error.response?.status === 404) {
+      return null;
+    }
+    throw error;
+  }
 }
 
 export async function getPlanLimits(): Promise<PlanLimits> {

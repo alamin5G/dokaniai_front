@@ -128,7 +128,7 @@ export default function DashboardLayout({ children, title, businessId }: Dashboa
       if (!isAuthOnlyRoute) {
         try {
           const sub = await getCurrentSubscription();
-          if (!["ACTIVE", "TRIAL", "GRACE"].includes(sub.status)) {
+          if (!sub || !["ACTIVE", "TRIAL", "GRACE"].includes(sub.status)) {
             clearTimeout(timeoutId);
             router.replace("/subscription/upgrade");
             return;

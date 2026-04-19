@@ -1,6 +1,7 @@
 "use client";
 
 import React from "react";
+import Link from "next/link";
 import { useTranslations } from "next-intl";
 import { LanguageSwitcher } from "@/components/ui/LanguageSwitcher";
 
@@ -18,10 +19,12 @@ export function AuthLayout({ children, heading, subheading }: AuthLayoutProps) {
       {/* Left Side: Editorial Branding */}
       <section className="md:col-span-5 hidden md:flex flex-col space-y-8 pl-8">
         <div className="flex items-center gap-3">
+          <Link href="/" className="flex items-center gap-3 hover:opacity-80 transition-opacity">
           <div className="w-12 h-12 bg-primary-container rounded-[1rem] flex items-center justify-center">
             <span className="material-symbols-outlined text-on-primary-container text-3xl" data-icon="book_2">book_2</span>
           </div>
           <h1 className="text-3xl font-extrabold tracking-tight text-primary font-headline">DokaniAI</h1>
+          </Link>
         </div>
         
         <div className="space-y-4">
@@ -47,8 +50,10 @@ export function AuthLayout({ children, heading, subheading }: AuthLayoutProps) {
       <section className="md:col-span-7 w-full max-w-md mx-auto space-y-6 px-4 z-10 pb-20 md:pb-0">
         {/* Mobile Header Only */}
         <div className="md:hidden flex flex-col items-center mb-8 text-center pt-8">
-          <span className="material-symbols-outlined text-primary text-5xl mb-2" data-icon="auto_stories">auto_stories</span>
-          <h1 className="text-2xl font-black text-primary">DokaniAI</h1>
+          <Link href="/" className="flex flex-col items-center hover:opacity-80 transition-opacity">
+            <span className="material-symbols-outlined text-primary text-5xl mb-2" data-icon="auto_stories">auto_stories</span>
+            <h1 className="text-2xl font-black text-primary">DokaniAI</h1>
+          </Link>
         </div>
         
         {/* Language Switcher */}

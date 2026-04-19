@@ -69,6 +69,7 @@ export default function DataExportPanel() {
                     getExportUsage(),
                 ]);
                 if (cancelled) return;
+                if (!subscription) { setIsPlusOrAbove(false); return; }
                 const plan = plans.find((item) => item.id === subscription.planId);
                 const planName = plan?.name?.toUpperCase() ?? "";
                 setIsPlusOrAbove(["PLUS", "ENTERPRISE"].includes(planName));

@@ -33,7 +33,7 @@ export function SubscriptionGate({ children }: SubscriptionGateProps) {
       try {
         const sub = await getCurrentSubscription();
         if (cancelled) return;
-        if (ACTIVE_STATUSES.includes(sub.status)) {
+        if (sub && ACTIVE_STATUSES.includes(sub.status)) {
           setStatus("allowed");
         } else {
           setStatus("blocked");

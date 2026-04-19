@@ -353,7 +353,7 @@ function OnboardingPageContent() {
     // ---------------------------------------------------------------------------
 
     useEffect(() => {
-        if (!isHydrated || !accessToken || !forceNewBusiness) return;
+        if (!isHydrated || !accessToken) return;
 
         let cancelled = false;
         const checkSubscription = async () => {
@@ -361,16 +361,16 @@ function OnboardingPageContent() {
                 const sub = await getCurrentSubscription();
                 if (cancelled) return;
                 setSubscription(sub);
-                if (!sub || !["ACTIVE", "TRIAL"].includes(sub.status)) {
+                if (!sub || !["ACTIVE", "TRIAL", "GRACE"].includes(sub.status)) {
                     setShowSubscriptionModal(true);
                 }
             } catch {
-                // If we can't fetch subscription, don't block the user
+                setShowSubscriptionModal(true);
             }
         };
         void checkSubscription();
         return () => { cancelled = true; };
-    }, [isHydrated, accessToken, forceNewBusiness]);
+    }, [isHydrated, accessToken]);
 
     // ---------------------------------------------------------------------------
     // Auth guard + hydration
@@ -1681,13 +1681,6 @@ function OnboardingPageContent() {
                                 className="w-full py-3 rounded-xl font-bold text-white bg-primary hover:bg-primary/90 transition-colors"
                             >
                                 {t("subscriptionRequired.viewPlans")}
-                            </button>
-                            <button
-                                type="button"
-                                onClick={() => setShowSubscriptionModal(false)}
-                                className="w-full py-3 rounded-xl font-bold bg-surface-container-high text-on-surface hover:bg-surface-container-highest transition-colors"
-                            >
-                                {t("subscriptionRequired.continueAnyway")}
                             </button>
                         </div>
                     </div>
