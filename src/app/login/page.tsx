@@ -65,7 +65,9 @@ export default function LoginPage() {
 
       let role: string | null = null;
       try {
-        const meResponse = await apiClient.get("/users/me");
+        const meResponse = await apiClient.get("/users/me", {
+          headers: { Authorization: `Bearer ${accessToken}` },
+        });
         role = meResponse.data?.data?.role ?? null;
       } catch {
         role = null;
