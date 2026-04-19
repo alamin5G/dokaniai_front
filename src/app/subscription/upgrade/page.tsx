@@ -17,7 +17,7 @@ import {
 import type { AppliedCoupon, MfsType, Plan, ReferralStatus, Subscription } from "@/types/subscription";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useLocale, useTranslations } from "next-intl";
-import { Suspense, useEffect, useMemo, useState } from "react";
+import { Suspense, useEffect, useMemo, useRef, useState } from "react";
 
 const MFS_OPTIONS: { key: MfsType; labelBn: string; labelEn: string; color: string }[] = [
   { key: "BKASH", labelBn: "বিকাশ", labelEn: "bKash", color: "#E2136E" },
@@ -131,6 +131,15 @@ function SubscriptionUpgradeContent() {
   const selectedPlan = useMemo(() => plans.find((p) => p.id === selectedPlanId) ?? null, [plans, selectedPlanId]);
   const currentPlan = useMemo(() => plans.find((p) => p.id === currentSubscription?.planId) ?? null, [plans, currentSubscription?.planId]);
 
+  useEffect(() => {
+    if (!planScrollRef.current || !selectedPlanId) return;
+    const container = planScrollRef.current;
+    const btn = container.querySelector<HTMLElement>(`[data-plan-id="${selectedPlanId}"]`);
+    if (!btn) return;
+    const scrollLeft = btn.offsetLeft - container.offsetWidth / 2 + btn.offsetWidth / 2;
+    container.scrollTo({ left: scrollLeft, behavior: "smooth" });
+  }, [selectedPlanId, plans]);
+
   const billingCycle = searchParams.get("billing") === "ANNUAL" ? "ANNUAL" as const : "MONTHLY" as const;
   const planPrice = billingCycle === "ANNUAL" && selectedPlan?.annualPriceBdt != null
     ? selectedPlan.annualPriceBdt : selectedPlan?.priceBdt ?? 0;
@@ -174,6 +183,7 @@ function SubscriptionUpgradeContent() {
   const isTrialPlan = selectedPlan?.isTrial === true;
   const isCurrentPlan = selectedPlan != null && selectedPlan.id === currentSubscription?.planId;
   const [showTrialConfirm, setShowTrialConfirm] = useState(false);
+  const planScrollRef = useRef<HTMLDivElement>(null);
 
   const handleCtaClick = () => {
     if (isTrialPlan) {
@@ -258,13 +268,14 @@ function SubscriptionUpgradeContent() {
             </div>
 
             {/* Plan Selector Cards */}
-            <div className="flex gap-3 overflow-x-auto pb-2 snap-x">
+            <div ref={planScrollRef} className="flex gap-3 overflow-x-auto pb-2 snap-x scrollbar-hide">
               {plans.map((plan) => {
                 const isSelected = plan.id === selectedPlanId;
                 const isCurrent = plan.id === currentSubscription?.planId;
                 return (
                   <button
                     key={plan.id}
+                    data-plan-id={plan.id}
                     onClick={() => { setSelectedPlanId(plan.id); setAppliedCoupon(null); }}
                     className={`min-w-[150px] flex-1 p-4 rounded-xl transition-all snap-start cursor-pointer relative overflow-hidden
                       ${isSelected
