@@ -3140,6 +3140,44 @@
       "actExtendTrial": "ট্রায়াল সময়কাল বাড়ান",
       "actResetPassword": "পাসওয়ার্ড রিসেট পাঠান",
       "applyFilters": "ফিল্টার প্রয়োগ করুন"
+    },
+    "referrals": {
+      "title": "রেফারেল প্রোগ্রাম",
+      "subtitle": "গ্রোথ ইঞ্জিন পরিচালনা এবং পর্যবেক্ষণ করুন।",
+      "settings": "সেটিংস",
+      "configTitle": "প্রোগ্রাম কনফিগারেশন",
+      "programActive": "সক্রিয়",
+      "referrerRewardType": "রেফারার রিওয়ার্ড টাইপ",
+      "rewardValue": "রিওয়ার্ড মান",
+      "referredDiscountType": "রেফার্ড ডিসকাউন্ট টাইপ",
+      "monthlyCap": "মাসিক সীমা",
+      "freeDays": "ফ্রি ডেজ",
+      "discountPercent": "ডিসকাউন্ট %",
+      "flatAmount": "ফ্ল্যাট অ্যামাউন্ট",
+      "saveConfig": "কনফিগারেশন সংরক্ষণ",
+      "configSaved": "কনফিগারেশন সফলভাবে সংরক্ষিত হয়েছে।",
+      "configError": "কনফিগারেশন সংরক্ষণ করতে ব্যর্থ।",
+      "totalReferrals": "মোট রেফারেল",
+      "total": "মোট",
+      "conversions": "সফল রূপান্তর",
+      "rate": "হার",
+      "totalPayouts": "মোট পেআউট মূল্য",
+      "recentActivity": "সাম্প্রতিক কার্যকলাপ",
+      "all": "সব",
+      "noEvents": "কোনো রেফারেল ইভেন্ট পাওয়া যায়নি।",
+      "col": {
+        "referrer": "রেফারার",
+        "referred": "রেফার্ড ব্যবহারকারী",
+        "status": "স্ট্যাটাস",
+        "reward": "রিওয়ার্ড",
+        "actions": "ক্রিয়াকলাপ"
+      },
+      "revoke": "বাতিল",
+      "confirmRevoke": "এই রেফারেল রিওয়ার্ড বাতিল করবেন?",
+      "topReferrers": "শীর্ষ রেফারার",
+      "noReferrers": "এখনো কোনো রেফারেল ডেটা নেই।",
+      "referrals": "রেফারেল",
+      "inviteUsers": "নতুন ব্যবহারকারী আমন্ত্রণ"
     }
   }
 }

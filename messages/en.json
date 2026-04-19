@@ -3140,6 +3140,44 @@
       "actExtendTrial": "Extend Trial Period",
       "actResetPassword": "Send Password Reset",
       "applyFilters": "Apply Filters"
+    },
+    "referrals": {
+      "title": "Referral Program",
+      "subtitle": "Manage and monitor the growth engine.",
+      "settings": "Settings",
+      "configTitle": "Program Configuration",
+      "programActive": "Active",
+      "referrerRewardType": "Referrer Reward Type",
+      "rewardValue": "Reward Value",
+      "referredDiscountType": "Referred Discount Type",
+      "monthlyCap": "Monthly Cap",
+      "freeDays": "Free Days",
+      "discountPercent": "Discount %",
+      "flatAmount": "Flat Amount",
+      "saveConfig": "Save Configuration",
+      "configSaved": "Configuration saved successfully.",
+      "configError": "Failed to save configuration.",
+      "totalReferrals": "Total Referrals",
+      "total": "total",
+      "conversions": "Successful Conversions",
+      "rate": "rate",
+      "totalPayouts": "Total Payouts Value",
+      "recentActivity": "Recent Activity",
+      "all": "ALL",
+      "noEvents": "No referral events found.",
+      "col": {
+        "referrer": "Referrer",
+        "referred": "Referred User",
+        "status": "Status",
+        "reward": "Reward",
+        "actions": "Actions"
+      },
+      "revoke": "Revoke",
+      "confirmRevoke": "Revoke this referral reward?",
+      "topReferrers": "Top Referrers",
+      "noReferrers": "No referral data yet.",
+      "referrals": "referrals",
+      "inviteUsers": "Invite New Users"
     }
   }
 }
