@@ -35,13 +35,18 @@ export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [errorText, setErrorText] = useState("");
+  const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
 
   const handleLoginSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setFieldErrors({});
     setErrorText("");
 
-    if (!identifier || !password) {
-      setErrorText(t("errorEmptyFields"));
+    const localErrors: Record<string, string> = {};
+    if (!identifier.trim()) localErrors.identifier = t("errorIdentifierRequired");
+    if (!password) localErrors.password = t("errorPasswordRequired");
+    if (Object.keys(localErrors).length > 0) {
+      setFieldErrors(localErrors);
       return;
     }
 
@@ -152,7 +157,8 @@ export default function LoginPage() {
           type="text"
           placeholder={t("identifierPlaceholder")}
           value={identifier}
-          onChange={(e) => setIdentifier(e.target.value)}
+          onChange={(e) => { setIdentifier(e.target.value); setFieldErrors((p) => { const n = {...p}; delete n.identifier; return n; }); }}
+          error={fieldErrors.identifier}
         />
 
         <div className="space-y-1">
@@ -171,7 +177,7 @@ export default function LoginPage() {
               className="w-full bg-surface-container-low border-2 border-transparent focus:border-primary/20 focus:bg-surface-container-lowest rounded-xl py-3.5 pl-12 pr-12 text-on-surface placeholder:text-on-surface-variant/40 font-medium transition-all shadow-sm group-focus-within:shadow-md outline-none"
               placeholder={t("passwordPlaceholder")}
               value={password}
-              onChange={(e) => setPassword(e.target.value)}
+              onChange={(e) => { setPassword(e.target.value); setFieldErrors((p) => { const n = {...p}; delete n.password; return n; }); }}
             />
             <button
               type="button"
@@ -183,6 +189,7 @@ export default function LoginPage() {
               <span className="material-symbols-outlined text-xl">{showPassword ? "visibility_off" : "visibility"}</span>
             </button>
           </div>
+          {fieldErrors.password && <p className="text-sm text-error ml-1 font-semibold">{fieldErrors.password}</p>}
         </div>
 
         {errorText && <p className="text-error text-sm font-semibold text-center">{errorText}</p>}

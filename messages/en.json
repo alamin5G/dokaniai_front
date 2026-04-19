@@ -23,6 +23,8 @@
       "submit": "Login",
       "errorEmptyFields": "Please enter your ID and password",
       "errorInvalid": "Invalid login credentials",
+      "errorIdentifierRequired": "Please enter your mobile number or email",
+      "errorPasswordRequired": "Please enter your password",
       "newAccount": "Want to create a new account?",
       "registerHere": "Click here",
       "emailNotVerified": "Email is not verified. Please verify your email first.",

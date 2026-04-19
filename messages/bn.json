@@ -23,6 +23,8 @@
       "submit": "লগইন করুন",
       "errorEmptyFields": "অনুগ্রহ করে আপনার আইডি এবং পাসওয়ার্ড দিন",
       "errorInvalid": "লগইন তথ্য ভুল হয়েছে",
+      "errorIdentifierRequired": "মোবাইল নম্বর বা ইমেইল দিন",
+      "errorPasswordRequired": "পাসওয়ার্ড দিন",
       "newAccount": "নতুন অ্যাকাউন্ট খুলতে চান?",
       "registerHere": "এখানে ক্লিক করুন",
       "emailNotVerified": "ইমেইল যাচাই হয়নি। অনুগ্রহ করে প্রথমে ইমেইল যাচাই করুন।",
