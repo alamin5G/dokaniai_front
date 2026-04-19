@@ -55,6 +55,11 @@
       "errorInvalidReferral": "রেফারেল কোডটি সঠিক নয়। দয়া করে পরীক্ষা করে আবার দিন।",
       "errorPhoneExists": "এই মোবাইল নম্বরে ইতিমধ্যেই একটি অ্যাকাউন্ট আছে।",
       "errorEmailExists": "এই ইমেইলে ইতিমধ্যেই একটি অ্যাকাউন্ট আছে।",
+      "errorNameRequired": "নাম দিতে হবে",
+      "errorPhoneRequired": "মোবাইল নম্বর দিতে হবে",
+      "errorEmailRequired": "ইমেইল দিতে হবে",
+      "errorPasswordRequired": "পাসওয়ার্ড দিতে হবে",
+      "errorRateLimited": "অনেকবার চেষ্টা করেছেন। কিছুক্ষণ পর আবার চেষ্টা করুন।",
       "alreadyHaveAccount": "ইতিমধ্যেই অ্যাকাউন্ট আছে?",
       "loginHere": "লগইন করুন"
     },

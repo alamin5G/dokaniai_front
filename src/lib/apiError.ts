@@ -120,19 +120,59 @@ export function getApiErrorMessage(error: unknown, fallbackMessage: string): str
 
 /**
  * Extract field-specific validation errors from API response.
+ * Handles two formats:
+ *  - `{ errors: [{ field, message }] }` — Spring Boot @Valid
+ *  - `{ error: { code, message, details: ["field: msg", ...] } }` — DokaniAI VALIDATION_ERROR
  * Returns a map of { fieldName: errorMessage }.
  */
 export function getApiFieldErrors(error: unknown): Record<string, string> {
   if (!axios.isAxiosError<ApiResponseBody>(error)) return {};
 
   const resData = error.response?.data;
-  if (!resData?.errors || !Array.isArray(resData.errors)) return {};
+  if (!resData) return {};
 
   const fieldErrors: Record<string, string> = {};
-  for (const e of resData.errors) {
-    if (e.field && (e.message || e.defaultMessage)) {
-      fieldErrors[e.field] = e.message || e.defaultMessage || "";
+
+  // Spring Boot @Valid format: { errors: [{ field, message }] }
+  if (resData.errors && Array.isArray(resData.errors)) {
+    for (const e of resData.errors) {
+      if (e.field && (e.message || e.defaultMessage)) {
+        fieldErrors[e.field] = e.message || e.defaultMessage || "";
+      }
     }
   }
+
+  // DokaniAI VALIDATION_ERROR format: { error: { details: ["field: message", ...] } }
+  if (resData.error && typeof resData.error === "object" && !Array.isArray(resData.error)) {
+    const details = resData.error.details;
+    if (Array.isArray(details)) {
+      for (const entry of details) {
+        if (typeof entry === "string") {
+          const colonIdx = entry.indexOf(": ");
+          if (colonIdx > 0) {
+            const field = entry.substring(0, colonIdx).trim();
+            const msg = entry.substring(colonIdx + 2).trim();
+            if (field && msg && !fieldErrors[field]) {
+              fieldErrors[field] = msg;
+            }
+          }
+        }
+      }
+    }
+  }
+
   return fieldErrors;
+}
+
+/**
+ * Extract the error code from the API response.
+ * Returns null if not found.
+ */
+export function getApiErrorCode(error: unknown): string | null {
+  if (!axios.isAxiosError<ApiResponseBody>(error)) return null;
+  const resData = error.response?.data;
+  if (resData?.error && typeof resData.error === "object" && !Array.isArray(resData.error)) {
+    return resData.error.code ?? null;
+  }
+  return null;
 }

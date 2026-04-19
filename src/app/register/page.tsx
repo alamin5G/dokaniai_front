@@ -4,7 +4,7 @@ import { AuthLayout } from "@/components/layout/AuthLayout";
 import { FormInput, GradientButton } from "@/components/ui/FormPrimitives";
 import { useRedirectIfAuthenticated } from "@/hooks/useAuthRedirect";
 import apiClient from "@/lib/api";
-import { getApiErrorMessage } from "@/lib/apiError";
+import { getApiErrorCode, getApiFieldErrors } from "@/lib/apiError";
 import { setAuthContact } from "@/lib/authFlow";
 import { useTranslations } from "next-intl";
 import Link from "next/link";
@@ -25,14 +25,30 @@ export default function RegisterPage() {
   const [agreed, setAgreed] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [errorText, setErrorText] = useState("");
+  const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setFieldErrors({});
+    setErrorText("");
+
+    const localErrors: Record<string, string> = {};
+    if (!fullName.trim()) localErrors.name = t("errorNameRequired");
+    if (!phone.trim()) localErrors.phone = t("errorPhoneRequired");
+    if (tab === "email") {
+      if (!email.trim()) localErrors.email = t("errorEmailRequired");
+      if (!password) localErrors.password = t("errorPasswordRequired");
+    }
+    if (Object.keys(localErrors).length > 0) {
+      setFieldErrors(localErrors);
+      return;
+    }
+
     if (!agreed) {
       setErrorText(t("errorAgree"));
       return;
     }
-    setErrorText("");
+
     setIsLoading(true);
 
     try {
@@ -61,13 +77,19 @@ export default function RegisterPage() {
         router.push("/verify-email");
       }
     } catch (error: unknown) {
-      const rawMsg = getApiErrorMessage(error, t("errorGeneric")).toLowerCase();
-      if (rawMsg.includes("referral")) {
-        setErrorText(t("errorInvalidReferral"));
-      } else if (rawMsg.includes("phone") || rawMsg.includes("already exists")) {
+      const fields = getApiFieldErrors(error);
+      if (Object.keys(fields).length > 0) {
+        setFieldErrors(fields);
+        return;
+      }
+
+      const code = getApiErrorCode(error);
+      if (code === "DUPLICATE_ENTRY") {
         setErrorText(t("errorPhoneExists"));
-      } else if (rawMsg.includes("email")) {
-        setErrorText(t("errorEmailExists"));
+      } else if (code === "VALIDATION_ERROR") {
+        setErrorText(t("errorGeneric"));
+      } else if (code === "RATE_LIMIT_EXCEEDED") {
+        setErrorText(t("errorRateLimited"));
       } else {
         setErrorText(t("errorGeneric"));
       }
@@ -89,7 +111,7 @@ export default function RegisterPage() {
       <div className="flex gap-2 p-1.5 bg-surface-container rounded-full mb-8 w-fit mx-auto md:mx-0">
         <button
           type="button"
-          onClick={() => setTab("phone")}
+          onClick={() => { setTab("phone"); setFieldErrors({}); setErrorText(""); }}
           className={`px-6 py-2.5 rounded-full font-bold shadow-sm text-sm transition-colors ${tab === "phone" ? "bg-surface-container-lowest text-primary" : "text-on-surface-variant hover:bg-surface-container-high"
             }`}
         >
@@ -97,7 +119,7 @@ export default function RegisterPage() {
         </button>
         <button
           type="button"
-          onClick={() => setTab("email")}
+          onClick={() => { setTab("email"); setFieldErrors({}); setErrorText(""); }}
           className={`px-6 py-2.5 rounded-full font-bold shadow-sm text-sm transition-colors ${tab === "email" ? "bg-surface-container-lowest text-primary" : "text-on-surface-variant hover:bg-surface-container-high"
             }`}
         >
@@ -112,7 +134,8 @@ export default function RegisterPage() {
           placeholder={t("fullNamePlaceholder")}
           icon="badge"
           value={fullName}
-          onChange={(e) => setFullName(e.target.value)}
+          onChange={(e) => { setFullName(e.target.value); setFieldErrors((p) => { const n = {...p}; delete n.name; return n; }); }}
+          error={fieldErrors.name}
         />
 
         {tab === "phone" ? (
@@ -123,7 +146,8 @@ export default function RegisterPage() {
             placeholder={t("phonePlaceholder")}
             icon="call"
             value={phone}
-            onChange={(e) => setPhone(e.target.value)}
+            onChange={(e) => { setPhone(e.target.value); setFieldErrors((p) => { const n = {...p}; delete n.phone; return n; }); }}
+            error={fieldErrors.phone}
           />
         ) : (
           <>
@@ -133,7 +157,8 @@ export default function RegisterPage() {
               placeholder={t("emailPlaceholder")}
               icon="email"
               value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              onChange={(e) => { setEmail(e.target.value); setFieldErrors((p) => { const n = {...p}; delete n.email; return n; }); }}
+              error={fieldErrors.email}
             />
             <FormInput
               label={t("phoneLabel")}
@@ -141,7 +166,8 @@ export default function RegisterPage() {
               placeholder={t("phonePlaceholder")}
               icon="call"
               value={phone}
-              onChange={(e) => setPhone(e.target.value)}
+              onChange={(e) => { setPhone(e.target.value); setFieldErrors((p) => { const n = {...p}; delete n.phone; return n; }); }}
+              error={fieldErrors.phone}
             />
           </>
         )}
@@ -152,7 +178,8 @@ export default function RegisterPage() {
           placeholder={t("referralCodePlaceholder")}
           icon="card_giftcard"
           value={referralCode}
-          onChange={(e) => setReferralCode(e.target.value)}
+          onChange={(e) => { setReferralCode(e.target.value); setFieldErrors((p) => { const n = {...p}; delete n.referralCode; return n; }); }}
+          error={fieldErrors.referralCode}
         />
 
         {tab === "email" && (
@@ -162,7 +189,8 @@ export default function RegisterPage() {
             placeholder={t("passwordPlaceholder")}
             icon="lock"
             value={password}
-            onChange={(e) => setPassword(e.target.value)}
+            onChange={(e) => { setPassword(e.target.value); setFieldErrors((p) => { const n = {...p}; delete n.password; return n; }); }}
+            error={fieldErrors.password}
           />
         )}
 

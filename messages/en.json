@@ -55,6 +55,11 @@
       "errorInvalidReferral": "Invalid referral code. Please check and try again.",
       "errorPhoneExists": "An account with this phone number already exists.",
       "errorEmailExists": "An account with this email already exists.",
+      "errorNameRequired": "Name is required",
+      "errorPhoneRequired": "Phone number is required",
+      "errorEmailRequired": "Email is required",
+      "errorPasswordRequired": "Password is required",
+      "errorRateLimited": "Too many attempts. Please try again later.",
       "alreadyHaveAccount": "Already have an account?",
       "loginHere": "Login"
     },
