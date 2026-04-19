@@ -66,3 +66,45 @@ export interface CategoryRequestDecisionPayload {
   suggestedCategoryId?: string;
   rejectionReason?: string;
 }
+
+export interface CategoryRequestStats {
+  pending: number;
+  approvedGlobal: number;
+  approvedBusiness: number;
+  rejected: number;
+  underReview: number;
+  cancelled: number;
+  duplicateSuggested: number;
+}
+
+export interface CategoryRequestDecisionResult {
+  approved: boolean;
+  createdCategoryId: string | null;
+  message: string;
+}
+
+export interface CategorySuggestion {
+  id: string;
+  nameBn: string;
+  nameEn: string | null;
+  scope: 'GLOBAL' | 'BUSINESS';
+  businessId: string | null;
+}
+
+export interface CategoryRequestSubmitResult {
+  success: boolean;
+  message: string;
+  status: CategoryRequestStatus;
+  requestId: string | null;
+  similarCategories: CategorySuggestion[] | null;
+  exactMatch: CategorySuggestion | null;
+}
+
+export interface CategoryRequestCreatePayload {
+  nameBn: string;
+  nameEn?: string;
+  parentId?: string;
+  description?: string;
+  justification?: string;
+  requestedScope?: 'GLOBAL' | 'BUSINESS';
+}

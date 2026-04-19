@@ -61,9 +61,9 @@ export default function CategoryRequestsTab() {
     const loadRequests = useCallback(async () => {
         setLoading(true);
         try {
-            const data = await getPendingCategoryRequests(page, 20);
-            setRequests(data);
-            setHasMore(data.length === 20);
+            const { content, totalPages } = await getPendingCategoryRequests(page, 20);
+            setRequests(content);
+            setHasMore(page + 1 < totalPages);
         } catch {
             setError(t("messages.loadError"));
         } finally {

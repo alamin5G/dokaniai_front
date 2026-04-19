@@ -430,6 +430,7 @@ export default function ProductInventoryPage({
                                 setSelectedCategoryId(categoryId);
                                 setPage(0);
                             }}
+                            businessId={businessId}
                             page={page}
                             totalPages={totalPages}
                             totalElements={totalElements}

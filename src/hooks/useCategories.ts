@@ -1,32 +1,64 @@
-/**
- * Category data hooks — SWR-backed with shared cache
- */
-
 import useSWR from "swr";
 import type { CategoryResponse } from "@/types/category";
-import { getCategoriesByBusinessType } from "@/lib/categoryApi";
+import type { CategoryRequestStats } from "@/types/categoryRequest";
+import {
+  getCategoriesByBusinessType,
+  getCategoryTree,
+  getCategoryRequestStats,
+} from "@/lib/categoryApi";
 import { swrKeys } from "@/lib/swrKeys";
 
-// ─── Fetchers ─────────────────────────────────────────────
-
 async function fetchCategoriesByType(key: string): Promise<CategoryResponse[]> {
-    // key = "/categories/by-business-type/{type}"
-    const businessType = key.split("/").pop();
-    if (!businessType) throw new Error("Invalid category key");
-    return getCategoriesByBusinessType(decodeURIComponent(businessType));
+  const businessType = key.split("/").pop();
+  if (!businessType) throw new Error("Invalid category key");
+  return getCategoriesByBusinessType(decodeURIComponent(businessType));
 }
 
-// ─── Hooks ────────────────────────────────────────────────
+async function fetchCategoryTree(key: string): Promise<CategoryResponse[]> {
+  const url = new URL(key, "http://dummy");
+  const bt = url.searchParams.get("businessType");
+  return getCategoryTree(bt ?? undefined);
+}
 
-/** Categories for a given business type */
+async function fetchCategoryRequestStats(): Promise<CategoryRequestStats> {
+  return getCategoryRequestStats();
+}
+
 export function useCategoriesByBusinessType(businessType: string | null | undefined) {
-    const key = businessType ? swrKeys.categoriesByBusinessType(businessType) : null;
-    const { data, error, isLoading, mutate } = useSWR(key, fetchCategoriesByType);
+  const key = businessType ? swrKeys.categoriesByBusinessType(businessType) : null;
+  const { data, error, isLoading, mutate } = useSWR(key, fetchCategoriesByType);
 
-    return {
-        categories: data ?? [],
-        isLoading,
-        error,
-        mutate,
-    };
+  return {
+    categories: data ?? [],
+    isLoading,
+    error,
+    mutate,
+  };
+}
+
+export function useCategoryTree(businessType?: string) {
+  const key = swrKeys.categoryTree(businessType);
+  const { data, error, isLoading, mutate } = useSWR(key, fetchCategoryTree);
+
+  return {
+    tree: data ?? [],
+    isLoading,
+    error,
+    mutate,
+  };
+}
+
+export function useCategoryRequestStats() {
+  const { data, error, isLoading, mutate } = useSWR(
+    swrKeys.categoryRequestStats,
+    fetchCategoryRequestStats,
+    { refreshInterval: 30000 },
+  );
+
+  return {
+    stats: data ?? null,
+    isLoading,
+    error,
+    mutate,
+  };
 }

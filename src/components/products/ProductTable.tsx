@@ -1,9 +1,11 @@
 "use client";
 
+import { useState } from "react";
 import { useLocale, useTranslations } from "next-intl";
-// eslint-disable-next-line @typescript-eslint/no-unused-vars -- used in inline component type
 import type { CategoryResponse } from "@/types/category";
 import type { Product, ProductStatus } from "@/types/product";
+import CategoryRequestSheet from "@/components/categories/CategoryRequestSheet";
+import CategoryRequestStatusSheet from "@/components/categories/CategoryRequestStatusSheet";
 
 interface ProductTableProps {
     products: Product[];
@@ -15,6 +17,7 @@ interface ProductTableProps {
     categories: CategoryResponse[];
     selectedCategoryId: string | null;
     onCategorySelect: (categoryId: string | null) => void;
+    businessId: string;
     page: number;
     totalPages: number;
     totalElements: number;
@@ -50,6 +53,7 @@ export default function ProductTable({
     categories,
     selectedCategoryId,
     onCategorySelect,
+    businessId,
     page,
     totalPages,
     totalElements,
@@ -171,6 +175,7 @@ export default function ProductTable({
                     onSelect={onCategorySelect}
                     isBn={isBn}
                     t={t}
+                    businessId={businessId}
                 />
             </div>
 
@@ -334,6 +339,7 @@ function CategoryFilterChipsInline({
     onSelect,
     isBn,
     t,
+    businessId,
 }: {
     categories: CategoryResponse[];
     selectedCategoryId: string | null;
@@ -341,7 +347,12 @@ function CategoryFilterChipsInline({
     isBn: boolean;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     t: any;
+    businessId: string;
 }) {
+    const ct = useTranslations("shop.categoryRequest");
+    const [showRequestSheet, setShowRequestSheet] = useState(false);
+    const [showStatusSheet, setShowStatusSheet] = useState(false);
+
     const topLevelCategories = categories.filter((c) => c.parentId === null);
     if (topLevelCategories.length === 0) return null;
 
@@ -350,33 +361,65 @@ function CategoryFilterChipsInline({
     }
 
     return (
-        <div className="flex items-center gap-2 overflow-x-auto pb-1 scrollbar-hide">
-            <button
-                type="button"
-                onClick={() => onSelect(null)}
-                className={`shrink-0 rounded-full px-4 py-2 text-sm font-semibold transition ${selectedCategoryId === null
-                    ? "bg-primary text-white"
-                    : "bg-surface text-on-surface hover:bg-surface-container-high"
-                    }`}
-            >
-                {t("filter.allCategories")}
-            </button>
-            {topLevelCategories.map((cat) => (
+        <>
+            <div className="flex items-center gap-2 overflow-x-auto pb-1 scrollbar-hide">
                 <button
-                    key={cat.id}
                     type="button"
-                    onClick={() =>
-                        onSelect(selectedCategoryId === cat.id ? null : cat.id)
-                    }
-                    className={`shrink-0 rounded-full px-4 py-2 text-sm font-semibold transition ${selectedCategoryId === cat.id
+                    onClick={() => onSelect(null)}
+                    className={`shrink-0 rounded-full px-4 py-2 text-sm font-semibold transition ${selectedCategoryId === null
                         ? "bg-primary text-white"
                         : "bg-surface text-on-surface hover:bg-surface-container-high"
-                        }`}
+                    }`}
                 >
-                    {getName(cat)}
+                    {t("filter.allCategories")}
                 </button>
-            ))}
-        </div>
+                {topLevelCategories.map((cat) => (
+                    <button
+                        key={cat.id}
+                        type="button"
+                        onClick={() =>
+                            onSelect(selectedCategoryId === cat.id ? null : cat.id)
+                        }
+                        className={`shrink-0 rounded-full px-4 py-2 text-sm font-semibold transition ${selectedCategoryId === cat.id
+                            ? "bg-primary text-white"
+                            : "bg-surface text-on-surface hover:bg-surface-container-high"
+                        }`}
+                    >
+                        {getName(cat)}
+                    </button>
+                ))}
+                <button
+                    type="button"
+                    onClick={() => setShowStatusSheet(true)}
+                    className="shrink-0 rounded-full px-3 py-2 text-xs font-semibold bg-surface-container-low text-on-surface-variant hover:bg-surface-container transition-colors flex items-center gap-1"
+                >
+                    <span className="material-symbols-outlined text-[14px]">receipt_long</span>
+                    {ct("myRequests")}
+                </button>
+                <button
+                    type="button"
+                    onClick={() => setShowRequestSheet(true)}
+                    className="shrink-0 rounded-full px-3 py-2 text-xs font-semibold bg-primary/10 text-primary hover:bg-primary/20 transition-colors flex items-center gap-1"
+                >
+                    <span className="material-symbols-outlined text-[14px]">add</span>
+                    {ct("requestCategory")}
+                </button>
+            </div>
+
+            {showRequestSheet && (
+                <CategoryRequestSheet
+                    businessId={businessId}
+                    categories={categories}
+                    onClose={() => setShowRequestSheet(false)}
+                />
+            )}
+            {showStatusSheet && (
+                <CategoryRequestStatusSheet
+                    businessId={businessId}
+                    onClose={() => setShowStatusSheet(false)}
+                />
+            )}
+        </>
     );
 }
 

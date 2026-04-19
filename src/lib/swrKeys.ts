@@ -74,6 +74,13 @@ export const swrKeys = {
     // Categories
     categoriesByBusinessType: (businessType: string) =>
         `/categories/by-business-type/${encodeURIComponent(businessType)}`,
+    categoryTree: (businessType?: string) =>
+        `/categories/tree${businessType ? `?businessType=${encodeURIComponent(businessType)}` : ''}`,
+    categoryRequestStats: '/category-requests/stats',
+    categoryRequestsByStatus: (status: string, page: number) =>
+        `/category-requests/status/${status}?page=${page}`,
+    categoryRequestsPending: (page: number) =>
+        `/category-requests/pending?page=${page}`,
 
     // Business
     businessStats: (businessId: string) =>
