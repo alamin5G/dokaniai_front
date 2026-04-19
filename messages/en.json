@@ -191,6 +191,7 @@
       "heroDescription": "A digital ledger that grows with you. From simple tracking to AI-powered insights — everything in one place.",
       "bestChoice": "Best Choice",
       "enterpriseDescription": "Customized solutions tailored to your organization's needs. Dedicated manager and on-premise data hosting.",
+      "ft2OfferNote": "Exclusive offer for FT1 users — activated via notification only.",
       "monthly": "Monthly",
       "annual": "Annual",
       "savePercent": "Save {percent}%",
@@ -1026,7 +1027,8 @@
       "unavailable": "Plans are currently unavailable. Please try again later.",
       "contactUs": "Contact Us",
       "enterpriseEmail": "support@dokaniai.com",
-      "enterpriseEmailSubject": "Enterprise Plan Inquiry"
+      "enterpriseEmailSubject": "Enterprise Plan Inquiry",
+      "offerOnly": "Offer Only"
     },
     "upgrade": {
       "title": "Subscription Upgrade",

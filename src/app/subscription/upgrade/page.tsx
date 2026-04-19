@@ -102,7 +102,7 @@ function SubscriptionUpgradeContent() {
         if (cancelled) return;
         const hasSubscription = current != null && ["ACTIVE", "TRIAL", "GRACE"].includes(current.status);
         const activePlans = allPlans
-          .filter((p) => p.isActive && !p.customPricing && (hasSubscription ? !p.isTrial : true))
+          .filter((p) => p.isActive && !p.customPricing && p.tierLevel !== 1 && (hasSubscription ? !p.isTrial : true))
           .sort((a, b) => a.tierLevel - b.tierLevel);
         setPlans(activePlans);
         setCurrentSubscription(current);

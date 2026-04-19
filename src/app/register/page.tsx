@@ -4,7 +4,7 @@ import { AuthLayout } from "@/components/layout/AuthLayout";
 import { FormInput, GradientButton } from "@/components/ui/FormPrimitives";
 import { useRedirectIfAuthenticated } from "@/hooks/useAuthRedirect";
 import apiClient from "@/lib/api";
-import { getApiErrorCode, getApiFieldErrors } from "@/lib/apiError";
+import { getApiErrorCode, getApiErrorMessage, getApiFieldErrors } from "@/lib/apiError";
 import { setAuthContact } from "@/lib/authFlow";
 import { useTranslations } from "next-intl";
 import Link from "next/link";
@@ -86,10 +86,19 @@ export default function RegisterPage() {
       const code = getApiErrorCode(error);
       if (code === "DUPLICATE_ENTRY") {
         setErrorText(t("errorPhoneExists"));
-      } else if (code === "VALIDATION_ERROR") {
-        setErrorText(t("errorGeneric"));
       } else if (code === "RATE_LIMIT_EXCEEDED") {
         setErrorText(t("errorRateLimited"));
+      } else if (code === "BAD_REQUEST") {
+        const msg = getApiErrorMessage(error, "").toLowerCase();
+        if (msg.includes("referral") || msg.includes("রেফারেল")) {
+          setErrorText(t("errorInvalidReferral"));
+        } else if (msg.includes("phone") || msg.includes("already") || msg.includes("registered")) {
+          setErrorText(t("errorPhoneExists"));
+        } else if (msg.includes("email")) {
+          setErrorText(t("errorEmailExists"));
+        } else {
+          setErrorText(t("errorGeneric"));
+        }
       } else {
         setErrorText(t("errorGeneric"));
       }

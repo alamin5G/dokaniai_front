@@ -39,13 +39,21 @@ function hasFeature(plan: Plan, featureKey: string): boolean {
   return keys.some((key) => featureMap[key] === true);
 }
 
-type PlanAction = "LOGIN" | "CURRENT" | "UPGRADE" | "DOWNGRADE";
+type PlanAction = "LOGIN" | "CURRENT" | "UPGRADE" | "DOWNGRADE" | "OFFER_ONLY";
 
 function isEnterprisePlan(plan: Plan): boolean {
   return plan.customPricing === true || plan.name === "ENTERPRISE";
 }
 
+function isFt2Plan(plan: Plan): boolean {
+  return plan.name === "FREE_TRIAL_2" || plan.tierLevel === 1;
+}
+
 function resolvePlanAction(currentPlan: Plan | null, targetPlan: Plan, isAuthenticated: boolean): PlanAction {
+  if (isFt2Plan(targetPlan)) {
+    return "OFFER_ONLY";
+  }
+
   if (!isAuthenticated) {
     return "LOGIN";
   }
@@ -105,6 +113,7 @@ function actionLabel(plan: Plan, action: PlanAction, isAuthenticated: boolean, s
     return s("pricing.contactUs");
   }
 
+  if (action === "OFFER_ONLY") return s("pricing.offerOnly");
   if (!isAuthenticated) {
     return plan.isTrial ? s("pricing.startTrial") : s("pricing.buyNow");
   }
@@ -337,7 +346,7 @@ export function PricingSection() {
             const isHighlighted = plan.highlight === true;
             const isEnterprise = isEnterprisePlan(plan);
             const action = resolvePlanAction(currentPlan, plan, isAuthenticated);
-            const isDisabled = action === "CURRENT";
+            const isDisabled = action === "CURRENT" || action === "OFFER_ONLY";
             const annualDiscount = calcAnnualDiscountPercent(plan);
 
             // Bento layout offsets
@@ -383,9 +392,16 @@ export function PricingSection() {
                   </span>
 
                   {/* Plan Name */}
-                  <h3 className={`text-3xl font-bold font-headline mb-6 ${isHighlighted ? "text-white" : ""}`}>
+                  <h3 className={`text-3xl font-bold font-headline mb-1 ${isHighlighted ? "text-white" : ""}`}>
                     {plan.displayNameBn}
                   </h3>
+
+                  {/* FT2 offer note */}
+                  {isFt2Plan(plan) && (
+                    <p className={`text-xs mb-5 ${isHighlighted ? "text-white/60" : "text-on-surface-variant"}`}>
+                      {t("ft2OfferNote")}
+                    </p>
+                  )}
 
                   {/* Price */}
                   <div className="mb-8">
@@ -443,9 +459,13 @@ export function PricingSection() {
                   disabled={isDisabled}
                   onClick={() => handlePlanAction(plan, action)}
                   className={`mt-12 w-full py-4 rounded-lg font-bold transition-all text-center ${isDisabled
-                    ? isHighlighted
-                      ? "bg-white/20 text-white/60 cursor-not-allowed"
-                      : "bg-surface-container-high text-on-surface-variant cursor-not-allowed"
+                    ? action === "OFFER_ONLY"
+                      ? isHighlighted
+                        ? "bg-white/15 text-white/50 cursor-not-allowed border border-dashed border-white/30"
+                        : "bg-surface-container text-on-surface-variant/50 cursor-not-allowed border border-dashed border-outline-variant"
+                      : isHighlighted
+                        ? "bg-white/20 text-white/60 cursor-not-allowed"
+                        : "bg-surface-container-high text-on-surface-variant cursor-not-allowed"
                     : isHighlighted
                       ? "bg-white text-primary hover:shadow-lg active:scale-95"
                       : isEnterprise
@@ -496,15 +516,15 @@ export function PricingSection() {
                         <button
                           type="button"
                           onClick={() => handlePlanAction(plan, action)}
-                          disabled={action === "CURRENT"}
-                          className={`inline-flex items-center justify-center rounded-full px-3 py-1.5 text-xs font-semibold transition-colors ${action === "CURRENT"
+                          disabled={action === "CURRENT" || action === "OFFER_ONLY"}
+                          className={`inline-flex items-center justify-center rounded-full px-3 py-1.5 text-xs font-semibold transition-colors ${action === "CURRENT" || action === "OFFER_ONLY"
                             ? "bg-surface-container-high text-on-surface-variant cursor-not-allowed"
                             : isEnterprisePlan(plan)
                               ? "bg-secondary text-on-secondary"
                               : "bg-primary/10 text-primary hover:bg-primary/15"
                             }`}
                         >
-                          {action === "CURRENT" ? `${s("pricing.currentPlan")} ✓` : actionLabel(plan, action, isAuthenticated, s)}
+                          {action === "CURRENT" ? `${s("pricing.currentPlan")} ✓` : action === "OFFER_ONLY" ? s("pricing.offerOnly") : actionLabel(plan, action, isAuthenticated, s)}
                         </button>
                       </td>
                     </tr>
