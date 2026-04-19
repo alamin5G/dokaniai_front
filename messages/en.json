@@ -2655,7 +2655,8 @@
         "totalCoupons": "Total Coupons",
         "activeCoupons": "Active",
         "totalRedemptions": "Total Redemptions",
-        "totalDiscount": "Total Discount Given"
+        "totalDiscount": "Total Discount Given",
+        "title": "Quick Stats"
       },
       "table": {
         "code": "Code",
@@ -2903,15 +2904,18 @@
       "activeCampaigns": "Active Campaigns",
       "recentRedemptions": "Recent Redemptions",
       "noRedemptions": "No redemptions yet.",
-      "card.value": "Value",
-      "card.limit": "Limit",
-      "card.usage": "Usage",
-      "card.edit": "Edit",
-      "card.deactivate": "Deactivate",
-      "card.activate": "Activate",
-      "redemption.code": "Coupon",
-      "redemption.time": "Time",
-      "stats.title": "Quick Stats"
+      "card": {
+        "value": "Value",
+        "limit": "Limit",
+        "usage": "Usage",
+        "edit": "Edit",
+        "deactivate": "Deactivate",
+        "activate": "Activate"
+      },
+      "redemption": {
+        "code": "Coupon",
+        "time": "Time"
+      }
     },
     "referralConfig": {
       "title": "Referral Program",

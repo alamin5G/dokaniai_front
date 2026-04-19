@@ -2655,7 +2655,8 @@
         "totalCoupons": "মোট কুপন",
         "activeCoupons": "সক্রিয়",
         "totalRedemptions": "মোট রিডিম্পশন",
-        "totalDiscount": "মোট ডিসকাউন্ট প্রদান (৳)"
+        "totalDiscount": "মোট ডিসকাউন্ট প্রদান (৳)",
+        "title": "দ্রুত পরিসংখ্যান"
       },
       "table": {
         "code": "কোড",
@@ -2903,15 +2904,18 @@
       "activeCampaigns": "সক্রিয় ক্যাম্পেইন",
       "recentRedemptions": "সাম্প্রতিক রিডেম্পশন",
       "noRedemptions": "এখনো কোনো রিডেম্পশন হয়নি।",
-      "card.value": "মান",
-      "card.limit": "সীমা",
-      "card.usage": "ব্যবহার",
-      "card.edit": "সম্পাদনা",
-      "card.deactivate": "নিষ্ক্রিয়",
-      "card.activate": "সক্রিয়",
-      "redemption.code": "কুপন",
-      "redemption.time": "সময়",
-      "stats.title": "দ্রুত পরিসংখ্যান"
+      "card": {
+        "value": "মান",
+        "limit": "সীমা",
+        "usage": "ব্যবহার",
+        "edit": "সম্পাদনা",
+        "deactivate": "নিষ্ক্রিয়",
+        "activate": "সক্রিয়"
+      },
+      "redemption": {
+        "code": "কুপন",
+        "time": "সময়"
+      }
     },
     "referralConfig": {
       "title": "রেফারেল প্রোগ্রাম",

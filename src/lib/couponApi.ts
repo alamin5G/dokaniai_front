@@ -1,6 +1,6 @@
 /**
  * Coupon Management API Client
- * Aligned with backend: CouponController (/api/v1/coupons)
+ * Aligned with backend: CouponController (/coupons)
  * SRS Reference: §6.12 FR-PROMO-01 to FR-PROMO-04
  */
 
@@ -24,8 +24,8 @@ interface ApiSuccess<T> {
     message?: string;
 }
 
-function unwrap<T>(response: { data: ApiSuccess<T> }): T {
-    return response.data.data;
+function unwrap<T>(body: ApiSuccess<T>): T {
+    return body.data;
 }
 
 // ─── List Coupons ────────────────────────────────────────
@@ -33,7 +33,7 @@ function unwrap<T>(response: { data: ApiSuccess<T> }): T {
 export async function listCoupons(
     params: ListCouponsParams = {}
 ): Promise<PagedCoupons> {
-    const { data } = await apiClient.get("/api/v1/coupons", { params });
+    const { data } = await apiClient.get("/coupons", { params });
     return unwrap<PagedCoupons>(data);
 }
 
@@ -42,14 +42,14 @@ export async function listCoupons(
 export async function createCoupon(
     request: CouponCreateRequest
 ): Promise<Coupon> {
-    const { data } = await apiClient.post("/api/v1/coupons", request);
+    const { data } = await apiClient.post("/coupons", request);
     return unwrap<Coupon>(data);
 }
 
 // ─── Get Coupon ──────────────────────────────────────────
 
 export async function getCoupon(couponId: string): Promise<Coupon> {
-    const { data } = await apiClient.get(`/api/v1/coupons/${couponId}`);
+    const { data } = await apiClient.get(`/coupons/${couponId}`);
     return unwrap<Coupon>(data);
 }
 
@@ -59,14 +59,14 @@ export async function updateCoupon(
     couponId: string,
     request: CouponUpdateRequest
 ): Promise<Coupon> {
-    const { data } = await apiClient.put(`/api/v1/coupons/${couponId}`, request);
+    const { data } = await apiClient.put(`/coupons/${couponId}`, request);
     return unwrap<Coupon>(data);
 }
 
 // ─── Delete Coupon ───────────────────────────────────────
 
 export async function deleteCoupon(couponId: string): Promise<void> {
-    await apiClient.delete(`/api/v1/coupons/${couponId}`);
+    await apiClient.delete(`/coupons/${couponId}`);
 }
 
 // ─── Validate Coupon ─────────────────────────────────────
@@ -80,7 +80,7 @@ export async function validateCoupon(
     if (planId) body.planId = planId;
     if (purchaseAmount !== undefined) body.purchaseAmount = String(purchaseAmount);
 
-    const { data } = await apiClient.post("/api/v1/coupons/validate", body);
+    const { data } = await apiClient.post("/coupons/validate", body);
     return unwrap<CouponValidation>(data);
 }
 
@@ -95,25 +95,25 @@ export async function applyCoupon(
     if (planId) body.planId = planId;
     if (purchaseAmount !== undefined) body.purchaseAmount = String(purchaseAmount);
 
-    const { data } = await apiClient.post("/api/v1/coupons/apply", body);
+    const { data } = await apiClient.post("/coupons/apply", body);
     return unwrap<AppliedCoupon>(data);
 }
 
 // ─── Get Coupon Stats ────────────────────────────────────
 
 export async function getCouponStats(couponId: string): Promise<CouponStats> {
-    const { data } = await apiClient.get(`/api/v1/coupons/${couponId}/stats`);
+    const { data } = await apiClient.get(`/coupons/${couponId}/stats`);
     return unwrap<CouponStats>(data);
 }
 
 // ─── Activate Coupon ─────────────────────────────────────
 
 export async function activateCoupon(couponId: string): Promise<void> {
-    await apiClient.post(`/api/v1/coupons/${couponId}/activate`);
+    await apiClient.post(`/coupons/${couponId}/activate`);
 }
 
 // ─── Deactivate Coupon ───────────────────────────────────
 
 export async function deactivateCoupon(couponId: string): Promise<void> {
-    await apiClient.post(`/api/v1/coupons/${couponId}/deactivate`);
+    await apiClient.post(`/coupons/${couponId}/deactivate`);
 }
