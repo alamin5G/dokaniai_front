@@ -26,6 +26,14 @@ export function useSubscriptionGuard(): SubscriptionGuardResult {
       return;
     }
 
+    const role = useAuthStore.getState().userRole;
+    if (role === "ADMIN" || role === "SUPER_ADMIN") {
+      setHasSubscription(true);
+      setSubscriptionStatus("ACTIVE");
+      setLoading(false);
+      return;
+    }
+
     if (checkedRef.current) return;
     checkedRef.current = true;
 

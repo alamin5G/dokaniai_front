@@ -7,6 +7,7 @@ import { TrialExpiryBanner } from "@/components/subscription/TrialExpiryBanner";
 import * as businessApi from "@/lib/businessApi";
 import { getCurrentSubscription } from "@/lib/subscriptionApi";
 import { useBusinessStore } from "@/store/businessStore";
+import { useAuthStore } from "@/store/authStore";
 import { useWebPush } from "@/hooks/useWebPush";
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
@@ -126,6 +127,13 @@ export default function DashboardLayout({ children, title, businessId }: Dashboa
         currentPath.startsWith("/billing");
 
       if (!isAuthOnlyRoute) {
+        const role = useAuthStore.getState().userRole;
+        if (role === "ADMIN" || role === "SUPER_ADMIN") {
+          clearTimeout(timeoutId);
+          setIsReady(true);
+          return;
+        }
+
         try {
           const sub = await getCurrentSubscription();
           if (!sub || !["ACTIVE", "TRIAL", "GRACE"].includes(sub.status)) {

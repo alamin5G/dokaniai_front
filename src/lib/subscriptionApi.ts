@@ -29,7 +29,23 @@ export async function getAvailablePlans(): Promise<Plan[]> {
   return unwrap(response);
 }
 
+let _currentSubCache: { key: string; promise: Promise<Subscription | null> } | null = null;
+
 export async function getCurrentSubscription(): Promise<Subscription | null> {
+  const token = apiClient.defaults.headers.common["Authorization"];
+  if (!token) return null;
+
+  const key = String(token);
+  if (_currentSubCache && _currentSubCache.key === key) {
+    return _currentSubCache.promise;
+  }
+
+  const promise = _doGetCurrentSubscription();
+  _currentSubCache = { key, promise };
+  return promise;
+}
+
+async function _doGetCurrentSubscription(): Promise<Subscription | null> {
   try {
     const response = await apiClient.get<ApiSuccess<Subscription>>("/subscriptions/current");
     return unwrap(response);
@@ -39,6 +55,10 @@ export async function getCurrentSubscription(): Promise<Subscription | null> {
     }
     throw error;
   }
+}
+
+export function invalidateCurrentSubscriptionCache(): void {
+  _currentSubCache = null;
 }
 
 export async function getPlanLimits(): Promise<PlanLimits> {

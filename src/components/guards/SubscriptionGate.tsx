@@ -24,6 +24,12 @@ export function SubscriptionGate({ children }: SubscriptionGateProps) {
       return;
     }
 
+    const role = useAuthStore.getState().userRole;
+    if (role === "ADMIN" || role === "SUPER_ADMIN") {
+      setStatus("allowed");
+      return;
+    }
+
     if (checkedRef.current) return;
     checkedRef.current = true;
 
