@@ -2898,7 +2898,20 @@
           "saved": "Payment settings updated successfully",
           "saveFailed": "Failed to update settings"
         }
-      }
+      },
+      "searchPlaceholder": "Search coupons...",
+      "activeCampaigns": "Active Campaigns",
+      "recentRedemptions": "Recent Redemptions",
+      "noRedemptions": "No redemptions yet.",
+      "card.value": "Value",
+      "card.limit": "Limit",
+      "card.usage": "Usage",
+      "card.edit": "Edit",
+      "card.deactivate": "Deactivate",
+      "card.activate": "Activate",
+      "redemption.code": "Coupon",
+      "redemption.time": "Time",
+      "stats.title": "Quick Stats"
     },
     "referralConfig": {
       "title": "Referral Program",

@@ -2898,7 +2898,20 @@
           "saved": "পেমেন্ট সেটিংস সফলভাবে আপডেট হয়েছে",
           "saveFailed": "সেটিংস আপডেট করতে ব্যর্থ হয়েছে"
         }
-      }
+      },
+      "searchPlaceholder": "কুপন খুঁজুন...",
+      "activeCampaigns": "সক্রিয় ক্যাম্পেইন",
+      "recentRedemptions": "সাম্প্রতিক রিডেম্পশন",
+      "noRedemptions": "এখনো কোনো রিডেম্পশন হয়নি।",
+      "card.value": "মান",
+      "card.limit": "সীমা",
+      "card.usage": "ব্যবহার",
+      "card.edit": "সম্পাদনা",
+      "card.deactivate": "নিষ্ক্রিয়",
+      "card.activate": "সক্রিয়",
+      "redemption.code": "কুপন",
+      "redemption.time": "সময়",
+      "stats.title": "দ্রুত পরিসংখ্যান"
     },
     "referralConfig": {
       "title": "রেফারেল প্রোগ্রাম",
