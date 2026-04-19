@@ -150,6 +150,7 @@ export interface ListUsersParams {
     role?: UserRole;
     status?: UserStatus;
     search?: string;
+    plan?: string;
     page?: number;
     size?: number;
 }

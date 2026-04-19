@@ -33,6 +33,7 @@ export async function listUsers(params?: ListUsersParams): Promise<PagedUsers> {
     if (params?.role) query.set("role", params.role);
     if (params?.status) query.set("status", params.status);
     if (params?.search) query.set("search", params.search);
+    if (params?.plan) query.set("plan", params.plan);
     if (params?.page !== undefined) query.set("page", String(params.page));
     if (params?.size !== undefined) query.set("size", String(params.size));
 

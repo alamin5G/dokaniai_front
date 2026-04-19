@@ -102,6 +102,7 @@ export default function AdminUserManagement() {
     const [loading, setLoading] = useState(true);
 
     const [search, setSearch] = useState("");
+    const [businessSearch, setBusinessSearch] = useState("");
     const [planFilter, setPlanFilter] = useState("");
     const [statusFilter, setStatusFilter] = useState<UserStatus | "">("");
 
@@ -118,9 +119,11 @@ export default function AdminUserManagement() {
     const loadUsers = useCallback(async () => {
         setLoading(true);
         try {
+            const combinedSearch = [search, businessSearch].filter(Boolean).join(" ");
             const result = await adminApi.listUsers({
-                search: search || undefined,
+                search: combinedSearch || undefined,
                 status: statusFilter || undefined,
+                plan: planFilter || undefined,
                 page,
                 size: 20,
             });
@@ -131,7 +134,7 @@ export default function AdminUserManagement() {
         } finally {
             setLoading(false);
         }
-    }, [search, statusFilter, page]);
+    }, [search, businessSearch, statusFilter, planFilter, page]);
 
     useEffect(() => {
         loadUsers();
@@ -239,8 +242,8 @@ export default function AdminUserManagement() {
                 </p>
             </div>
 
-            <div className="bg-surface-container-lowest p-4 rounded-2xl flex items-center gap-4 shadow-[0_8px_30px_rgb(0,0,0,0.04)]">
-                <div className="flex-1 bg-surface-container-low rounded-xl px-4 py-3 flex items-center gap-3 relative overflow-hidden group">
+            <div className="bg-surface-container-lowest p-4 rounded-2xl flex flex-wrap items-center gap-4 shadow-[0_8px_30px_rgb(0,0,0,0.04)]">
+                <div className="flex-1 min-w-[180px] bg-surface-container-low rounded-xl px-4 py-3 flex items-center gap-3 relative overflow-hidden group">
                     <div className="absolute bottom-0 left-0 w-full h-[2px] bg-secondary scale-x-0 group-focus-within:scale-x-100 transition-transform origin-left" />
                     <span className="material-symbols-outlined text-on-surface-variant">phone_iphone</span>
                     <input
@@ -251,26 +254,38 @@ export default function AdminUserManagement() {
                         onChange={(e) => { setSearch(e.target.value); setPage(0); }}
                     />
                 </div>
-                <div className="flex-1 bg-surface-container-low rounded-xl px-4 py-3 flex items-center gap-3 relative overflow-hidden group">
+                <div className="flex-1 min-w-[180px] bg-surface-container-low rounded-xl px-4 py-3 flex items-center gap-3 relative overflow-hidden group">
+                    <div className="absolute bottom-0 left-0 w-full h-[2px] bg-secondary scale-x-0 group-focus-within:scale-x-100 transition-transform origin-left" />
+                    <span className="material-symbols-outlined text-on-surface-variant">storefront</span>
+                    <input
+                        className="bg-transparent border-none outline-none text-sm w-full focus:ring-0 p-0 placeholder:text-on-surface-variant/60"
+                        placeholder={t("searchBusiness")}
+                        type="text"
+                        value={businessSearch}
+                        onChange={(e) => { setBusinessSearch(e.target.value); setPage(0); }}
+                    />
+                </div>
+                <div className="flex-1 min-w-[180px] bg-surface-container-low rounded-xl px-4 py-3 flex items-center gap-3 relative overflow-hidden group">
                     <div className="absolute bottom-0 left-0 w-full h-[2px] bg-secondary scale-x-0 group-focus-within:scale-x-100 transition-transform origin-left" />
                     <span className="material-symbols-outlined text-on-surface-variant">workspace_premium</span>
                     <select
                         className="bg-transparent border-none outline-none text-sm w-full focus:ring-0 p-0 text-on-surface appearance-none cursor-pointer"
-                        value={statusFilter}
-                        onChange={(e) => { setStatusFilter(e.target.value as UserStatus | ""); setPage(0); }}
+                        value={planFilter}
+                        onChange={(e) => { setPlanFilter(e.target.value); setPage(0); }}
                     >
-                        <option value="">{t("allStatuses")}</option>
-                        <option value="ACTIVE">Active</option>
-                        <option value="SUSPENDED">Suspended</option>
-                        <option value="ARCHIVED">Archived</option>
+                        <option value="">{t("allPlans")}</option>
+                        <option value="pro">Pro Plan</option>
+                        <option value="basic">Basic Plan</option>
+                        <option value="plus">Plus Plan</option>
+                        <option value="free">Free Tier</option>
                     </select>
                 </div>
                 <button
-                    onClick={handleExport}
+                    onClick={() => { setPage(0); loadUsers(); }}
                     className="bg-gradient-to-r from-primary to-primary-container text-on-primary px-6 py-3 rounded-xl text-sm font-bold tracking-wide hover:shadow-lg hover:shadow-primary/20 transition-all flex items-center gap-2 shrink-0"
                 >
-                    <span className="material-symbols-outlined text-sm">download</span>
-                    {t("exportCsv")}
+                    <span className="material-symbols-outlined text-sm">filter_list</span>
+                    {t("applyFilters")}
                 </button>
             </div>
 

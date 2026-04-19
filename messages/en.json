@@ -3121,7 +3121,8 @@
       "actRestore": "Restore Account",
       "actDelete": "Delete Account Permanently",
       "actExtendTrial": "Extend Trial Period",
-      "actResetPassword": "Send Password Reset"
+      "actResetPassword": "Send Password Reset",
+      "applyFilters": "Apply Filters"
     }
   }
 }
