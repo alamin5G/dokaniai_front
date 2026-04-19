@@ -3,6 +3,7 @@
 import BottomNavBar from "@/components/layout/BottomNavBar";
 import SideNavBar from "@/components/layout/SideNavBar";
 import TopAppBar from "@/components/layout/TopAppBar";
+import { TrialExpiryBanner } from "@/components/subscription/TrialExpiryBanner";
 import * as businessApi from "@/lib/businessApi";
 import { getCurrentSubscription } from "@/lib/subscriptionApi";
 import { useBusinessStore } from "@/store/businessStore";
@@ -87,6 +88,7 @@ export default function DashboardLayout({ children, title, businessId }: Dashboa
 
   const [isReady, setIsReady] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [ft2DaysRemaining, setFt2DaysRemaining] = useState<number | null>(null);
 
   // Refs to track lifecycle and avoid stale closures
   const mountedRef = useRef(true);
@@ -130,6 +132,15 @@ export default function DashboardLayout({ children, title, businessId }: Dashboa
             clearTimeout(timeoutId);
             router.replace("/subscription/upgrade");
             return;
+          }
+
+          if (sub.status === "TRIAL" && sub.currentPeriodEnd) {
+            const daysLeft = Math.max(0, Math.ceil(
+              Math.abs(new Date(sub.currentPeriodEnd).getTime() - Date.now()) / (1000 * 60 * 60 * 24)
+            ));
+            if (daysLeft <= 7) {
+              setFt2DaysRemaining(daysLeft);
+            }
           }
         } catch {
           clearTimeout(timeoutId);
@@ -330,6 +341,11 @@ export default function DashboardLayout({ children, title, businessId }: Dashboa
         <TopAppBar title={title} businessId={activeBusinessId ?? businessId} />
 
         <div className="px-6 py-8 max-w-7xl mx-auto">
+          {ft2DaysRemaining !== null && (
+            <div className="mb-6">
+              <TrialExpiryBanner daysRemaining={ft2DaysRemaining} />
+            </div>
+          )}
           {children}
         </div>
       </main>

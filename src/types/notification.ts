@@ -4,6 +4,7 @@ export type NotificationType =
     | 'DISCOUNT'
     | 'PAYMENT'
     | 'TRIAL_ENDING'
+    | 'FT2_OFFER'
     | 'GRACE_PERIOD'
     | 'DUE_REMINDER'
     | 'SYSTEM'
