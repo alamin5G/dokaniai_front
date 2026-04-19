@@ -3178,6 +3178,45 @@
       "noReferrers": "No referral data yet.",
       "referrals": "referrals",
       "inviteUsers": "Invite New Users"
+    },
+    "support": {
+      "title": "Support Tickets",
+      "subtitle": "Manage and respond to customer inquiries.",
+      "tierNote": "Sorted by Subscriber Tier: Plus > Pro > Basic",
+      "all": "All",
+      "noTickets": "No tickets found.",
+      "unassigned": "Unassigned",
+      "selectTicket": "Select a ticket to view details",
+      "assignToMe": "Assign to Me",
+      "escalate": "Escalate",
+      "resolve": "Resolve",
+      "reply": "Quick Reply",
+      "replyPlaceholder": "Type your response...",
+      "send": "Send",
+      "noMessages": "No messages yet.",
+      "status": {
+        "OPEN": "Open",
+        "IN_PROGRESS": "In Progress",
+        "WAITING_USER": "Waiting",
+        "RESOLVED": "Resolved",
+        "CLOSED": "Closed"
+      },
+      "priority": {
+        "LOW": "Low",
+        "NORMAL": "Normal",
+        "MEDIUM": "Medium",
+        "HIGH": "High",
+        "URGENT": "Urgent"
+      },
+      "category": {
+        "GENERAL": "General",
+        "BILLING": "Billing",
+        "TECHNICAL": "Technical",
+        "CATEGORY_REQUEST": "Category Request",
+        "FEATURE_REQUEST": "Feature Request",
+        "ACCOUNT": "Account",
+        "OTHER": "Other"
+      }
     }
   }
 }

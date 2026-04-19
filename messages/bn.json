@@ -3178,6 +3178,45 @@
       "noReferrers": "এখনো কোনো রেফারেল ডেটা নেই।",
       "referrals": "রেফারেল",
       "inviteUsers": "নতুন ব্যবহারকারী আমন্ত্রণ"
+    },
+    "support": {
+      "title": "সাপোর্ট টিকেট",
+      "subtitle": "গ্রাহকদের অনুসন্ধান পরিচালনা এবং সাড়া দিন।",
+      "tierNote": "সাবস্ক্রাইবার টায়ার অনুযায়ী সাজানো: Plus > Pro > Basic",
+      "all": "সব",
+      "noTickets": "কোনো টিকেট পাওয়া যায়নি।",
+      "unassigned": "অ্যাসাইন করা হয়নি",
+      "selectTicket": "বিস্তারিত দেখতে একটি টিকেট নির্বাচন করুন",
+      "assignToMe": "আমাকে অ্যাসাইন করুন",
+      "escalate": "এসকেলেট",
+      "resolve": "সমাধান",
+      "reply": "দ্রুত উত্তর",
+      "replyPlaceholder": "আপনার উত্তর লিখুন...",
+      "send": "পাঠান",
+      "noMessages": "এখনো কোনো বার্তা নেই।",
+      "status": {
+        "OPEN": "খোলা",
+        "IN_PROGRESS": "চলমান",
+        "WAITING_USER": "অপেক্ষমাণ",
+        "RESOLVED": "সমাধান",
+        "CLOSED": "বন্ধ"
+      },
+      "priority": {
+        "LOW": "কম",
+        "NORMAL": "স্বাভাবিক",
+        "MEDIUM": "মিডিয়াম",
+        "HIGH": "উচ্চ",
+        "URGENT": "জরুরি"
+      },
+      "category": {
+        "GENERAL": "সাধারণ",
+        "BILLING": "বিলিং",
+        "TECHNICAL": "টেকনিক্যাল",
+        "CATEGORY_REQUEST": "ক্যাটেগরি অনুরোধ",
+        "FEATURE_REQUEST": "ফিচার অনুরোধ",
+        "ACCOUNT": "অ্যাকাউন্ট",
+        "OTHER": "অন্যান্য"
+      }
     }
   }
 }
