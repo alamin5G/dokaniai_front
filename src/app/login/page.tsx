@@ -3,6 +3,7 @@
 import { AuthLayout } from "@/components/layout/AuthLayout";
 import { FormInput, GradientButton } from "@/components/ui/FormPrimitives";
 import { useRedirectIfAuthenticated } from "@/hooks/useAuthRedirect";
+import { getApiErrorCode, getApiFieldErrors } from "@/lib/apiError";
 import apiClient from "@/lib/api";
 import { consumeRedirectAfterLogin, getPendingUpgradePlan, isPendingPlanTrial, setRedirectAfterLogin } from "@/lib/authFlow";
 import { getClientDeviceContext } from "@/lib/device";
@@ -135,7 +136,12 @@ export default function LoginPage() {
         }
       }
     } catch (error: unknown) {
-      setErrorText(t("errorInvalid"));
+      const fields = getApiFieldErrors(error);
+      if (Object.keys(fields).length > 0) {
+        setFieldErrors(fields);
+      } else {
+        setErrorText(t("errorInvalid"));
+      }
     } finally {
       setIsLoading(false);
     }
