@@ -85,7 +85,7 @@ function MatchStatusBadge({ status }: { status: string }) {
 // ─── Main Component ───────────────────────────────────────
 
 export default function PaymentsTab() {
-    const t = useTranslations("shop.admin.payments");
+    const t = useTranslations("admin.payments");
 
     // Internal tab
     const [activeInternalTab, setActiveInternalTab] = useState<InternalTab>("review");

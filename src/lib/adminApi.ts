@@ -1,6 +1,6 @@
 /**
  * Admin Module API
- * Aligned with backend: AdminController (/api/v1/admin/*)
+ * Aligned with backend: AdminController (/admin/*)
  */
 
 import apiClient from "@/lib/api";
@@ -37,59 +37,76 @@ export async function listUsers(params?: ListUsersParams): Promise<PagedUsers> {
     if (params?.size !== undefined) query.set("size", String(params.size));
 
     const qs = query.toString();
-    const { data } = await apiClient.get(`/api/v1/admin/users${qs ? `?${qs}` : ""}`);
+    const { data } = await apiClient.get(`/admin/users${qs ? `?${qs}` : ""}`);
     return data.data;
 }
 
 export async function getUserDetails(userId: string): Promise<AdminUser> {
-    const { data } = await apiClient.get(`/api/v1/admin/users/${userId}`);
+    const { data } = await apiClient.get(`/admin/users/${userId}`);
+    return data.data;
+}
+
+export interface AdminBusiness {
+    id: string;
+    userId: string;
+    name: string;
+    slug: string;
+    type: string | null;
+    status: string;
+    archivedAt: string | null;
+    createdAt: string;
+    updatedAt: string;
+}
+
+export async function getUserBusinesses(userId: string): Promise<AdminBusiness[]> {
+    const { data } = await apiClient.get(`/admin/users/${userId}/businesses`);
     return data.data;
 }
 
 export async function suspendUser(userId: string, request: SuspendUserRequest): Promise<void> {
-    await apiClient.post(`/api/v1/admin/users/${userId}/suspend`, request);
+    await apiClient.post(`/admin/users/${userId}/suspend`, request);
 }
 
 export async function unsuspendUser(userId: string): Promise<void> {
-    await apiClient.post(`/api/v1/admin/users/${userId}/unsuspend`);
+    await apiClient.post(`/admin/users/${userId}/unsuspend`);
 }
 
 export async function archiveUser(userId: string, reason?: string): Promise<void> {
     const query = reason ? `?reason=${encodeURIComponent(reason)}` : "";
-    await apiClient.post(`/api/v1/admin/users/${userId}/archive${query}`);
+    await apiClient.post(`/admin/users/${userId}/archive${query}`);
 }
 
 export async function restoreUser(userId: string, reason?: string): Promise<void> {
     const query = reason ? `?reason=${encodeURIComponent(reason)}` : "";
-    await apiClient.post(`/api/v1/admin/users/${userId}/restore${query}`);
+    await apiClient.post(`/admin/users/${userId}/restore${query}`);
 }
 
 export async function deleteUser(userId: string, reason?: string): Promise<void> {
     const query = reason ? `?reason=${encodeURIComponent(reason)}` : "";
-    await apiClient.delete(`/api/v1/admin/users/${userId}${query}`);
+    await apiClient.delete(`/admin/users/${userId}${query}`);
 }
 
 export async function extendTrial(userId: string, request: ExtendTrialRequest): Promise<void> {
-    await apiClient.post(`/api/v1/admin/users/${userId}/extend-trial`, request);
+    await apiClient.post(`/admin/users/${userId}/extend-trial`, request);
 }
 
 export async function grantComplimentaryUpgrade(
     userId: string,
     request: ComplimentaryUpgradeRequest
 ): Promise<void> {
-    await apiClient.post(`/api/v1/admin/users/${userId}/complimentary`, request);
+    await apiClient.post(`/admin/users/${userId}/complimentary`, request);
 }
 
 export async function resetUserPassword(userId: string): Promise<void> {
-    await apiClient.post(`/api/v1/admin/users/${userId}/reset-password`);
+    await apiClient.post(`/admin/users/${userId}/reset-password`);
 }
 
 export async function updateUserRole(userId: string, request: UpdateRoleRequest): Promise<void> {
-    await apiClient.put(`/api/v1/admin/users/${userId}/role`, request);
+    await apiClient.put(`/admin/users/${userId}/role`, request);
 }
 
 export async function exportUsersCsv(): Promise<Blob> {
-    const { data } = await apiClient.get("/api/v1/admin/users/export", {
+    const { data } = await apiClient.get("/admin/users/export", {
         responseType: "blob",
     });
     return data;
@@ -107,7 +124,7 @@ export async function adminListTickets(
     if (params?.size !== undefined) query.set("size", String(params.size));
 
     const qs = query.toString();
-    const { data } = await apiClient.get(`/api/v1/admin/support/tickets${qs ? `?${qs}` : ""}`);
+    const { data } = await apiClient.get(`/admin/support/tickets${qs ? `?${qs}` : ""}`);
     return data.data;
 }
 
@@ -115,28 +132,28 @@ export async function assignTicket(
     ticketId: string,
     request: AssignTicketRequest
 ): Promise<void> {
-    await apiClient.post(`/api/v1/admin/support/tickets/${ticketId}/assign`, request);
+    await apiClient.post(`/admin/support/tickets/${ticketId}/assign`, request);
 }
 
 export async function respondToTicket(
     ticketId: string,
     request: TicketResponseRequest
 ): Promise<void> {
-    await apiClient.post(`/api/v1/admin/support/tickets/${ticketId}/respond`, request);
+    await apiClient.post(`/admin/support/tickets/${ticketId}/respond`, request);
 }
 
 export async function addInternalNote(
     ticketId: string,
     request: InternalNoteRequest
 ): Promise<void> {
-    await apiClient.post(`/api/v1/admin/support/tickets/${ticketId}/internal-note`, request);
+    await apiClient.post(`/admin/support/tickets/${ticketId}/internal-note`, request);
 }
 
 export async function escalateTicket(
     ticketId: string,
     request?: EscalateTicketRequest
 ): Promise<void> {
-    await apiClient.post(`/api/v1/admin/support/tickets/${ticketId}/escalate`, request ?? {});
+    await apiClient.post(`/admin/support/tickets/${ticketId}/escalate`, request ?? {});
 }
 
 // ─── Audit Logs ─────────────────────────────────────────────────────────────
@@ -151,21 +168,21 @@ export async function getAuditLogs(params?: AuditLogParams): Promise<PagedAuditL
     if (params?.size !== undefined) query.set("size", String(params.size));
 
     const qs = query.toString();
-    const { data } = await apiClient.get(`/api/v1/admin/audit-logs${qs ? `?${qs}` : ""}`);
+    const { data } = await apiClient.get(`/admin/audit-logs${qs ? `?${qs}` : ""}`);
     return data.data;
 }
 
 // ─── System Stats ───────────────────────────────────────────────────────────
 
 export async function getSystemStats(): Promise<SystemStats> {
-    const { data } = await apiClient.get("/api/v1/admin/stats");
+    const { data } = await apiClient.get("/admin/stats");
     return data.data;
 }
 
 // ─── Referral Events ─────────────────────────────────────────────────────────
 
 export async function getReferralStats(): Promise<ReferralStats> {
-    const { data } = await apiClient.get("/api/v1/admin/referrals/stats");
+    const { data } = await apiClient.get("/admin/referrals/stats");
     return data.data;
 }
 
@@ -176,7 +193,7 @@ export async function getReferralEvents(params?: ReferralEventsParams): Promise<
     if (params?.size !== undefined) query.set("size", String(params.size));
 
     const qs = query.toString();
-    const { data } = await apiClient.get(`/api/v1/admin/referrals/events${qs ? `?${qs}` : ""}`);
+    const { data } = await apiClient.get(`/admin/referrals/events${qs ? `?${qs}` : ""}`);
     return data.data;
 }
 
@@ -186,16 +203,16 @@ export async function getReferralEventsByUser(
     size = 20
 ): Promise<PagedReferralEvents> {
     const { data } = await apiClient.get(
-        `/api/v1/admin/referrals/users/${userId}?page=${page}&size=${size}`
+        `/admin/referrals/users/${userId}?page=${page}&size=${size}`
     );
     return data.data;
 }
 
 export async function revokeReferralEvent(eventId: string): Promise<void> {
-    await apiClient.patch(`/api/v1/admin/referrals/events/${eventId}/revoke`);
+    await apiClient.patch(`/admin/referrals/events/${eventId}/revoke`);
 }
 
 export async function getTopReferrers(limit = 10): Promise<string[]> {
-    const { data } = await apiClient.get(`/api/v1/admin/referrals/top-referrers?limit=${limit}`);
+    const { data } = await apiClient.get(`/admin/referrals/top-referrers?limit=${limit}`);
     return data.data;
 }

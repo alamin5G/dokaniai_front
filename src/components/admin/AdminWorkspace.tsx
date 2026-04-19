@@ -241,7 +241,7 @@ export default function AdminWorkspace() {
 // Dashboard Tab
 // ═══════════════════════════════════════════════════════════════════════════
 
-function DashboardTab() {
+export function DashboardTab() {
     const t = useTranslations("admin.dashboard");
     const [stats, setStats] = useState<SystemStats | null>(null);
     const [loading, setLoading] = useState(true);
@@ -319,7 +319,7 @@ function DashboardTab() {
 // Users Tab
 // ═══════════════════════════════════════════════════════════════════════════
 
-function UsersTab() {
+export function UsersTab() {
     const t = useTranslations("admin.users");
     const { userRole } = useAuthStore();
     const isSuperAdmin = userRole === "SUPER_ADMIN";
@@ -680,7 +680,7 @@ function UserActionsMenu({
 // Tickets Tab (Admin-side support ticket management)
 // ═══════════════════════════════════════════════════════════════════════════
 
-function TicketsTab() {
+export function TicketsTab() {
     const t = useTranslations("admin.tickets");
     const { userId: currentAdminId } = useAuthStore();
 
@@ -1022,7 +1022,7 @@ function TicketsTab() {
 // Audit Logs Tab (Super Admin only)
 // ═══════════════════════════════════════════════════════════════════════════
 
-function AuditTab() {
+export function AuditTab() {
     const t = useTranslations("admin.audit");
 
     const [logs, setLogs] = useState<AuditLog[]>([]);
