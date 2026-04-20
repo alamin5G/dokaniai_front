@@ -508,6 +508,11 @@ export default function PaymentsTab() {
                                                     <span>Expires in <strong className="text-on-surface">{bootstrapCountdown}</strong></span>
                                                 </div>
                                             )}
+                                            {/* Generate QR button — directly below QR area */}
+                                            <button onClick={handleBootstrapDevice} disabled={bootstrapLoading} className="w-full max-w-[16rem] py-3 rounded-2xl bg-gradient-to-r from-primary to-primary-container text-on-primary font-label font-semibold shadow-md hover:shadow-lg transition-all flex items-center justify-center gap-2 text-sm">
+                                                <span className="material-symbols-outlined text-lg">qr_code_scanner</span>
+                                                {bootstrapLoading ? "..." : t("actions.bootstrapDevice")}
+                                            </button>
                                         </div>
 
                                         {/* Details */}
@@ -541,11 +546,6 @@ export default function PaymentsTab() {
                                                     </div>
                                                 </div>
                                             </div>
-                                            {/* Generate QR button in main content area */}
-                                            <button onClick={handleBootstrapDevice} disabled={bootstrapLoading} className="w-full py-3.5 rounded-2xl bg-gradient-to-r from-primary to-primary-container text-on-primary font-label font-semibold shadow-md hover:shadow-lg transition-all flex items-center justify-center gap-2 text-base">
-                                                <span className="material-symbols-outlined text-xl">qr_code_scanner</span>
-                                                {bootstrapLoading ? "..." : t("actions.bootstrapDevice")}
-                                            </button>
                                         </div>
                                     </div>
                                 </div>
@@ -608,10 +608,6 @@ export default function PaymentsTab() {
                                     </div>
                                 </div>
 
-                                <button onClick={handleBootstrapDevice} disabled={bootstrapLoading} className="w-full py-3 rounded-full bg-gradient-to-r from-primary to-primary-container text-on-primary font-label font-semibold shadow-md hover:shadow-lg transition-all flex items-center justify-center gap-2">
-                                    <span className="material-symbols-outlined text-lg">qr_code_scanner</span>
-                                    {bootstrapLoading ? "..." : t("actions.bootstrapDevice")}
-                                </button>
                             </div>
                         </div>
                     )}

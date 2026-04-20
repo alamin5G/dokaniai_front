@@ -2,7 +2,7 @@
 
 import { useAuthStore } from "@/store/authStore";
 import { useRouter, usePathname } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 
 function Spinner() {
     return (
@@ -13,7 +13,7 @@ function Spinner() {
 }
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
-    const { userRole, accessToken } = useAuthStore();
+    const { userRole, accessToken, clearTokens } = useAuthStore();
     const router = useRouter();
     const [checked, setChecked] = useState(false);
     const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -65,11 +65,18 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                 </div>
                 <div className="flex flex-col gap-1">
                     <button
-                        onClick={() => router.push("/dashboard")}
+                        onClick={() => router.push("/admin")}
                         className="flex items-center gap-3 px-4 py-3 rounded-xl text-on-surface-variant hover:bg-surface-container-low transition-colors w-full"
                     >
-                        <span className="material-symbols-outlined">arrow_back</span>
-                        <span className="text-sm font-medium">Back to App</span>
+                        <span className="material-symbols-outlined">dashboard</span>
+                        <span className="text-sm font-medium">Admin Dashboard</span>
+                    </button>
+                    <button
+                        onClick={() => { clearTokens(); router.push("/login"); }}
+                        className="flex items-center gap-3 px-4 py-3 rounded-xl text-on-surface-variant hover:bg-surface-container-low transition-colors w-full"
+                    >
+                        <span className="material-symbols-outlined">logout</span>
+                        <span className="text-sm font-medium">Logout</span>
                     </button>
                 </div>
             </aside>
@@ -120,11 +127,10 @@ function SidebarLink({ href, icon, label, filled }: { href: string; icon: string
     return (
         <button
             onClick={() => router.push(href)}
-            className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-colors w-full text-left ${
-                isActive
-                    ? "bg-surface-container text-on-surface"
-                    : "text-on-surface-variant hover:bg-surface-container-low"
-            }`}
+            className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-colors w-full text-left ${isActive
+                ? "bg-surface-container text-on-surface"
+                : "text-on-surface-variant hover:bg-surface-container-low"
+                }`}
         >
             <span
                 className={`material-symbols-outlined ${isActive ? "text-primary" : ""}`}
@@ -152,11 +158,10 @@ function CategorySubNav() {
         <div>
             <button
                 onClick={() => { router.push("/admin/categories"); setOpen(true); }}
-                className={`flex items-center justify-between w-full px-4 py-3 rounded-xl transition-colors text-left ${
-                    isParentActive
-                        ? "bg-surface-container text-on-surface"
-                        : "text-on-surface-variant hover:bg-surface-container-low"
-                }`}
+                className={`flex items-center justify-between w-full px-4 py-3 rounded-xl transition-colors text-left ${isParentActive
+                    ? "bg-surface-container text-on-surface"
+                    : "text-on-surface-variant hover:bg-surface-container-low"
+                    }`}
             >
                 <div className="flex items-center gap-3">
                     <span
@@ -181,11 +186,10 @@ function CategorySubNav() {
                             <button
                                 key={item.href}
                                 onClick={() => router.push(item.href)}
-                                className={`flex items-center gap-2 px-3 py-2 rounded-lg text-left transition-colors text-[13px] ${
-                                    isActive
-                                        ? "bg-primary-fixed/30 text-primary font-semibold"
-                                        : "text-on-surface-variant hover:bg-surface-container-low"
-                                }`}
+                                className={`flex items-center gap-2 px-3 py-2 rounded-lg text-left transition-colors text-[13px] ${isActive
+                                    ? "bg-primary-fixed/30 text-primary font-semibold"
+                                    : "text-on-surface-variant hover:bg-surface-container-low"
+                                    }`}
                             >
                                 <span className={`w-1.5 h-1.5 rounded-full ${isActive ? "bg-primary" : "bg-on-surface-variant/30"}`} />
                                 {item.label}
@@ -197,3 +201,4 @@ function CategorySubNav() {
         </div>
     );
 }
+
