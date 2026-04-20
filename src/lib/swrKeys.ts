@@ -88,6 +88,12 @@ export const swrKeys = {
         `/categories/${categoryId}/businesses?page=${page}`,
     categoryTags: (categoryId: string) =>
         `/categories/${categoryId}/tags`,
+    businessCategoryTags: (businessId: string, categoryId: string) =>
+        `/categories/businesses/${businessId}/categories/${categoryId}/tags`,
+    businessCategoryTagClusters: (businessId: string) =>
+        `/categories/businesses/${businessId}/tag-clusters`,
+    adminCategoryTagClusters: (businessType: string) =>
+        `/categories/tag-clusters?businessType=${encodeURIComponent(businessType)}`,
 
     // Business
     businessStats: (businessId: string) =>
@@ -113,4 +119,3 @@ export const swrKeys = {
     inventoryLogs: (businessId: string, params?: Record<string, unknown>) =>
         `/businesses/${businessId}/inventory/logs${paramsKey(params ?? {})}`,
 } as const;
-

@@ -101,7 +101,7 @@ export default function ModerationPage() {
             {t("subtitle")}
           </p>
         </div>
-        <div className="flex gap-3">
+        <div className="flex gap-3 items-center">
           {stats && (
             <div className="flex items-center gap-2 bg-surface-container-lowest rounded-full px-4 py-2 shadow-sm">
               <span className="w-2 h-2 rounded-full bg-error animate-pulse" />
@@ -110,6 +110,13 @@ export default function ModerationPage() {
               </span>
             </div>
           )}
+          <button
+            onClick={() => router.push("/admin/categories")}
+            className="flex items-center gap-2 py-3 px-6 bg-surface-container-highest text-on-surface rounded-full font-label text-sm font-bold hover:bg-surface-variant transition-colors"
+          >
+            <span className="material-symbols-outlined text-sm">add_circle</span>
+            {t("newCategory")}
+          </button>
         </div>
       </div>
 
@@ -161,7 +168,7 @@ export default function ModerationPage() {
                 <div
                   key={req.id}
                   onClick={() => router.push(`/admin/categories/requests/${req.id}`)}
-                  className="bg-surface-container-lowest p-5 rounded-2xl group hover:bg-surface-container-low transition-colors cursor-pointer"
+                  className="bg-surface-container-lowest p-5 rounded-2xl group hover:bg-surface-container-low hover:shadow-sm transition-all cursor-pointer"
                 >
                   <div className="flex justify-between items-start mb-4">
                     <span className={`inline-flex items-center px-2.5 py-1 rounded-md text-[10px] font-bold uppercase tracking-wider ${statusBadgeStyle(req.status)}`}>
@@ -238,21 +245,25 @@ export default function ModerationPage() {
           {/* Stats Cards */}
           {stats && (
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-              <div className="bg-surface-container-lowest p-5 rounded-2xl text-center">
+              <div className="bg-surface-container-lowest p-5 rounded-2xl text-center relative overflow-hidden">
+                <div className="absolute inset-x-0 top-0 h-1 bg-error/70" />
                 <div className="text-3xl font-headline font-extrabold text-error">{stats.pending}</div>
-                <div className="text-xs font-label text-on-surface-variant mt-1">{t("status.pending")}</div>
+                <div className="text-xs font-label text-on-surface-variant mt-1">{t("status.PENDING")}</div>
               </div>
-              <div className="bg-surface-container-lowest p-5 rounded-2xl text-center">
+              <div className="bg-surface-container-lowest p-5 rounded-2xl text-center relative overflow-hidden">
+                <div className="absolute inset-x-0 top-0 h-1 bg-secondary/70" />
                 <div className="text-3xl font-headline font-extrabold text-secondary">{stats.underReview}</div>
-                <div className="text-xs font-label text-on-surface-variant mt-1">{t("status.underReview")}</div>
+                <div className="text-xs font-label text-on-surface-variant mt-1">{t("status.UNDER_REVIEW")}</div>
               </div>
-              <div className="bg-surface-container-lowest p-5 rounded-2xl text-center">
+              <div className="bg-surface-container-lowest p-5 rounded-2xl text-center relative overflow-hidden">
+                <div className="absolute inset-x-0 top-0 h-1 bg-primary/70" />
                 <div className="text-3xl font-headline font-extrabold text-primary">{stats.approvedGlobal + stats.approvedBusiness}</div>
                 <div className="text-xs font-label text-on-surface-variant mt-1">{t("approved")}</div>
               </div>
-              <div className="bg-surface-container-lowest p-5 rounded-2xl text-center">
+              <div className="bg-surface-container-lowest p-5 rounded-2xl text-center relative overflow-hidden">
+                <div className="absolute inset-x-0 top-0 h-1 bg-tertiary/70" />
                 <div className="text-3xl font-headline font-extrabold text-tertiary">{stats.rejected}</div>
-                <div className="text-xs font-label text-on-surface-variant mt-1">{t("status.rejected")}</div>
+                <div className="text-xs font-label text-on-surface-variant mt-1">{t("status.REJECTED")}</div>
               </div>
             </div>
           )}

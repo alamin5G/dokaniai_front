@@ -3,7 +3,7 @@
 import { useState, useCallback, useEffect, useMemo } from "react";
 import { useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
-import { useCategoriesByBusinessType, useBusinessesByCategory, useCategoryTags } from "@/hooks/useCategories";
+import { useAdminCategoryTagClusters, useCategoriesByBusinessType, useBusinessesByCategory, useCategoryTags } from "@/hooks/useCategories";
 import type { CategoryResponse } from "@/types/category";
 import type { CategoryRequestResponse } from "@/types/categoryRequest";
 import { getPendingCategoryRequests, decideCategoryRequest, addCategoryTags, removeCategoryTag } from "@/lib/categoryApi";
@@ -77,36 +77,60 @@ function TreeNodeItem({
   const [expanded, setExpanded] = useState(depth < 1);
   const isSelected = selectedId === node.category.id;
   const hasChildren = node.children.length > 0;
+  const isRoot = depth === 0;
 
   return (
-    <div>
+    <div className="relative">
+      {!isRoot && (
+        <div
+          className="absolute left-5 top-0 bottom-0 w-px bg-surface-container-high"
+          aria-hidden="true"
+        />
+      )}
       <button
         onClick={() => {
           onSelect(node.category);
           if (hasChildren) setExpanded(!expanded);
         }}
-        className={`w-full flex items-center gap-2 p-2 rounded-lg text-left transition-colors font-body text-sm ${
+        className={`relative w-full flex items-center gap-2.5 p-3 rounded-2xl text-left transition-all duration-200 font-body text-sm ${
           isSelected
-            ? "bg-surface-container-high text-on-surface cursor-pointer"
-            : "text-on-surface-variant hover:bg-surface-container-low cursor-pointer"
+            ? "bg-primary-fixed text-on-primary-fixed shadow-sm scale-[1.01] cursor-pointer"
+            : "text-on-surface-variant hover:bg-surface-container-low hover:translate-x-0.5 cursor-pointer"
         }`}
-        style={{ paddingLeft: `${12 + depth * 16}px` }}
+        style={{ paddingLeft: `${14 + depth * 18}px` }}
       >
         {hasChildren ? (
-          <span className="material-symbols-outlined text-[18px] transition-transform" style={{ transform: expanded ? "rotate(0deg)" : "rotate(-90deg)" }}>
+          <span
+            className={`material-symbols-outlined text-[18px] transition-transform duration-200 ${
+              isSelected ? "text-on-primary-fixed" : "text-on-surface-variant"
+            }`}
+            style={{ transform: expanded ? "rotate(0deg)" : "rotate(-90deg)" }}
+          >
             {expanded ? "keyboard_arrow_down" : "keyboard_arrow_right"}
           </span>
         ) : (
           <span className="material-symbols-outlined text-[18px] opacity-0">keyboard_arrow_right</span>
         )}
-        {depth === 0 && (
-          <span className="material-symbols-outlined text-[18px]">{getRootIcon(businessType)}</span>
+        {isRoot && (
+          <span className={`material-symbols-outlined text-[18px] ${isSelected ? "text-on-primary-fixed" : "text-primary"}`}>
+            {getRootIcon(businessType)}
+          </span>
         )}
-        <span className="font-medium flex-1">{node.category.nameBn}</span>
-        <span className="text-xs text-on-surface-variant bg-surface-container-highest px-1.5 py-0.5 rounded">{node.children.length}</span>
+        <span className={`font-medium flex-1 truncate ${isRoot ? "font-semibold" : ""}`}>
+          {node.category.nameBn}
+        </span>
+        <span
+          className={`text-[11px] px-2 py-1 rounded-full font-semibold ${
+            isSelected
+              ? "bg-white/25 text-on-primary-fixed"
+              : "bg-surface-container-highest text-on-surface-variant"
+          }`}
+        >
+          {node.children.length}
+        </span>
       </button>
       {expanded && hasChildren && (
-        <div className="pl-6 mt-1 space-y-1">
+        <div className="pl-5 mt-1.5 space-y-1.5 animate-[fadeIn_0.18s_ease-out]">
           {node.children.map((child) => (
             <TreeNodeItem
               key={child.category.id}
@@ -136,6 +160,7 @@ export default function CategoryManagementPage() {
   const [newTagName, setNewTagName] = useState("");
 
   const { categories, isLoading, mutate } = useCategoriesByBusinessType(businessType);
+  const { clusters: tagClusters, isLoading: loadingTagClusters } = useAdminCategoryTagClusters(businessType);
 
   const { businesses, totalPages, isLoading: loadingBusinesses } = useBusinessesByCategory(
     selectedCategory?.id ?? null,
@@ -251,6 +276,51 @@ export default function CategoryManagementPage() {
         </div>
       </div>
 
+      <section className="bg-surface-container-lowest rounded-[24px] p-6 shadow-sm">
+        <div className="flex items-center justify-between gap-4">
+          <div>
+            <h3 className="font-headline font-bold text-xl text-on-surface">
+              {t("tagClustersTitle")}
+            </h3>
+            <p className="mt-1 text-sm text-on-surface-variant">
+              {t("tagClustersDesc")}
+            </p>
+          </div>
+          <span className="rounded-full bg-surface-container-high px-3 py-1 text-[11px] font-bold uppercase tracking-wider text-on-surface-variant">
+            {businessType.replace(/_/g, " ")}
+          </span>
+        </div>
+
+        <div className="mt-5 grid gap-3 md:grid-cols-2 xl:grid-cols-3">
+          {loadingTagClusters ? (
+            Array.from({ length: 6 }).map((_, index) => (
+              <div key={index} className="h-24 animate-pulse rounded-2xl bg-surface-container-low" />
+            ))
+          ) : tagClusters.length > 0 ? (
+            tagClusters.map((cluster) => (
+              <div key={cluster.tag} className="rounded-2xl bg-surface-container-low p-4">
+                <div className="flex items-start justify-between gap-3">
+                  <div>
+                    <p className="text-base font-bold text-on-surface">#{cluster.tag}</p>
+                    <p className="mt-1 text-xs text-on-surface-variant">
+                      {t("tagClusterCount", { count: cluster.categoryCount })}
+                    </p>
+                  </div>
+                  <span className="rounded-full bg-surface-container-highest px-3 py-1 text-[11px] font-semibold text-on-surface-variant">
+                    {cluster.categoryCount}
+                  </span>
+                </div>
+                <p className="mt-3 text-xs leading-6 text-on-surface-variant">
+                  {cluster.sampleCategories.join(", ")}
+                </p>
+              </div>
+            ))
+          ) : (
+            <p className="text-sm text-on-surface-variant">{t("tagClustersEmpty")}</p>
+          )}
+        </div>
+      </section>
+
       {pendingRequests.length > 0 && (
         <section className="bg-surface-container-lowest rounded-xl p-6 relative overflow-hidden">
           <div className="absolute top-0 left-0 w-1 h-full bg-error" />
@@ -318,68 +388,131 @@ export default function CategoryManagementPage() {
         </section>
       )}
 
-      <div className="flex flex-col lg:flex-row gap-8">
-        <div className="lg:w-1/3 bg-surface-container-lowest rounded-xl p-6">
-          <div className="flex items-center justify-between mb-6">
-            <h3 className="font-headline font-semibold text-xl text-on-surface">{t("taxonomy.hierarchy")}</h3>
-            <button className="text-on-surface-variant hover:text-on-surface">
-              <span className="material-symbols-outlined text-[20px]">filter_list</span>
-            </button>
-          </div>
+      <div className="grid grid-cols-1 xl:grid-cols-12 gap-8 lg:gap-12 items-start">
+        <section className="xl:col-span-4 flex flex-col gap-6">
+          <div className="bg-surface-container-lowest rounded-[24px] p-6 shadow-sm">
+            <div className="flex items-center justify-between mb-6">
+              <h3 className="font-headline font-bold text-xl text-on-surface">{t("taxonomy.hierarchy")}</h3>
+              <span className="inline-flex items-center gap-1 rounded-full bg-surface-container-high px-3 py-1 text-[11px] font-bold uppercase tracking-wider text-on-surface-variant">
+                <span className="material-symbols-outlined text-[14px]">account_tree</span>
+                {businessType.replace(/_/g, " ")}
+              </span>
+            </div>
 
-          <div className="mb-3">
-            <select
-              value={businessType}
-              onChange={(e) => { setBusinessType(e.target.value); setSelectedCategory(null); }}
-              className="w-full bg-surface-container-low text-on-surface rounded-lg px-3 py-2 text-sm border border-outline-variant/20 focus:border-primary focus:outline-none font-body"
-            >
-              {BUSINESS_TYPES.map((bt) => (
-                <option key={bt} value={bt}>{bt.replace(/_/g, " ")}</option>
-              ))}
-            </select>
-          </div>
+            <div className="mb-4">
+              <select
+                value={businessType}
+                onChange={(e) => { setBusinessType(e.target.value); setSelectedCategory(null); }}
+                className="w-full bg-surface-container-low text-on-surface rounded-xl px-4 py-3 text-sm border border-outline-variant/20 focus:border-primary focus:outline-none font-body"
+              >
+                {BUSINESS_TYPES.map((bt) => (
+                  <option key={bt} value={bt}>{bt.replace(/_/g, " ")}</option>
+                ))}
+              </select>
+            </div>
 
-          <div className="relative mb-3">
-            <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant text-[18px]">search</span>
-            <input
-              type="text"
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              placeholder={t("taxonomy.searchPlaceholder")}
-              className="w-full bg-surface-container-low text-on-surface rounded-full pl-10 pr-4 py-2 text-sm font-body border-none focus:ring-0 focus:border-b-2 focus:border-b-secondary transition-all outline-none placeholder:text-on-surface-variant/70"
-            />
-          </div>
+            <div className="relative mb-4">
+              <span className="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-on-surface-variant text-[18px]">search</span>
+              <input
+                type="text"
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                placeholder={t("taxonomy.searchPlaceholder")}
+                className="w-full bg-surface-container-low text-on-surface rounded-full pl-11 pr-4 py-3 text-sm font-body border-none focus:ring-0 focus:border-b-2 focus:border-b-secondary transition-all outline-none placeholder:text-on-surface-variant/70"
+              />
+            </div>
 
-          <div className="space-y-1 max-h-[60vh] overflow-y-auto font-body text-sm">
-            {isLoading ? (
-              <div className="flex justify-center py-8">
-                <div className="h-6 w-6 animate-spin rounded-full border-3 border-surface-container-high border-t-primary" />
-              </div>
-            ) : filteredTree.length === 0 ? (
-              <p className="text-center text-sm text-on-surface-variant py-8">{t("taxonomy.noCategories")}</p>
-            ) : (
-              filteredTree.map((node) => (
-                <TreeNodeItem
-                  key={node.category.id}
-                  node={node}
-                  selectedId={selectedCategory?.id ?? null}
-                  onSelect={(cat) => { setSelectedCategory(cat); mutate(); }}
-                  businessType={businessType}
-                />
-              ))
-            )}
-          </div>
+            <div className="space-y-1 max-h-[68vh] overflow-y-auto font-body text-sm pr-1">
+              {isLoading ? (
+                <div className="flex justify-center py-8">
+                  <div className="h-6 w-6 animate-spin rounded-full border-4 border-surface-container-high border-t-primary" />
+                </div>
+              ) : filteredTree.length === 0 ? (
+                <p className="text-center text-sm text-on-surface-variant py-8">{t("taxonomy.noCategories")}</p>
+              ) : (
+                filteredTree.map((node) => (
+                  <TreeNodeItem
+                    key={node.category.id}
+                    node={node}
+                    selectedId={selectedCategory?.id ?? null}
+                    onSelect={(cat) => { setSelectedCategory(cat); mutate(); }}
+                    businessType={businessType}
+                  />
+                ))
+              )}
+            </div>
 
-          <div className="mt-4 pt-3 border-t border-surface-container-high">
-            <p className="text-xs text-on-surface-variant font-body">
-              {t("taxonomy.totalCategories", { count: categories.length })}
-            </p>
+            <div className="mt-5 border-t border-surface-container-high pt-4 flex items-center justify-between">
+              <p className="text-xs text-on-surface-variant font-body">
+                {t("taxonomy.totalCategories", { count: categories.length })}
+              </p>
+              <p className="text-xs text-on-surface-variant font-body">
+                {t("taxonomy.active")}: {activeCategoryCount}
+              </p>
+            </div>
           </div>
-        </div>
+        </section>
 
-        <div className="lg:w-2/3 space-y-6">
+        <section className="xl:col-span-8 flex flex-col gap-6">
           {selectedCategory ? (
             <>
+              <div className="bg-surface-container-lowest rounded-[24px] p-6 relative overflow-hidden shadow-sm">
+                <div className="absolute -right-16 -top-16 h-40 w-40 rounded-full bg-primary-fixed/30 blur-3xl" />
+                <div className="relative z-10 flex flex-col md:flex-row md:items-start justify-between gap-6">
+                  <div className="min-w-0">
+                    <div className="mb-4 flex flex-wrap items-center gap-2">
+                      <span className="inline-flex items-center gap-1 rounded-full bg-surface-container-high px-3 py-1 text-[10px] font-bold uppercase tracking-wider text-on-surface">
+                        <span className="material-symbols-outlined text-[14px]">
+                          {selectedCategory.scope === "GLOBAL" ? "public" : "storefront"}
+                        </span>
+                        {selectedCategory.scope}
+                      </span>
+                      {selectedCategory.isSystem && (
+                        <span className="inline-flex items-center gap-1 rounded-full bg-secondary-fixed px-3 py-1 text-[10px] font-bold uppercase tracking-wider text-on-secondary-fixed">
+                          <span className="material-symbols-outlined text-[14px]">shield</span>
+                          System
+                        </span>
+                      )}
+                    </div>
+                    <h3 className="font-headline text-3xl font-extrabold tracking-tight text-on-surface">
+                      {selectedCategory.nameBn}
+                    </h3>
+                    {selectedCategory.nameEn && (
+                      <p className="mt-1 text-base text-on-surface-variant">{selectedCategory.nameEn}</p>
+                    )}
+                    <p className="mt-3 max-w-2xl text-sm text-on-surface-variant">
+                      {selectedCategory.businessType?.replace(/_/g, " ") ?? businessType.replace(/_/g, " ")} taxonomy branch with
+                      {" "}{categories.filter((category) => category.parentId === selectedCategory.id).length} direct child categories.
+                    </p>
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-3 sm:min-w-[280px]">
+                    <div className="rounded-2xl bg-surface-container-low p-4">
+                      <p className="text-[10px] font-bold uppercase tracking-wider text-on-surface-variant">{t("taxonomy.status")}</p>
+                      <p className="mt-2 text-sm font-semibold text-on-surface">
+                        {selectedCategory.isActive ? t("taxonomy.active") : t("taxonomy.inactive")}
+                      </p>
+                    </div>
+                    <div className="rounded-2xl bg-surface-container-low p-4">
+                      <p className="text-[10px] font-bold uppercase tracking-wider text-on-surface-variant">{t("taxonomy.subCategories")}</p>
+                      <p className="mt-2 text-2xl font-headline font-extrabold text-on-surface">
+                        {categories.filter((category) => category.parentId === selectedCategory.id).length}
+                      </p>
+                    </div>
+                    <div className="rounded-2xl bg-surface-container-low p-4">
+                      <p className="text-[10px] font-bold uppercase tracking-wider text-on-surface-variant">{t("taxonomy.scope")}</p>
+                      <p className="mt-2 text-sm font-semibold text-on-surface">{selectedCategory.scope}</p>
+                    </div>
+                    <div className="rounded-2xl bg-surface-container-low p-4">
+                      <p className="text-[10px] font-bold uppercase tracking-wider text-on-surface-variant">{t("taxonomy.businessType")}</p>
+                      <p className="mt-2 text-sm font-semibold text-on-surface">
+                        {selectedCategory.businessType?.replace(/_/g, " ") ?? "—"}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
               <CategoryDetailView category={selectedCategory} categories={categories} onClose={() => setSelectedCategory(null)} />
 
               <div className="bg-surface-container-lowest rounded-xl p-6">
@@ -391,8 +524,20 @@ export default function CategoryManagementPage() {
                     </div>
                     <div className="flex-1">
                       <h4 className="font-headline font-semibold text-sm text-on-surface mb-2">
-                        AI Suggested Attributes for &ldquo;{selectedCategory.nameBn}&rdquo;
+                        {t("tagSuggestionsTitle", { name: selectedCategory.nameBn })}
                       </h4>
+                      <div className="flex items-center gap-2 mb-3">
+                        <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold ${
+                          tags.suggestionSource === "AI"
+                            ? "bg-primary-fixed text-on-primary-fixed"
+                            : "bg-surface-container-high text-on-surface-variant"
+                        }`}>
+                          {tags.suggestionSource === "AI" ? t("tagSuggestionSourceAi") : t("tagSuggestionSourceRule")}
+                        </span>
+                        <p className="text-xs text-on-surface-variant">
+                          {t("tagSuggestionsHelp")}
+                        </p>
+                      </div>
                       <div className="flex flex-wrap gap-2">
                         {loadingTags ? (
                           <div className="h-5 w-20 animate-pulse bg-surface-container-high rounded-full" />
@@ -445,7 +590,7 @@ export default function CategoryManagementPage() {
                 </div>
               </div>
 
-              <div className="bg-surface-container-lowest rounded-xl p-6">
+              <div className="bg-surface-container-lowest rounded-[24px] p-6">
                 <h3 className="font-headline font-semibold text-lg text-on-surface mb-4">
                   {t("businessesInCategory")}
                 </h3>
@@ -516,12 +661,19 @@ export default function CategoryManagementPage() {
               </div>
             </>
           ) : (
-            <div className="bg-surface-container-lowest rounded-xl p-12 shadow-sm flex flex-col items-center justify-center min-h-[400px]">
-              <span className="material-symbols-outlined text-5xl text-on-surface-variant/30 mb-4">category</span>
-              <p className="text-on-surface-variant text-sm font-body">{t("taxonomy.selectCategory")}</p>
+            <div className="bg-surface-container-lowest rounded-[24px] p-12 shadow-sm flex flex-col items-center justify-center min-h-[480px] text-center">
+              <div className="mb-5 flex h-20 w-20 items-center justify-center rounded-full bg-surface-container-low text-primary">
+                <span className="material-symbols-outlined text-4xl">category</span>
+              </div>
+              <h3 className="font-headline text-2xl font-bold text-on-surface mb-2">
+                {t("taxonomy.selectCategory")}
+              </h3>
+              <p className="max-w-md text-sm text-on-surface-variant">
+                Browse the left taxonomy explorer, choose a branch, then review details, suggested attributes, and affected businesses here.
+              </p>
             </div>
           )}
-        </div>
+        </section>
       </div>
 
       {showCreateModal && (

@@ -26,5 +26,11 @@ export interface CategoryBusinessResponse {
 export interface CategoryTagsResponse {
   currentTags: string[];
   suggestedTags: string[];
+  suggestionSource: 'AI' | 'RULE_BASED';
 }
 
+export interface CategoryTagClusterResponse {
+  tag: string;
+  categoryCount: number;
+  sampleCategories: string[];
+}

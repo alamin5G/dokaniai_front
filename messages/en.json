@@ -1155,6 +1155,8 @@
       "filter": {
         "all": "All Status",
         "allCategories": "All Categories",
+        "allTags": "All Tags",
+        "tagLabel": "Tag Filter",
         "search": "Search by name or SKU"
       },
       "pagination": {
@@ -1185,6 +1187,13 @@
         "categoryPlaceholder": "Select category",
         "subCategory": "Sub-Category",
         "subCategoryPlaceholder": "Select sub-category",
+        "categoryTagsTitle": "Category Attribute Hints",
+        "categoryTagsHelp": "Use saved and suggested tags as search facets, grouping hints, and future classification guidance.",
+        "categoryTagsLoading": "Loading tags",
+        "categoryTagsSourceAi": "AI Hints",
+        "categoryTagsSourceRule": "Rule Hints",
+        "savedTags": "Saved Tags",
+        "suggestedTags": "Suggested Tags",
         "submit": {
           "create": "Create Product",
           "edit": "Save Changes",
@@ -1857,6 +1866,12 @@
           "avgOrder": "Avg. Order",
           "segments": "Customer Segments",
           "customers": "customers"
+        },
+        "tagClusters": {
+          "title": "Category Tag Clusters",
+          "subtitle": "Use shared category attributes for grouping, search facets, and taxonomy cleanup signals.",
+          "count": "{count} categories",
+          "empty": "No tag clusters available yet for this business."
         },
         "upgrade": {
           "currentPlan": "Current plan: {plan}",
@@ -3307,7 +3322,15 @@
         "noParent": "No parent (root level)",
         "descriptionOptional": "Description (Optional)",
         "descriptionPlaceholder": "Brief description of this category…",
-        "createError": "Failed to create category."
+        "createError": "Failed to create category.",
+        "tagSuggestionsTitle": "Suggested Attributes for “{name}”",
+        "tagSuggestionsHelp": "Use these tags to classify search, filtering, and admin understanding of the category.",
+        "tagSuggestionSourceAi": "AI Generated",
+        "tagSuggestionSourceRule": "Rule Based",
+        "tagClustersTitle": "Tag Clusters",
+        "tagClustersDesc": "Live grouping of categories by shared attributes so overlapping branches are easier to review.",
+        "tagClusterCount": "{count} categories",
+        "tagClustersEmpty": "No tag clusters available for this taxonomy yet."
       },
       "moderation": {
         "title": "Category Moderation",
@@ -3318,6 +3341,10 @@
         "recentActivity": "Recent Activity",
         "approved": "Approved",
         "approve": "Approve",
+        "newCategory": "New Category",
+        "backToModeration": "Moderation",
+        "requestDetailBreadcrumb": "Request Details",
+        "viewAllBranches": "View All Taxonomy Branches",
         "allStatuses": "All",
         "noRequests": "No requests found for this filter.",
         "prev": "Previous",
@@ -3341,6 +3368,7 @@
         "approveGlobalDesc": "Available to all merchants",
         "approveBusiness": "Approve Business",
         "approveBusinessDesc": "Restrict to this business",
+        "approveBusinessDescDetailed": "Restrict to {businessType} only",
         "merge": "Merge",
         "reject": "Reject",
         "selectTarget": "Select target…",

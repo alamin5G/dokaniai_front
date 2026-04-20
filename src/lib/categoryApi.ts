@@ -1,5 +1,5 @@
 import apiClient from '@/lib/api';
-import type { CategoryResponse, CategoryBusinessResponse, CategoryTagsResponse } from '@/types/category';
+import type { CategoryResponse, CategoryBusinessResponse, CategoryTagClusterResponse, CategoryTagsResponse } from '@/types/category';
 import type {
   CategoryRequestCreatePayload,
   CategoryRequestDecisionPayload,
@@ -207,6 +207,34 @@ export async function getBusinessesByCategory(
 export async function getCategoryTags(categoryId: string): Promise<CategoryTagsResponse> {
   const response = await apiClient.get<ApiSuccess<CategoryTagsResponse>>(
     `/categories/${encodeURIComponent(categoryId)}/tags`,
+  );
+  return unwrap(response);
+}
+
+export async function getBusinessCategoryTags(
+  businessId: string,
+  categoryId: string,
+): Promise<CategoryTagsResponse> {
+  const response = await apiClient.get<ApiSuccess<CategoryTagsResponse>>(
+    `/categories/businesses/${encodeURIComponent(businessId)}/categories/${encodeURIComponent(categoryId)}/tags`,
+  );
+  return unwrap(response);
+}
+
+export async function getBusinessCategoryTagClusters(
+  businessId: string,
+): Promise<CategoryTagClusterResponse[]> {
+  const response = await apiClient.get<ApiSuccess<CategoryTagClusterResponse[]>>(
+    `/categories/businesses/${encodeURIComponent(businessId)}/tag-clusters`,
+  );
+  return unwrap(response);
+}
+
+export async function getAdminCategoryTagClusters(
+  businessType: string,
+): Promise<CategoryTagClusterResponse[]> {
+  const response = await apiClient.get<ApiSuccess<CategoryTagClusterResponse[]>>(
+    `/categories/tag-clusters?businessType=${encodeURIComponent(businessType)}`,
   );
   return unwrap(response);
 }

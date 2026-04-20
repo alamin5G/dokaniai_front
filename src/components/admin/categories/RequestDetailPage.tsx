@@ -37,7 +37,7 @@ export default function RequestDetailPage() {
   const params = useParams();
   const requestId = params.id as string;
 
-  const { request, isLoading, mutate } = useCategoryRequestById(requestId);
+  const { request, isLoading } = useCategoryRequestById(requestId);
 
   const [decision, setDecision] = useState<DecisionForm>({
     ...initialDecision,
@@ -46,19 +46,13 @@ export default function RequestDetailPage() {
   const [error, setError] = useState<string | null>(null);
 
   const [categories, setCategories] = useState<CategoryResponse[]>([]);
-  const [categorySearch, setCategorySearch] = useState("");
-  const [loadingCategories, setLoadingCategories] = useState(false);
-
   const loadCategories = useCallback(async (bt: string | null) => {
     if (!bt) return;
-    setLoadingCategories(true);
     try {
       const cats = await getCategoriesByBusinessType(bt);
       setCategories(cats);
     } catch {
       setCategories([]);
-    } finally {
-      setLoadingCategories(false);
     }
   }, []);
 
@@ -75,13 +69,7 @@ export default function RequestDetailPage() {
     }
   }, [decision.action, request?.businessType, loadCategories]);
 
-  const filteredCategories = useMemo(() => {
-    if (!categorySearch.trim()) return categories;
-    const q = categorySearch.toLowerCase();
-    return categories.filter(
-      (c) => c.nameBn.toLowerCase().includes(q) || (c.nameEn && c.nameEn.toLowerCase().includes(q)),
-    );
-  }, [categories, categorySearch]);
+  const filteredCategories = useMemo(() => categories, [categories]);
 
   async function handleSubmit() {
     if (!request) return;
@@ -144,6 +132,18 @@ export default function RequestDetailPage() {
 
   return (
     <div className="max-w-7xl mx-auto w-full flex-1 flex flex-col gap-8">
+      <div className="flex items-center gap-3 text-sm text-on-surface-variant">
+        <button
+          onClick={() => router.push("/admin/categories/moderation")}
+          className="flex items-center gap-1 hover:text-on-surface transition-colors"
+        >
+          <span className="material-symbols-outlined text-[18px]">arrow_back</span>
+          {t("backToModeration")}
+        </button>
+        <span>/</span>
+        <span>{t("requestDetailBreadcrumb")}</span>
+      </div>
+
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-4">
         <div>
           <div className="flex items-center gap-3 mb-2">
@@ -283,7 +283,7 @@ export default function RequestDetailPage() {
                       onClick={() => router.push("/admin/categories")}
                       className="text-xs font-bold text-primary hover:underline"
                     >
-                      {t("mergeInto")}
+                      {t("viewAllBranches")}
                     </button>
                   </div>
                 </div>
@@ -343,7 +343,7 @@ export default function RequestDetailPage() {
             <div>
               <p className="font-bold text-sm">{t("approveBusiness")}</p>
               <p className={`text-xs mt-1 ${decision.action === "APPROVE_BUSINESS" ? "opacity-80" : "text-on-surface-variant"}`}>
-                {t("approveBusinessDesc")}
+                {t("approveBusinessDescDetailed", { businessType: request.businessType?.replace(/_/g, " ") ?? "business" })}
               </p>
             </div>
           </button>

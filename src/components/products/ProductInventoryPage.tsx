@@ -15,7 +15,7 @@ import {
     importProductsCsv,
 } from "@/lib/productApi";
 import { useProducts, useProductStats, useLowStockProducts, useReorderNeededProducts } from "@/hooks/useProducts";
-import { useCategoriesByBusinessType } from "@/hooks/useCategories";
+import { useBusinessCategoryTagClusters, useCategoriesByBusinessType } from "@/hooks/useCategories";
 import { useProductMutations } from "@/hooks/useProductMutations";
 import { invalidateProducts } from "@/lib/swrMutations";
 import { getAvailablePlans, getCurrentSubscription } from "@/lib/subscriptionApi";
@@ -77,6 +77,7 @@ export default function ProductInventoryPage({
     const [search, setSearch] = useState("");
     const [status, setStatus] = useState<"" | ProductStatus>("");
     const [selectedCategoryId, setSelectedCategoryId] = useState<string | null>(null);
+    const [selectedCategoryTag, setSelectedCategoryTag] = useState<string | null>(null);
     const [page, setPage] = useState(0);
 
     // Data — SWR-backed (shared cache, auto-revalidation)
@@ -86,11 +87,13 @@ export default function ProductInventoryPage({
         search: search || undefined,
         status: status || undefined,
         category: selectedCategoryId || undefined,
+        categoryTag: selectedCategoryTag || undefined,
     });
     const { stats } = useProductStats(businessId);
     const { lowStockProducts } = useLowStockProducts(businessId);
     const { reorderProducts } = useReorderNeededProducts(businessId);
     const { categories } = useCategoriesByBusinessType(activeBusiness?.type ?? null);
+    const { clusters: categoryTagClusters } = useBusinessCategoryTagClusters(businessId);
 
     // Mutations — SWR-backed with cache invalidation
     const { submitCreate, submitUpdate, submitArchive } = useProductMutations(businessId);
@@ -430,6 +433,12 @@ export default function ProductInventoryPage({
                                 setSelectedCategoryId(categoryId);
                                 setPage(0);
                             }}
+                            categoryTagClusters={categoryTagClusters}
+                            selectedCategoryTag={selectedCategoryTag}
+                            onCategoryTagSelect={(tag) => {
+                                setSelectedCategoryTag(tag);
+                                setPage(0);
+                            }}
                             businessId={businessId}
                             page={page}
                             totalPages={totalPages}
@@ -444,6 +453,7 @@ export default function ProductInventoryPage({
                     <aside className="space-y-6">
                         {/* Product Form */}
                         <ProductForm
+                            businessId={businessId}
                             form={form}
                             editorMode={editorMode}
                             editingProduct={editingProduct}
@@ -467,4 +477,3 @@ export default function ProductInventoryPage({
         </section>
     );
 }
-

@@ -2,6 +2,7 @@
 
 import { useLocale, useTranslations } from "next-intl";
 import { useCallback, useEffect, useMemo, useState } from "react";
+import { useBusinessCategoryTagClusters } from "@/hooks/useCategories";
 import type {
     DashboardSummary,
     DailySalesReport,
@@ -58,6 +59,7 @@ export default function ReportWorkspace({
     const locale = useLocale();
     const loc = resolveLocale(locale);
     const plan = usePlanFeatures();
+    const { clusters: categoryTagClusters } = useBusinessCategoryTagClusters(businessId);
 
     const currencyFmt = new Intl.NumberFormat(loc, { maximumFractionDigits: 0 });
     const pctFmt = new Intl.NumberFormat(loc, { minimumFractionDigits: 1, maximumFractionDigits: 1 });
@@ -377,6 +379,44 @@ export default function ReportWorkspace({
                                 {plan.aiInsights && (
                                     <AIInsightPanel businessId={businessId} />
                                 )}
+
+                                <div className="rounded-3xl bg-surface-container p-6">
+                                    <div className="flex items-center justify-between gap-4">
+                                        <div>
+                                            <h3 className="text-lg font-bold text-primary">
+                                                {t("tagClusters.title")}
+                                            </h3>
+                                            <p className="text-sm text-on-surface-variant">
+                                                {t("tagClusters.subtitle")}
+                                            </p>
+                                        </div>
+                                        <span className="rounded-full bg-surface-container-high px-3 py-1 text-xs font-semibold text-on-surface-variant">
+                                            {categoryTagClusters.length}
+                                        </span>
+                                    </div>
+
+                                    {categoryTagClusters.length > 0 ? (
+                                        <div className="mt-5 grid gap-3 md:grid-cols-2">
+                                            {categoryTagClusters.slice(0, 8).map((cluster) => (
+                                                <div key={cluster.tag} className="rounded-2xl bg-surface px-4 py-4">
+                                                    <div className="flex items-center justify-between gap-3">
+                                                        <p className="font-semibold text-on-surface">#{cluster.tag}</p>
+                                                        <span className="text-xs font-semibold text-primary">
+                                                            {t("tagClusters.count", { count: cluster.categoryCount })}
+                                                        </span>
+                                                    </div>
+                                                    <p className="mt-2 text-xs leading-6 text-on-surface-variant">
+                                                        {cluster.sampleCategories.join(", ")}
+                                                    </p>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    ) : (
+                                        <p className="mt-4 text-sm text-on-surface-variant">
+                                            {t("tagClusters.empty")}
+                                        </p>
+                                    )}
+                                </div>
 
                                 {/* Customer Analytics (Plus only) */}
                                 {plan.customerAnalytics ? (

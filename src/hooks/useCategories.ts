@@ -1,12 +1,15 @@
 import useSWR from "swr";
-import type { CategoryResponse } from "@/types/category";
-import type { CategoryRequestStats, CategoryRequestResponse } from "@/types/categoryRequest";
+import type { CategoryResponse, CategoryTagClusterResponse, CategoryTagsResponse } from "@/types/category";
+import type { CategoryRequestStats } from "@/types/categoryRequest";
 import {
   getCategoriesByBusinessType,
   getCategoryTree,
   getCategoryRequestStats,
   getCategoryRequestById,
   getBusinessesByCategory,
+  getBusinessCategoryTagClusters,
+  getBusinessCategoryTags,
+  getAdminCategoryTagClusters,
   getCategoryTags,
 } from "@/lib/categoryApi";
 import { swrKeys } from "@/lib/swrKeys";
@@ -100,7 +103,55 @@ export function useCategoryTags(categoryId: string | null) {
   const { data, error, isLoading, mutate } = useSWR(key, () => getCategoryTags(categoryId!));
 
   return {
-    tags: data ?? { currentTags: [], suggestedTags: [] },
+    tags: data ?? { currentTags: [], suggestedTags: [], suggestionSource: "RULE_BASED" },
+    isLoading,
+    error,
+    mutate,
+  };
+}
+
+export function useBusinessCategoryTags(
+  businessId: string | null | undefined,
+  categoryId: string | null,
+) {
+  const key = businessId && categoryId ? swrKeys.businessCategoryTags(businessId, categoryId) : null;
+  const { data, error, isLoading, mutate } = useSWR(
+    key,
+    () => getBusinessCategoryTags(businessId!, categoryId!),
+  );
+
+  return {
+    tags: (data ?? { currentTags: [], suggestedTags: [], suggestionSource: "RULE_BASED" }) as CategoryTagsResponse,
+    isLoading,
+    error,
+    mutate,
+  };
+}
+
+export function useBusinessCategoryTagClusters(businessId: string | null | undefined) {
+  const key = businessId ? swrKeys.businessCategoryTagClusters(businessId) : null;
+  const { data, error, isLoading, mutate } = useSWR(
+    key,
+    () => getBusinessCategoryTagClusters(businessId!),
+  );
+
+  return {
+    clusters: (data ?? []) as CategoryTagClusterResponse[],
+    isLoading,
+    error,
+    mutate,
+  };
+}
+
+export function useAdminCategoryTagClusters(businessType: string | null | undefined) {
+  const key = businessType ? swrKeys.adminCategoryTagClusters(businessType) : null;
+  const { data, error, isLoading, mutate } = useSWR(
+    key,
+    () => getAdminCategoryTagClusters(businessType!),
+  );
+
+  return {
+    clusters: (data ?? []) as CategoryTagClusterResponse[],
     isLoading,
     error,
     mutate,

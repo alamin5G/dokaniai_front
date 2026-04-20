@@ -25,6 +25,7 @@ export interface ListProductsParams {
   search?: string;
   status?: ProductStatus;
   category?: string;
+  categoryTag?: string;
 }
 
 export async function listProducts(
