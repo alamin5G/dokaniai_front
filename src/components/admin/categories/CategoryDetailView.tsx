@@ -15,16 +15,12 @@ export default function CategoryDetailView({
   onClose: () => void;
 }) {
   const t = useTranslations("admin.categories.taxonomy");
+  const isReadOnlySystemCategory = category.isSystem;
   const [editing, setEditing] = useState(false);
   const [editNameBn, setEditNameBn] = useState(category.nameBn);
   const [editNameEn, setEditNameEn] = useState(category.nameEn || "");
   const [saving, setSaving] = useState(false);
   const [notice, setNotice] = useState<string | null>(null);
-
-  const parentCategory = useMemo(
-    () => (category.parentId ? categories.find((c) => c.id === category.parentId) : null),
-    [category.parentId, categories],
-  );
 
   const children = useMemo(
     () => categories.filter((c) => c.parentId === category.id),
@@ -140,7 +136,9 @@ export default function CategoryDetailView({
             <>
               <button
                 onClick={() => setEditing(true)}
-                className="bg-surface-container-high text-on-surface px-3 py-2 rounded-lg text-sm font-medium hover:bg-surface-container-highest transition-colors flex items-center gap-1"
+                disabled={isReadOnlySystemCategory}
+                className="bg-surface-container-high text-on-surface px-3 py-2 rounded-lg text-sm font-medium hover:bg-surface-container-highest transition-colors flex items-center gap-1 disabled:opacity-40 disabled:cursor-not-allowed"
+                title={isReadOnlySystemCategory ? t("systemCategoryReadOnly") : t("edit")}
               >
                 <span className="material-symbols-outlined text-[16px]">edit</span>
                 {t("edit")}

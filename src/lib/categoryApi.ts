@@ -69,6 +69,14 @@ export async function getPendingCategoryRequests(page = 0, size = 20): Promise<{
   return { content: data.content, totalPages: data.totalPages ?? (data.last ? data.number + 1 : data.number + 2) };
 }
 
+export async function getAllCategoryRequests(page = 0, size = 20): Promise<{ content: CategoryRequestResponse[]; totalPages: number }> {
+  const response = await apiClient.get<ApiSuccess<Paged<CategoryRequestResponse>>>(
+    `/category-requests?page=${page}&size=${size}`,
+  );
+  const data = response.data.data;
+  return { content: data.content, totalPages: data.totalPages ?? (data.last ? data.number + 1 : data.number + 2) };
+}
+
 export async function getCategoryRequestsByStatus(
   status: CategoryRequestStatus,
   page = 0,

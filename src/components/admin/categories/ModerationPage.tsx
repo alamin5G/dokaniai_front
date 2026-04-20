@@ -4,7 +4,7 @@ import { useState, useCallback, useEffect } from "react";
 import { useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
 import type { CategoryRequestResponse, CategoryRequestStatus } from "@/types/categoryRequest";
-import { getPendingCategoryRequests, getCategoryRequestsByStatus, decideCategoryRequest } from "@/lib/categoryApi";
+import { getAllCategoryRequests, getCategoryRequestsByStatus, decideCategoryRequest } from "@/lib/categoryApi";
 import { useCategoryRequestStats } from "@/hooks/useCategories";
 
 const STATUS_TABS: { key: CategoryRequestStatus | "ALL"; labelKey: string }[] = [
@@ -66,7 +66,7 @@ export default function ModerationPage() {
     try {
       const result =
         activeTab === "ALL"
-          ? await getPendingCategoryRequests(page, 20)
+          ? await getAllCategoryRequests(page, 20)
           : await getCategoryRequestsByStatus(activeTab, page, 20);
       setRequests(result.content);
       setTotalPages(result.totalPages);
@@ -89,14 +89,6 @@ export default function ModerationPage() {
     } catch { }
   }
 
-  async function handleQuickReject(requestId: string) {
-    try {
-      await decideCategoryRequest(requestId, { action: "REJECT", rejectionReason: "Not suitable" });
-      loadRequests();
-      mutateStats();
-    } catch { }
-  }
-
   return (
     <div className="space-y-8">
       {/* Page Header */}
@@ -114,7 +106,7 @@ export default function ModerationPage() {
             <div className="flex items-center gap-2 bg-surface-container-lowest rounded-full px-4 py-2 shadow-sm">
               <span className="w-2 h-2 rounded-full bg-error animate-pulse" />
               <span className="text-sm font-body font-semibold text-on-surface">
-                {stats.pending} {t("pending")}
+                {stats.pending} {t("pendingCountLabel")}
               </span>
             </div>
           )}
@@ -132,7 +124,7 @@ export default function ModerationPage() {
                 : "bg-surface-container-high text-on-surface-variant hover:bg-surface-container-highest"
               }`}
           >
-            {t(`status.${tab.labelKey}`)}
+            {t(`statusTabs.${tab.labelKey}`)}
             {tab.key === "PENDING" && stats?.pending
               ? ` (${stats.pending})`
               : ""}

@@ -1890,8 +1890,10 @@
           "justificationPlaceholder": "যেমন: আমি বিশেষ মসলা বিক্রি করি যা বিদ্যমান ক্যাটেগরিতে খায় না...",
           "scope": "দৃশ্যমানতা",
           "scopeHelp": "গ্লোবাল = সব দোকান ব্যবহার করতে পারবে। ব্যবসা = শুধু আপনার দোকান।",
-          "scope.GLOBAL": "সব দোকান",
-          "scope.BUSINESS": "শুধু আমার দোকান",
+          "scopeOptions": {
+            "GLOBAL": "সব দোকান",
+            "BUSINESS": "শুধু আমার দোকান"
+          },
           "submit": "অনুরোধ জমা দিন",
           "submitting": "জমা হচ্ছে…",
           "submitError": "অনুরোধ জমা দিতে ব্যর্থ। আবার চেষ্টা করুন।",
@@ -2568,8 +2570,10 @@
       "justificationPlaceholder": "যেমন: আমি বিশেষ মসলা বিক্রি করি যা বিদ্যমান ক্যাটেগরিতে খায় না...",
       "scope": "দৃশ্যমানতা",
       "scopeHelp": "গ্লোবাল = সব দোকান ব্যবহার করতে পারবে। ব্যবসা = শুধু আপনার দোকান।",
-      "scope.GLOBAL": "সব দোকান",
-      "scope.BUSINESS": "শুধু আমার দোকান",
+      "scopeOptions": {
+        "GLOBAL": "সব দোকান",
+        "BUSINESS": "শুধু আমার দোকান"
+      },
       "submit": "অনুরোধ জমা দিন",
       "submitting": "জমা হচ্ছে…",
       "submitError": "অনুরোধ জমা দিতে ব্যর্থ। আবার চেষ্টা করুন।",
@@ -3338,7 +3342,8 @@
         "deactivate": "নিষ্ক্রিয় করুন",
         "confirmDeactivate": "আপনি কি নিশ্চিত যে এই ক্যাটেগরি নিষ্ক্রিয় করতে চান?",
         "systemCategory": "সিস্টেম ক্যাটেগরি — মুছে ফেলা যাবে না",
-        "systemCategoryInfo": "এটি একটি সিস্টেম-সংজ্ঞায়িত ক্যাটেগরি এবং মুছে ফেলা যাবে না। আপনি এর নাম সম্পাদনা করতে পারেন।",
+        "systemCategoryReadOnly": "সিস্টেম ক্যাটেগরি — seed করা ক্যাটেগরি সম্পাদনা করা যাবে না",
+        "systemCategoryInfo": "এটি একটি seed করা system category। এটি read-only এবং মুছে ফেলা যাবে না।",
         "createTitle": "নতুন ক্যাটেগরি তৈরি করুন",
         "nameBn": "নাম (বাংলা)",
         "nameEn": "নাম (ইংরেজি)",
@@ -3350,6 +3355,13 @@
       },
       "moderation": {
         "title": "ক্যাটেগরি মডারেশন",
+        "subtitle": "ক্যাটেগরি অনুরোধ পর্যালোচনা করুন, AI similarity signal দেখুন, এবং সব business type জুড়ে taxonomy পরিষ্কার রাখুন।",
+        "pending": "অপেক্ষমাণ",
+        "pendingCountLabel": "অপেক্ষমাণ",
+        "pendingRequests": "অপেক্ষমাণ অনুরোধ",
+        "recentActivity": "সাম্প্রতিক কার্যক্রম",
+        "approved": "অনুমোদিত",
+        "approve": "অনুমোদন",
         "allStatuses": "সব",
         "noRequests": "এই ফিল্টারে কোনো অনুরোধ পাওয়া যায়নি।",
         "prev": "আগে",
@@ -3387,6 +3399,14 @@
         "pendingTitle": "অপেক্ষমাণ অনুরোধ",
         "viewAll": "সব দেখুন",
         "viewAllRequests": "সব অনুরোধ দেখুন",
+        "previous": "আগে",
+        "statusTabs": {
+          "all": "সব",
+          "pending": "অপেক্ষমাণ",
+          "underReview": "পর্যালোচনাধীন",
+          "approvedGlobal": "অনুমোদিত (গ্লোবাল)",
+          "rejected": "প্রত্যাখ্যাত"
+        },
         "status": {
           "PENDING": "অপেক্ষমাণ",
           "UNDER_REVIEW": "পর্যালোচনাধীন",

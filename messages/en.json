@@ -2526,8 +2526,10 @@
       "justificationPlaceholder": "e.g., I sell special spices that don't fit in existing categories...",
       "scope": "Visibility",
       "scopeHelp": "Global = all shops can use it. Business = only your shop.",
-      "scope.GLOBAL": "All Shops",
-      "scope.BUSINESS": "Only My Shop",
+      "scopeOptions": {
+        "GLOBAL": "All Shops",
+        "BUSINESS": "Only My Shop"
+      },
       "submit": "Submit Request",
       "submitting": "Submitting…",
       "submitError": "Failed to submit request. Please try again.",
@@ -3296,7 +3298,8 @@
         "deactivate": "Deactivate",
         "confirmDeactivate": "Are you sure you want to deactivate this category?",
         "systemCategory": "System category — cannot be deleted",
-        "systemCategoryInfo": "This is a system-defined category and cannot be deleted. You can edit its names.",
+        "systemCategoryReadOnly": "System category — seeded categories cannot be edited",
+        "systemCategoryInfo": "This is a system-defined seeded category. It is read-only and cannot be deleted.",
         "createTitle": "Create New Category",
         "nameBn": "Name (Bengali)",
         "nameEn": "Name (English)",
@@ -3308,6 +3311,13 @@
       },
       "moderation": {
         "title": "Category Moderation",
+        "subtitle": "Review category requests, inspect AI similarity signals, and keep the taxonomy clean across all business types.",
+        "pending": "Pending",
+        "pendingCountLabel": "pending",
+        "pendingRequests": "Pending Requests",
+        "recentActivity": "Recent Activity",
+        "approved": "Approved",
+        "approve": "Approve",
         "allStatuses": "All",
         "noRequests": "No requests found for this filter.",
         "prev": "Previous",
@@ -3345,6 +3355,14 @@
         "pendingTitle": "Pending Requests",
         "viewAll": "View All",
         "viewAllRequests": "View All Requests",
+        "previous": "Previous",
+        "statusTabs": {
+          "all": "All",
+          "pending": "Pending",
+          "underReview": "Under Review",
+          "approvedGlobal": "Approved (Global)",
+          "rejected": "Rejected"
+        },
         "status": {
           "PENDING": "Pending",
           "UNDER_REVIEW": "Under Review",

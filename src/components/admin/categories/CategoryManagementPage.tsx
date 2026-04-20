@@ -134,11 +134,10 @@ export default function CategoryManagementPage() {
   const [loadingRequests, setLoadingRequests] = useState(true);
   const [businessesPage, setBusinessesPage] = useState(0);
   const [newTagName, setNewTagName] = useState("");
-  const [addingTag, setAddingTag] = useState(false);
 
   const { categories, isLoading, mutate } = useCategoriesByBusinessType(businessType);
 
-  const { businesses, totalPages, isLoading: loadingBusinesses, mutate: mutateBusinesses } = useBusinessesByCategory(
+  const { businesses, totalPages, isLoading: loadingBusinesses } = useBusinessesByCategory(
     selectedCategory?.id ?? null,
     businessesPage,
   );
@@ -197,9 +196,13 @@ export default function CategoryManagementPage() {
     } catch {}
   }
 
-  const selectedChildren = useMemo(
-    () => (selectedCategory ? categories.filter((c) => c.parentId === selectedCategory.id) : []),
-    [selectedCategory, categories],
+  const rootCategoryCount = useMemo(
+    () => categories.filter((category) => !category.parentId).length,
+    [categories],
+  );
+  const activeCategoryCount = useMemo(
+    () => categories.filter((category) => category.isActive).length,
+    [categories],
   );
 
   return (
@@ -220,6 +223,32 @@ export default function CategoryManagementPage() {
           <span className="material-symbols-outlined text-[20px]">add</span>
           {t("taxonomy.create")}
         </button>
+      </div>
+
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+        <div className="bg-surface-container-lowest rounded-2xl p-5">
+          <p className="text-xs font-label uppercase tracking-wider text-on-surface-variant mb-2">
+            {t("taxonomy.hierarchy")}
+          </p>
+          <p className="text-3xl font-headline font-extrabold text-on-surface">{rootCategoryCount}</p>
+          <p className="text-sm text-on-surface-variant mt-1">{businessType.replace(/_/g, " ")}</p>
+        </div>
+        <div className="bg-surface-container-lowest rounded-2xl p-5">
+          <p className="text-xs font-label uppercase tracking-wider text-on-surface-variant mb-2">
+            {t("taxonomy.totalCategories", { count: categories.length })}
+          </p>
+          <p className="text-3xl font-headline font-extrabold text-on-surface">{categories.length}</p>
+          <p className="text-sm text-on-surface-variant mt-1">{t("taxonomy.active")}: {activeCategoryCount}</p>
+        </div>
+        <div className="bg-surface-container-lowest rounded-2xl p-5">
+          <p className="text-xs font-label uppercase tracking-wider text-on-surface-variant mb-2">
+            {t("pendingRequestsTitle")}
+          </p>
+          <p className="text-3xl font-headline font-extrabold text-on-surface">{pendingRequests.length}</p>
+          <p className="text-sm text-on-surface-variant mt-1">
+            {loadingRequests ? "…" : t("moderation.pendingTitle")}
+          </p>
+        </div>
       </div>
 
       {pendingRequests.length > 0 && (
@@ -316,7 +345,7 @@ export default function CategoryManagementPage() {
               type="text"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              placeholder="Search categories..."
+              placeholder={t("taxonomy.searchPlaceholder")}
               className="w-full bg-surface-container-low text-on-surface rounded-full pl-10 pr-4 py-2 text-sm font-body border-none focus:ring-0 focus:border-b-2 focus:border-b-secondary transition-all outline-none placeholder:text-on-surface-variant/70"
             />
           </div>
@@ -351,53 +380,9 @@ export default function CategoryManagementPage() {
         <div className="lg:w-2/3 space-y-6">
           {selectedCategory ? (
             <>
+              <CategoryDetailView category={selectedCategory} categories={categories} onClose={() => setSelectedCategory(null)} />
+
               <div className="bg-surface-container-lowest rounded-xl p-6">
-                <div className="flex items-start justify-between mb-4">
-                  <div>
-                    <h3 className="font-headline font-bold text-2xl text-on-surface">{selectedCategory.nameBn}</h3>
-                    {selectedCategory.nameEn && (
-                      <p className="font-body text-on-surface-variant text-base">{selectedCategory.nameEn}</p>
-                    )}
-                  </div>
-                  <CategoryDetailView category={selectedCategory} categories={categories} onClose={() => setSelectedCategory(null)} />
-                </div>
-
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-                  <div className="bg-surface-container-low p-4 rounded-lg">
-                    <div className="text-xs font-body text-on-surface-variant mb-1">{t("taxonomy.status")}</div>
-                    <div className="font-body font-medium text-sm text-on-surface flex items-center gap-1">
-                      <span className={`w-2 h-2 rounded-full ${selectedCategory.isActive ? "bg-primary-fixed" : "bg-error"}`} />
-                      {selectedCategory.isActive ? t("taxonomy.active") : t("taxonomy.inactive")}
-                    </div>
-                  </div>
-                  <div className="bg-surface-container-low p-4 rounded-lg">
-                    <div className="text-xs font-body text-on-surface-variant mb-1">{t("taxonomy.scope")}</div>
-                    <div className="font-body font-medium text-sm text-on-surface">{selectedCategory.scope}</div>
-                  </div>
-                  <div className="bg-surface-container-low p-4 rounded-lg">
-                    <div className="text-xs font-body text-on-surface-variant mb-1">{t("taxonomy.subCategories")}</div>
-                    <div className="font-body font-medium text-lg text-on-surface">{selectedChildren.length}</div>
-                  </div>
-                  <div className="bg-surface-container-low p-4 rounded-lg">
-                    <div className="text-xs font-body text-on-surface-variant mb-1">{t("taxonomy.businessType")}</div>
-                    <div className="font-body font-medium text-sm text-on-surface">{selectedCategory.businessType?.replace(/_/g, " ") ?? "—"}</div>
-                  </div>
-                </div>
-
-                {selectedChildren.length > 0 && (
-                  <div className="mb-6">
-                    <h4 className="font-headline font-semibold text-sm text-on-surface mb-2">{t("taxonomy.subCategoriesList")}</h4>
-                    <div className="flex flex-wrap gap-2">
-                      {selectedChildren.map((child) => (
-                        <span key={child.id} className="inline-flex items-center gap-1 px-3 py-1.5 bg-surface-container-low text-on-surface text-sm font-body rounded-lg">
-                          {child.nameBn}
-                          {child.nameEn && <span className="text-on-surface-variant text-xs">({child.nameEn})</span>}
-                        </span>
-                      ))}
-                    </div>
-                  </div>
-                )}
-
                 <div className="bg-surface-container-low p-5 rounded-lg relative">
                   <div className="absolute inset-0 bg-surface-container-lowest/60 backdrop-blur-md rounded-lg pointer-events-none" />
                   <div className="relative z-10 flex items-start gap-4">
@@ -441,12 +426,11 @@ export default function CategoryManagementPage() {
                                 onChange={(e) => setNewTagName(e.target.value)}
                                 onKeyDown={async (e) => {
                                   if (e.key === "Enter" && newTagName.trim()) {
-                                    setAddingTag(true);
                                     try {
                                       await addCategoryTags(selectedCategory.id, [newTagName.trim()]);
                                       setNewTagName("");
                                       mutateTags();
-                                    } catch {} finally { setAddingTag(false); }
+                                    } catch {}
                                   }
                                 }}
                                 placeholder="Add tag"

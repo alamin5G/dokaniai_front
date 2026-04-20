@@ -118,7 +118,7 @@ export default function CategoryRequestStatusSheet({
 
                 {req.approvedScope && (
                   <div className="bg-emerald-50 rounded-lg px-3 py-2 text-xs text-emerald-700 mb-2">
-                    <span className="font-bold">{t("approvedScope")}:</span> {t(`scope.${req.approvedScope}`)}
+                    <span className="font-bold">{t("approvedScope")}:</span> {t(`scopeOptions.${req.approvedScope}`)}
                   </div>
                 )}
 

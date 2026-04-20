@@ -173,7 +173,7 @@ export default function CategoryRequestSheet({
                     <span className="material-symbols-outlined text-[16px] align-middle mr-1">
                       {s === "GLOBAL" ? "public" : "storefront"}
                     </span>
-                    {t(`scope.${s}`)}
+                    {t(`scopeOptions.${s}`)}
                   </button>
                 ))}
               </div>
@@ -255,7 +255,7 @@ export default function CategoryRequestSheet({
                 </div>
                 <p className="text-sm text-on-surface-variant">{t("exactMatchDesc")}</p>
                 <button
-                  onClick={() => handleUseSuggestion(result.exactMatch)}
+                  onClick={() => result.exactMatch && handleUseSuggestion(result.exactMatch)}
                   className="w-full bg-primary text-on-primary py-3 rounded-xl text-sm font-bold hover:opacity-90 transition-opacity"
                 >
                   {t("useExisting")}
