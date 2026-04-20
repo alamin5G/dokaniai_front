@@ -420,74 +420,53 @@ export default function DueLedgerWorkspace({
                     </div>
                 </div>
 
-                {/* Transaction table */}
-                <div className="overflow-hidden rounded-2xl bg-surface-container-lowest shadow-sm">
-                    <table className="min-w-full text-left">
-                        <thead className="bg-surface-container-low text-sm font-bold text-on-surface-variant">
-                            <tr>
-                                <th className="px-6 py-4">{t("ledger.date")}</th>
-                                <th className="px-6 py-4">{t("ledger.type")}</th>
-                                <th className="px-6 py-4">{t("ledger.description")}</th>
-                                <th className="px-6 py-4 text-right">{t("ledger.amount")}</th>
-                                <th className="px-6 py-4 text-right">{t("ledger.balance")}</th>
-                            </tr>
-                        </thead>
-                        <tbody className="divide-y divide-surface-container">
-                            {filteredLedgerTransactions.length === 0 ? (
-                                <tr>
-                                    <td colSpan={6} className="px-6 py-12 text-center text-on-surface-variant">
-                                        No transactions found.
-                                    </td>
-                                </tr>
-                            ) : (
-                                filteredLedgerTransactions.map((tx: DueTransaction) => (
-                                    <tr
-                                        key={tx.id}
-                                        className="hover:bg-surface-container-low transition-colors"
-                                    >
-                                        <td className="px-6 py-4 text-sm text-on-surface-variant">
-                                            {new Date(tx.date).toLocaleDateString(loc)}
-                                        </td>
-                                        <td className="px-6 py-4">
-                                            <div className="flex items-center gap-2">
-                                                <span
-                                                    className={`inline-block rounded-full px-3 py-1 text-xs font-bold ${tx.type === "BAKI"
-                                                        ? "bg-tertiary-container text-on-tertiary-container"
-                                                        : tx.type === "JOMA"
-                                                            ? "bg-primary-container text-on-primary-container"
-                                                            : "bg-surface-container-high text-on-surface-variant"
-                                                        }`}
-                                                >
-                                                    {tx.type}
-                                                </span>
-                                                {tx.recordedVia === "AUTO_MFS" && (
-                                                    <span
-                                                        className="inline-flex items-center gap-1 rounded-full bg-blue-100 px-2.5 py-0.5 text-[10px] font-bold text-blue-800"
-                                                        title={t("autoMfs.badgeTooltip")}
-                                                    >
-                                                        <span className="material-symbols-outlined text-xs">sync</span>
-                                                        {t("autoMfs.badge")}
+                {/* Transaction History — card-based per due_ledger_workspace/code.html */}
+                <div className="bg-surface-container-low rounded-2xl p-8 flex-1">
+                    <h3 className="text-lg font-headline font-bold text-on-surface mb-6">{t("ledger.title")} <span className="text-sm font-normal text-on-surface-variant font-bengali ml-2">{t("ledger.subtitle")}</span></h3>
+                    <div className="flex flex-col gap-4">
+                        {filteredLedgerTransactions.length === 0 ? (
+                            <p className="py-8 text-center text-sm text-on-surface-variant">{t("ledger.empty")}</p>
+                        ) : (
+                            filteredLedgerTransactions.map((tx: DueTransaction) => {
+                                const isAutoMfs = tx.recordedVia === "AUTO_MFS";
+                                const isJoma = tx.type === "JOMA";
+                                return (
+                                    <div key={tx.id} className={`rounded-xl p-5 relative overflow-hidden ${isAutoMfs ? "bg-primary-fixed/20 border-l-4 border-primary" : "bg-surface-container-lowest"}`}>
+                                        {isAutoMfs && <div className="absolute right-0 top-0 bottom-0 w-32 bg-gradient-to-l from-primary-fixed/40 to-transparent pointer-events-none" />}
+                                        <div className="flex justify-between items-center">
+                                            <div className="flex items-center gap-4">
+                                                <div className={`w-12 h-12 rounded-full ${isAutoMfs ? "bg-surface-container-lowest flex items-center justify-center text-primary shadow-sm" : "bg-surface-container-low flex items-center justify-center text-on-surface-variant"}`}>
+                                                    <span className="material-symbols-outlined" style={isAutoMfs ? { fontVariationSettings: "'FILL' 1" } : undefined}>
+                                                        {isJoma ? "account_balance_wallet" : "shopping_bag"}
                                                     </span>
-                                                )}
+                                                </div>
+                                                <div>
+                                                    <h4 className="font-headline font-semibold text-on-surface">
+                                                        {isAutoMfs ? t("autoMfs.title") : (tx.description || tx.type)}
+                                                        {isJoma && !isAutoMfs && <span className="text-on-surface-variant"> ({tx.type})</span>}
+                                                    </h4>
+                                                    <p className={`text-sm text-on-surface-variant mt-0.5 ${isAutoMfs ? "font-bengali" : ""}`}>
+                                                        {isAutoMfs
+                                                            ? `${tx.paymentMethod || "MFS"} ending · ${new Date(tx.date).toLocaleDateString(loc)}`
+                                                            : new Date(tx.date).toLocaleDateString(loc)
+                                                        }
+                                                    </p>
+                                                </div>
                                             </div>
-                                        </td>
-                                        <td className="px-6 py-4 text-sm text-on-surface">
-                                            {tx.description || "—"}
-                                        </td>
-                                        <td
-                                            className={`px-6 py-4 text-right font-bold ${tx.type === "BAKI" ? "text-tertiary" : "text-primary"
-                                                }`}
-                                        >
-                                            {tx.type === "BAKI" ? "+" : "−"} ৳ {formatMoney(tx.amount)}
-                                        </td>
-                                        <td className="px-6 py-4 text-right font-bold text-on-surface">
-                                            ৳ {formatMoney(tx.runningBalance)}
-                                        </td>
-                                    </tr>
-                                ))
-                            )}
-                        </tbody>
-                    </table>
+                                            <div className="text-right">
+                                                <p className={`font-headline font-bold text-lg ${isJoma ? "text-primary" : "text-error"}`}>
+                                                    {isJoma ? "+" : "−"} ৳ {formatMoney(tx.amount)}
+                                                </p>
+                                                <p className="font-body text-xs text-on-surface-variant mt-0.5">
+                                                    {isJoma ? t("ledger.paymentReceived") : t("ledger.creditAdded")}
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                );
+                            })
+                        )}
+                    </div>
                 </div>
 
                 {/* Transaction Form Overlay */}

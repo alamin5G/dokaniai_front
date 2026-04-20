@@ -75,6 +75,7 @@ export interface MfsNumberResponse {
     mfsType: string;
     mfsNumber: string;
     simSlot: number | null;
+    accountType?: string;
     status: "PENDING" | "APPROVED" | "REJECTED";
     approvedByName: string | null;
     approvedAt: string | null;

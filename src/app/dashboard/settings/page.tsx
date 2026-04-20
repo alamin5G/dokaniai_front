@@ -352,7 +352,7 @@ export default function BusinessSettingsPage() {
     const [mfsNumbers, setMfsNumbers] = useState<MfsNumberResponse[]>([]);
     const [mfsNumbersLoading, setMfsNumbersLoading] = useState(false);
     const [mfsRegistering, setMfsRegistering] = useState(false);
-    const [mfsForm, setMfsForm] = useState({ mfsType: "BKASH" as "BKASH" | "NAGAD" | "ROCKET", mfsNumber: "", simSlot: 0 });
+    const [mfsForm, setMfsForm] = useState({ mfsType: "BKASH" as "BKASH" | "NAGAD" | "ROCKET", mfsNumber: "", simSlot: 0, accountType: "MERCHANT" as string });
     const [mfsMessage, setMfsMessage] = useState<{ type: "success" | "error"; text: string } | null>(null);
 
     const showFeedback = (type: "success" | "error" | "warning", message: string) => {
@@ -749,7 +749,7 @@ export default function BusinessSettingsPage() {
                 simSlot: mfsForm.simSlot,
             });
             setMfsMessage({ type: "success", text: t("settings.mfsNumbers.registerSuccess") });
-            setMfsForm({ mfsType: "BKASH", mfsNumber: "", simSlot: 0 });
+            setMfsForm({ mfsType: "BKASH", mfsNumber: "", simSlot: 0, accountType: "MERCHANT" });
             await loadMfsNumbers();
         } catch (err: unknown) {
             const msg = err instanceof Error ? err.message : t("settings.mfsNumbers.registerError");
@@ -1441,6 +1441,14 @@ export default function BusinessSettingsPage() {
                             <SectionCard title={t("settings.mfsNumbers.title")}>
                                 <p className="text-sm text-on-surface-variant mb-5">{t("settings.mfsNumbers.subtitle")}</p>
 
+                                {/* AI Verification hint */}
+                                <div className="flex justify-end mb-4 pointer-events-none">
+                                    <div className="inline-flex items-center gap-2 bg-surface-container-lowest/70 backdrop-blur-xl px-4 py-2 rounded-full shadow-[0_20px_40px_rgba(24,28,26,0.06)]">
+                                        <span className="material-symbols-outlined text-primary text-sm" style={{ fontVariationSettings: "'FILL' 1" }}>smart_toy</span>
+                                        <span className="text-xs font-semibold text-primary">AI Verification Active</span>
+                                    </div>
+                                </div>
+
                                 {mfsMessage ? (
                                     <div className={`mb-4 rounded-[1.25rem] border px-4 py-3 text-sm font-medium ${mfsMessage.type === "success"
                                         ? "border-emerald-200 bg-emerald-50 text-emerald-800"
@@ -1450,43 +1458,70 @@ export default function BusinessSettingsPage() {
                                     </div>
                                 ) : null}
 
-                                <form onSubmit={handleMfsRegister} className="space-y-4">
-                                    <div className="grid gap-4 lg:grid-cols-3">
-                                        <SelectField
-                                            label={t("settings.mfsNumbers.mfsTypeLabel")}
-                                            value={mfsForm.mfsType}
-                                            onChange={(value) => setMfsForm((f) => ({ ...f, mfsType: value as "BKASH" | "NAGAD" | "ROCKET" }))}
-                                        >
-                                            <option value="BKASH">bKash</option>
-                                            <option value="NAGAD">Nagad</option>
-                                            <option value="ROCKET">Rocket</option>
-                                        </SelectField>
-                                        <FormInput
-                                            label={t("settings.mfsNumbers.mfsNumberLabel")}
-                                            value={mfsForm.mfsNumber}
-                                            onChange={(e) => setMfsForm((f) => ({ ...f, mfsNumber: e.target.value }))}
-                                            placeholder={t("settings.mfsNumbers.mfsNumberPlaceholder")}
-                                        />
-                                        <SelectField
-                                            label={t("settings.mfsNumbers.simSlotLabel")}
-                                            value={String(mfsForm.simSlot)}
-                                            onChange={(value) => setMfsForm((f) => ({ ...f, simSlot: Number(value) }))}
-                                        >
-                                            <option value="0">{t("settings.mfsNumbers.simSlot0")}</option>
-                                            <option value="1">{t("settings.mfsNumbers.simSlot1")}</option>
-                                        </SelectField>
+                                <form onSubmit={handleMfsRegister} className="space-y-6">
+                                    {/* Provider Selection — chip-style radio per mfs_registration_settings/code.html */}
+                                    <div className="flex flex-col gap-3">
+                                        <label className="text-sm font-semibold text-on-surface-variant">{t("settings.mfsNumbers.mfsTypeLabel")}</label>
+                                        <div className="flex flex-wrap gap-3">
+                                            {(["BKASH", "NAGAD", "ROCKET"] as const).map((provider) => {
+                                                const colors: Record<string, string> = { BKASH: "#E2136E", NAGAD: "#F37021", ROCKET: "#7C3AED" };
+                                                const labels: Record<string, string> = { BKASH: "bKash", NAGAD: "Nagad", ROCKET: "Rocket" };
+                                                return (
+                                                    <label key={provider} className="cursor-pointer relative">
+                                                        <input type="radio" name="mfsProvider" checked={mfsForm.mfsType === provider} onChange={() => setMfsForm((f) => ({ ...f, mfsType: provider }))} className="peer sr-only" />
+                                                        <div className={`px-6 py-3 rounded-full font-medium transition-colors flex items-center gap-2 ${mfsForm.mfsType === provider ? "bg-primary text-white" : "bg-surface-container-high text-on-surface hover:bg-surface-container-highest"}`}>
+                                                            <span className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold ${mfsForm.mfsType === provider ? "bg-white/20 text-white" : "bg-surface-container text-on-surface-variant"}`} style={{ border: mfsForm.mfsType === provider ? "none" : `2px solid ${colors[provider]}22` }}>{labels[provider].charAt(0)}</span>
+                                                            <span>{labels[provider]}</span>
+                                                        </div>
+                                                    </label>
+                                                );
+                                            })}
+                                        </div>
                                     </div>
-                                    <button
-                                        type="submit"
-                                        disabled={mfsRegistering}
-                                        className="inline-flex rounded-full bg-gradient-to-r from-primary to-primary-container px-6 py-3 text-sm font-bold text-white shadow-md transition disabled:opacity-50"
-                                    >
-                                        {mfsRegistering ? t("settings.mfsNumbers.registering") : t("settings.mfsNumbers.registerButton")}
-                                    </button>
+
+                                    {/* Phone + Account Type + SIM Slot */}
+                                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                                        <div>
+                                            <label className="text-sm font-semibold text-on-surface-variant block mb-2">{t("settings.mfsNumbers.mfsNumberLabel")}</label>
+                                            <div className="relative">
+                                                <span className="absolute left-4 top-1/2 -translate-y-1/2 text-on-surface-variant font-medium text-sm">+88</span>
+                                                <input type="tel" value={mfsForm.mfsNumber} onChange={(e) => setMfsForm((f) => ({ ...f, mfsNumber: e.target.value }))} placeholder="01X XXXX XXXX" required className="w-full pl-12 pr-4 py-4 rounded-xl text-lg font-medium text-on-surface placeholder:text-on-surface-variant/50 bg-surface-container-low focus:ring-1 focus:ring-primary outline-none border-none" />
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <label className="text-sm font-semibold text-on-surface-variant block mb-2">{t("settings.mfsNumbers.accountTypeLabel")}</label>
+                                            <select value={mfsForm.accountType} onChange={(e) => setMfsForm((f) => ({ ...f, accountType: e.target.value }))} className="w-full px-4 py-4 rounded-xl text-base font-medium text-on-surface bg-surface-container-low focus:ring-1 focus:ring-primary outline-none border-none appearance-none cursor-pointer">
+                                                <option value="MERCHANT">Merchant (Payment)</option>
+                                                <option value="PERSONAL">Personal (Send Money)</option>
+                                                <option value="AGENT">Agent</option>
+                                            </select>
+                                        </div>
+                                        <div>
+                                            <label className="text-sm font-semibold text-on-surface-variant block mb-2">{t("settings.mfsNumbers.simSlotLabel")}</label>
+                                            <select value={String(mfsForm.simSlot)} onChange={(e) => setMfsForm((f) => ({ ...f, simSlot: Number(e.target.value) }))} className="w-full px-4 py-4 rounded-xl text-base font-medium text-on-surface bg-surface-container-low focus:ring-1 focus:ring-primary outline-none border-none appearance-none cursor-pointer">
+                                                <option value="0">{t("settings.mfsNumbers.simSlot0")}</option>
+                                                <option value="1">{t("settings.mfsNumbers.simSlot1")}</option>
+                                            </select>
+                                        </div>
+                                    </div>
+
+                                    <div className="flex items-center justify-end gap-4">
+                                        <button type="button" onClick={() => setMfsForm({ mfsType: "BKASH", mfsNumber: "", simSlot: 0, accountType: "MERCHANT" })} className="px-6 py-3 text-on-surface font-bold hover:bg-surface-container-high rounded-xl transition-colors">{t("transactionForm.cancel")}</button>
+                                        <button type="submit" disabled={mfsRegistering} className="inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-primary to-primary-container px-8 py-3 text-sm font-bold text-white hover:opacity-90 disabled:opacity-50 transition-opacity shadow-sm">
+                                            {t("settings.mfsNumbers.registerButton")}
+                                            <span className="material-symbols-outlined text-sm">arrow_forward</span>
+                                        </button>
+                                    </div>
                                 </form>
                             </SectionCard>
 
                             <SectionCard title={t("settings.mfsNumbers.myNumbersTitle")}>
+                                <div className="flex items-center justify-between mb-2">
+                                    <h3 className="text-xl font-bold font-headline text-on-surface tracking-tight flex items-center gap-3">
+                                        {t("settings.mfsNumbers.myNumbersTitle")}
+                                        <span className="text-sm font-medium bg-surface-container-high px-3 py-1 rounded-full">{mfsNumbers.filter(n => n.status === "APPROVED").length} {t("settings.mfsNumbers.activeCount")}</span>
+                                    </h3>
+                                </div>
                                 {mfsNumbersLoading ? (
                                     <div className="flex items-center justify-center py-10">
                                         <span className="material-symbols-outlined animate-spin text-primary">progress_activity</span>
@@ -1494,41 +1529,58 @@ export default function BusinessSettingsPage() {
                                 ) : mfsNumbers.length === 0 ? (
                                     <p className="text-sm text-on-surface-variant py-4 text-center">{t("settings.mfsNumbers.noNumbers")}</p>
                                 ) : (
-                                    <div className="space-y-3">
-                                        {mfsNumbers.map((item) => (
-                                            <div
-                                                key={item.id}
-                                                className="flex items-center justify-between rounded-xl border border-outline-variant/30 bg-surface-container-low px-5 py-4"
-                                            >
-                                                <div className="flex items-center gap-4">
-                                                    <span className={`inline-block rounded-full px-3 py-1 text-xs font-bold ${item.mfsType === "BKASH"
-                                                        ? "bg-pink-100 text-pink-800"
-                                                        : item.mfsType === "NAGAD"
-                                                            ? "bg-orange-100 text-orange-800"
-                                                            : "bg-purple-100 text-purple-800"
-                                                        }`}>
-                                                        {item.mfsType}
-                                                    </span>
-                                                    <div>
-                                                        <p className="font-semibold text-on-surface">{item.mfsNumber}</p>
-                                                        {item.simSlot != null && (
-                                                            <p className="text-xs text-on-surface-variant">SIM {item.simSlot + 1}</p>
+                                    <div className="space-y-4">
+                                        {mfsNumbers.map((item) => {
+                                            const colors: Record<string, { bg: string; text: string; initial: string }> = {
+                                                BKASH: { bg: "bg-[#E2136E]/10", text: "text-[#E2136E]", initial: "b" },
+                                                NAGAD: { bg: "bg-[#F37021]/10", text: "text-[#F37021]", initial: "N" },
+                                                ROCKET: { bg: "bg-purple-100", text: "text-purple-700", initial: "R" },
+                                            };
+                                            const c = colors[item.mfsType] || { bg: "bg-gray-100", text: "text-gray-800", initial: "?" };
+                                            const isApproved = item.status === "APPROVED";
+                                            return (
+                                                <div key={item.id} className={`bg-surface-container-lowest p-6 rounded-2xl flex flex-col gap-4 ${!isApproved ? "opacity-80" : ""}`}>
+                                                    <div className="flex items-start justify-between">
+                                                        <div className="flex items-center gap-4">
+                                                            <div className={`w-12 h-12 rounded-full ${c.bg} flex items-center justify-center ${c.text} font-bold text-xl shrink-0`}>{c.initial}</div>
+                                                            <div>
+                                                                <h4 className="font-bold text-lg text-on-surface tracking-tight">{item.mfsType === "BKASH" ? "bKash" : item.mfsType === "NAGAD" ? "Nagad" : "Rocket"} {item.accountType || ""}</h4>
+                                                                <p className="text-sm text-on-surface-variant font-medium">+88 {item.mfsNumber}</p>
+                                                            </div>
+                                                        </div>
+                                                        <div className={`px-3 py-1 rounded-full text-xs font-bold flex items-center gap-1 ${isApproved ? "bg-primary-fixed-dim/20 text-primary-container" : "bg-surface-variant text-on-surface-variant"}`}>
+                                                            <span className="material-symbols-outlined text-[14px]">{isApproved ? "verified" : "pending"}</span>
+                                                            {isApproved ? t("settings.mfsNumbers.statusApproved") : t("settings.mfsNumbers.statusPending")}
+                                                        </div>
+                                                    </div>
+                                                    <div className="bg-surface-container-low rounded-xl p-4 mt-2 flex items-center justify-between">
+                                                        <div className="flex flex-col">
+                                                            <span className="text-xs font-semibold text-on-surface-variant uppercase tracking-wider">{isApproved ? t("settings.mfsNumbers.autoSync") : t("settings.mfsNumbers.pendingApproval")}</span>
+                                                            <span className="text-sm font-bold text-primary">{isApproved ? `Active on SIM ${item.simSlot !== null ? item.simSlot + 1 : "?"}` : t("settings.mfsNumbers.waitingApproval")}</span>
+                                                        </div>
+                                                        {isApproved ? (
+                                                            <button className="text-secondary font-medium text-sm hover:underline">{t("settings.mfsNumbers.configure")}</button>
+                                                        ) : (
+                                                            <button className="text-secondary font-medium text-sm hover:underline">{t("settings.mfsNumbers.resend")}</button>
                                                         )}
                                                     </div>
                                                 </div>
-                                                <span className={`rounded-full px-3 py-1 text-xs font-bold ${item.status === "APPROVED"
-                                                    ? "bg-emerald-100 text-emerald-800"
-                                                    : item.status === "PENDING"
-                                                        ? "bg-amber-100 text-amber-800"
-                                                        : "bg-rose-100 text-rose-800"
-                                                    }`}>
-                                                    {t(`settings.mfsNumbers.status${item.status.charAt(0)}${item.status.slice(1).toLowerCase()}` as "settings.mfsNumbers.statusPending")}
-                                                </span>
-                                            </div>
-                                        ))}
+                                            );
+                                        })}
                                     </div>
                                 )}
                             </SectionCard>
+
+                            {/* Why register MFS numbers? — per mfs_registration_settings/code.html */}
+                            <div className="bg-secondary-fixed/30 p-6 rounded-2xl border-l-4 border-secondary">
+                                <h4 className="font-bold text-on-secondary-container mb-2 flex items-center gap-2">
+                                    <span className="material-symbols-outlined">info</span>
+                                    {t("settings.mfsNumbers.whyRegisterTitle")}
+                                </h4>
+                                <p className="text-sm text-on-surface-variant leading-relaxed">
+                                    {t("settings.mfsNumbers.whyRegisterDesc")}
+                                </p>
+                            </div>
                         </>
                     ) : null}
 
