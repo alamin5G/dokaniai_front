@@ -8,6 +8,7 @@ import type {
     AdminUser,
     AdminListTicketsParams,
     AuditLogParams,
+    AuditLogSummary,
     AssignTicketRequest,
     ComplimentaryUpgradeRequest,
     EscalateTicketRequest,
@@ -161,8 +162,15 @@ export async function escalateTicket(
 
 export async function getAuditLogs(params?: AuditLogParams): Promise<PagedAuditLogs> {
     const query = new URLSearchParams();
+    if (params?.search) query.set("search", params.search);
+    if (params?.actorId) query.set("actorId", params.actorId);
     if (params?.userId) query.set("userId", params.userId);
+    if (params?.targetUserId) query.set("targetUserId", params.targetUserId);
     if (params?.action) query.set("action", params.action);
+    if (params?.severity) query.set("severity", params.severity);
+    if (params?.status) query.set("status", params.status);
+    if (params?.targetEntity) query.set("targetEntity", params.targetEntity);
+    if (params?.ipAddress) query.set("ipAddress", params.ipAddress);
     if (params?.startDate) query.set("startDate", params.startDate);
     if (params?.endDate) query.set("endDate", params.endDate);
     if (params?.page !== undefined) query.set("page", String(params.page));
@@ -171,6 +179,46 @@ export async function getAuditLogs(params?: AuditLogParams): Promise<PagedAuditL
     const qs = query.toString();
     const { data } = await apiClient.get(`/admin/audit-logs${qs ? `?${qs}` : ""}`);
     return data.data;
+}
+
+export async function getAuditLogSummary(params?: AuditLogParams): Promise<AuditLogSummary> {
+    const query = new URLSearchParams();
+    if (params?.search) query.set("search", params.search);
+    if (params?.actorId) query.set("actorId", params.actorId);
+    if (params?.userId) query.set("userId", params.userId);
+    if (params?.targetUserId) query.set("targetUserId", params.targetUserId);
+    if (params?.action) query.set("action", params.action);
+    if (params?.severity) query.set("severity", params.severity);
+    if (params?.status) query.set("status", params.status);
+    if (params?.targetEntity) query.set("targetEntity", params.targetEntity);
+    if (params?.ipAddress) query.set("ipAddress", params.ipAddress);
+    if (params?.startDate) query.set("startDate", params.startDate);
+    if (params?.endDate) query.set("endDate", params.endDate);
+
+    const qs = query.toString();
+    const { data } = await apiClient.get(`/admin/audit-logs/summary${qs ? `?${qs}` : ""}`);
+    return data.data;
+}
+
+export async function downloadAuditLogsCsv(params?: AuditLogParams): Promise<Blob> {
+    const query = new URLSearchParams();
+    if (params?.search) query.set("search", params.search);
+    if (params?.actorId) query.set("actorId", params.actorId);
+    if (params?.userId) query.set("userId", params.userId);
+    if (params?.targetUserId) query.set("targetUserId", params.targetUserId);
+    if (params?.action) query.set("action", params.action);
+    if (params?.severity) query.set("severity", params.severity);
+    if (params?.status) query.set("status", params.status);
+    if (params?.targetEntity) query.set("targetEntity", params.targetEntity);
+    if (params?.ipAddress) query.set("ipAddress", params.ipAddress);
+    if (params?.startDate) query.set("startDate", params.startDate);
+    if (params?.endDate) query.set("endDate", params.endDate);
+
+    const qs = query.toString();
+    const { data } = await apiClient.get(`/admin/audit-logs/export${qs ? `?${qs}` : ""}`, {
+        responseType: "blob",
+    });
+    return data;
 }
 
 // ─── System Stats ───────────────────────────────────────────────────────────

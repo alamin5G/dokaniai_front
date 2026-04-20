@@ -70,6 +70,36 @@ export interface PagedAuditLogs {
     size: number;
 }
 
+export interface AuditFacetCount {
+    label: string;
+    count: number;
+}
+
+export interface AuditLogHighlight {
+    id: string;
+    actorId: string;
+    action: string;
+    severity: string;
+    status: string;
+    targetEntity: string | null;
+    details: string | null;
+    ipAddress: string | null;
+    createdAt: string;
+}
+
+export interface AuditLogSummary {
+    totalLogs: number;
+    warningCount: number;
+    criticalCount: number;
+    failedCount: number;
+    authEventCount: number;
+    exportCount: number;
+    uniqueActors: number;
+    topActions: AuditFacetCount[];
+    topEntities: AuditFacetCount[];
+    highlights: AuditLogHighlight[];
+}
+
 // ─── System Stats ───────────────────────────────────────────────────────────
 
 export interface SubscriptionStats {
@@ -167,8 +197,15 @@ export interface AdminListTicketsParams {
 // ─── Audit Log Filters ──────────────────────────────────────────────────────
 
 export interface AuditLogParams {
+    search?: string;
+    actorId?: string;
     userId?: string;
+    targetUserId?: string;
     action?: string;
+    severity?: string;
+    status?: string;
+    targetEntity?: string;
+    ipAddress?: string;
     startDate?: string; // ISO datetime
     endDate?: string;   // ISO datetime
     page?: number;
