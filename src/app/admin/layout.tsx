@@ -55,7 +55,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                         <SidebarLink href="/admin/users" icon="group" label="Users" />
                         <SidebarLink href="/admin/payments" icon="payments" label="Payments" />
                         <SidebarLink href="/admin/coupons" icon="confirmation_number" label="Coupons" />
-                        <SidebarLink href="/admin/categories" icon="category" label="Categories" />
+                        <CategorySubNav />
                         <SidebarLink href="/admin/referrals" icon="share" label="Referrals" />
                         <SidebarLink href="/admin/support" icon="support_agent" label="Support" />
                         {(userRole === "SUPER_ADMIN") && (
@@ -134,5 +134,66 @@ function SidebarLink({ href, icon, label, filled }: { href: string; icon: string
             </span>
             <span className={`text-sm ${isActive ? "font-bold" : "font-medium"}`}>{label}</span>
         </button>
+    );
+}
+
+function CategorySubNav() {
+    const pathname = usePathname();
+    const router = useRouter();
+    const [open, setOpen] = useState(pathname.startsWith("/admin/categories"));
+    const isParentActive = pathname.startsWith("/admin/categories");
+
+    const subItems = [
+        { href: "/admin/categories", label: "Taxonomy" },
+        { href: "/admin/categories/moderation", label: "Moderation" },
+    ];
+
+    return (
+        <div>
+            <button
+                onClick={() => { router.push("/admin/categories"); setOpen(true); }}
+                className={`flex items-center justify-between w-full px-4 py-3 rounded-xl transition-colors text-left ${
+                    isParentActive
+                        ? "bg-surface-container text-on-surface"
+                        : "text-on-surface-variant hover:bg-surface-container-low"
+                }`}
+            >
+                <div className="flex items-center gap-3">
+                    <span
+                        className={`material-symbols-outlined ${isParentActive ? "text-primary" : ""}`}
+                        style={isParentActive ? { fontVariationSettings: "'FILL' 1" } : undefined}
+                    >
+                        category
+                    </span>
+                    <span className={`text-sm ${isParentActive ? "font-bold" : "font-medium"}`}>Categories</span>
+                </div>
+                <span
+                    className={`material-symbols-outlined text-[16px] transition-transform ${open ? "rotate-180" : ""}`}
+                >
+                    expand_more
+                </span>
+            </button>
+            {open && (
+                <div className="ml-6 pl-4 border-l-2 border-outline-variant/20 mt-1 flex flex-col gap-0.5">
+                    {subItems.map((item) => {
+                        const isActive = pathname === item.href;
+                        return (
+                            <button
+                                key={item.href}
+                                onClick={() => router.push(item.href)}
+                                className={`flex items-center gap-2 px-3 py-2 rounded-lg text-left transition-colors text-[13px] ${
+                                    isActive
+                                        ? "bg-primary-fixed/30 text-primary font-semibold"
+                                        : "text-on-surface-variant hover:bg-surface-container-low"
+                                }`}
+                            >
+                                <span className={`w-1.5 h-1.5 rounded-full ${isActive ? "bg-primary" : "bg-on-surface-variant/30"}`} />
+                                {item.label}
+                            </button>
+                        );
+                    })}
+                </div>
+            )}
+        </div>
     );
 }

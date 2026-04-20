@@ -1,10 +1,11 @@
 import useSWR from "swr";
 import type { CategoryResponse } from "@/types/category";
-import type { CategoryRequestStats } from "@/types/categoryRequest";
+import type { CategoryRequestStats, CategoryRequestResponse } from "@/types/categoryRequest";
 import {
   getCategoriesByBusinessType,
   getCategoryTree,
   getCategoryRequestStats,
+  getCategoryRequestById,
 } from "@/lib/categoryApi";
 import { swrKeys } from "@/lib/swrKeys";
 
@@ -57,6 +58,18 @@ export function useCategoryRequestStats() {
 
   return {
     stats: data ?? null,
+    isLoading,
+    error,
+    mutate,
+  };
+}
+
+export function useCategoryRequestById(id: string | null) {
+  const key = id ? swrKeys.categoryRequestById(id) : null;
+  const { data, error, isLoading, mutate } = useSWR(key, () => getCategoryRequestById(id!));
+
+  return {
+    request: data ?? null,
     isLoading,
     error,
     mutate,

@@ -176,3 +176,10 @@ export async function getBusinessCategoryRequests(businessId: string): Promise<C
   );
   return unwrap(response);
 }
+
+export async function getCategoryRequestById(requestId: string): Promise<CategoryRequestResponse> {
+  const response = await apiClient.get<ApiSuccess<CategoryRequestResponse>>(
+    `/category-requests/${encodeURIComponent(requestId)}`,
+  );
+  return unwrap(response);
+}

@@ -81,6 +81,8 @@ export const swrKeys = {
         `/category-requests/status/${status}?page=${page}`,
     categoryRequestsPending: (page: number) =>
         `/category-requests/pending?page=${page}`,
+    categoryRequestById: (id: string) =>
+        `/category-requests/${id}`,
 
     // Business
     businessStats: (businessId: string) =>
