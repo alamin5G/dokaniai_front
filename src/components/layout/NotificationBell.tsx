@@ -65,6 +65,7 @@ const typeColors: Record<string, string> = {
     TRIAL_ENDING: "bg-yellow-100 text-yellow-700",
     GRACE_PERIOD: "bg-purple-100 text-purple-700",
     DUE_REMINDER: "bg-amber-100 text-amber-700",
+    CATEGORY_REQUEST: "bg-indigo-100 text-indigo-700",
     SYSTEM: "bg-gray-100 text-gray-700",
     SUBSCRIPTION: "bg-indigo-100 text-indigo-700",
     SUPPORT: "bg-teal-100 text-teal-700",

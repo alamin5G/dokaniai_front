@@ -410,6 +410,7 @@ function CategoryFilterChipsInline({
                 <CategoryRequestSheet
                     businessId={businessId}
                     categories={categories}
+                    onUseExistingCategory={onSelect}
                     onClose={() => setShowRequestSheet(false)}
                 />
             )}
@@ -422,4 +423,3 @@ function CategoryFilterChipsInline({
         </>
     );
 }
-

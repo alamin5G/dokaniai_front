@@ -116,6 +116,18 @@ export default function CategoryRequestStatusSheet({
                   </div>
                 )}
 
+                {req.approvedScope && (
+                  <div className="bg-emerald-50 rounded-lg px-3 py-2 text-xs text-emerald-700 mb-2">
+                    <span className="font-bold">{t("approvedScope")}:</span> {t(`scope.${req.approvedScope}`)}
+                  </div>
+                )}
+
+                {req.status === "DUPLICATE_SUGGESTED" && req.suggestedCategoryName && (
+                  <div className="bg-amber-50 rounded-lg px-3 py-2 text-xs text-amber-700 mb-2">
+                    <span className="font-bold">{t("mergedWith")}:</span> {req.suggestedCategoryName}
+                  </div>
+                )}
+
                 {req.status === "PENDING" && (
                   <button
                     onClick={() => handleCancel(req.id)}

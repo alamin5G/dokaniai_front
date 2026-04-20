@@ -7,6 +7,7 @@ export type NotificationType =
     | 'FT2_OFFER'
     | 'GRACE_PERIOD'
     | 'DUE_REMINDER'
+    | 'CATEGORY_REQUEST'
     | 'SYSTEM'
     | 'SUBSCRIPTION'
     | 'SUPPORT'

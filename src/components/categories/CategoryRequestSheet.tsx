@@ -15,17 +15,19 @@ export default function CategoryRequestSheet({
   businessId,
   categories,
   onClose,
+  onUseExistingCategory,
 }: {
   businessId: string;
   categories: CategoryResponse[];
   onClose: () => void;
+  onUseExistingCategory?: (categoryId: string) => void;
 }) {
   const t = useTranslations("shop.categoryRequest");
 
   const [nameBn, setNameBn] = useState("");
   const [nameEn, setNameEn] = useState("");
   const [justification, setJustification] = useState("");
-  const [description, setDescription] = useState("");
+  const description = "";
   const [requestedScope, setRequestedScope] = useState<"GLOBAL" | "BUSINESS">("GLOBAL");
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -79,6 +81,7 @@ export default function CategoryRequestSheet({
   }
 
   function handleUseSuggestion(suggestion: CategorySuggestion) {
+    onUseExistingCategory?.(suggestion.id);
     onClose();
   }
 
@@ -251,6 +254,12 @@ export default function CategoryRequestSheet({
                   {result.exactMatch.nameEn && <p className="text-xs text-amber-600">{result.exactMatch.nameEn}</p>}
                 </div>
                 <p className="text-sm text-on-surface-variant">{t("exactMatchDesc")}</p>
+                <button
+                  onClick={() => handleUseSuggestion(result.exactMatch)}
+                  className="w-full bg-primary text-on-primary py-3 rounded-xl text-sm font-bold hover:opacity-90 transition-opacity"
+                >
+                  {t("useExisting")}
+                </button>
               </>
             ) : (
               <>

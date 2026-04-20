@@ -2547,6 +2547,8 @@
       "cancelRequest": "Cancel request",
       "rejectionReason": "Reason",
       "adminNotes": "Admin note",
+      "approvedScope": "Approved as",
+      "mergedWith": "Merged with",
       "status": {
         "PENDING": "Pending",
         "UNDER_REVIEW": "Under Review",

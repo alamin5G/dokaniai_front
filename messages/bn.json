@@ -2589,6 +2589,8 @@
       "cancelRequest": "অনুরোধ বাতিল করুন",
       "rejectionReason": "কারণ",
       "adminNotes": "অ্যাডমিন নোট",
+      "approvedScope": "অনুমোদিত স্কোপ",
+      "mergedWith": "যার সাথে একত্রিত",
       "status": {
         "PENDING": "অপেক্ষমাণ",
         "UNDER_REVIEW": "পর্যালোচনাধীন",

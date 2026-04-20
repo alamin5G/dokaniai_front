@@ -91,6 +91,7 @@ export default function CategoryFilterChips({
                 <CategoryRequestSheet
                     businessId={businessId}
                     categories={categories}
+                    onUseExistingCategory={onSelect}
                     onClose={() => setShowRequestSheet(false)}
                 />
             )}
