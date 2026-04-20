@@ -10,7 +10,14 @@ import {
     getUnreadCount,
     deleteNotification,
 } from "@/lib/notificationApi";
+import {
+    trackActivityEvent,
+    trackNotificationDismiss,
+    trackNotificationOpen,
+    trackNotificationPanelOpen,
+} from "@/lib/activityTracker";
 import { useAuthStore } from "@/store/authStore";
+import { useBusinessStore } from "@/store/businessStore";
 
 // ─── Icons ──────────────────────────────────────────────────
 
@@ -90,6 +97,7 @@ const toneBorders: Record<string, string> = {
 
 export default function NotificationBell() {
     const t = useTranslations("notifications");
+    const activeBusinessId = useBusinessStore((state) => state.activeBusinessId);
 
     const [isOpen, setIsOpen] = useState(false);
     const [notifications, setNotifications] = useState<NotificationItem[]>([]);
@@ -119,6 +127,11 @@ export default function NotificationBell() {
     // ─── Load notifications when panel opens ─────────────
     useEffect(() => {
         if (!isOpen) return;
+
+        trackNotificationPanelOpen({
+            unreadCount,
+            notificationCount: notifications.length,
+        });
 
         async function loadNotifications() {
             setLoading(true);
@@ -150,13 +163,17 @@ export default function NotificationBell() {
     }, []);
 
     // ─── Actions ────────────────────────────────────────
-    async function handleMarkRead(id: string) {
+    async function handleMarkRead(notification: NotificationItem) {
         try {
-            await markAsRead(id);
+            await markAsRead(notification.id);
             setNotifications((prev) =>
-                prev.map((n) => (n.id === id ? { ...n, isRead: true } : n))
+                prev.map((n) => (n.id === notification.id ? { ...n, isRead: true } : n))
             );
-            setUnreadCount((c) => Math.max(0, c - 1));
+            setUnreadCount((c) => Math.max(0, c - (notification.isRead ? 0 : 1)));
+            trackNotificationOpen({
+                businessId: activeBusinessId,
+                notification,
+            });
         } catch { /* non-critical */ }
     }
 
@@ -165,14 +182,26 @@ export default function NotificationBell() {
             await markAllAsRead();
             setNotifications((prev) => prev.map((n) => ({ ...n, isRead: true })));
             setUnreadCount(0);
+            trackActivityEvent({
+                businessId: activeBusinessId,
+                eventType: "NOTIFICATION_MARK_ALL_READ",
+                eventCategory: "NOTIFICATION",
+                metadata: {
+                    affectedCount: notifications.filter((item) => !item.isRead).length,
+                },
+            });
         } catch { /* non-critical */ }
     }
 
-    async function handleDelete(id: string) {
+    async function handleDelete(notification: NotificationItem) {
         try {
-            await deleteNotification(id);
-            setNotifications((prev) => prev.filter((n) => n.id !== id));
-            setUnreadCount((c) => Math.max(0, c - 1));
+            await deleteNotification(notification.id);
+            setNotifications((prev) => prev.filter((n) => n.id !== notification.id));
+            setUnreadCount((c) => Math.max(0, c - (notification.isRead ? 0 : 1)));
+            trackNotificationDismiss({
+                businessId: activeBusinessId,
+                notification,
+            });
         } catch { /* non-critical */ }
     }
 
@@ -271,8 +300,8 @@ function NotificationCard({
     typeLabel,
 }: {
     notification: NotificationItem;
-    onMarkRead: (id: string) => void;
-    onDelete: (id: string) => void;
+    onMarkRead: (notification: NotificationItem) => void;
+    onDelete: (notification: NotificationItem) => void;
     timeAgo: (dateStr: string) => string;
     typeLabel: string;
 }) {
@@ -317,7 +346,7 @@ function NotificationCard({
                 {isAi && actionLabel && (
                     <button
                         type="button"
-                        onClick={() => onMarkRead(notification.id)}
+                        onClick={() => onMarkRead(notification)}
                         className="mt-1.5 inline-flex items-center gap-1 rounded-lg bg-primary/10 px-2.5 py-1 text-[11px] font-semibold text-primary hover:bg-primary/20 transition-colors"
                     >
                         {actionLabel}
@@ -342,7 +371,7 @@ function NotificationCard({
                 {!notification.isRead && (
                     <button
                         type="button"
-                        onClick={() => onMarkRead(notification.id)}
+                        onClick={() => onMarkRead(notification)}
                         className="rounded-lg p-1 text-primary hover:bg-primary-container/10 transition-colors"
                         title="Mark read"
                     >
@@ -351,7 +380,7 @@ function NotificationCard({
                 )}
                 <button
                     type="button"
-                    onClick={() => onDelete(notification.id)}
+                    onClick={() => onDelete(notification)}
                     className="rounded-lg p-1 text-on-surface-variant hover:bg-surface-container transition-colors"
                     title="Delete"
                 >

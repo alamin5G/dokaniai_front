@@ -4,12 +4,13 @@ import BottomNavBar from "@/components/layout/BottomNavBar";
 import SideNavBar from "@/components/layout/SideNavBar";
 import TopAppBar from "@/components/layout/TopAppBar";
 import { TrialExpiryBanner } from "@/components/subscription/TrialExpiryBanner";
+import { trackAppOpen, trackPageView } from "@/lib/activityTracker";
 import * as businessApi from "@/lib/businessApi";
 import { getCurrentSubscription } from "@/lib/subscriptionApi";
 import { useBusinessStore } from "@/store/businessStore";
 import { useAuthStore } from "@/store/authStore";
 import { useWebPush } from "@/hooks/useWebPush";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
 
 // ---------------------------------------------------------------------------
@@ -82,6 +83,7 @@ const LOADING_TIMEOUT = 10_000;
 
 export default function DashboardLayout({ children, title, businessId }: DashboardLayoutProps) {
   const router = useRouter();
+  const pathname = usePathname();
   const { activeBusiness, activeBusinessId, loadBusinesses, loadBusiness, setActiveBusiness, businesses } = useBusinessStore();
 
   // Web Push — auto-registers service worker when dashboard loads
@@ -324,6 +326,28 @@ export default function DashboardLayout({ children, title, businessId }: Dashboa
       });
     }
   }, [isReady, activeBusinessId, loadBusiness, router, businessId]);
+
+  useEffect(() => {
+    if (!isReady) {
+      return;
+    }
+
+    const trackedBusinessId = activeBusinessId ?? businessId ?? null;
+    trackAppOpen({
+      businessId: trackedBusinessId,
+      pathname,
+    });
+
+    const pathSegments = pathname.split("/").filter(Boolean);
+    const section = pathSegments[2] ?? pathSegments[0] ?? "dashboard";
+
+    trackPageView({
+      businessId: trackedBusinessId,
+      pathname,
+      section,
+      title,
+    });
+  }, [isReady, activeBusinessId, businessId, pathname, title]);
 
   // -------------------------------------------------------------------------
   // Render

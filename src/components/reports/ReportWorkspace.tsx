@@ -27,6 +27,7 @@ import {
     getStockAlertReport,
     exportReport,
 } from "@/lib/reportApi";
+import { trackReportView } from "@/lib/activityTracker";
 import type { ReportType } from "@/types/report";
 import { usePlanFeatures } from "@/hooks/usePlanFeatures";
 import UpgradeCta from "./UpgradeCta";
@@ -186,6 +187,27 @@ export default function ReportWorkspace({
                 break;
         }
     }, [activeTab, loadDashboard, loadSalesReport, loadProfitReport, loadDueReport, loadStockReport]);
+
+    useEffect(() => {
+        const reportTypeMap: Record<TabKey, string> = {
+            dashboard: "DASHBOARD",
+            sales: salesPeriod === "daily" ? "DAILY_SALES" : salesPeriod === "weekly" ? "WEEKLY_SALES" : "MONTHLY_SALES",
+            profit: "NET_PROFIT",
+            expenses: "EXPENSE_BREAKDOWN",
+            due: "DUE_LEDGER",
+            stock: "STOCK_ALERT",
+            discounts: "DISCOUNT_REPORT",
+            returns: "RETURN_REPORT",
+            advanced: "ADVANCED_REPORTS",
+        };
+
+        trackReportView({
+            businessId,
+            reportType: reportTypeMap[activeTab],
+            tab: activeTab,
+            period: activeTab === "sales" ? salesPeriod : undefined,
+        });
+    }, [activeTab, businessId, salesPeriod]);
 
     // ── Export handler ──
     async function handleExport(format: string) {

@@ -127,7 +127,7 @@ function StatCard({
         <div className={`rounded-[28px] border p-5 shadow-sm ${tone}`}>
             <div className="flex items-start justify-between gap-4">
                 <div>
-                    <p className="text-[11px] font-bold uppercase tracking-[0.28em] opacity-70">{eyebrow}</p>
+                    <p className="text-xs font-semibold opacity-70">{eyebrow}</p>
                     <p className="mt-3 text-3xl font-black tracking-tight">{value}</p>
                     <p className="mt-2 text-sm leading-6 opacity-80">{label}</p>
                 </div>
@@ -220,71 +220,18 @@ export default function AdminAuditPage() {
         }
     }, [activeFilters, t]);
 
-    const exportPdf = useCallback(() => {
-        const rows = logs.map((log) => `
-            <tr>
-                <td>${formatDate(log.createdAt)}</td>
-                <td>${log.action}</td>
-                <td>${log.actorId}</td>
-                <td>${log.targetEntity || "—"}</td>
-                <td>${log.severity}</td>
-                <td>${log.status}</td>
-                <td>${(log.details || log.description || "—").replace(/</g, "&lt;")}</td>
-            </tr>
-        `).join("");
-        const popup = window.open("", "_blank", "width=1200,height=900");
-        if (!popup) return;
-        popup.document.write(`
-            <html>
-                <head>
-                    <title>Audit Logs</title>
-                    <style>
-                        body { font-family: Arial, sans-serif; padding: 24px; color: #0f172a; }
-                        h1 { margin-bottom: 4px; }
-                        p { color: #475569; margin-top: 0; }
-                        table { width: 100%; border-collapse: collapse; margin-top: 24px; }
-                        th, td { border: 1px solid #cbd5e1; padding: 10px; vertical-align: top; font-size: 12px; text-align: left; }
-                        th { background: #f1f5f9; text-transform: uppercase; letter-spacing: 0.08em; font-size: 11px; }
-                    </style>
-                </head>
-                <body>
-                    <h1>DokaniAI Audit Logs</h1>
-                    <p>Generated ${new Date().toLocaleString()} | Retention window: 365 days</p>
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>Timestamp</th>
-                                <th>Action</th>
-                                <th>Actor</th>
-                                <th>Entity</th>
-                                <th>Severity</th>
-                                <th>Status</th>
-                                <th>Details</th>
-                            </tr>
-                        </thead>
-                        <tbody>${rows}</tbody>
-                    </table>
-                </body>
-            </html>
-        `);
-        popup.document.close();
-        popup.focus();
-        popup.print();
-    }, [logs]);
-
     return (
         <div className="space-y-6 text-on-surface">
             <section className="relative overflow-hidden rounded-[32px] border border-emerald-200/60 bg-[radial-gradient(circle_at_top_left,_rgba(16,185,129,0.18),_transparent_32%),linear-gradient(135deg,_#f8fff9,_#eef6f1_45%,_#f8fafc)] p-6 md:p-8">
                 <div className="absolute right-0 top-0 h-40 w-40 rounded-full bg-emerald-300/20 blur-3xl" />
                 <div className="relative flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
                     <div className="max-w-3xl">
-                        <p className="text-xs font-black uppercase tracking-[0.35em] text-emerald-700/80">{t("eyebrow")}</p>
+                        <p className="text-sm font-bold text-emerald-700/80">{t("eyebrow")}</p>
                         <h1 className="mt-3 text-4xl font-black tracking-[-0.04em] text-emerald-950 md:text-5xl">{t("title")}</h1>
                         <p className="mt-4 max-w-2xl text-sm leading-7 text-emerald-950/70 md:text-base">{t("subtitle")}</p>
                         <div className="mt-5 flex flex-wrap gap-3 text-xs font-semibold text-emerald-900/80">
                             <span className="rounded-full bg-white/80 px-3 py-1.5">{t("retention")}</span>
                             <span className="rounded-full bg-white/80 px-3 py-1.5">{t("scope")}</span>
-                            <span className="rounded-full bg-white/80 px-3 py-1.5">{t("aligned")}</span>
                         </div>
                     </div>
                     <div className="flex flex-wrap gap-3">
@@ -296,14 +243,6 @@ export default function AdminAuditPage() {
                         >
                             <span className="material-symbols-outlined text-lg">download</span>
                             {exporting ? t("exporting") : t("exportCsv")}
-                        </button>
-                        <button
-                            type="button"
-                            onClick={exportPdf}
-                            className="inline-flex items-center gap-2 rounded-full bg-emerald-950 px-5 py-3 text-sm font-semibold text-white shadow-lg shadow-emerald-950/15 transition hover:bg-emerald-900"
-                        >
-                            <span className="material-symbols-outlined text-lg">picture_as_pdf</span>
-                            {t("exportPdf")}
                         </button>
                     </div>
                 </div>
@@ -373,52 +312,52 @@ export default function AdminAuditPage() {
 
                             <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
                                 <label className="space-y-2">
-                                    <span className="text-xs font-bold uppercase tracking-[0.22em] text-on-surface-variant">{t("searchLabel")}</span>
+                                    <span className="text-sm font-semibold text-on-surface-variant">{t("searchLabel")}</span>
                                     <input value={draftFilters.search || ""} onChange={(e) => setDraftFilters((prev) => ({ ...prev, search: e.target.value }))} placeholder={t("searchPlaceholder")} className="w-full rounded-2xl border border-outline-variant/20 bg-white px-4 py-3 text-sm outline-none transition focus:border-primary" />
                                 </label>
                                 <label className="space-y-2">
-                                    <span className="text-xs font-bold uppercase tracking-[0.22em] text-on-surface-variant">{t("actorId")}</span>
+                                    <span className="text-sm font-semibold text-on-surface-variant">{t("actorId")}</span>
                                     <input value={draftFilters.actorId || ""} onChange={(e) => setDraftFilters((prev) => ({ ...prev, actorId: e.target.value }))} placeholder={t("actorPlaceholder")} className="w-full rounded-2xl border border-outline-variant/20 bg-white px-4 py-3 text-sm outline-none transition focus:border-primary" />
                                 </label>
                                 <label className="space-y-2">
-                                    <span className="text-xs font-bold uppercase tracking-[0.22em] text-on-surface-variant">{t("targetUserId")}</span>
+                                    <span className="text-sm font-semibold text-on-surface-variant">{t("targetUserId")}</span>
                                     <input value={draftFilters.targetUserId || ""} onChange={(e) => setDraftFilters((prev) => ({ ...prev, targetUserId: e.target.value }))} placeholder={t("targetPlaceholder")} className="w-full rounded-2xl border border-outline-variant/20 bg-white px-4 py-3 text-sm outline-none transition focus:border-primary" />
                                 </label>
                                 <label className="space-y-2">
-                                    <span className="text-xs font-bold uppercase tracking-[0.22em] text-on-surface-variant">{t("actionLabel")}</span>
+                                    <span className="text-sm font-semibold text-on-surface-variant">{t("actionLabel")}</span>
                                     <select value={draftFilters.action || ""} onChange={(e) => setDraftFilters((prev) => ({ ...prev, action: e.target.value }))} className="w-full rounded-2xl border border-outline-variant/20 bg-white px-4 py-3 text-sm outline-none transition focus:border-primary">
                                         <option value="">{t("allActions")}</option>
                                         {ACTION_OPTIONS.map((action) => <option key={action} value={action}>{action}</option>)}
                                     </select>
                                 </label>
                                 <label className="space-y-2">
-                                    <span className="text-xs font-bold uppercase tracking-[0.22em] text-on-surface-variant">{t("severityLabel")}</span>
+                                    <span className="text-sm font-semibold text-on-surface-variant">{t("severityLabel")}</span>
                                     <select value={draftFilters.severity || ""} onChange={(e) => setDraftFilters((prev) => ({ ...prev, severity: e.target.value }))} className="w-full rounded-2xl border border-outline-variant/20 bg-white px-4 py-3 text-sm outline-none transition focus:border-primary">
                                         <option value="">{t("allSeverities")}</option>
                                         {SEVERITY_OPTIONS.map((severity) => <option key={severity} value={severity}>{severity}</option>)}
                                     </select>
                                 </label>
                                 <label className="space-y-2">
-                                    <span className="text-xs font-bold uppercase tracking-[0.22em] text-on-surface-variant">{t("statusLabel")}</span>
+                                    <span className="text-sm font-semibold text-on-surface-variant">{t("statusLabel")}</span>
                                     <select value={draftFilters.status || ""} onChange={(e) => setDraftFilters((prev) => ({ ...prev, status: e.target.value }))} className="w-full rounded-2xl border border-outline-variant/20 bg-white px-4 py-3 text-sm outline-none transition focus:border-primary">
                                         <option value="">{t("allStatus")}</option>
                                         {STATUS_OPTIONS.map((status) => <option key={status} value={status}>{status}</option>)}
                                     </select>
                                 </label>
                                 <label className="space-y-2">
-                                    <span className="text-xs font-bold uppercase tracking-[0.22em] text-on-surface-variant">{t("entityLabel")}</span>
+                                    <span className="text-sm font-semibold text-on-surface-variant">{t("entityLabel")}</span>
                                     <input value={draftFilters.targetEntity || ""} onChange={(e) => setDraftFilters((prev) => ({ ...prev, targetEntity: e.target.value }))} placeholder={t("entityPlaceholder")} className="w-full rounded-2xl border border-outline-variant/20 bg-white px-4 py-3 text-sm outline-none transition focus:border-primary" />
                                 </label>
                                 <label className="space-y-2">
-                                    <span className="text-xs font-bold uppercase tracking-[0.22em] text-on-surface-variant">{t("ipLabel")}</span>
+                                    <span className="text-sm font-semibold text-on-surface-variant">{t("ipLabel")}</span>
                                     <input value={draftFilters.ipAddress || ""} onChange={(e) => setDraftFilters((prev) => ({ ...prev, ipAddress: e.target.value }))} placeholder={t("ipPlaceholder")} className="w-full rounded-2xl border border-outline-variant/20 bg-white px-4 py-3 text-sm outline-none transition focus:border-primary" />
                                 </label>
                                 <label className="space-y-2">
-                                    <span className="text-xs font-bold uppercase tracking-[0.22em] text-on-surface-variant">{t("startDate")}</span>
+                                    <span className="text-sm font-semibold text-on-surface-variant">{t("startDate")}</span>
                                     <input type="datetime-local" value={formatForInput(draftFilters.startDate)} onChange={(e) => setDraftFilters((prev) => ({ ...prev, startDate: e.target.value }))} className="w-full rounded-2xl border border-outline-variant/20 bg-white px-4 py-3 text-sm outline-none transition focus:border-primary" />
                                 </label>
                                 <label className="space-y-2">
-                                    <span className="text-xs font-bold uppercase tracking-[0.22em] text-on-surface-variant">{t("endDate")}</span>
+                                    <span className="text-sm font-semibold text-on-surface-variant">{t("endDate")}</span>
                                     <input type="datetime-local" value={formatForInput(draftFilters.endDate)} onChange={(e) => setDraftFilters((prev) => ({ ...prev, endDate: e.target.value }))} className="w-full rounded-2xl border border-outline-variant/20 bg-white px-4 py-3 text-sm outline-none transition focus:border-primary" />
                                 </label>
                             </div>
@@ -488,13 +427,13 @@ export default function AdminAuditPage() {
                                 <p className="text-lg font-black tracking-tight">{t("tableTitle")}</p>
                                 <p className="text-sm text-on-surface-variant">{t("tableSubtitle", { count: summary.totalLogs })}</p>
                             </div>
-                            <div className="rounded-full bg-surface-container-low px-3 py-1 text-xs font-bold uppercase tracking-[0.22em] text-on-surface-variant">
+                            <div className="rounded-full bg-surface-container-low px-3 py-1 text-xs font-semibold text-on-surface-variant">
                                 {t("retentionChip")}
                             </div>
                         </div>
                         <div className="overflow-x-auto">
                             <table className="min-w-full text-left">
-                                <thead className="bg-surface-container-low text-xs font-bold uppercase tracking-[0.22em] text-on-surface-variant">
+                                <thead className="bg-surface-container-low text-xs font-semibold text-on-surface-variant">
                                     <tr>
                                         <th className="px-5 py-4">{t("colTimestamp")}</th>
                                         <th className="px-5 py-4">{t("colActor")}</th>
@@ -607,7 +546,7 @@ export default function AdminAuditPage() {
                                     <span className={`inline-flex rounded-full border px-3 py-1.5 text-xs font-bold ${statusClasses(selectedLog.status)}`}>{selectedLog.status}</span>
                                 </div>
                                 <div className="rounded-2xl bg-surface-container-low p-4">
-                                    <p className="text-xs font-bold uppercase tracking-[0.22em] text-on-surface-variant">{t("fieldAction")}</p>
+                                    <p className="text-sm font-semibold text-on-surface-variant">{t("fieldAction")}</p>
                                     <p className="mt-2 text-lg font-black">{selectedLog.action}</p>
                                     <p className="mt-1 text-sm text-on-surface-variant">{selectedLog.details || selectedLog.description || "—"}</p>
                                 </div>
@@ -624,13 +563,13 @@ export default function AdminAuditPage() {
                                         [t("fieldBusiness"), selectedLog.businessId || "—"],
                                     ].map(([label, value]) => (
                                         <div key={label} className="rounded-2xl border border-outline-variant/10 bg-white px-4 py-3">
-                                            <p className="text-[11px] font-bold uppercase tracking-[0.22em] text-on-surface-variant">{label}</p>
+                                            <p className="text-sm font-semibold text-on-surface-variant">{label}</p>
                                             <p className="mt-2 break-all text-sm text-on-surface">{value}</p>
                                         </div>
                                     ))}
                                 </div>
                                 <div className="rounded-2xl border border-outline-variant/10 bg-white px-4 py-3">
-                                    <p className="text-[11px] font-bold uppercase tracking-[0.22em] text-on-surface-variant">{t("fieldNotes")}</p>
+                                    <p className="text-sm font-semibold text-on-surface-variant">{t("fieldNotes")}</p>
                                     <pre className="mt-2 whitespace-pre-wrap break-words font-body text-sm text-on-surface">{selectedLog.details || selectedLog.description || "—"}</pre>
                                 </div>
                             </div>
