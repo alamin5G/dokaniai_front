@@ -3366,7 +3366,15 @@
         "distribution": "Status Distribution",
         "noData": "No request data available.",
         "loadError": "Failed to load statistics."
-      }
+      },
+      "businessesInCategory": "Businesses in this Category",
+      "noBusinessesInCategory": "No businesses found in this category.",
+      "customTags": "Custom Tags",
+      "sampleBusiness1": "Dhaka Super Store",
+      "sampleLocation": "Gulshan, Dhaka",
+      "sampleBusiness2": "Green Mart",
+      "sampleLocation2": "Banani, Dhaka",
+      "viewAllBusinesses": "View All Businesses"
     }
   }
 }

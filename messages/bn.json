@@ -3408,7 +3408,15 @@
         "distribution": "স্ট্যাটাস বন্টন",
         "noData": "কোনো অনুরোধ ডেটা উপলব্ধ নেই।",
         "loadError": "পরিসংখ্যান লোড করা যায়নি।"
-      }
+      },
+      "businessesInCategory": "এই ক্যাটেগরিতে ব্যবসাগুলো",
+      "noBusinessesInCategory": "এই ক্যাটেগরিতে কোনো ব্যবসা পাওয়া যায়নি।",
+      "customTags": "কাস্টম ট্যাগ",
+      "sampleBusiness1": "ঢাকা সুপার স্টোর",
+      "sampleLocation": "গুলশান, ঢাকা",
+      "sampleBusiness2": "গ্রিন মার্ট",
+      "sampleLocation2": "বনানী, ঢাকা",
+      "viewAllBusinesses": "সব ব্যবসা দেখুন"
     }
   }
 }

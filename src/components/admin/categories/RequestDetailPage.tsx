@@ -64,7 +64,7 @@ export default function RequestDetailPage() {
 
   useEffect(() => {
     if (request) {
-      startReviewCategoryRequest(request.id).catch(() => {});
+      startReviewCategoryRequest(request.id).catch(() => { });
       setDecision((d) => ({ ...d, suggestedCategoryId: request.suggestedCategoryId || "" }));
     }
   }, [request]);
@@ -229,30 +229,56 @@ export default function RequestDetailPage() {
 
             {request.similarCategories && request.similarCategories.length > 0 ? (
               <>
-                <p className="text-sm text-on-surface-variant mb-6 relative z-10">
+                <p className="text-sm text-on-surface-variant mb-4 relative z-10">
                   {t("aiAnalysisDesc")}
                 </p>
-                <div className="flex flex-col gap-4 relative z-10 flex-1">
+
+                {/* AI Recommendation Badge */}
+                {request.aiRecommendation && (
+                  <div className="mb-4 relative z-10 flex items-center gap-2">
+                    <span className={`px-3 py-1 rounded-full text-xs font-bold ${request.aiRecommendation === "MERGE"
+                        ? "bg-tertiary-fixed text-on-tertiary-fixed"
+                        : "bg-primary-fixed text-on-primary-fixed"
+                      }`}>
+                      AI: {request.aiRecommendation}
+                    </span>
+                    {request.aiSimilarityCheck && (
+                      <span className="px-2 py-0.5 bg-primary-fixed/40 text-primary-container text-[10px] font-bold rounded-full">
+                        CHECKED
+                      </span>
+                    )}
+                  </div>
+                )}
+
+                <div className="flex flex-col gap-3 relative z-10 flex-1">
                   {request.similarCategories.map((sim) => (
                     <div
                       key={sim.categoryId}
                       className="bg-surface-container-low rounded-lg p-4 flex justify-between items-center group hover:bg-surface-container transition-colors cursor-pointer"
                     >
-                      <div>
-                        <p className="font-semibold text-lg text-on-surface">{sim.nameBn}</p>
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-2 mb-1">
+                          <p className="font-semibold text-lg text-on-surface font-bengali">{sim.nameBn}</p>
+                          <span className={`px-1.5 py-0.5 rounded text-[9px] font-bold uppercase ${scoreColor(sim.similarityScore)}`}>
+                            {methodLabel(sim.detectionMethod)}
+                          </span>
+                        </div>
                         <p className="text-xs text-on-surface-variant">
                           {sim.nameEn ?? ""} &bull; {Math.round(sim.similarityScore * 100)}% Match
                         </p>
+                        {sim.reason && (
+                          <p className="text-xs text-on-surface-variant/70 mt-1 truncate">{sim.reason}</p>
+                        )}
                       </div>
                       <button
                         onClick={() => setDecision((d) => ({ ...d, action: "MERGE", suggestedCategoryId: sim.categoryId }))}
-                        className="text-primary opacity-0 group-hover:opacity-100 transition-opacity p-2 hover:bg-surface-container-highest rounded-full"
+                        className="text-primary opacity-0 group-hover:opacity-100 transition-opacity p-2 hover:bg-surface-container-highest rounded-full flex-shrink-0"
                       >
                         <span className="material-symbols-outlined">call_merge</span>
                       </button>
                     </div>
                   ))}
-                  <div className="mt-auto pt-4 text-center">
+                  <div className="mt-auto pt-3 text-center">
                     <button
                       onClick={() => router.push("/admin/categories")}
                       className="text-xs font-bold text-primary hover:underline"
@@ -261,6 +287,14 @@ export default function RequestDetailPage() {
                     </button>
                   </div>
                 </div>
+
+                {/* AI Reasoning */}
+                {request.aiReasoning && (
+                  <div className="mt-4 relative z-10 bg-surface-container-low/50 rounded-lg p-3 border border-outline-variant/10">
+                    <p className="text-[10px] font-bold text-on-surface-variant uppercase tracking-wider mb-1">AI Reasoning</p>
+                    <p className="text-xs text-on-surface-variant leading-relaxed">{request.aiReasoning}</p>
+                  </div>
+                )}
               </>
             ) : (
               <div className="relative z-10 flex flex-col items-center py-6">
@@ -284,11 +318,10 @@ export default function RequestDetailPage() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
           <button
             onClick={() => handleActionChange("APPROVE_GLOBAL")}
-            className={`p-6 rounded-xl text-left flex flex-col justify-between transition-all h-32 group ${
-              decision.action === "APPROVE_GLOBAL"
+            className={`p-6 rounded-xl text-left flex flex-col justify-between transition-all h-32 group ${decision.action === "APPROVE_GLOBAL"
                 ? "bg-gradient-to-br from-primary to-primary-container text-on-primary shadow-md -translate-y-1"
                 : "bg-surface-container-high text-on-surface hover:bg-surface-container-highest"
-            }`}
+              }`}
           >
             <span className={`material-symbols-outlined mb-2 group-hover:scale-110 transition-transform`}>public</span>
             <div>
@@ -301,11 +334,10 @@ export default function RequestDetailPage() {
 
           <button
             onClick={() => handleActionChange("APPROVE_BUSINESS")}
-            className={`p-6 rounded-xl text-left flex flex-col justify-between transition-all h-32 ${
-              decision.action === "APPROVE_BUSINESS"
+            className={`p-6 rounded-xl text-left flex flex-col justify-between transition-all h-32 ${decision.action === "APPROVE_BUSINESS"
                 ? "bg-surface-container-high text-on-surface shadow-md -translate-y-1"
                 : "bg-surface-container-high text-on-surface hover:bg-surface-container-highest"
-            }`}
+              }`}
           >
             <span className={`material-symbols-outlined mb-2 ${decision.action !== "APPROVE_BUSINESS" ? "text-primary" : ""}`}>storefront</span>
             <div>
@@ -316,9 +348,8 @@ export default function RequestDetailPage() {
             </div>
           </button>
 
-          <div className={`bg-surface-container-low rounded-xl p-4 flex flex-col justify-between h-32 border-2 transition-colors relative ${
-            decision.action === "MERGE" ? "border-secondary" : "border-transparent"
-          }`}>
+          <div className={`bg-surface-container-low rounded-xl p-4 flex flex-col justify-between h-32 border-2 transition-colors relative ${decision.action === "MERGE" ? "border-secondary" : "border-transparent"
+            }`}>
             <div className="flex items-center gap-2 mb-2 text-secondary">
               <span className="material-symbols-outlined text-[20px]">call_merge</span>
               <span className="font-bold text-sm">{t("merge")}</span>
@@ -338,9 +369,8 @@ export default function RequestDetailPage() {
             </div>
           </div>
 
-          <div className={`bg-error-container/30 rounded-xl p-4 flex flex-col justify-between h-32 border-2 transition-colors ${
-            decision.action === "REJECT" ? "border-error" : "border-transparent"
-          }`}>
+          <div className={`bg-error-container/30 rounded-xl p-4 flex flex-col justify-between h-32 border-2 transition-colors ${decision.action === "REJECT" ? "border-error" : "border-transparent"
+            }`}>
             <div className="flex items-center gap-2 mb-2 text-error">
               <span className="material-symbols-outlined text-[20px]">block</span>
               <span className="font-bold text-sm">{t("reject")}</span>

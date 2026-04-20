@@ -6,6 +6,8 @@ import {
   getCategoryTree,
   getCategoryRequestStats,
   getCategoryRequestById,
+  getBusinessesByCategory,
+  getCategoryTags,
 } from "@/lib/categoryApi";
 import { swrKeys } from "@/lib/swrKeys";
 
@@ -70,6 +72,35 @@ export function useCategoryRequestById(id: string | null) {
 
   return {
     request: data ?? null,
+    isLoading,
+    error,
+    mutate,
+  };
+}
+
+export function useBusinessesByCategory(categoryId: string | null, page = 0) {
+  const key = categoryId ? swrKeys.categoryBusinesses(categoryId, page) : null;
+  const { data, error, isLoading, mutate } = useSWR(
+    key,
+    () => getBusinessesByCategory(categoryId!, page),
+    { revalidateOnFocus: false },
+  );
+
+  return {
+    businesses: data?.content ?? [],
+    totalPages: data?.totalPages ?? 0,
+    isLoading,
+    error,
+    mutate,
+  };
+}
+
+export function useCategoryTags(categoryId: string | null) {
+  const key = categoryId ? swrKeys.categoryTags(categoryId) : null;
+  const { data, error, isLoading, mutate } = useSWR(key, () => getCategoryTags(categoryId!));
+
+  return {
+    tags: data ?? { currentTags: [], suggestedTags: [] },
     isLoading,
     error,
     mutate,

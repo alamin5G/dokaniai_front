@@ -1,25 +1,26 @@
 "use client";
 
-import { useState, useCallback, useEffect, useMemo } from "react";
+import { useState, useCallback, useEffect } from "react";
 import { useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
-import { useCategoriesByBusinessType } from "@/hooks/useCategories";
 import type { CategoryRequestResponse, CategoryRequestStatus } from "@/types/categoryRequest";
 import { getPendingCategoryRequests, getCategoryRequestsByStatus, decideCategoryRequest } from "@/lib/categoryApi";
+import { useCategoryRequestStats } from "@/hooks/useCategories";
 
-const BUSINESS_TYPES = [
-  "GROCERY", "FASHION", "ELECTRONICS", "RESTAURANT", "PHARMACY",
-  "STATIONERY", "HARDWARE", "BAKERY", "MOBILE_SHOP", "TAILORING",
-  "SWEETS_SHOP", "COSMETICS", "BOOKSHOP", "JEWELLERY", "PRINTING", "OTHER",
+const STATUS_TABS: { key: CategoryRequestStatus | "ALL"; labelKey: string }[] = [
+  { key: "ALL", labelKey: "all" },
+  { key: "PENDING", labelKey: "pending" },
+  { key: "UNDER_REVIEW", labelKey: "underReview" },
+  { key: "APPROVED_GLOBAL", labelKey: "approvedGlobal" },
+  { key: "REJECTED", labelKey: "rejected" },
 ];
 
-const CATEGORY_ICONS: Record<string, string> = {
+const BUSINESS_TYPE_ICONS: Record<string, string> = {
   GROCERY: "shopping_cart",
   FASHION: "styler",
   ELECTRONICS: "devices",
   RESTAURANT: "restaurant",
   PHARMACY: "local_pharmacy",
-  STATIONERY: "edit",
   HARDWARE: "handyman",
   BAKERY: "bakery_dining",
   MOBILE_SHOP: "smartphone",
@@ -29,310 +30,289 @@ const CATEGORY_ICONS: Record<string, string> = {
   BOOKSHOP: "menu_book",
   JEWELLERY: "diamond",
   PRINTING: "print",
+  STATIONERY: "edit",
   OTHER: "category",
 };
 
-function getStatusBadgeClasses(status: CategoryRequestStatus) {
-  const map: Record<string, string> = {
-    PENDING: "bg-error-container text-on-error-container",
-    UNDER_REVIEW: "bg-secondary-container text-on-secondary-container",
-    APPROVED_GLOBAL: "bg-emerald-100 text-emerald-700",
-    APPROVED_BUSINESS: "bg-blue-100 text-blue-700",
-    REJECTED: "bg-red-100 text-red-700",
-    CANCELLED: "bg-surface-container-high text-on-surface-variant",
-    DUPLICATE_SUGGESTED: "bg-amber-100 text-amber-700",
-  };
-  return map[status] ?? "bg-surface-container-high text-on-surface-variant";
-}
-
-function getStatusIcon(status: CategoryRequestStatus) {
-  const map: Record<string, string> = {
-    PENDING: "schedule",
-    UNDER_REVIEW: "visibility",
-    APPROVED_GLOBAL: "public",
-    APPROVED_BUSINESS: "storefront",
-    REJECTED: "block",
-    CANCELLED: "cancel",
-    DUPLICATE_SUGGESTED: "content_copy",
-  };
-  return map[status] ?? "help";
-}
+const statusBadgeStyle = (status: CategoryRequestStatus) => {
+  switch (status) {
+    case "PENDING":
+      return "bg-error-container text-on-error-container";
+    case "UNDER_REVIEW":
+      return "bg-secondary-container text-on-secondary-container";
+    case "APPROVED_GLOBAL":
+    case "APPROVED_BUSINESS":
+      return "bg-primary-fixed text-on-primary-fixed";
+    case "REJECTED":
+      return "bg-tertiary-fixed text-on-tertiary-fixed";
+    default:
+      return "bg-surface-container-high text-on-surface";
+  }
+};
 
 export default function ModerationPage() {
-  const t = useTranslations("admin.categories");
+  const t = useTranslations("admin.categories.moderation");
   const router = useRouter();
-  const [statusFilter, setStatusFilter] = useState<CategoryRequestStatus | "ALL">("PENDING");
+  const [activeTab, setActiveTab] = useState<CategoryRequestStatus | "ALL">("ALL");
   const [requests, setRequests] = useState<CategoryRequestResponse[]>([]);
   const [loading, setLoading] = useState(true);
   const [page, setPage] = useState(0);
-  const [hasMore, setHasMore] = useState(true);
-  const [selectedBusinessType, setSelectedBusinessType] = useState<string>("GROCERY");
+  const [totalPages, setTotalPages] = useState(1);
 
-  const { categories, isLoading: loadingCategories } = useCategoriesByBusinessType(selectedBusinessType);
-
-  const groupedByBusinessType = useMemo(() => {
-    const groups: Record<string, typeof categories> = {};
-    for (const cat of categories) {
-      const bt = cat.businessType || "OTHER";
-      if (!groups[bt]) groups[bt] = [];
-      groups[bt].push(cat);
-    }
-    return groups;
-  }, [categories]);
+  const { stats, mutate: mutateStats } = useCategoryRequestStats();
 
   const loadRequests = useCallback(async () => {
     setLoading(true);
     try {
-      if (statusFilter === "ALL") {
-        const { content } = await getPendingCategoryRequests(page, 20);
-        setRequests(content);
-        setHasMore(content.length === 20);
-      } else {
-        const { content, totalPages } = await getCategoryRequestsByStatus(statusFilter, page, 20);
-        setRequests(content);
-        setHasMore(page + 1 < totalPages);
-      }
+      const result =
+        activeTab === "ALL"
+          ? await getPendingCategoryRequests(page, 20)
+          : await getCategoryRequestsByStatus(activeTab, page, 20);
+      setRequests(result.content);
+      setTotalPages(result.totalPages);
     } catch {
       setRequests([]);
     } finally {
       setLoading(false);
     }
-  }, [page, statusFilter]);
+  }, [activeTab, page]);
 
   useEffect(() => {
     loadRequests();
   }, [loadRequests]);
 
-  useEffect(() => {
-    setPage(0);
-  }, [statusFilter]);
-
   async function handleQuickApprove(requestId: string) {
     try {
       await decideCategoryRequest(requestId, { action: "APPROVE_GLOBAL" });
       loadRequests();
-    } catch {}
+      mutateStats();
+    } catch { }
+  }
+
+  async function handleQuickReject(requestId: string) {
+    try {
+      await decideCategoryRequest(requestId, { action: "REJECT", rejectionReason: "Not suitable" });
+      loadRequests();
+      mutateStats();
+    } catch { }
   }
 
   return (
-    <div className="space-y-12">
+    <div className="space-y-8">
+      {/* Page Header */}
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
         <div>
           <h2 className="text-4xl md:text-5xl font-headline font-extrabold tracking-tight text-on-surface leading-tight">
-            {t("moderationPageTitle")}
+            {t("title")}
           </h2>
           <p className="text-on-surface-variant font-body mt-2 text-lg max-w-2xl">
-            {t("moderationPageSubtitle")}
+            {t("subtitle")}
           </p>
         </div>
-        <div className="flex-shrink-0">
-          <button
-            onClick={() => router.push("/admin/categories")}
-            className="flex items-center gap-2 py-3 px-6 bg-surface-container-highest text-on-surface rounded-full font-label text-sm font-bold hover:bg-surface-variant transition-colors"
-          >
-            <span className="material-symbols-outlined text-sm">add_circle</span>
-            {t("taxonomy.createTitle")}
-          </button>
+        <div className="flex gap-3">
+          {stats && (
+            <div className="flex items-center gap-2 bg-surface-container-lowest rounded-full px-4 py-2 shadow-sm">
+              <span className="w-2 h-2 rounded-full bg-error animate-pulse" />
+              <span className="text-sm font-body font-semibold text-on-surface">
+                {stats.pending} {t("pending")}
+              </span>
+            </div>
+          )}
         </div>
       </div>
 
+      {/* Status Filter Tabs */}
+      <div className="flex gap-2 overflow-x-auto pb-2">
+        {STATUS_TABS.map((tab) => (
+          <button
+            key={tab.key}
+            onClick={() => { setActiveTab(tab.key); setPage(0); }}
+            className={`px-4 py-2 rounded-full font-label text-sm font-semibold whitespace-nowrap transition-colors ${activeTab === tab.key
+                ? "bg-primary text-on-primary"
+                : "bg-surface-container-high text-on-surface-variant hover:bg-surface-container-highest"
+              }`}
+          >
+            {t(`status.${tab.labelKey}`)}
+            {tab.key === "PENDING" && stats?.pending
+              ? ` (${stats.pending})`
+              : ""}
+          </button>
+        ))}
+      </div>
+
+      {/* Asymmetric Grid */}
       <div className="grid grid-cols-1 xl:grid-cols-12 gap-8 lg:gap-12 items-start">
+        {/* Pending Requests List (Left Column - 4 spans) */}
         <section className="xl:col-span-4 flex flex-col gap-6">
           <div className="flex items-center justify-between">
-            <h3 className="text-xl font-headline font-bold text-on-surface">{t("moderation.pendingTitle")}</h3>
-            <button className="text-sm font-label font-semibold text-primary hover:text-primary-container transition-colors flex items-center gap-1">
-              {t("moderation.viewAll")} <span className="material-symbols-outlined text-xs">arrow_forward</span>
+            <h3 className="text-xl font-headline font-bold text-on-surface">{t("pendingRequests")}</h3>
+            <button
+              onClick={() => { setActiveTab("ALL"); setPage(0); }}
+              className="text-sm font-label font-semibold text-primary hover:text-primary-container transition-colors flex items-center gap-1"
+            >
+              {t("viewAll")} <span className="material-symbols-outlined text-xs">arrow_forward</span>
             </button>
-          </div>
-
-          <div className="flex gap-1.5 overflow-x-auto pb-1 mb-2">
-            {(["ALL", "PENDING", "UNDER_REVIEW"] as const).map((s) => (
-              <button
-                key={s}
-                onClick={() => setStatusFilter(s)}
-                className={`whitespace-nowrap px-3 py-1.5 rounded-full text-xs font-bold transition-colors ${
-                  statusFilter === s
-                    ? getStatusBadgeClasses(s === "ALL" ? "PENDING" : s)
-                    : "bg-surface-container-low text-on-surface-variant hover:bg-surface-container"
-                }`}
-              >
-                {s === "ALL" ? t("moderation.allStatuses") : t(`moderation.status.${s}`)}
-              </button>
-            ))}
           </div>
 
           <div className="flex flex-col gap-3">
             {loading ? (
-              <div className="flex justify-center py-16">
+              <div className="flex justify-center py-12">
                 <div className="h-8 w-8 animate-spin rounded-full border-4 border-surface-container-high border-t-primary" />
               </div>
             ) : requests.length === 0 ? (
-              <div className="bg-surface-container-lowest rounded-2xl p-12 shadow-sm flex flex-col items-center">
+              <div className="bg-surface-container-lowest rounded-2xl p-8 flex flex-col items-center">
                 <span className="material-symbols-outlined text-4xl text-on-surface-variant/30 mb-3">task_alt</span>
-                <p className="text-on-surface-variant text-sm">{t("moderation.noRequests")}</p>
+                <p className="text-sm text-on-surface-variant font-body">{t("noRequests")}</p>
               </div>
             ) : (
-              requests.slice(0, 6).map((req) => (
+              requests.slice(0, 8).map((req) => (
                 <div
                   key={req.id}
-                  className="bg-surface-container-lowest p-5 rounded-2xl group hover:bg-surface-container-low transition-colors cursor-pointer"
                   onClick={() => router.push(`/admin/categories/requests/${req.id}`)}
+                  className="bg-surface-container-lowest p-5 rounded-2xl group hover:bg-surface-container-low transition-colors cursor-pointer"
                 >
                   <div className="flex justify-between items-start mb-4">
-                    <span className={`inline-flex items-center px-2.5 py-1 rounded-md text-[10px] font-bold uppercase tracking-wider ${getStatusBadgeClasses(req.status)}`}>
-                      {t(`moderation.status.${req.status}`)}
+                    <span className={`inline-flex items-center px-2.5 py-1 rounded-md text-[10px] font-bold uppercase tracking-wider ${statusBadgeStyle(req.status)}`}>
+                      {t(`status.${req.status}`)}
                     </span>
                     <span className="text-xs font-label font-semibold text-secondary flex items-center gap-1">
-                      <span className="material-symbols-outlined text-[14px]">storefront</span>
-                      {(req.businessType?.replace(/_/g, " ") ?? "—").toUpperCase()}
+                      <span className="material-symbols-outlined text-[14px]">
+                        {BUSINESS_TYPE_ICONS[req.businessType ?? ""] || "category"}
+                      </span>
+                      {req.businessType?.replace(/_/g, " ") ?? "—"}
                     </span>
                   </div>
-
                   <div className="mb-4">
-                    <h4 className="text-2xl font-semibold text-on-surface leading-tight">{req.nameBn}</h4>
+                    <h4 className="text-2xl font-bengali font-semibold text-on-surface leading-tight">{req.nameBn}</h4>
                     <p className="text-sm text-on-surface-variant mt-1 font-body">
-                      {t("moderation.requestedBy")}: <span className="font-medium text-on-surface">{req.businessName || req.requestedByName || "—"}</span>
+                      {t("requestedBy")}: <span className="font-medium text-on-surface">{req.businessName || req.requestedByName || "—"}</span>
                     </p>
+                    {req.similarCategories && req.similarCategories.length > 0 && (
+                      <div className="mt-2 flex items-center gap-1">
+                        <span className="material-symbols-outlined text-[14px] text-primary-container">auto_awesome</span>
+                        <span className="text-xs font-label text-primary-container font-semibold">
+                          {req.similarCategories.length} {t("aiMatches")}
+                        </span>
+                      </div>
+                    )}
                   </div>
-
                   <div className="flex gap-2">
                     <button
                       onClick={(e) => { e.stopPropagation(); handleQuickApprove(req.id); }}
                       className="flex-1 py-2 bg-gradient-to-r from-primary to-primary-container text-on-primary rounded-full font-label text-xs font-bold transition-all hover:opacity-90"
                     >
-                      {t("moderation.approveGlobal")}
+                      {t("approve")}
                     </button>
                     <button
                       onClick={(e) => { e.stopPropagation(); router.push(`/admin/categories/requests/${req.id}`); }}
                       className="flex-1 py-2 bg-surface-container-highest text-on-surface rounded-full font-label text-xs font-bold transition-all hover:bg-surface-variant"
                     >
-                      {t("moderation.review")}
+                      {t("review")}
                     </button>
                   </div>
                 </div>
               ))
             )}
-          </div>
 
-          {requests.length > 6 && (
-            <div className="flex items-center justify-center">
-              <button
-                onClick={() => router.push("/admin/categories/moderation")}
-                className="text-sm font-label font-semibold text-primary hover:text-primary-container transition-colors"
-              >
-                {t("moderation.viewAllRequests")}
-              </button>
-            </div>
-          )}
+            {/* Pagination */}
+            {totalPages > 1 && (
+              <div className="flex items-center justify-center gap-2 mt-2">
+                <button
+                  onClick={() => setPage((p) => Math.max(0, p - 1))}
+                  disabled={page === 0}
+                  className="text-sm text-primary hover:text-primary-container disabled:opacity-30 disabled:cursor-not-allowed"
+                >
+                  {t("previous")}
+                </button>
+                <span className="text-xs text-on-surface-variant">{page + 1} / {totalPages}</span>
+                <button
+                  onClick={() => setPage((p) => Math.min(totalPages - 1, p + 1))}
+                  disabled={page >= totalPages - 1}
+                  className="text-sm text-primary hover:text-primary-container disabled:opacity-30 disabled:cursor-not-allowed"
+                >
+                  {t("next")}
+                </button>
+              </div>
+            )}
+          </div>
         </section>
 
+        {/* Stats & Recent Activity (Right Column - 8 spans) */}
         <section className="xl:col-span-8 flex flex-col gap-6">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-            <h3 className="text-xl font-headline font-bold text-on-surface">{t("taxonomy.hierarchy")}</h3>
-            <div className="relative flex items-center w-full sm:w-64 bg-surface-container-lowest rounded-full px-4 py-2">
-              <span className="material-symbols-outlined text-on-surface-variant mr-2 text-sm">filter_list</span>
-              <select
-                value={selectedBusinessType}
-                onChange={(e) => setSelectedBusinessType(e.target.value)}
-                className="w-full bg-transparent border-none focus:ring-0 text-sm font-body text-on-surface p-0 appearance-none cursor-pointer"
-              >
-                {BUSINESS_TYPES.map((bt) => (
-                  <option key={bt} value={bt}>{bt.replace(/_/g, " ")}</option>
-                ))}
-              </select>
-            </div>
+            <h3 className="text-xl font-headline font-bold text-on-surface">{t("recentActivity")}</h3>
           </div>
 
+          {/* Stats Cards */}
+          {stats && (
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+              <div className="bg-surface-container-lowest p-5 rounded-2xl text-center">
+                <div className="text-3xl font-headline font-extrabold text-error">{stats.pending}</div>
+                <div className="text-xs font-label text-on-surface-variant mt-1">{t("status.pending")}</div>
+              </div>
+              <div className="bg-surface-container-lowest p-5 rounded-2xl text-center">
+                <div className="text-3xl font-headline font-extrabold text-secondary">{stats.underReview}</div>
+                <div className="text-xs font-label text-on-surface-variant mt-1">{t("status.underReview")}</div>
+              </div>
+              <div className="bg-surface-container-lowest p-5 rounded-2xl text-center">
+                <div className="text-3xl font-headline font-extrabold text-primary">{stats.approvedGlobal + stats.approvedBusiness}</div>
+                <div className="text-xs font-label text-on-surface-variant mt-1">{t("approved")}</div>
+              </div>
+              <div className="bg-surface-container-lowest p-5 rounded-2xl text-center">
+                <div className="text-3xl font-headline font-extrabold text-tertiary">{stats.rejected}</div>
+                <div className="text-xs font-label text-on-surface-variant mt-1">{t("status.rejected")}</div>
+              </div>
+            </div>
+          )}
+
+          {/* Request Detail Cards */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {loadingCategories ? (
-              <div className="md:col-span-2 flex justify-center py-16">
-                <div className="h-8 w-8 animate-spin rounded-full border-4 border-surface-container-high border-t-primary" />
-              </div>
-            ) : categories.length === 0 ? (
-              <div className="md:col-span-2 bg-surface-container-lowest rounded-2xl p-12 shadow-sm text-center">
-                <p className="text-on-surface-variant text-sm">{t("taxonomy.noCategories")}</p>
-              </div>
-            ) : (
-              (() => {
-                const roots = categories.filter((c) => !c.parentId);
-                const childrenMap = new Map<string, typeof categories>();
-                for (const c of categories) {
-                  if (c.parentId) {
-                    const arr = childrenMap.get(c.parentId) || [];
-                    arr.push(c);
-                    childrenMap.set(c.parentId, arr);
-                  }
-                }
-
-                return roots.slice(0, 4).map((root, idx) => {
-                  const children = childrenMap.get(root.id) || [];
-                  const isFullWidth = idx >= 2 && roots.length <= 3;
-
-                  return (
-                    <div
-                      key={root.id}
-                      className={`bg-surface-container-lowest p-6 rounded-[24px] flex flex-col h-full relative overflow-hidden group ${
-                        isFullWidth ? "md:col-span-2" : ""
-                      }`}
-                    >
-                      <div className={`absolute -right-10 -top-10 w-40 h-40 rounded-full blur-3xl group-hover:opacity-100 transition-all duration-500 ${
-                        idx % 2 === 0 ? "bg-primary-fixed/20" : "bg-secondary-container/20"
-                      }`} />
-
-                      <div className="flex justify-between items-start mb-6 relative z-10">
-                        <div className="flex items-center gap-3">
-                          <div className={`w-12 h-12 rounded-full bg-surface-container-low flex items-center justify-center ${
-                            idx % 2 === 0 ? "text-primary" : "text-secondary"
-                          }`}>
-                            <span className="material-symbols-outlined" style={{ fontVariationSettings: "'FILL' 1" }}>
-                              {CATEGORY_ICONS[root.businessType || "OTHER"] || "category"}
-                            </span>
-                          </div>
-                          <div>
-                            <h4 className="font-headline font-bold text-lg text-on-surface tracking-tight uppercase">
-                              {root.nameBn}
-                            </h4>
-                            <p className="text-xs text-on-surface-variant font-label">
-                              {children.length} {children.length === 1 ? "subcategory" : "subcategories"}
-                            </p>
-                          </div>
-                        </div>
-                      </div>
-
-                      {children.length > 0 && (
-                        <div className="space-y-4 relative z-10 flex-1">
-                          {children.slice(0, 2).map((child) => {
-                            const grandchildren = childrenMap.get(child.id) || [];
-                            return (
-                              <div key={child.id}>
-                                <div className="flex items-center gap-2 mb-2">
-                                  <span className="text-sm font-semibold text-on-surface">{child.nameBn}</span>
-                                  {grandchildren.length > 0 && (
-                                    <span className="material-symbols-outlined text-on-surface-variant text-[14px]">chevron_right</span>
-                                  )}
-                                </div>
-                                <div className="flex flex-wrap gap-2">
-                                  {grandchildren.slice(0, 3).map((gc) => (
-                                    <span key={gc.id} className="px-3 py-1 bg-surface-container-low text-on-surface text-sm rounded-lg">
-                                      {gc.nameBn}
-                                    </span>
-                                  ))}
-                                  {grandchildren.length > 3 && (
-                                    <span className="px-3 py-1 bg-surface-container-low text-on-surface-variant text-xs font-label rounded-lg flex items-center">
-                                      +{grandchildren.length - 3}
-                                    </span>
-                                  )}
-                                </div>
-                              </div>
-                            );
-                          })}
-                        </div>
-                      )}
+            {requests.slice(0, 4).map((req) => (
+              <div
+                key={req.id}
+                onClick={() => router.push(`/admin/categories/requests/${req.id}`)}
+                className="bg-surface-container-lowest p-6 rounded-[24px] flex flex-col h-full relative overflow-hidden group cursor-pointer hover:shadow-md transition-all"
+              >
+                <div className="absolute -right-10 -top-10 w-40 h-40 bg-primary-fixed/20 rounded-full blur-3xl group-hover:bg-primary-fixed/30 transition-all duration-500" />
+                <div className="flex justify-between items-start mb-4 relative z-10">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-full bg-surface-container-low flex items-center justify-center text-primary">
+                      <span className="material-symbols-outlined" style={{ fontVariationSettings: "'FILL' 1" }}>
+                        {BUSINESS_TYPE_ICONS[req.businessType ?? ""] || "category"}
+                      </span>
                     </div>
-                  );
-                });
-              })()
-            )}
+                    <div>
+                      <h4 className="font-bengali font-bold text-lg text-on-surface">{req.nameBn}</h4>
+                      <p className="text-xs text-on-surface-variant">{req.businessName || req.requestedByName || "—"}</p>
+                    </div>
+                  </div>
+                  <span className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase ${statusBadgeStyle(req.status)}`}>
+                    {t(`status.${req.status}`)}
+                  </span>
+                </div>
+
+                {req.similarCategories && req.similarCategories.length > 0 ? (
+                  <div className="relative z-10 mt-auto">
+                    <div className="flex items-center gap-1 mb-2">
+                      <span className="material-symbols-outlined text-[14px] text-primary-container">auto_awesome</span>
+                      <span className="text-xs font-label text-primary-container font-semibold">AI: {req.aiRecommendation || "MERGE"}</span>
+                    </div>
+                    <div className="flex flex-wrap gap-1">
+                      {req.similarCategories.slice(0, 3).map((sim) => (
+                        <span key={sim.categoryId} className="px-2 py-0.5 bg-surface-container-low text-on-surface text-xs font-bengali rounded-lg">
+                          {sim.nameBn} ({Math.round(sim.similarityScore * 100)}%)
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                ) : (
+                  <div className="relative z-10 mt-auto flex items-center gap-1">
+                    <span className="material-symbols-outlined text-[14px] text-on-surface-variant/40">verified</span>
+                    <span className="text-xs text-on-surface-variant/60 font-body">{t("noSimilar")}</span>
+                  </div>
+                )}
+              </div>
+            ))}
           </div>
         </section>
       </div>

@@ -13,7 +13,6 @@ import type {
 } from "@/types/admin";
 import type { SupportTicket } from "@/types/support";
 import CouponsTab from "./CouponsTab";
-import CategoryRequestsTab from "./CategoryRequestsTab";
 import PaymentsTab from "./PaymentsTab";
 import ReferralConfigTab from "./ReferralConfigTab";
 import ReferralEventsTab from "./ReferralEventsTab";
@@ -227,7 +226,6 @@ export default function AdminWorkspace() {
             {activeTab === "dashboard" && <DashboardTab />}
             {activeTab === "users" && <UsersTab />}
             {activeTab === "coupons" && <CouponsTab />}
-            {activeTab === "categories" && <CategoryRequestsTab />}
             {activeTab === "payments" && <PaymentsTab />}
             {activeTab === "referral" && <ReferralConfigTab />}
             {activeTab === "referralEvents" && <ReferralEventsTab />}

@@ -14,3 +14,17 @@ export interface CategoryResponse {
   updatedAt: string;
 }
 
+export interface CategoryBusinessResponse {
+  businessId: string;
+  businessName: string;
+  businessType: string;
+  location: string;
+  primaryCategory: string;
+  status: string;
+}
+
+export interface CategoryTagsResponse {
+  currentTags: string[];
+  suggestedTags: string[];
+}
+

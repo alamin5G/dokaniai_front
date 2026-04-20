@@ -84,6 +84,11 @@ export const swrKeys = {
     categoryRequestById: (id: string) =>
         `/category-requests/${id}`,
 
+    categoryBusinesses: (categoryId: string, page: number) =>
+        `/categories/${categoryId}/businesses?page=${page}`,
+    categoryTags: (categoryId: string) =>
+        `/categories/${categoryId}/tags`,
+
     // Business
     businessStats: (businessId: string) =>
         `/businesses/${businessId}/stats`,

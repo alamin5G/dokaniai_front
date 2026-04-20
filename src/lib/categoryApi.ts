@@ -1,5 +1,5 @@
 import apiClient from '@/lib/api';
-import type { CategoryResponse } from '@/types/category';
+import type { CategoryResponse, CategoryBusinessResponse, CategoryTagsResponse } from '@/types/category';
 import type {
   CategoryRequestCreatePayload,
   CategoryRequestDecisionPayload,
@@ -182,4 +182,35 @@ export async function getCategoryRequestById(requestId: string): Promise<Categor
     `/category-requests/${encodeURIComponent(requestId)}`,
   );
   return unwrap(response);
+}
+
+export async function getBusinessesByCategory(
+  categoryId: string,
+  page = 0,
+  size = 20,
+): Promise<{ content: CategoryBusinessResponse[]; totalPages: number }> {
+  const response = await apiClient.get<ApiSuccess<Paged<CategoryBusinessResponse>>>(
+    `/categories/${encodeURIComponent(categoryId)}/businesses?page=${page}&size=${size}`,
+  );
+  const data = response.data.data;
+  return { content: data.content, totalPages: data.totalPages ?? (data.last ? data.number + 1 : data.number + 2) };
+}
+
+export async function getCategoryTags(categoryId: string): Promise<CategoryTagsResponse> {
+  const response = await apiClient.get<ApiSuccess<CategoryTagsResponse>>(
+    `/categories/${encodeURIComponent(categoryId)}/tags`,
+  );
+  return unwrap(response);
+}
+
+export async function addCategoryTags(categoryId: string, tags: string[]): Promise<string[]> {
+  const response = await apiClient.post<ApiSuccess<string[]>>(
+    `/categories/${encodeURIComponent(categoryId)}/tags`,
+    tags,
+  );
+  return unwrap(response);
+}
+
+export async function removeCategoryTag(categoryId: string, tag: string): Promise<void> {
+  await apiClient.delete(`/categories/${encodeURIComponent(categoryId)}/tags/${encodeURIComponent(tag)}`);
 }
