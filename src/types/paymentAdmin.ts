@@ -37,6 +37,8 @@ export interface AdminDevice {
     status: string;
     lastReportAt: string;
     registeredAt: string;
+    nodeId: string | null;
+    batteryLevel: number | null;
 }
 
 // ─── SMS Report Item ───────────────────────────────────────────────────────

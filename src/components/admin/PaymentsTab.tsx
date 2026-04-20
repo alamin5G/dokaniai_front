@@ -438,9 +438,9 @@ export default function PaymentsTab() {
                                                         <DeviceStatusBadge status={device.status} />
                                                     </div>
                                                     <div className="flex justify-between text-xs text-on-surface-variant font-label mt-3">
-                                                        <div className={`flex items-center gap-1 ${device.status !== "ACTIVE" ? "text-error" : ""}`}>
-                                                            <span className="material-symbols-outlined text-[14px]">{device.status === "ACTIVE" ? "battery_charging_80" : "battery_alert"}</span>
-                                                            {device.status === "ACTIVE" ? "82%" : "15%"}
+                                                        <div className={`flex items-center gap-1 ${device.batteryLevel !== null && device.batteryLevel < 20 ? "text-error" : ""}`}>
+                                                            <span className="material-symbols-outlined text-[14px]">{device.batteryLevel !== null ? (device.batteryLevel > 50 ? "battery_charging_80" : device.batteryLevel > 20 ? "battery_4_bar" : "battery_alert") : "battery_unknown"}</span>
+                                                            {device.batteryLevel !== null ? `${device.batteryLevel}%` : "N/A"}
                                                         </div>
                                                         <div className="flex items-center gap-1">
                                                             <span className="material-symbols-outlined text-[14px]">{device.status === "ACTIVE" ? "sync" : "sync_problem"}</span>
@@ -519,7 +519,7 @@ export default function PaymentsTab() {
                                                 <div className="grid grid-cols-2 gap-y-6">
                                                     <div>
                                                         <p className="font-label text-xs text-on-surface-variant mb-1">{t("devices.nodeId")}</p>
-                                                        <p className="font-headline text-lg font-bold text-on-surface">LDG-{activeDevices.toString().padStart(4, "0")}-BX</p>
+                                                        <p className="font-headline text-lg font-bold text-on-surface">{devices.find(d => d.nodeId)?.nodeId || "—"}</p>
                                                     </div>
                                                     <div>
                                                         <p className="font-label text-xs text-on-surface-variant mb-1">{t("devices.environment")}</p>
@@ -1020,65 +1020,63 @@ export default function PaymentsTab() {
             {/* BOOTSTRAP QR MODAL — per device_bootstrap_qr/code.html */}
             {/* ═══════════════════════════════════════════════════ */}
             {showBootstrapModal && bootstrapQrDataUrl && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
-                    <div className="w-full max-w-2xl max-h-[90vh] overflow-y-auto rounded-3xl bg-surface-container-lowest p-8 md:p-12 shadow-xl">
-                        <div className="flex justify-between items-start mb-8">
+                <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/50 p-4">
+                    <div className="w-full max-w-2xl max-h-[90vh] overflow-y-auto rounded-3xl bg-surface-container-lowest p-6 md:p-10 shadow-2xl ring-1 ring-outline-variant/10">
+                        <div className="flex justify-between items-start mb-6">
                             <div>
                                 <p className="font-label text-sm text-primary font-semibold tracking-wider uppercase mb-2">{t("devices.bootstrapTitle")}</p>
-                                <h2 className="font-headline text-4xl md:text-5xl font-extrabold text-on-surface tracking-tight leading-tight">Bootstrap Node</h2>
+                                <h2 className="font-headline text-3xl md:text-4xl font-extrabold text-on-surface tracking-tight leading-tight">Bootstrap Node</h2>
                             </div>
                             <button onClick={closeBootstrapModal} className="p-2 rounded-full hover:bg-surface-container-low transition-colors">
                                 <span className="material-symbols-outlined">close</span>
                             </button>
                         </div>
 
-                        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-                            <div className="lg:col-span-8 space-y-8">
-                                <div className="bg-surface-container-lowest rounded-3xl p-8 md:p-12 relative overflow-hidden group">
-                                    <div className="absolute -top-24 -right-24 w-64 h-64 bg-primary-fixed opacity-20 rounded-full blur-[60px] pointer-events-none" />
-                                    <div className="flex flex-col md:flex-row gap-12 items-center md:items-start relative z-10">
-                                        <div className="shrink-0 flex flex-col items-center gap-4">
-                                            <div className="w-64 h-64 bg-white p-4 rounded-3xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] flex items-center justify-center relative">
-                                                <img src={bootstrapQrDataUrl} alt="Bootstrap QR" className="w-full h-full object-contain" />
-                                                <div className="absolute top-4 left-4 w-6 h-6 border-t-4 border-l-4 border-primary rounded-tl-lg" />
-                                                <div className="absolute top-4 right-4 w-6 h-6 border-t-4 border-r-4 border-primary rounded-tr-lg" />
-                                                <div className="absolute bottom-4 left-4 w-6 h-6 border-b-4 border-l-4 border-primary rounded-bl-lg" />
-                                                <div className="absolute bottom-4 right-4 w-6 h-6 border-b-4 border-r-4 border-primary rounded-br-lg" />
-                                            </div>
-                                            {bootstrapCountdown && (
-                                                <div className="flex items-center gap-2 text-on-surface-variant font-label text-sm bg-surface-container-low px-4 py-2 rounded-full">
-                                                    <span className="material-symbols-outlined text-[16px] text-primary">timer</span>
-                                                    <span>Expires in <strong className="text-on-surface">{bootstrapCountdown}</strong></span>
-                                                </div>
-                                            )}
+                        <div className="flex flex-col gap-8">
+                            <div className="bg-surface-container-low rounded-3xl p-6 md:p-10 relative overflow-hidden">
+                                <div className="absolute -top-24 -right-24 w-64 h-64 bg-primary-fixed opacity-20 rounded-full blur-[60px] pointer-events-none" />
+                                <div className="flex flex-col md:flex-row gap-8 items-center md:items-start relative z-10">
+                                    <div className="shrink-0 flex flex-col items-center gap-4">
+                                        <div className="w-48 h-48 md:w-56 md:h-56 bg-white p-3 rounded-3xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] flex items-center justify-center relative">
+                                            <img src={bootstrapQrDataUrl} alt="Bootstrap QR" className="w-full h-full object-contain" />
+                                            <div className="absolute top-3 left-3 w-5 h-5 border-t-3 border-l-3 border-primary rounded-tl-lg" />
+                                            <div className="absolute top-3 right-3 w-5 h-5 border-t-3 border-r-3 border-primary rounded-tr-lg" />
+                                            <div className="absolute bottom-3 left-3 w-5 h-5 border-b-3 border-l-3 border-primary rounded-bl-lg" />
+                                            <div className="absolute bottom-3 right-3 w-5 h-5 border-b-3 border-r-3 border-primary rounded-br-lg" />
                                         </div>
-
-                                        <div className="flex-1 w-full space-y-8">
-                                            <div>
-                                                <h3 className="font-headline text-2xl font-bold text-on-surface mb-2">{t("devices.scanWithApp")}</h3>
-                                                <p className="font-body text-on-surface-variant leading-relaxed">{t("devices.bootstrapDesc")}</p>
+                                        {bootstrapCountdown && (
+                                            <div className="flex items-center gap-2 text-on-surface-variant font-label text-sm bg-surface-container-highest px-4 py-2 rounded-full">
+                                                <span className="material-symbols-outlined text-[16px] text-primary">timer</span>
+                                                <span>Expires in <strong className="text-on-surface">{bootstrapCountdown}</strong></span>
                                             </div>
-                                            <div className="bg-surface-container-low rounded-2xl p-6">
-                                                <div className="flex justify-between items-center mb-4">
-                                                    <h4 className="font-label font-semibold text-sm text-on-surface-variant uppercase tracking-wider">{t("devices.sessionDetails")}</h4>
-                                                    {bootstrapDeepLink && (
-                                                        <button onClick={() => { navigator.clipboard.writeText(bootstrapDeepLink); setNotice(t("modal.bootstrapCopied")); }} className="text-primary hover:text-primary-container p-1 rounded-lg hover:bg-surface-container-highest transition-colors">
-                                                            <span className="material-symbols-outlined text-[20px]">content_copy</span>
-                                                        </button>
-                                                    )}
+                                        )}
+                                    </div>
+
+                                    <div className="flex-1 w-full space-y-6">
+                                        <div>
+                                            <h3 className="font-headline text-xl md:text-2xl font-bold text-on-surface mb-2">{t("devices.scanWithApp")}</h3>
+                                            <p className="font-body text-on-surface-variant leading-relaxed">{t("devices.bootstrapDesc")}</p>
+                                        </div>
+                                        <div className="bg-surface-container-lowest rounded-2xl p-5 ring-1 ring-outline-variant/10">
+                                            <div className="flex justify-between items-center mb-4">
+                                                <h4 className="font-label font-semibold text-sm text-on-surface-variant uppercase tracking-wider">{t("devices.sessionDetails")}</h4>
+                                                {bootstrapDeepLink && (
+                                                    <button onClick={() => { navigator.clipboard.writeText(bootstrapDeepLink); setNotice(t("modal.bootstrapCopied")); }} className="text-primary hover:text-primary-container p-1 rounded-lg hover:bg-surface-container-highest transition-colors">
+                                                        <span className="material-symbols-outlined text-[20px]">content_copy</span>
+                                                    </button>
+                                                )}
+                                            </div>
+                                            <div className="grid grid-cols-1 gap-y-5">
+                                                <div>
+                                                    <p className="font-label text-xs text-on-surface-variant mb-1">{t("devices.environment")}</p>
+                                                    <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-primary-fixed-dim/20 text-on-primary-fixed-variant font-label text-xs font-semibold">
+                                                        <span className="w-1.5 h-1.5 rounded-full bg-primary" />
+                                                        Production
+                                                    </div>
                                                 </div>
-                                                <div className="grid grid-cols-1 gap-y-6">
-                                                    <div>
-                                                        <p className="font-label text-xs text-on-surface-variant mb-1">{t("devices.environment")}</p>
-                                                        <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-primary-fixed-dim/20 text-on-primary-fixed-variant font-label text-xs font-semibold">
-                                                            <span className="w-1.5 h-1.5 rounded-full bg-primary" />
-                                                            Production
-                                                        </div>
-                                                    </div>
-                                                    <div>
-                                                        <p className="font-label text-xs text-on-surface-variant mb-1">{t("modal.bootstrapDeepLink")}</p>
-                                                        <p className="font-body text-sm font-mono text-on-surface bg-surface-container-highest px-3 py-2 rounded-lg truncate">{bootstrapDeepLink}</p>
-                                                    </div>
+                                                <div>
+                                                    <p className="font-label text-xs text-on-surface-variant mb-1">{t("modal.bootstrapDeepLink")}</p>
+                                                    <p className="font-body text-sm font-mono text-on-surface bg-surface-container-highest px-3 py-2 rounded-lg truncate">{bootstrapDeepLink}</p>
                                                 </div>
                                             </div>
                                         </div>
