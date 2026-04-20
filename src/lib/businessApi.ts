@@ -16,6 +16,7 @@ import type {
   OperatingHoursRequest,
   BusinessProfileRequest,
   BusinessProfileResponse,
+  BusinessOptionResponse,
   BusinessResponse,
   BusinessSettingsRequest,
   BusinessSettingsResponse,
@@ -231,5 +232,12 @@ export async function getMyOnboardingStatus(): Promise<OnboardingMyStatusRespons
 /** GET /businesses/types/options */
 export async function listBusinessTypeOptions(): Promise<BusinessTypeOptionResponse[]> {
   const response = await apiClient.get<ApiSuccess<BusinessTypeOptionResponse[]>>('/businesses/types/options');
+  return unwrap(response);
+}
+
+export async function listAdminBusinessesByType(type: string): Promise<BusinessOptionResponse[]> {
+  const response = await apiClient.get<ApiSuccess<BusinessOptionResponse[]>>('/businesses/admin/by-type', {
+    params: { type },
+  });
   return unwrap(response);
 }

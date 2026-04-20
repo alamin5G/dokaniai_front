@@ -134,6 +134,31 @@ export async function createGlobalCategory(payload: {
   return unwrap(response);
 }
 
+export async function createBusinessScopedCategory(
+  businessId: string,
+  payload: {
+    nameBn: string;
+    nameEn?: string;
+    businessType: string;
+    parentId?: string;
+    description?: string;
+  },
+): Promise<CategoryResponse> {
+  const body: Record<string, unknown> = {
+    nameBn: payload.nameBn,
+    nameEn: payload.nameEn || null,
+    slug: payload.nameBn.trim().toLowerCase().replace(/\s+/g, '-').substring(0, 50),
+    scope: 'BUSINESS',
+    businessType: payload.businessType,
+    parentId: payload.parentId || null,
+  };
+  const response = await apiClient.post<ApiSuccess<CategoryResponse>>(
+    `/categories/businesses/${encodeURIComponent(businessId)}/categories`,
+    body,
+  );
+  return unwrap(response);
+}
+
 export async function updateCategory(
   categoryId: string,
   payload: { nameBn?: string; nameEn?: string; description?: string },

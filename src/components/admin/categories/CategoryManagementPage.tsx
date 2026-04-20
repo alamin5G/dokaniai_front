@@ -149,6 +149,7 @@ function TreeNodeItem({
 
 export default function CategoryManagementPage() {
   const t = useTranslations("admin.categories");
+  const tx = useTranslations("admin.categories.taxonomy");
   const router = useRouter();
   const [businessType, setBusinessType] = useState("GROCERY");
   const [selectedCategory, setSelectedCategory] = useState<CategoryResponse | null>(null);
@@ -246,24 +247,24 @@ export default function CategoryManagementPage() {
           className="bg-gradient-to-r from-primary to-primary-container text-on-primary font-body font-semibold px-6 py-3 rounded-xl flex items-center gap-2 hover:opacity-90 transition-opacity w-fit shadow-sm"
         >
           <span className="material-symbols-outlined text-[20px]">add</span>
-          {t("taxonomy.create")}
+          {tx("create")}
         </button>
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
         <div className="bg-surface-container-lowest rounded-2xl p-5">
           <p className="text-xs font-label uppercase tracking-wider text-on-surface-variant mb-2">
-            {t("taxonomy.hierarchy")}
+            {tx("hierarchy")}
           </p>
           <p className="text-3xl font-headline font-extrabold text-on-surface">{rootCategoryCount}</p>
           <p className="text-sm text-on-surface-variant mt-1">{businessType.replace(/_/g, " ")}</p>
         </div>
         <div className="bg-surface-container-lowest rounded-2xl p-5">
           <p className="text-xs font-label uppercase tracking-wider text-on-surface-variant mb-2">
-            {t("taxonomy.totalCategories", { count: categories.length })}
+            {tx("totalCategories", { count: categories.length })}
           </p>
           <p className="text-3xl font-headline font-extrabold text-on-surface">{categories.length}</p>
-          <p className="text-sm text-on-surface-variant mt-1">{t("taxonomy.active")}: {activeCategoryCount}</p>
+          <p className="text-sm text-on-surface-variant mt-1">{tx("active")}: {activeCategoryCount}</p>
         </div>
         <div className="bg-surface-container-lowest rounded-2xl p-5">
           <p className="text-xs font-label uppercase tracking-wider text-on-surface-variant mb-2">
@@ -280,10 +281,10 @@ export default function CategoryManagementPage() {
         <div className="flex items-center justify-between gap-4">
           <div>
             <h3 className="font-headline font-bold text-xl text-on-surface">
-              {t("tagClustersTitle")}
+              {tx("tagClustersTitle")}
             </h3>
             <p className="mt-1 text-sm text-on-surface-variant">
-              {t("tagClustersDesc")}
+              {tx("tagClustersDesc")}
             </p>
           </div>
           <span className="rounded-full bg-surface-container-high px-3 py-1 text-[11px] font-bold uppercase tracking-wider text-on-surface-variant">
@@ -303,7 +304,7 @@ export default function CategoryManagementPage() {
                   <div>
                     <p className="text-base font-bold text-on-surface">#{cluster.tag}</p>
                     <p className="mt-1 text-xs text-on-surface-variant">
-                      {t("tagClusterCount", { count: cluster.categoryCount })}
+                      {tx("tagClusterCount", { count: cluster.categoryCount })}
                     </p>
                   </div>
                   <span className="rounded-full bg-surface-container-highest px-3 py-1 text-[11px] font-semibold text-on-surface-variant">
@@ -316,7 +317,7 @@ export default function CategoryManagementPage() {
               </div>
             ))
           ) : (
-            <p className="text-sm text-on-surface-variant">{t("tagClustersEmpty")}</p>
+            <p className="text-sm text-on-surface-variant">{tx("tagClustersEmpty")}</p>
           )}
         </div>
       </section>
@@ -392,7 +393,7 @@ export default function CategoryManagementPage() {
         <section className="xl:col-span-4 flex flex-col gap-6">
           <div className="bg-surface-container-lowest rounded-[24px] p-6 shadow-sm">
             <div className="flex items-center justify-between mb-6">
-              <h3 className="font-headline font-bold text-xl text-on-surface">{t("taxonomy.hierarchy")}</h3>
+            <h3 className="font-headline font-bold text-xl text-on-surface">{tx("hierarchy")}</h3>
               <span className="inline-flex items-center gap-1 rounded-full bg-surface-container-high px-3 py-1 text-[11px] font-bold uppercase tracking-wider text-on-surface-variant">
                 <span className="material-symbols-outlined text-[14px]">account_tree</span>
                 {businessType.replace(/_/g, " ")}
@@ -417,7 +418,7 @@ export default function CategoryManagementPage() {
                 type="text"
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
-                placeholder={t("taxonomy.searchPlaceholder")}
+                placeholder={tx("searchPlaceholder")}
                 className="w-full bg-surface-container-low text-on-surface rounded-full pl-11 pr-4 py-3 text-sm font-body border-none focus:ring-0 focus:border-b-2 focus:border-b-secondary transition-all outline-none placeholder:text-on-surface-variant/70"
               />
             </div>
@@ -428,7 +429,7 @@ export default function CategoryManagementPage() {
                   <div className="h-6 w-6 animate-spin rounded-full border-4 border-surface-container-high border-t-primary" />
                 </div>
               ) : filteredTree.length === 0 ? (
-                <p className="text-center text-sm text-on-surface-variant py-8">{t("taxonomy.noCategories")}</p>
+                <p className="text-center text-sm text-on-surface-variant py-8">{tx("noCategories")}</p>
               ) : (
                 filteredTree.map((node) => (
                   <TreeNodeItem
@@ -444,10 +445,10 @@ export default function CategoryManagementPage() {
 
             <div className="mt-5 border-t border-surface-container-high pt-4 flex items-center justify-between">
               <p className="text-xs text-on-surface-variant font-body">
-                {t("taxonomy.totalCategories", { count: categories.length })}
+                {tx("totalCategories", { count: categories.length })}
               </p>
               <p className="text-xs text-on-surface-variant font-body">
-                {t("taxonomy.active")}: {activeCategoryCount}
+                {tx("active")}: {activeCategoryCount}
               </p>
             </div>
           </div>
@@ -488,23 +489,23 @@ export default function CategoryManagementPage() {
 
                   <div className="grid grid-cols-2 gap-3 sm:min-w-[280px]">
                     <div className="rounded-2xl bg-surface-container-low p-4">
-                      <p className="text-[10px] font-bold uppercase tracking-wider text-on-surface-variant">{t("taxonomy.status")}</p>
+                      <p className="text-[10px] font-bold uppercase tracking-wider text-on-surface-variant">{tx("status")}</p>
                       <p className="mt-2 text-sm font-semibold text-on-surface">
-                        {selectedCategory.isActive ? t("taxonomy.active") : t("taxonomy.inactive")}
+                        {selectedCategory.isActive ? tx("active") : tx("inactive")}
                       </p>
                     </div>
                     <div className="rounded-2xl bg-surface-container-low p-4">
-                      <p className="text-[10px] font-bold uppercase tracking-wider text-on-surface-variant">{t("taxonomy.subCategories")}</p>
+                      <p className="text-[10px] font-bold uppercase tracking-wider text-on-surface-variant">{tx("subCategories")}</p>
                       <p className="mt-2 text-2xl font-headline font-extrabold text-on-surface">
                         {categories.filter((category) => category.parentId === selectedCategory.id).length}
                       </p>
                     </div>
                     <div className="rounded-2xl bg-surface-container-low p-4">
-                      <p className="text-[10px] font-bold uppercase tracking-wider text-on-surface-variant">{t("taxonomy.scope")}</p>
+                      <p className="text-[10px] font-bold uppercase tracking-wider text-on-surface-variant">{tx("scope")}</p>
                       <p className="mt-2 text-sm font-semibold text-on-surface">{selectedCategory.scope}</p>
                     </div>
                     <div className="rounded-2xl bg-surface-container-low p-4">
-                      <p className="text-[10px] font-bold uppercase tracking-wider text-on-surface-variant">{t("taxonomy.businessType")}</p>
+                      <p className="text-[10px] font-bold uppercase tracking-wider text-on-surface-variant">{tx("businessType")}</p>
                       <p className="mt-2 text-sm font-semibold text-on-surface">
                         {selectedCategory.businessType?.replace(/_/g, " ") ?? "—"}
                       </p>
@@ -524,7 +525,7 @@ export default function CategoryManagementPage() {
                     </div>
                     <div className="flex-1">
                       <h4 className="font-headline font-semibold text-sm text-on-surface mb-2">
-                        {t("tagSuggestionsTitle", { name: selectedCategory.nameBn })}
+                        {tx("tagSuggestionsTitle", { name: selectedCategory.nameBn })}
                       </h4>
                       <div className="flex items-center gap-2 mb-3">
                         <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold ${
@@ -532,12 +533,17 @@ export default function CategoryManagementPage() {
                             ? "bg-primary-fixed text-on-primary-fixed"
                             : "bg-surface-container-high text-on-surface-variant"
                         }`}>
-                          {tags.suggestionSource === "AI" ? t("tagSuggestionSourceAi") : t("tagSuggestionSourceRule")}
+                          {tags.suggestionSource === "AI" ? tx("tagSuggestionSourceAi") : tx("tagSuggestionSourceRule")}
                         </span>
                         <p className="text-xs text-on-surface-variant">
-                          {t("tagSuggestionsHelp")}
+                          {tx("tagSuggestionsHelp")}
                         </p>
                       </div>
+                      {tags.suggestionNote ? (
+                        <p className="mb-3 text-[11px] leading-5 text-on-surface-variant">
+                          {tags.suggestionNote}
+                        </p>
+                      ) : null}
                       <div className="flex flex-wrap gap-2">
                         {loadingTags ? (
                           <div className="h-5 w-20 animate-pulse bg-surface-container-high rounded-full" />
@@ -600,13 +606,13 @@ export default function CategoryManagementPage() {
                       <div className="h-6 w-6 animate-spin rounded-full border-3 border-surface-container-high border-t-primary" />
                     </div>
                   ) : businesses.length === 0 ? (
-                    <p className="text-center text-sm text-on-surface-variant py-8">{t("noBusinessesInCategory")}</p>
+                  <p className="text-center text-sm text-on-surface-variant py-8">{t("noBusinessesInCategory")}</p>
                   ) : (
                     <table className="w-full text-left font-body text-sm">
                       <thead>
                         <tr className="text-on-surface-variant border-b-2 border-surface-container-low">
                           <th className="pb-3 font-medium">{t("colBusiness")}</th>
-                          <th className="pb-3 font-medium">{t("taxonomy.hierarchy")}</th>
+                          <th className="pb-3 font-medium">{tx("hierarchy")}</th>
                           <th className="pb-3 font-medium">{t("colStatus")}</th>
                           <th className="pb-3 font-medium text-right">{t("colActions")}</th>
                         </tr>
@@ -666,7 +672,7 @@ export default function CategoryManagementPage() {
                 <span className="material-symbols-outlined text-4xl">category</span>
               </div>
               <h3 className="font-headline text-2xl font-bold text-on-surface mb-2">
-                {t("taxonomy.selectCategory")}
+                {tx("selectCategory")}
               </h3>
               <p className="max-w-md text-sm text-on-surface-variant">
                 Browse the left taxonomy explorer, choose a branch, then review details, suggested attributes, and affected businesses here.

@@ -103,7 +103,7 @@ export function useCategoryTags(categoryId: string | null) {
   const { data, error, isLoading, mutate } = useSWR(key, () => getCategoryTags(categoryId!));
 
   return {
-    tags: data ?? { currentTags: [], suggestedTags: [], suggestionSource: "RULE_BASED" },
+    tags: data ?? { currentTags: [], suggestedTags: [], suggestionSource: "RULE_BASED", suggestionNote: "" },
     isLoading,
     error,
     mutate,
@@ -121,7 +121,7 @@ export function useBusinessCategoryTags(
   );
 
   return {
-    tags: (data ?? { currentTags: [], suggestedTags: [], suggestionSource: "RULE_BASED" }) as CategoryTagsResponse,
+    tags: (data ?? { currentTags: [], suggestedTags: [], suggestionSource: "RULE_BASED", suggestionNote: "" }) as CategoryTagsResponse,
     isLoading,
     error,
     mutate,

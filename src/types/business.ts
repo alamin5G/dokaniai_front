@@ -107,6 +107,13 @@ export interface BusinessResponse {
   updatedAt: string;
 }
 
+export interface BusinessOptionResponse {
+  id: string;
+  name: string;
+  type: string;
+  status: string;
+}
+
 /** Mirrors BusinessStatsResponse.java */
 export interface BusinessStatsResponse {
   totalProducts: number;

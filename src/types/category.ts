@@ -27,6 +27,7 @@ export interface CategoryTagsResponse {
   currentTags: string[];
   suggestedTags: string[];
   suggestionSource: 'AI' | 'RULE_BASED';
+  suggestionNote: string;
 }
 
 export interface CategoryTagClusterResponse {
