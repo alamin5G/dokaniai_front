@@ -593,7 +593,7 @@ export default function PaymentsTab() {
                                             <p className="text-sm text-on-surface-variant text-center py-4">{t("messages.noDevices")}</p>
                                         ) : (
                                             devices.slice(0, 5).map((device) => (
-                                                <div key={device.id} className={`flex items-center gap-4 p-3 rounded-2xl hover:bg-surface-container-low transition-colors group cursor-pointer ${device.status !== "ACTIVE" ? "opacity-70" : ""}`}>
+                                                <div key={device.id} className={`flex items-center gap-4 p-3 rounded-2xl hover:bg-surface-container-low transition-colors group ${device.status !== "ACTIVE" ? "opacity-70" : ""}`}>
                                                     <div className="w-12 h-12 rounded-xl bg-surface-container-highest flex items-center justify-center text-on-surface-variant group-hover:text-primary transition-colors">
                                                         <span className="material-symbols-outlined">{device.status === "ACTIVE" ? "smartphone" : "phonelink_erase"}</span>
                                                     </div>
@@ -601,7 +601,17 @@ export default function PaymentsTab() {
                                                         <h4 className="font-headline font-semibold text-sm text-on-surface truncate">{device.deviceName}</h4>
                                                         <p className="font-body text-xs text-on-surface-variant truncate">{device.userName}</p>
                                                     </div>
-                                                    <div className={`w-2 h-2 rounded-full ${device.status === "ACTIVE" ? "bg-primary-fixed" : "bg-error"}`} />
+                                                    {device.status === "ACTIVE" ? (
+                                                        <button
+                                                            onClick={() => { setRevokeModalDevice(device); setRevokeReason(""); }}
+                                                            className="p-2 rounded-full text-on-surface-variant hover:bg-error-container hover:text-error transition-colors"
+                                                            title={t("actions.revoke")}
+                                                        >
+                                                            <span className="material-symbols-outlined text-lg">phonelink_erase</span>
+                                                        </button>
+                                                    ) : (
+                                                        <div className="w-2 h-2 rounded-full bg-error" />
+                                                    )}
                                                 </div>
                                             ))
                                         )}
