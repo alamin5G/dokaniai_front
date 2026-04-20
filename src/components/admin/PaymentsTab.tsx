@@ -488,19 +488,26 @@ export default function PaymentsTab() {
                                     <div className="flex flex-col md:flex-row gap-12 items-center md:items-start relative z-10">
                                         {/* QR Display */}
                                         <div className="shrink-0 flex flex-col items-center gap-4">
-                                            <div className="w-64 h-64 bg-white p-4 rounded-3xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] flex items-center justify-center relative">
-                                                <div className="w-6 h-6 border-t-4 border-l-4 border-primary rounded-tl-lg absolute top-4 left-4" />
-                                                <div className="w-6 h-6 border-t-4 border-r-4 border-primary rounded-tr-lg absolute top-4 right-4" />
-                                                <div className="w-6 h-6 border-b-4 border-l-4 border-primary rounded-bl-lg absolute bottom-4 left-4" />
-                                                <div className="w-6 h-6 border-b-4 border-r-4 border-primary rounded-br-lg absolute bottom-4 right-4" />
-                                                <div className="flex items-center justify-center text-on-surface-variant">
-                                                    <span className="material-symbols-outlined text-6xl">qr_code_2</span>
+                                            {bootstrapQrDataUrl ? (
+                                                <div className="w-64 h-64 bg-white p-4 rounded-3xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] flex items-center justify-center relative">
+                                                    <img src={bootstrapQrDataUrl} alt="Bootstrap QR" className="w-full h-full object-contain" />
+                                                    <div className="absolute top-4 left-4 w-6 h-6 border-t-4 border-l-4 border-primary rounded-tl-lg" />
+                                                    <div className="absolute top-4 right-4 w-6 h-6 border-t-4 border-r-4 border-primary rounded-tr-lg" />
+                                                    <div className="absolute bottom-4 left-4 w-6 h-6 border-b-4 border-l-4 border-primary rounded-bl-lg" />
+                                                    <div className="absolute bottom-4 right-4 w-6 h-6 border-b-4 border-r-4 border-primary rounded-br-lg" />
                                                 </div>
-                                            </div>
-                                            <div className="flex items-center gap-2 text-on-surface-variant font-label text-sm bg-surface-container-low px-4 py-2 rounded-full">
-                                                <span className="material-symbols-outlined text-[16px] text-primary">timer</span>
-                                                <span>{t("devices.scanHint")}</span>
-                                            </div>
+                                            ) : (
+                                                <div className="w-64 h-64 bg-white/60 border-2 border-dashed border-outline-variant/40 rounded-3xl flex flex-col items-center justify-center gap-3">
+                                                    <span className="material-symbols-outlined text-5xl text-on-surface-variant/40">qr_code_scanner</span>
+                                                    <p className="text-xs text-on-surface-variant/60 text-center px-4 font-label">{t("devices.scanHint")}</p>
+                                                </div>
+                                            )}
+                                            {bootstrapCountdown && (
+                                                <div className="flex items-center gap-2 text-on-surface-variant font-label text-sm bg-surface-container-low px-4 py-2 rounded-full">
+                                                    <span className="material-symbols-outlined text-[16px] text-primary">timer</span>
+                                                    <span>Expires in <strong className="text-on-surface">{bootstrapCountdown}</strong></span>
+                                                </div>
+                                            )}
                                         </div>
 
                                         {/* Details */}
@@ -524,16 +531,21 @@ export default function PaymentsTab() {
                                                     <div>
                                                         <p className="font-label text-xs text-on-surface-variant mb-1">{t("devices.environment")}</p>
                                                         <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-primary-fixed-dim/20 text-on-primary-fixed-variant font-label text-xs font-semibold">
-                                                            <span className="w-1.5 h-1.5 rounded-full bg-primary" />
-                                                            Production
+                                                            <span className={`w-1.5 h-1.5 rounded-full ${process.env.NODE_ENV === "production" ? "bg-primary" : "bg-tertiary"}`} />
+                                                            {process.env.NODE_ENV === "production" ? "Production" : "Development"}
                                                         </div>
                                                     </div>
                                                     <div className="col-span-2">
                                                         <p className="font-label text-xs text-on-surface-variant mb-1">{t("devices.bootstrapToken")}</p>
-                                                        <p className="font-body text-sm font-mono text-on-surface bg-surface-container-highest px-3 py-2 rounded-lg truncate">{bootstrapDeepLink || "Click 'Generate QR' to create token"}</p>
+                                                        <p className="font-body text-sm font-mono text-on-surface bg-surface-container-highest px-3 py-2 rounded-lg truncate">{bootstrapDeepLink || "—"}</p>
                                                     </div>
                                                 </div>
                                             </div>
+                                            {/* Generate QR button in main content area */}
+                                            <button onClick={handleBootstrapDevice} disabled={bootstrapLoading} className="w-full py-3.5 rounded-2xl bg-gradient-to-r from-primary to-primary-container text-on-primary font-label font-semibold shadow-md hover:shadow-lg transition-all flex items-center justify-center gap-2 text-base">
+                                                <span className="material-symbols-outlined text-xl">qr_code_scanner</span>
+                                                {bootstrapLoading ? "..." : t("actions.bootstrapDevice")}
+                                            </button>
                                         </div>
                                     </div>
                                 </div>
