@@ -6,13 +6,17 @@ import {
   submitPaymentTrx,
 } from "@/lib/subscriptionApi";
 import { setRedirectAfterLogin } from "@/lib/authFlow";
+import { listBusinesses } from "@/lib/businessApi";
+import { buildShopPath } from "@/lib/shopRouting";
 import type { MfsType, PaymentIntentStatusResponse } from "@/types/subscription";
 import { useLocale, useTranslations } from "next-intl";
 import { useParams, useRouter } from "next/navigation";
 import Image from "next/image";
 import { useCallback, useEffect, useMemo, useState } from "react";
 
+/** Shape of checkout data stored in sessionStorage by the upgrade page */
 interface CheckoutData {
+  paymentIntentId?: string; // optional for backward compatibility
   receiverNumber: string;
   amount: number;
   mfsMethod: MfsType;
@@ -68,23 +72,20 @@ const MFS_THEMES: Record<
 /* ── TrxID validation per provider ─────────────────────────────── */
 function validateTrxId(trxId: string, mfsMethod: MfsType): string | null {
   const trimmed = trxId.trim();
-  if (!trimmed) return null; // empty handled elsewhere
+  if (!trimmed) return null;
 
   switch (mfsMethod) {
     case "BKASH": {
-      // bKash: ~10 alphanumeric uppercase
       if (!/^[A-Z0-9]{10}$/.test(trimmed))
         return "bKash TrxID must be 10 alphanumeric characters (e.g. DDJ8BQBVCM)";
       return null;
     }
     case "NAGAD": {
-      // Nagad: ~8 alphanumeric uppercase
       if (!/^[A-Z0-9]{8}$/.test(trimmed))
         return "Nagad TxnID must be 8 alphanumeric characters (e.g. 754PTHMR)";
       return null;
     }
     case "ROCKET": {
-      // Rocket: 10 digit numeric
       if (!/^\d{10}$/.test(trimmed))
         return "Rocket TxnId must be 10 digits (e.g. 4661971574)";
       return null;
@@ -117,7 +118,13 @@ export default function SubscriptionPaymentStatusPage() {
   const [notice, setNotice] = useState<string | null>(null);
   const [checkoutData, setCheckoutData] = useState<CheckoutData | null>(null);
   const [remainingSeconds, setRemainingSeconds] = useState<number | null>(null);
+  /* Tracks whether the user has submitted a TrxID — persisted in sessionStorage so it survives refresh */
+  const [trxSubmitted, setTrxSubmitted] = useState(false);
+  const [submittedTrxId, setSubmittedTrxId] = useState("");
+  /* Smart redirect target after payment completion (resolved from business count) */
+  const [redirectTarget, setRedirectTarget] = useState("/onboarding");
 
+  /* ── Auth guard ── */
   useEffect(() => {
     if (typeof window === "undefined") return;
     try {
@@ -132,14 +139,21 @@ export default function SubscriptionPaymentStatusPage() {
     }
   }, [paymentIntentId, router]);
 
+  /* ── Load checkout data + restore TrxID submitted state ── */
   useEffect(() => {
     if (typeof window === "undefined") return;
     try {
       const raw = sessionStorage.getItem("payment_checkout");
       if (raw) setCheckoutData(JSON.parse(raw));
-    } catch { }
+      const saved = sessionStorage.getItem("payment_trx_submitted");
+      if (saved) {
+        setTrxSubmitted(true);
+        setSubmittedTrxId(saved);
+      }
+    } catch { /* ignore */ }
   }, []);
 
+  /* ── Status polling ── */
   const refreshStatus = useCallback(async () => {
     try {
       const current = await getPaymentIntentStatus(paymentIntentId);
@@ -157,24 +171,54 @@ export default function SubscriptionPaymentStatusPage() {
     return () => { window.clearInterval(intervalId); };
   }, [refreshStatus, statusData]);
 
+  /* ── Cleanup on terminal states ── */
   useEffect(() => {
     if (statusData?.status === "COMPLETED") {
       sessionStorage.removeItem("payment_checkout");
+      sessionStorage.removeItem("payment_trx_submitted");
+    }
+    if (statusData?.status === "FAILED" || statusData?.status === "EXPIRED") {
+      sessionStorage.removeItem("payment_trx_submitted");
     }
   }, [statusData?.status]);
 
-  // Countdown timer for payment session expiry
+  /* ── Smart redirect after payment completion ──
+   *  0 businesses → /onboarding (first-time setup)
+   *  1 business   → /shop (direct to their store)
+   *  2+ businesses → /businesses (business selector)
+   */
+  useEffect(() => {
+    if (statusData?.status !== "COMPLETED") return;
+    let cancelled = false;
+    const resolveTarget = async () => {
+      try {
+        const response = await listBusinesses();
+        const businesses = response.businesses ?? [];
+        if (cancelled) return;
+        if (businesses.length === 0) {
+          setRedirectTarget("/onboarding");
+        } else if (businesses.length === 1) {
+          setRedirectTarget(buildShopPath(businesses[0].id));
+        } else {
+          setRedirectTarget("/businesses");
+        }
+      } catch {
+        if (!cancelled) setRedirectTarget("/onboarding");
+      }
+    };
+    void resolveTarget();
+    return () => { cancelled = true; };
+  }, [statusData?.status]);
+
+  /* ── Countdown timer ── */
   useEffect(() => {
     const expiryStr = statusData?.expiresAt || checkoutData?.expiresAt;
     if (!expiryStr || isTerminalStatus(statusData?.status ?? "")) return;
-
     const expiry = new Date(expiryStr).getTime();
     const tick = () => {
       const diff = Math.max(0, Math.floor((expiry - Date.now()) / 1000));
       setRemainingSeconds(diff);
-      if (diff <= 0) {
-        void refreshStatus();
-      }
+      if (diff <= 0) void refreshStatus();
     };
     tick();
     const id = window.setInterval(tick, 1000);
@@ -190,23 +234,22 @@ export default function SubscriptionPaymentStatusPage() {
     return t("payment.status.pending");
   }, [statusData, t]);
 
+  /* ── Handlers ── */
   const handleSubmitTrx = async () => {
     if (!trxId.trim()) { setNotice(t("payment.errors.enterTrx")); return; }
-
-    // Validate TrxID format per provider
     if (checkoutData) {
       const validationError = validateTrxId(trxId, checkoutData.mfsMethod);
-      if (validationError) {
-        setTrxError(validationError);
-        return;
-      }
+      if (validationError) { setTrxError(validationError); return; }
     }
     setTrxError(null);
     setIsSubmitting(true);
     try {
       const next = await submitPaymentTrx(paymentIntentId, trxId.trim());
       setStatusData(next);
-      setNotice(t("payment.trxSubmitted"));
+      setTrxSubmitted(true);
+      setSubmittedTrxId(trxId.trim());
+      sessionStorage.setItem("payment_trx_submitted", trxId.trim());
+      setNotice(null);
     } catch (error) {
       setNotice(error instanceof Error ? error.message : t("payment.errors.trxSubmitFailed"));
     } finally { setIsSubmitting(false); }
@@ -217,16 +260,27 @@ export default function SubscriptionPaymentStatusPage() {
     try {
       const next = await resubmitPaymentIntent(paymentIntentId);
       setStatusData(next);
+      setTrxSubmitted(false);
+      setSubmittedTrxId("");
+      sessionStorage.removeItem("payment_trx_submitted");
       setNotice(t("payment.resubmitted"));
     } catch (error) {
       setNotice(error instanceof Error ? error.message : t("payment.errors.resubmitFailed"));
     } finally { setIsSubmitting(false); }
   };
 
+  /* ── Derived state ── */
   const theme = checkoutData ? MFS_THEMES[checkoutData.mfsMethod] : null;
   const isCompleted = statusData?.status === "COMPLETED";
   const isPending = !statusData || statusData.status === "PENDING";
+  const isManualReview = statusData?.status === "MANUAL_REVIEW";
+  const isFailed = statusData?.status === "FAILED";
+  const isExpired = statusData?.status === "EXPIRED";
+  const showVerificationUI = isManualReview || (trxSubmitted && isPending);
 
+  /* ══════════════════════════════════════════════════════════════════
+     RENDER
+  ══════════════════════════════════════════════════════════════════ */
   return (
     <div className="min-h-screen bg-[#f8faf6] font-['Hind_Siliguri','Manrope',sans-serif] antialiased">
       <header className="sticky top-0 z-40 bg-[#f2f4f0] flex items-center justify-between px-4 sm:px-6 py-3">
@@ -240,24 +294,178 @@ export default function SubscriptionPaymentStatusPage() {
       </header>
 
       <main className="max-w-lg mx-auto px-4 sm:px-6 py-6 sm:py-10 space-y-6">
-        {notice && (
+        {notice && !trxSubmitted && (
           <div className="rounded-xl bg-[#ecefeb] px-5 py-3 text-sm text-[#191c1a]">{notice}</div>
         )}
 
+        {/* ══════ COMPLETED ══════ */}
         {isCompleted ? (
           <div className="bg-white rounded-2xl p-8 shadow-[0_8px_30px_rgba(25,28,26,0.06)] text-center space-y-4">
             <div className="w-16 h-16 rounded-full bg-[#00503a]/10 flex items-center justify-center mx-auto">
               <span className="material-symbols-outlined text-[#003727] text-4xl" style={{ fontVariationSettings: "'FILL' 1" }}>check_circle</span>
             </div>
             <h2 className="text-2xl font-bold text-[#191c1a]">{isBn ? "পেমেন্ট সফল!" : "Payment Successful!"}</h2>
-            <p className="text-sm text-[#404944]">{isBn ? "আপনার সাবস্ক্রিপশন সক্রিয় হয়েছে। এখন আপনার ব্যবসা সেটআপ করুন।" : "Your subscription is now active. Let's set up your business."}</p>
-            <button onClick={() => router.push("/onboarding")} className="w-full py-3.5 text-white font-bold text-base rounded-full shadow-lg" style={{ background: "linear-gradient(135deg, #003727, #00503a)" }}>
-              {isBn ? "অনবোর্ডিং শুরু করুন" : "Start Onboarding"}
+            <p className="text-sm text-[#404944]">{isBn ? "আপনার সাবস্ক্রিপশন সক্রিয় হয়েছে।" : "Your subscription is now active."}</p>
+            {/* Smart CTA: routes to onboarding / shop / business list based on count */}
+            <button onClick={() => router.push(redirectTarget)} className="w-full py-3.5 text-white font-bold text-base rounded-full shadow-lg" style={{ background: "linear-gradient(135deg, #003727, #00503a)" }}>
+              {redirectTarget === "/onboarding"
+                ? (isBn ? "অনবোর্ডিং শুরু করুন" : "Start Onboarding")
+                : redirectTarget === "/businesses"
+                  ? (isBn ? "ব্যবসা নির্বাচন করুন" : "Select Business")
+                  : (isBn ? "দোকানে যান" : "Go to Shop")}
             </button>
           </div>
+
+          /* ══════ VERIFICATION WAITING UI (glassy card) ══════ */
+        ) : showVerificationUI ? (
+          <div className="space-y-5">
+            {/* Glassy verification card */}
+            <div className="relative rounded-3xl overflow-hidden shadow-[0_12px_40px_rgba(25,28,26,0.10)] border border-white/40">
+              <div className="absolute inset-0 bg-white/70 backdrop-blur-xl" />
+              <div className="relative h-2 overflow-hidden" style={{ background: theme?.gradient ?? "linear-gradient(135deg, #003727, #00503a)" }}>
+                <div className="absolute inset-0 animate-pulse bg-gradient-to-r from-transparent via-white/40 to-transparent" />
+              </div>
+              <div className="relative p-8 space-y-6">
+                {/* Animated pending icon */}
+                <div className="flex justify-center">
+                  <div className="relative">
+                    <div className="absolute -inset-3 rounded-full animate-ping opacity-15" style={{ background: theme?.primary ?? "#003727", animationDuration: "2s" }} />
+                    <div className="absolute -inset-1.5 rounded-full animate-ping opacity-10" style={{ background: theme?.primary ?? "#003727", animationDuration: "2.5s" }} />
+                    <div className="relative w-24 h-24 rounded-full flex items-center justify-center shadow-lg" style={{ background: theme?.gradient ?? "linear-gradient(135deg, #003727, #00503a)" }}>
+                      {isManualReview ? (
+                        <span className="material-symbols-outlined text-white text-4xl" style={{ fontVariationSettings: "'FILL' 1" }}>person_search</span>
+                      ) : (
+                        <svg className="w-10 h-10 text-white animate-spin" style={{ animationDuration: "3s" }} viewBox="0 0 24 24" fill="none">
+                          <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z" fill="currentColor" opacity="0.3" />
+                          <path d="M12 2C6.48 2 2 6.48 2 12h2c0-4.41 3.59-8 8-8V2z" fill="currentColor" />
+                        </svg>
+                      )}
+                    </div>
+                  </div>
+                </div>
+
+                {/* Status text */}
+                <div className="text-center space-y-2">
+                  <h2 className="text-xl font-bold text-[#191c1a]">
+                    {isManualReview
+                      ? (isBn ? "ম্যানুয়াল রিভিউতে আছে" : "Under Manual Review")
+                      : (isBn ? "পেমেন্ট যাচাই হচ্ছে..." : "Verifying Payment...")}
+                  </h2>
+                  <p className="text-sm text-[#404944]">
+                    {isManualReview
+                      ? (isBn ? "আপনার পেমেন্ট এডমিন যাচাই করছেন। কিছুক্ষণের মধ্যে কনফার্ম হবে।" : "An admin is verifying your payment. It will be confirmed shortly.")
+                      : (isBn ? "আপনার পেমেন্ট স্বয়ংক্রিয়ভাবে যাচাই করা হচ্ছে। অনুগ্রহ করে অপেক্ষা করুন।" : "Your payment is being auto-verified. Please wait.")}
+                  </p>
+                </div>
+
+                {/* TrxID + Amount info */}
+                <div className="rounded-2xl bg-white/60 backdrop-blur-sm border border-white/50 p-4 space-y-3">
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs text-[#707974]">{isBn ? "ট্রানজেকশন আইডি" : "Transaction ID"}</span>
+                    <div className="flex items-center gap-1.5">
+                      <span className="text-sm font-bold font-['Manrope',sans-serif] text-[#191c1a] tracking-wider">{submittedTrxId}</span>
+                      <button onClick={() => navigator.clipboard?.writeText(submittedTrxId)} className="rounded p-0.5 hover:bg-white/60 transition-colors" title={isBn ? "কপি করুন" : "Copy"}>
+                        <span className="material-symbols-outlined text-[#707974] text-sm">content_copy</span>
+                      </button>
+                    </div>
+                  </div>
+                  {checkoutData && (
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs text-[#707974]">{isBn ? "পরিমাণ" : "Amount"}</span>
+                      <span className="text-sm font-bold font-['Manrope',sans-serif]" style={{ color: theme?.primary }}>৳{formatPrice(checkoutData.amount, locale)}</span>
+                    </div>
+                  )}
+                  {checkoutData && theme && (
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs text-[#707974]">{isBn ? "পদ্ধতি" : "Method"}</span>
+                      <div className="flex items-center gap-2">
+                        <div className="relative w-5 h-5 rounded overflow-hidden">
+                          <Image src={theme.logo} alt={theme.labelEn} fill className="object-contain" />
+                        </div>
+                        <span className="text-sm font-medium text-[#191c1a]">{isBn ? theme.labelBn : theme.labelEn}</span>
+                      </div>
+                    </div>
+                  )}
+                </div>
+
+                {/* Live polling dots */}
+                <div className="flex items-center justify-center gap-2">
+                  <div className="flex gap-1">
+                    <span className="w-1.5 h-1.5 rounded-full animate-bounce" style={{ background: theme?.primary ?? "#003727", animationDelay: "0ms", animationDuration: "1s" }} />
+                    <span className="w-1.5 h-1.5 rounded-full animate-bounce" style={{ background: theme?.primary ?? "#003727", animationDelay: "150ms", animationDuration: "1s" }} />
+                    <span className="w-1.5 h-1.5 rounded-full animate-bounce" style={{ background: theme?.primary ?? "#003727", animationDelay: "300ms", animationDuration: "1s" }} />
+                  </div>
+                  <span className="text-xs text-[#707974]">{isBn ? "স্বয়ংক্রিয়ভাবে আপডেট হচ্ছে" : "Auto-updating"}</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Countdown timer */}
+            {remainingSeconds !== null && remainingSeconds > 0 && (
+              <div className="flex items-center justify-center gap-2 text-sm text-[#404944]">
+                <span className="material-symbols-outlined text-base">timer</span>
+                <span>{isBn ? "সেশন মেয়াদোত্তীর্ণ হবে" : "Session expires in"} </span>
+                <span className="font-bold font-['Manrope',sans-serif] tabular-nums">
+                  {String(Math.floor(remainingSeconds / 60)).padStart(2, "0")}:{String(remainingSeconds % 60).padStart(2, "0")}
+                </span>
+              </div>
+            )}
+
+            {/* Action buttons */}
+            <div className="flex gap-3">
+              <button type="button" onClick={() => router.push("/subscription/upgrade")} className="flex-1 py-3 text-sm font-semibold text-[#404944] hover:text-[#191c1a] transition-colors rounded-full border border-[#e5e7e4] bg-white/60 backdrop-blur-sm">
+                {isBn ? "← ফিরে যান" : "← Go Back"}
+              </button>
+              <button type="button" onClick={() => router.push("/subscription/upgrade")} className="flex-1 py-3 text-sm font-medium text-[#707974] hover:text-[#404944] transition-colors">
+                {isBn ? "পরে দেখব" : "Check Later"}
+              </button>
+            </div>
+
+            <p className="text-center text-[11px] text-[#707974] flex items-center justify-center gap-1">
+              <span className="material-symbols-outlined text-[13px]">lock</span>
+              {isBn ? "এই পৃষ্ঠাটি খোলা রাখুন — পেমেন্ট কনফার্ম হলে স্বয়ংক্রিয়ভাবে আপডেট হবে" : "Keep this page open — it will auto-update when payment is confirmed"}
+            </p>
+          </div>
+
+          /* ══════ FAILED ══════ */
+        ) : isFailed ? (
+          <div className="bg-white rounded-2xl p-8 shadow-[0_8px_30px_rgba(25,28,26,0.06)] text-center space-y-4 border border-[#ffdad6]/50">
+            <div className="w-16 h-16 rounded-full bg-[#ba1a1a]/10 flex items-center justify-center mx-auto">
+              <span className="material-symbols-outlined text-[#ba1a1a] text-4xl" style={{ fontVariationSettings: "'FILL' 1" }}>cancel</span>
+            </div>
+            <h2 className="text-xl font-bold text-[#ba1a1a]">{isBn ? "পেমেন্ট ব্যর্থ হয়েছে" : "Payment Failed"}</h2>
+            <p className="text-sm text-[#404944]">{isBn ? "আপনার পেমেন্ট যাচাই করা যায়নি। আবার চেষ্টা করুন।" : "Your payment could not be verified. Please try again."}</p>
+            <button onClick={handleResubmit} disabled={isSubmitting} className="w-full py-3.5 text-white font-bold text-base rounded-full shadow-lg disabled:opacity-40 flex items-center justify-center gap-2" style={theme ? { background: theme.gradient } : { background: "linear-gradient(135deg, #003727, #00503a)" }}>
+              {isSubmitting ? (
+                <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+              ) : (
+                <>
+                  <span className="material-symbols-outlined text-lg">refresh</span>
+                  <span>{isBn ? "আবার চেষ্টা করুন" : "Try Again"}</span>
+                </>
+              )}
+            </button>
+            <button onClick={() => router.push("/subscription/upgrade")} className="w-full py-2.5 text-sm font-medium text-[#404944] hover:text-[#191c1a] transition-colors">
+              {isBn ? "← ফিরে যান" : "← Go Back"}
+            </button>
+          </div>
+
+          /* ══════ EXPIRED ══════ */
+        ) : isExpired ? (
+          <div className="bg-white rounded-2xl p-8 shadow-[0_8px_30px_rgba(25,28,26,0.06)] text-center space-y-4 border border-[#e5e7e4]">
+            <div className="w-16 h-16 rounded-full bg-[#707974]/10 flex items-center justify-center mx-auto">
+              <span className="material-symbols-outlined text-[#707974] text-4xl" style={{ fontVariationSettings: "'FILL' 1" }}>timer_off</span>
+            </div>
+            <h2 className="text-xl font-bold text-[#191c1a]">{isBn ? "সেশন মেয়াদোত্তীর্ণ" : "Session Expired"}</h2>
+            <p className="text-sm text-[#404944]">{isBn ? "পেমেন্ট সেশনের সময় শেষ হয়ে গেছে। নতুন করে শুরু করুন।" : "The payment session has expired. Please start over."}</p>
+            <button onClick={() => router.push("/subscription/upgrade")} className="w-full py-3.5 text-white font-bold text-base rounded-full shadow-lg" style={{ background: "linear-gradient(135deg, #003727, #00503a)" }}>
+              {isBn ? "নতুন পেমেন্ট শুরু করুন" : "Start New Payment"}
+            </button>
+          </div>
+
+          /* ══════ DEFAULT — Payment instruction card + TrxID input ══════ */
         ) : (
           <>
-            {/* ── Provider-branded payment instruction card ── */}
             {checkoutData && theme && isPending && (
               <div className="rounded-2xl overflow-hidden shadow-[0_8px_30px_rgba(25,28,26,0.08)] border border-[#e5e7e4]">
                 {/* Provider header banner */}
@@ -270,13 +478,12 @@ export default function SubscriptionPaymentStatusPage() {
                     <h3 className="font-bold text-white text-lg">{isBn ? theme.labelBn : theme.labelEn} {isBn ? "পেমেন্ট" : "Payment"}</h3>
                     <p className="text-xs text-white/80">{isBn ? "নিচের নির্দেশনা অনুসরণ করুন" : "Follow the instructions below"}</p>
                   </div>
-                  {/* Countdown Timer */}
                   {remainingSeconds !== null && remainingSeconds > 0 && (
                     <div className="relative flex flex-col items-center">
                       <div className="flex items-center gap-1.5 rounded-full bg-white/20 backdrop-blur-sm px-3.5 py-2">
                         <span className="material-symbols-outlined text-white text-base">timer</span>
                         <span className="text-white font-bold text-sm tabular-nums tracking-wide">
-                          {String(Math.floor(remainingSeconds / 60)).padStart(2, '0')}:{String(remainingSeconds % 60).padStart(2, '0')}
+                          {String(Math.floor(remainingSeconds / 60)).padStart(2, "0")}:{String(remainingSeconds % 60).padStart(2, "0")}
                         </span>
                       </div>
                       <span className="text-[10px] text-white/70 mt-0.5">{isBn ? "সময় বাকি" : "remaining"}</span>
@@ -294,50 +501,28 @@ export default function SubscriptionPaymentStatusPage() {
 
                 {/* Steps */}
                 <div className="bg-white p-6 space-y-4">
-                  {/* Step 1 */}
                   <div className="flex items-start gap-3">
-                    <div className="w-7 h-7 rounded-full flex items-center justify-center shrink-0 mt-0.5 text-xs font-bold text-white shadow-sm" style={{ background: theme.gradient }}>
-                      1
-                    </div>
+                    <div className="w-7 h-7 rounded-full flex items-center justify-center shrink-0 mt-0.5 text-xs font-bold text-white shadow-sm" style={{ background: theme.gradient }}>1</div>
                     <p className="text-sm text-[#191c1a] pt-0.5">
-                      {isBn
-                        ? `${theme.labelBn} অ্যাপ খুলুন → "সেন্ড মানি" এ যান`
-                        : `Open ${theme.labelEn} App → Go to "Send Money"`}
+                      {isBn ? `${theme.labelBn} অ্যাপ খুলুন → "সেন্ড মানি" এ যান` : `Open ${theme.labelEn} App \u2192 Go to "Send Money"`}
                     </p>
                   </div>
-
-                  {/* Divider */}
                   <div className="ml-3.5 border-l-2 border-dashed border-[#e5e7e4] h-2" />
-
-                  {/* Step 2 */}
                   <div className="flex items-start gap-3">
-                    <div className="w-7 h-7 rounded-full flex items-center justify-center shrink-0 mt-0.5 text-xs font-bold text-white shadow-sm" style={{ background: theme.gradient }}>
-                      2
-                    </div>
+                    <div className="w-7 h-7 rounded-full flex items-center justify-center shrink-0 mt-0.5 text-xs font-bold text-white shadow-sm" style={{ background: theme.gradient }}>2</div>
                     <div className="text-sm text-[#191c1a] flex-1">
                       <p className="mb-1.5">{isBn ? "এই নম্বরে পাঠান:" : "Send to this number:"}</p>
                       <div className="rounded-xl px-4 py-3 flex items-center justify-between border" style={{ backgroundColor: theme.lightBg, borderColor: `${theme.primary}30` }}>
                         <span className="text-lg font-bold font-['Manrope',sans-serif] tracking-wider" style={{ color: theme.primary }}>{checkoutData.receiverNumber}</span>
-                        <button
-                          onClick={() => navigator.clipboard?.writeText(checkoutData.receiverNumber)}
-                          className="rounded-lg p-1.5 transition-colors hover:bg-white/60"
-                          style={{ color: theme.primary }}
-                          title={isBn ? "কপি করুন" : "Copy"}
-                        >
+                        <button onClick={() => navigator.clipboard?.writeText(checkoutData.receiverNumber)} className="rounded-lg p-1.5 transition-colors hover:bg-white/60" style={{ color: theme.primary }} title={isBn ? "কপি করুন" : "Copy"}>
                           <span className="material-symbols-outlined text-xl">content_copy</span>
                         </button>
                       </div>
                     </div>
                   </div>
-
-                  {/* Divider */}
                   <div className="ml-3.5 border-l-2 border-dashed border-[#e5e7e4] h-2" />
-
-                  {/* Step 3 */}
                   <div className="flex items-start gap-3">
-                    <div className="w-7 h-7 rounded-full flex items-center justify-center shrink-0 mt-0.5 text-xs font-bold text-white shadow-sm" style={{ background: theme.gradient }}>
-                      3
-                    </div>
+                    <div className="w-7 h-7 rounded-full flex items-center justify-center shrink-0 mt-0.5 text-xs font-bold text-white shadow-sm" style={{ background: theme.gradient }}>3</div>
                     <div className="text-sm text-[#191c1a] flex-1">
                       <p className="mb-1.5">{isBn ? "পরিমাণ:" : "Amount:"}</p>
                       <div className="rounded-xl px-4 py-3 border" style={{ backgroundColor: theme.lightBg, borderColor: `${theme.primary}30` }}>
@@ -345,15 +530,9 @@ export default function SubscriptionPaymentStatusPage() {
                       </div>
                     </div>
                   </div>
-
-                  {/* Divider */}
                   <div className="ml-3.5 border-l-2 border-dashed border-[#e5e7e4] h-2" />
-
-                  {/* Step 4 */}
                   <div className="flex items-start gap-3">
-                    <div className="w-7 h-7 rounded-full flex items-center justify-center shrink-0 mt-0.5 text-xs font-bold text-white shadow-sm" style={{ background: theme.gradient }}>
-                      4
-                    </div>
+                    <div className="w-7 h-7 rounded-full flex items-center justify-center shrink-0 mt-0.5 text-xs font-bold text-white shadow-sm" style={{ background: theme.gradient }}>4</div>
                     <p className="text-sm text-[#191c1a] pt-0.5">
                       {isBn ? "PIN দিয়ে কনফার্ম করুন এবং Transaction ID কপি করুন" : "Confirm with PIN and copy the Transaction ID"}
                     </p>
@@ -362,21 +541,11 @@ export default function SubscriptionPaymentStatusPage() {
               </div>
             )}
 
-            {statusData?.status === "MANUAL_REVIEW" && (
-              <div className="bg-[#d1e4ff]/30 rounded-xl p-5 flex items-start gap-3">
-                <span className="material-symbols-outlined text-[#0061a4] text-xl" style={{ fontVariationSettings: "'FILL' 1" }}>info</span>
-                <div>
-                  <p className="text-sm font-semibold text-[#191c1a]">{isBn ? "ম্যানুয়াল রিভিউতে আছে" : "Under Manual Review"}</p>
-                  <p className="text-xs text-[#404944] mt-1">{isBn ? "আপনার পেমেন্ট যাচাই করা হচ্ছে। কিছুক্ষণের মধ্যে কনফার্ম হবে।" : "Your payment is being verified. It will be confirmed shortly."}</p>
-                </div>
-              </div>
-            )}
-
             {/* ── Transaction status + TrxID input ── */}
             <div className="bg-white rounded-2xl p-6 shadow-[0_8px_30px_rgba(25,28,26,0.06)] space-y-4 border border-[#e5e7e4]">
               <div className="flex items-center justify-between">
                 <h3 className="text-base font-semibold text-[#191c1a]">{isBn ? "লেনদেনের অবস্থা" : "Transaction Status"}</h3>
-                <span className={`text-xs font-semibold px-3 py-1 rounded-full ${isPending ? "bg-[#d1e4ff]/40 text-[#0061a4]" : isCompleted ? "bg-[#00503a]/10 text-[#003727]" : "bg-[#ffdad6]/50 text-[#ba1a1a]"}`}>
+                <span className={`text-xs font-semibold px-3 py-1 rounded-full ${isPending ? "bg-[#d1e4ff]/40 text-[#0061a4]" : "bg-[#ffdad6]/50 text-[#ba1a1a]"}`}>
                   {statusLabel}
                 </span>
               </div>
@@ -400,7 +569,6 @@ export default function SubscriptionPaymentStatusPage() {
                     </div>
                   </div>
 
-                  {/* Validation error message */}
                   {trxError && (
                     <p className="text-xs text-[#ba1a1a] flex items-center gap-1">
                       <span className="material-symbols-outlined text-sm">error</span>
@@ -408,7 +576,6 @@ export default function SubscriptionPaymentStatusPage() {
                     </p>
                   )}
 
-                  {/* Provider-specific hint */}
                   {theme && !trxError && (
                     <p className="text-[11px] text-[#707974] flex items-center gap-1">
                       <span className="material-symbols-outlined text-[13px]">info</span>
@@ -437,20 +604,12 @@ export default function SubscriptionPaymentStatusPage() {
                 </>
               )}
 
-              <button
-                type="button"
-                onClick={() => router.push("/subscription/upgrade")}
-                className="w-full py-3 text-sm font-semibold text-[#404944] hover:text-[#191c1a] transition-colors"
-              >
+              <button type="button" onClick={() => router.push("/subscription/upgrade")} className="w-full py-3 text-sm font-semibold text-[#404944] hover:text-[#191c1a] transition-colors">
                 {isBn ? "← ফিরে যান" : "← Go Back"}
               </button>
 
               {!isCompleted && (
-                <button
-                  type="button"
-                  onClick={() => router.push("/subscription/upgrade")}
-                  className="w-full py-2.5 text-sm font-medium text-[#404944] hover:text-[#191c1a] transition-colors"
-                >
+                <button type="button" onClick={() => router.push("/subscription/upgrade")} className="w-full py-2.5 text-sm font-medium text-[#404944] hover:text-[#191c1a] transition-colors">
                   {isBn ? "পরে সম্পন্ন করব" : "Finish Later"}
                 </button>
               )}
@@ -466,4 +625,3 @@ export default function SubscriptionPaymentStatusPage() {
     </div>
   );
 }
-

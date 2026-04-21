@@ -90,6 +90,24 @@ function SubscriptionUpgradeContent() {
     }
   }, [router, searchParams]);
 
+  /* ── Redirect to verification UI if user has an active pending payment ──
+   *  If the user submitted a TrxID and navigates back here, send them to
+   *  the payment page so they see the verification waiting UI instead.
+   */
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    try {
+      const trxSubmitted = sessionStorage.getItem("payment_trx_submitted");
+      const checkoutRaw = sessionStorage.getItem("payment_checkout");
+      if (trxSubmitted && checkoutRaw) {
+        const checkout = JSON.parse(checkoutRaw);
+        if (checkout.paymentIntentId) {
+          router.replace(`/subscription/payment/${checkout.paymentIntentId}`);
+        }
+      }
+    } catch { /* ignore — let user stay on upgrade page if sessionStorage is corrupted */ }
+  }, [router]);
+
   useEffect(() => {
     let cancelled = false;
     const loadData = async () => {
@@ -169,7 +187,9 @@ function SubscriptionUpgradeContent() {
       });
       clearPendingUpgradePlan();
       clearPendingPlan().catch(() => { });
+      /* Store checkout data + intent ID in sessionStorage for cross-page detection */
       sessionStorage.setItem("payment_checkout", JSON.stringify({
+        paymentIntentId: intent.paymentIntentId,
         receiverNumber: intent.receiverNumber,
         amount: intent.amount,
         mfsMethod: checkoutMethod,
@@ -513,8 +533,8 @@ function SubscriptionUpgradeContent() {
                         <span className={`font-semibold ${isSelected ? "text-[#191c1a]" : "text-[#404944]"}`}>
                           {isBn ? mfs.labelBn : mfs.labelEn}
                         </span>
-                        <div className="h-9 w-16 rounded-lg flex items-center justify-center overflow-hidden" style={{ backgroundColor: `${mfs.color}10` }}>
-                          <Image src={mfs.logo} alt={mfs.labelEn} width={48} height={24} className="object-contain" style={{ width: 'auto', height: 'auto' }} />
+                        <div className="relative h-9 w-16 rounded-lg flex items-center justify-center" style={{ backgroundColor: `${mfs.color}10` }}>
+                          <Image src={mfs.logo} alt={mfs.labelEn} fill className="object-contain p-1" />
                         </div>
                       </div>
                     </button>
