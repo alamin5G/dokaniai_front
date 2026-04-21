@@ -116,6 +116,7 @@ export default function SubscriptionPaymentStatusPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [notice, setNotice] = useState<string | null>(null);
   const [checkoutData, setCheckoutData] = useState<CheckoutData | null>(null);
+  const [remainingSeconds, setRemainingSeconds] = useState<number | null>(null);
 
   useEffect(() => {
     if (typeof window === "undefined") return;
@@ -161,6 +162,24 @@ export default function SubscriptionPaymentStatusPage() {
       sessionStorage.removeItem("payment_checkout");
     }
   }, [statusData?.status]);
+
+  // Countdown timer for payment session expiry
+  useEffect(() => {
+    const expiryStr = statusData?.expiresAt || checkoutData?.expiresAt;
+    if (!expiryStr || isTerminalStatus(statusData?.status ?? "")) return;
+
+    const expiry = new Date(expiryStr).getTime();
+    const tick = () => {
+      const diff = Math.max(0, Math.floor((expiry - Date.now()) / 1000));
+      setRemainingSeconds(diff);
+      if (diff <= 0) {
+        void refreshStatus();
+      }
+    };
+    tick();
+    const id = window.setInterval(tick, 1000);
+    return () => window.clearInterval(id);
+  }, [statusData?.expiresAt, checkoutData?.expiresAt, statusData?.status, refreshStatus]);
 
   const statusLabel = useMemo(() => {
     if (!statusData) return t("payment.status.loading");
@@ -247,10 +266,30 @@ export default function SubscriptionPaymentStatusPage() {
                   <div className="relative w-12 h-12 rounded-xl bg-white/20 backdrop-blur-sm flex items-center justify-center p-1.5 shadow-lg">
                     <Image src={theme.logo} alt={theme.labelEn} width={36} height={36} className="object-contain" />
                   </div>
-                  <div className="relative">
+                  <div className="relative flex-1">
                     <h3 className="font-bold text-white text-lg">{isBn ? theme.labelBn : theme.labelEn} {isBn ? "পেমেন্ট" : "Payment"}</h3>
                     <p className="text-xs text-white/80">{isBn ? "নিচের নির্দেশনা অনুসরণ করুন" : "Follow the instructions below"}</p>
                   </div>
+                  {/* Countdown Timer */}
+                  {remainingSeconds !== null && remainingSeconds > 0 && (
+                    <div className="relative flex flex-col items-center">
+                      <div className="flex items-center gap-1.5 rounded-full bg-white/20 backdrop-blur-sm px-3.5 py-2">
+                        <span className="material-symbols-outlined text-white text-base">timer</span>
+                        <span className="text-white font-bold text-sm tabular-nums tracking-wide">
+                          {String(Math.floor(remainingSeconds / 60)).padStart(2, '0')}:{String(remainingSeconds % 60).padStart(2, '0')}
+                        </span>
+                      </div>
+                      <span className="text-[10px] text-white/70 mt-0.5">{isBn ? "সময় বাকি" : "remaining"}</span>
+                    </div>
+                  )}
+                  {remainingSeconds === 0 && (
+                    <div className="relative flex flex-col items-center">
+                      <div className="flex items-center gap-1.5 rounded-full bg-white/30 backdrop-blur-sm px-3.5 py-2">
+                        <span className="material-symbols-outlined text-white text-base">warning</span>
+                        <span className="text-white font-bold text-sm">{isBn ? "মেয়াদ শেষ!" : "Expired!"}</span>
+                      </div>
+                    </div>
+                  )}
                 </div>
 
                 {/* Steps */}
@@ -409,8 +448,7 @@ export default function SubscriptionPaymentStatusPage() {
               {!isCompleted && (
                 <button
                   type="button"
-                  onClick={handleResubmit}
-                  disabled={isSubmitting}
+                  onClick={() => router.push("/subscription/upgrade")}
                   className="w-full py-2.5 text-sm font-medium text-[#404944] hover:text-[#191c1a] transition-colors"
                 >
                   {isBn ? "পরে সম্পন্ন করব" : "Finish Later"}

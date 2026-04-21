@@ -186,6 +186,7 @@ export default function SubscriptionPage() {
         verifiedAt: null,
         failedAttempts: 0,
         fraudFlag: false,
+        expiresAt: intent.expiresAt ?? null,
       });
       setNotice(isBn ? "পেমেন্ট ইনটেন্ট তৈরি হয়েছে। TrxID দিন।" : "Payment intent created. Submit TrxID.");
     } catch (error) {

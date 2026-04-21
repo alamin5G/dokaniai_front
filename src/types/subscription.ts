@@ -105,6 +105,7 @@ export interface PaymentIntentStatusResponse {
   verifiedAt: string | null;
   failedAttempts: number | null;
   fraudFlag: boolean | null;
+  expiresAt: string | null;
 }
 
 export interface ReferralStatus {
