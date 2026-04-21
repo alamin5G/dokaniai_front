@@ -20,6 +20,8 @@ import {
     getAllDevices,
     revokeDevice,
     getUnmatchedSmsPool,
+    deleteSmsReport,
+    getCompletedPayments,
     getPaymentSummary,
     getPendingMfsNumbers,
     approveMfsNumber,
@@ -29,7 +31,7 @@ import {
     createBootstrap,
 } from "@/lib/paymentAdminApi";
 
-type InternalTab = "review" | "rejected" | "devices" | "smsPool" | "mfsNumbers" | "settings";
+type InternalTab = "review" | "approved" | "rejected" | "devices" | "smsPool" | "mfsNumbers" | "settings";
 
 function MfsBadge({ method }: { method: string }) {
     const config: Record<string, { bg: string; text: string; label: string; initial: string }> = {
@@ -108,6 +110,7 @@ export default function PaymentsTab() {
     const [reviewQueue, setReviewQueue] = useState<ManualReviewPaymentItem[]>([]);
     const [fraudFlags, setFraudFlags] = useState<ManualReviewPaymentItem[]>([]);
     const [rejectedPayments, setRejectedPayments] = useState<ManualReviewPaymentItem[]>([]);
+    const [completedPayments, setCompletedPayments] = useState<ManualReviewPaymentItem[]>([]);
     const [devices, setDevices] = useState<AdminDevice[]>([]);
     const [smsPool, setSmsPool] = useState<SmsReportItem[]>([]);
     const [summary, setSummary] = useState<PaymentSummary | null>(null);
@@ -145,10 +148,11 @@ export default function PaymentsTab() {
         setLoading(true);
         setError(null);
         try {
-            const [review, fraud, rejected, dev, sms, sum, mfs, settings] = await Promise.all([
+            const [review, fraud, rejected, completed, dev, sms, sum, mfs, settings] = await Promise.all([
                 getManualReviewQueue(),
                 getFraudFlaggedPayments(),
                 getRejectedPayments(),
+                getCompletedPayments(),
                 getAllDevices(),
                 getUnmatchedSmsPool(),
                 getPaymentSummary(),
@@ -158,6 +162,7 @@ export default function PaymentsTab() {
             setReviewQueue(review);
             setFraudFlags(fraud);
             setRejectedPayments(rejected);
+            setCompletedPayments(completed);
             setDevices(dev);
             setSmsPool(sms);
             setSummary(sum);
@@ -227,6 +232,14 @@ export default function PaymentsTab() {
         } catch { setError(t("messages.loadFailed")); } finally { setActionLoading(false); }
     }
 
+    async function handleDeleteSms(reportId: string) {
+        if (!confirm("Delete this SMS report?")) return;
+        try {
+            await deleteSmsReport(reportId);
+            setSmsPool(prev => prev.filter(s => s.id !== reportId));
+        } catch { setError(t("messages.loadFailed")); }
+    }
+
     function startBootstrapCountdown(expiresAt: Date) {
         if (bootstrapTimerRef.current) clearInterval(bootstrapTimerRef.current);
         function tick() {
@@ -275,8 +288,10 @@ export default function PaymentsTab() {
     const highRiskCount = reviewQueue.filter((i) => i.fraudFlag).length;
 
     const rejectedCount = rejectedPayments.length;
+    const completedCount = completedPayments.length;
     const internalTabs: { key: InternalTab; label: string; icon: string; badge?: number }[] = [
         { key: "review", label: t("tabs.review"), icon: "rate_review" },
+        { key: "approved", label: t("tabs.approved"), icon: "check_circle", badge: completedCount },
         { key: "rejected", label: t("tabs.rejected"), icon: "block", badge: rejectedCount },
         { key: "devices", label: t("tabs.devices"), icon: "screenshot_monitor" },
         { key: "smsPool", label: t("tabs.smsPool"), icon: "sms_failed" },
@@ -487,6 +502,86 @@ export default function PaymentsTab() {
                     )}
 
                     {/* ═══════════════════════════════════════════════════ */}
+                    {/* ═══════════════════════════════════════════════════ */}
+                    {/* APPROVED TAB — Completed / Auto-Verified Payments */}
+                    {/* ═══════════════════════════════════════════════════ */}
+                    {activeInternalTab === "approved" && (
+                        <div className="space-y-6">
+                            <div className="bg-surface-container-lowest rounded-3xl p-8 shadow-[0_4px_40px_rgb(0,0,0,0.02)]">
+                                <div className="flex justify-between items-center mb-8">
+                                    <div>
+                                        <h2 className="font-headline text-2xl font-bold text-primary">{t("approved.title")}</h2>
+                                        <p className="text-sm text-on-surface-variant mt-1">{t("approved.subtitle")}</p>
+                                    </div>
+                                    <span className="bg-primary-container text-on-primary-container px-4 py-1.5 rounded-full font-label text-sm font-bold">{completedPayments.length} {t("approved.countLabel")}</span>
+                                </div>
+
+                                {completedPayments.length === 0 ? (
+                                    <div className="py-16 text-center">
+                                        <span className="material-symbols-outlined text-6xl text-on-surface-variant/30 mb-4 block">verified</span>
+                                        <p className="text-on-surface-variant font-medium">{t("approved.noCompleted")}</p>
+                                    </div>
+                                ) : (
+                                    <div className="space-y-4">
+                                        {completedPayments.map((item) => (
+                                            <div key={item.paymentIntentId} className="group p-5 rounded-2xl bg-surface-container-low hover:bg-surface-container transition-colors relative overflow-hidden">
+                                                <div className="absolute left-0 top-0 bottom-0 w-1 bg-primary" />
+                                                <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 pl-2">
+                                                    <div className="flex items-center gap-4 flex-1 min-w-0">
+                                                        <AvatarInitials name={item.userName} />
+                                                        <div className="min-w-0">
+                                                            <div className="font-headline font-bold text-on-surface flex items-center gap-2">
+                                                                {item.userName}
+                                                                <span className="bg-primary/10 text-primary text-[10px] px-2 py-0.5 rounded-full font-label uppercase tracking-widest">{t("status.COMPLETED")}</span>
+                                                            </div>
+                                                            <div className="font-body text-xs text-on-surface-variant">{item.userPhone}</div>
+                                                            <div className="font-label text-xs text-on-surface-variant tracking-wider mt-0.5">TRX: {item.submittedTrxId}</div>
+                                                            {item.planName && (
+                                                                <div className="font-label text-xs text-primary mt-0.5 flex items-center gap-1">
+                                                                    <span className="material-symbols-outlined text-[12px]">workspace_premium</span>
+                                                                    {item.planName} {item.billingCycle === "ANNUAL" ? "(Annual)" : ""}
+                                                                </div>
+                                                            )}
+                                                        </div>
+                                                    </div>
+
+                                                    <div className="flex items-center gap-3">
+                                                        <div className="flex flex-col items-end gap-0.5">
+                                                            <div className="font-headline font-bold text-lg text-on-surface">৳ {item.amount.toLocaleString()}</div>
+                                                            {item.couponCode && (
+                                                                <div className="font-label text-xs text-secondary flex items-center gap-1">
+                                                                    <span className="material-symbols-outlined text-[12px]">sell</span>
+                                                                    {item.couponCode} {item.discountAmount != null && <span>(-৳{item.discountAmount.toLocaleString()})</span>}
+                                                                </div>
+                                                            )}
+                                                        </div>
+                                                        <MfsBadge method={item.mfsMethod} />
+                                                    </div>
+
+                                                    <div className="bg-surface-container-high/50 rounded-xl p-4 min-w-[200px]">
+                                                        <p className="text-[10px] font-bold text-on-surface-variant uppercase tracking-wider mb-2">{t("approved.verificationInfo")}</p>
+                                                        <div className="space-y-1">
+                                                            <div className="flex items-center gap-2">
+                                                                <span className="material-symbols-outlined text-[16px] text-primary mt-0.5">check_circle</span>
+                                                                <p className="text-xs text-on-surface-variant">{t("approved.verifiedAt")} {item.reviewedAt ? new Date(item.reviewedAt).toLocaleString() : "—"}</p>
+                                                            </div>
+                                                            {item.reviewedByName && (
+                                                                <div className="flex items-center gap-2">
+                                                                    <span className="material-symbols-outlined text-[16px] text-on-surface-variant mt-0.5">person</span>
+                                                                    <p className="text-xs text-on-surface-variant">{t("approved.by")}: {item.reviewedByName}</p>
+                                                                </div>
+                                                            )}
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                )}
+                            </div>
+                        </div>
+                    )}
+
                     {/* REJECTED TAB — Audit Trail for Rejected Payments */}
                     {/* ═══════════════════════════════════════════════════ */}
                     {activeInternalTab === "rejected" && (
@@ -757,25 +852,32 @@ export default function PaymentsTab() {
                                                 <th className="px-6 py-4">{t("table.receiver")}</th>
                                                 <th className="px-6 py-4">{t("table.receivedAt")}</th>
                                                 <th className="px-6 py-4">{t("table.matchStatus")}</th>
+                            <th className="px-6 py-4"></th>
                                             </tr>
                                         </thead>
-                                        <tbody className="divide-y divide-surface-container">
-                                            {filteredSmsPool.length === 0 ? (
-                                                <tr><td colSpan={7} className="px-6 py-12 text-center text-on-surface-variant">{t("messages.noSms")}</td></tr>
-                                            ) : (
-                                                filteredSmsPool.map((sms) => (
-                                                    <tr key={sms.id} className="hover:bg-surface-container-low transition-colors">
-                                                        <td className="px-6 py-4 text-sm font-mono text-on-surface">{sms.trxId}</td>
-                                                        <td className="px-6 py-4 text-sm font-medium text-on-surface">৳ {sms.amount.toLocaleString()}</td>
-                                                        <td className="px-6 py-4"><MfsBadge method={sms.mfsType} /></td>
-                                                        <td className="px-6 py-4 text-sm text-on-surface-variant">{sms.senderNumber}</td>
-                                                        <td className="px-6 py-4 text-sm text-on-surface-variant">{sms.receiverNumber}</td>
-                                                        <td className="px-6 py-4 text-sm text-on-surface-variant whitespace-nowrap">{new Date(sms.smsReceivedAt).toLocaleString()}</td>
-                                                        <td className="px-6 py-4"><MatchStatusBadge status={sms.matchStatus} /></td>
-                                                    </tr>
-                                                ))
-                                            )}
-                                        </tbody>
+                                         <tbody className="divide-y divide-surface-container">
+                                             {filteredSmsPool.length === 0 ? (
+                                                 <tr><td colSpan={8} className="px-6 py-12 text-center text-on-surface-variant">{t("messages.noSms")}</td></tr>
+                                             ) : (
+                                                 filteredSmsPool.map((sms) => (
+                                                     <tr key={sms.id} className="hover:bg-surface-container-low transition-colors">
+                                                         <td className="px-6 py-4 text-sm font-mono text-on-surface">{sms.trxId}</td>
+                                                         <td className="px-6 py-4 text-sm font-medium text-on-surface">৳ {sms.amount.toLocaleString()}</td>
+                                                         <td className="px-6 py-4"><MfsBadge method={sms.mfsType} /></td>
+                                                         <td className="px-6 py-4 text-sm text-on-surface-variant">{sms.senderNumber}</td>
+                                                         <td className="px-6 py-4 text-sm text-on-surface-variant">{sms.receiverNumber}</td>
+                                                         <td className="px-6 py-4 text-sm text-on-surface-variant whitespace-nowrap">{new Date(sms.smsReceivedAt).toLocaleString()}</td>
+                                                         <td className="px-6 py-4"><MatchStatusBadge status={sms.matchStatus} /></td>
+                                                         <td className="px-6 py-4">
+                                                             <button
+                                                                 onClick={() => handleDeleteSms(sms.id)}
+                                                                 className="text-error text-sm hover:underline cursor-pointer"
+                                                             >Delete</button>
+                                                         </td>
+                                                     </tr>
+                                                 ))
+                                             )}
+                                         </tbody>
                                     </table>
                                 </div>
                             </div>

@@ -185,12 +185,13 @@ export default function SubscriptionPaymentStatusPage() {
   }, [statusData?.status]);
 
   /* ── Smart redirect after payment completion ──
-   *  0 businesses → /onboarding (first-time setup)
-   *  1 business   → /shop (direct to their store)
-   *  2+ businesses → /businesses (business selector)
-   */
+    *  0 businesses → /onboarding (first-time setup)
+    *  1 business   → /shop (direct to their store)
+    *  2+ businesses → /businesses (business selector)
+    */
   useEffect(() => {
     if (statusData?.status !== "COMPLETED") return;
+    window.dispatchEvent(new CustomEvent("dokaniai:subscription-refresh"));
     let cancelled = false;
     const resolveTarget = async () => {
       try {

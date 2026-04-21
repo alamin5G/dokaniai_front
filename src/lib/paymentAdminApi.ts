@@ -87,6 +87,15 @@ export async function rejectPaymentIntent(
 
 // ─── Device Management ─────────────────────────────────────────────────────
 
+export async function getCompletedPayments(): Promise<ManualReviewPaymentItem[]> {
+    try {
+        const { data } = await apiClient.get("/payments/admin/completed");
+        return data.data;
+    } catch (error) {
+        throw new Error(getApiErrorMessage(error, "Failed to load completed payments."));
+    }
+}
+
 export async function getAllDevices(): Promise<AdminDevice[]> {
     try {
         const { data } = await apiClient.get("/payments/admin/devices");
@@ -116,6 +125,14 @@ export async function getUnmatchedSmsPool(): Promise<SmsReportItem[]> {
         return data.data;
     } catch (error) {
         throw new Error(getApiErrorMessage(error, "Failed to load unmatched SMS pool."));
+    }
+}
+
+export async function deleteSmsReport(reportId: string): Promise<void> {
+    try {
+        await apiClient.delete(`/payments/admin/sms-pool/${reportId}`);
+    } catch (error) {
+        throw new Error(getApiErrorMessage(error, "Failed to delete SMS report."));
     }
 }
 

@@ -7,6 +7,8 @@ import { useEffect, useRef, useState } from "react";
 
 const ACTIVE_STATUSES = new Set<SubscriptionStatus>(["ACTIVE", "TRIAL", "GRACE"]);
 
+export const SUBSCRIPTION_REFRESH_EVENT = "dokaniai:subscription-refresh";
+
 interface SubscriptionGuardResult {
   loading: boolean;
   hasSubscription: boolean;
@@ -19,6 +21,7 @@ export function useSubscriptionGuard(): SubscriptionGuardResult {
   const [hasSubscription, setHasSubscription] = useState(false);
   const [subscriptionStatus, setSubscriptionStatus] = useState<SubscriptionStatus | null>(null);
   const checkedRef = useRef(false);
+  const refreshGenerationRef = useRef(0);
 
   useEffect(() => {
     if (!accessToken) {
@@ -61,8 +64,17 @@ export function useSubscriptionGuard(): SubscriptionGuardResult {
     }
 
     void check();
-    return () => { cancelled = true; };
-  }, [accessToken]);
 
-  return { loading, hasSubscription, subscriptionStatus };
+    const onRefresh = () => {
+      checkedRef.current = false;
+      refreshGenerationRef.current += 1;
+      void check();
+    };
+
+    window.addEventListener(SUBSCRIPTION_REFRESH_EVENT, onRefresh);
+    return () => {
+      cancelled = true;
+      window.removeEventListener(SUBSCRIPTION_REFRESH_EVENT, onRefresh);
+    };
+  }, [accessToken]);
 }
