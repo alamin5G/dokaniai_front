@@ -2943,19 +2943,11 @@
           "rejectTitle": "Reject Payment",
           "revokeTitle": "Revoke Device",
           "selectSms": "Select SMS Report to Link",
-          "smsPoolAlignment": "SMS Pool Alignment",
-          "findReceipt": "Find and link the actual MFS receipt.",
-          "probMatch": "High Prob. Match",
-          "aiRecommended": "AI Recommended",
-          "searchSms": "Search Amount, TrxID, or Phone...",
-          "smsPreview": "Amount: ৳{amount}, Sender: {sender}, TrxID: {trxId}",
-          "resolution": "Resolution Decision",
-          "payer": "Payer",
           "rejectionReason": "Rejection Reason",
           "revokeReason": "Revoke Reason",
           "reasonPlaceholder": "Enter reason...",
-          "confirmVerify": "Verify & Link Selected",
-          "confirmReject": "Reject Submission",
+          "confirmVerify": "Confirm Verification",
+          "confirmReject": "Confirm Rejection",
           "confirmRevoke": "Confirm Revocation",
           "paymentDetails": "Payment Details",
           "noSmsFound": "No unmatched SMS reports found",
@@ -2965,15 +2957,7 @@
           "bootstrapExpired": "Token expired. Generate a new one.",
           "bootstrapCopied": "Deep link copied to clipboard!",
           "bootstrapDeepLink": "Deep Link (fallback)",
-          "close": "Close",
-          "copied": "Copied to clipboard!",
-          "reportedSource": "Reported Source",
-          "systemMatch": "System Match",
-          "matchFailed": "Failed",
-          "payerProfile": "Payer Profile",
-          "trustScore": "Trust Score",
-          "trustHigh": "High (92%)",
-          "totalOrders": "Total Orders"
+          "close": "Close"
         },
         "table": {
           "userName": "User",
@@ -3018,27 +3002,6 @@
           "MATCHED": "Matched",
           "UNMATCHED": "Unmatched",
           "IGNORED": "Ignored"
-        },
-        "modal": {
-          "verifyTitle": "Verify Payment",
-          "rejectTitle": "Reject Payment",
-          "revokeTitle": "Revoke Device",
-          "selectSms": "Select SMS Report to Link",
-          "rejectionReason": "Rejection Reason",
-          "revokeReason": "Revoke Reason",
-          "reasonPlaceholder": "Enter reason...",
-          "confirmVerify": "Confirm Verification",
-          "confirmReject": "Confirm Rejection",
-          "confirmRevoke": "Confirm Revocation",
-          "paymentDetails": "Payment Details",
-          "noSmsFound": "No unmatched SMS reports found",
-          "bootstrapTitle": "Bootstrap New Device",
-          "bootstrapDesc": "Scan this QR code with the DokaniAI Admin app on the Android device you want to register. The token expires in 10 minutes.",
-          "bootstrapExpiry": "Expires in",
-          "bootstrapExpired": "Token expired. Generate a new one.",
-          "bootstrapCopied": "Deep link copied to clipboard!",
-          "bootstrapDeepLink": "Deep Link (fallback)",
-          "close": "Close"
         },
         "messages": {
           "verifySuccess": "Payment verified successfully",
@@ -3186,7 +3149,8 @@
         "devices": "Admin Devices",
         "smsPool": "SMS Pool",
         "mfsNumbers": "MFS Numbers",
-        "settings": "Settings"
+        "settings": "Settings",
+        "rejected": "Rejected"
       },
       "summary": {
         "refresh": "Refresh",
@@ -3352,6 +3316,19 @@
         "saving": "Saving...",
         "saved": "Settings saved successfully",
         "saveFailed": "Failed to save settings"
+      },
+      "rejected": {
+        "title": "Rejected Payments",
+        "subtitle": "Audit trail for all admin-rejected payments",
+        "countLabel": "Total Rejected",
+        "noRejected": "No rejected payments — all clear!",
+        "auditTrail": "Audit Trail",
+        "reasonLabel": "Rejection Reason",
+        "reviewerLabel": "Rejected By",
+        "rejectedAtLabel": "Rejected At"
+      },
+      "status": {
+        "REJECTED": "Rejected"
       }
     },
     "dashboardV2": {
