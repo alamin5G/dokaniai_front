@@ -71,6 +71,8 @@ function SubscriptionUpgradeContent() {
   const [isLoading, setIsLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [notice, setNotice] = useState<string | null>(null);
+  /* Tracks whether the redirect check has completed — prevents page flash before redirect */
+  const [redirectChecked, setRedirectChecked] = useState(false);
 
   useEffect(() => {
     if (typeof window === "undefined") return;
@@ -93,19 +95,27 @@ function SubscriptionUpgradeContent() {
   /* ── Redirect to verification UI if user has an active pending payment ──
    *  If the user submitted a TrxID and navigates back here, send them to
    *  the payment page so they see the verification waiting UI instead.
+   *  Also checks if checkout data exists (user initialized payment but hasn't submitted TrxID yet).
+   *
+   *  CRITICAL: This must run BEFORE the page renders content, otherwise the user
+   *  sees the upgrade page flash before being redirected.
    */
   useEffect(() => {
-    if (typeof window === "undefined") return;
+    if (typeof window === "undefined") { setRedirectChecked(true); return; }
     try {
       const trxSubmitted = sessionStorage.getItem("payment_trx_submitted");
       const checkoutRaw = sessionStorage.getItem("payment_checkout");
-      if (trxSubmitted && checkoutRaw) {
+      if (checkoutRaw) {
         const checkout = JSON.parse(checkoutRaw);
         if (checkout.paymentIntentId) {
+          // User has an active payment — redirect to verification/payment page
+          // This covers both: TrxID submitted (verification UI) and not yet submitted (payment instructions)
           router.replace(`/subscription/payment/${checkout.paymentIntentId}`);
+          return; // Don't set redirectChecked — page will navigate away
         }
       }
     } catch { /* ignore — let user stay on upgrade page if sessionStorage is corrupted */ }
+    setRedirectChecked(true);
   }, [router]);
 
   useEffect(() => {
@@ -235,6 +245,18 @@ function SubscriptionUpgradeContent() {
           <div className="w-10 h-10 border-3 border-[#003727]/20 border-t-[#003727] rounded-full animate-spin" />
           <p className="text-[#404944] font-['Hind_Siliguri','Manrope',sans-serif]">{t("upgrade.loading")}</p>
         </div>
+      </div>
+    );
+  }
+
+  /* ── Don't render page content until redirect check completes ──
+   *  This prevents the upgrade page from flashing before redirecting
+   *  to the verification UI when user has an active payment.
+   */
+  if (!redirectChecked) {
+    return (
+      <div className="min-h-screen bg-[#f8faf6] flex items-center justify-center">
+        <div className="w-8 h-8 border-3 border-[#003727]/20 border-t-[#003727] rounded-full animate-spin" />
       </div>
     );
   }

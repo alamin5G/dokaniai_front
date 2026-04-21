@@ -102,6 +102,7 @@ export interface PaymentInitializeResponse {
 export interface PaymentIntentStatusResponse {
   paymentIntentId: string;
   status: PaymentIntentStatus;
+  submittedTrxId?: string | null;
   verifiedAt: string | null;
   failedAttempts: number | null;
   fraudFlag: boolean | null;

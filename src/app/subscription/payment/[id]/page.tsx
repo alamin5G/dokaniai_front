@@ -123,6 +123,8 @@ export default function SubscriptionPaymentStatusPage() {
   const [submittedTrxId, setSubmittedTrxId] = useState("");
   /* Smart redirect target after payment completion (resolved from business count) */
   const [redirectTarget, setRedirectTarget] = useState("/onboarding");
+  /* Copy feedback state */
+  const [copiedField, setCopiedField] = useState<string | null>(null);
 
   /* ── Auth guard ── */
   useEffect(() => {
@@ -269,6 +271,29 @@ export default function SubscriptionPaymentStatusPage() {
     } finally { setIsSubmitting(false); }
   };
 
+  /* ── Clipboard helper with fallback for non-HTTPS contexts ── */
+  const copyToClipboard = useCallback(async (text: string, fieldId: string) => {
+    try {
+      if (navigator.clipboard?.writeText) {
+        await navigator.clipboard.writeText(text);
+      } else {
+        // Fallback for HTTP or older browsers
+        const textarea = document.createElement("textarea");
+        textarea.value = text;
+        textarea.style.position = "fixed";
+        textarea.style.opacity = "0";
+        document.body.appendChild(textarea);
+        textarea.select();
+        document.execCommand("copy");
+        document.body.removeChild(textarea);
+      }
+      setCopiedField(fieldId);
+      setTimeout(() => setCopiedField(null), 2000);
+    } catch {
+      /* silently fail */
+    }
+  }, []);
+
   /* ── Derived state ── */
   const theme = checkoutData ? MFS_THEMES[checkoutData.mfsMethod] : null;
   const isCompleted = statusData?.status === "COMPLETED";
@@ -277,6 +302,8 @@ export default function SubscriptionPaymentStatusPage() {
   const isFailed = statusData?.status === "FAILED";
   const isExpired = statusData?.status === "EXPIRED";
   const showVerificationUI = isManualReview || (trxSubmitted && isPending);
+  /* Display TrxID: prefer local state, fallback to API response */
+  const displayTrxId = submittedTrxId || statusData?.submittedTrxId || "";
 
   /* ══════════════════════════════════════════════════════════════════
      RENDER
@@ -358,15 +385,19 @@ export default function SubscriptionPaymentStatusPage() {
                   </p>
                 </div>
 
-                {/* TrxID + Amount info */}
+                {/* TrxID + Amount info — uses displayTrxId which falls back to API response */}
                 <div className="rounded-2xl bg-white/60 backdrop-blur-sm border border-white/50 p-4 space-y-3">
                   <div className="flex items-center justify-between">
                     <span className="text-xs text-[#707974]">{isBn ? "ট্রানজেকশন আইডি" : "Transaction ID"}</span>
                     <div className="flex items-center gap-1.5">
-                      <span className="text-sm font-bold font-['Manrope',sans-serif] text-[#191c1a] tracking-wider">{submittedTrxId}</span>
-                      <button onClick={() => navigator.clipboard?.writeText(submittedTrxId)} className="rounded p-0.5 hover:bg-white/60 transition-colors" title={isBn ? "কপি করুন" : "Copy"}>
-                        <span className="material-symbols-outlined text-[#707974] text-sm">content_copy</span>
-                      </button>
+                      <span className="text-sm font-bold font-['Manrope',sans-serif] tracking-wider" style={{ color: theme?.primary ?? "#191c1a" }}>{displayTrxId || (isBn ? "লোড হচ্ছে..." : "Loading...")}</span>
+                      {displayTrxId && (
+                        <button onClick={() => copyToClipboard(displayTrxId, "trxid")} className="rounded p-0.5 hover:bg-white/60 transition-colors" title={isBn ? "কপি করুন" : "Copy"}>
+                          <span className="material-symbols-outlined text-sm" style={{ color: copiedField === "trxid" ? "#00503a" : (theme?.primary ?? "#707974") }}>
+                            {copiedField === "trxid" ? "check" : "content_copy"}
+                          </span>
+                        </button>
+                      )}
                     </div>
                   </div>
                   {checkoutData && (
@@ -400,26 +431,19 @@ export default function SubscriptionPaymentStatusPage() {
               </div>
             </div>
 
-            {/* Countdown timer */}
+            {/* Countdown timer — always visible in verification UI */}
             {remainingSeconds !== null && remainingSeconds > 0 && (
-              <div className="flex items-center justify-center gap-2 text-sm text-[#404944]">
-                <span className="material-symbols-outlined text-base">timer</span>
-                <span>{isBn ? "সেশন মেয়াদোত্তীর্ণ হবে" : "Session expires in"} </span>
-                <span className="font-bold font-['Manrope',sans-serif] tabular-nums">
+              <div className="flex items-center justify-center gap-2 py-2 px-4 rounded-full mx-auto w-fit" style={{ backgroundColor: theme ? `${theme.primary}10` : "#00372710" }}>
+                <span className="material-symbols-outlined text-base" style={{ color: theme?.primary ?? "#003727" }}>timer</span>
+                <span className="text-sm" style={{ color: theme?.primary ?? "#003727" }}>{isBn ? "সেশন মেয়াদোত্তীর্ণ হবে" : "Session expires in"} </span>
+                <span className="font-bold font-['Manrope',sans-serif] tabular-nums" style={{ color: theme?.primary ?? "#003727" }}>
                   {String(Math.floor(remainingSeconds / 60)).padStart(2, "0")}:{String(remainingSeconds % 60).padStart(2, "0")}
                 </span>
               </div>
             )}
 
-            {/* Action buttons */}
-            <div className="flex gap-3">
-              <button type="button" onClick={() => router.push("/subscription/upgrade")} className="flex-1 py-3 text-sm font-semibold text-[#404944] hover:text-[#191c1a] transition-colors rounded-full border border-[#e5e7e4] bg-white/60 backdrop-blur-sm">
-                {isBn ? "← ফিরে যান" : "← Go Back"}
-              </button>
-              <button type="button" onClick={() => router.push("/subscription/upgrade")} className="flex-1 py-3 text-sm font-medium text-[#707974] hover:text-[#404944] transition-colors">
-                {isBn ? "পরে দেখব" : "Check Later"}
-              </button>
-            </div>
+            {/* NO "Go Back" or "Check Later" buttons — user MUST stay on verification UI
+                until payment is verified or rejected. This is by design. */}
 
             <p className="text-center text-[11px] text-[#707974] flex items-center justify-center gap-1">
               <span className="material-symbols-outlined text-[13px]">lock</span>
@@ -514,8 +538,8 @@ export default function SubscriptionPaymentStatusPage() {
                       <p className="mb-1.5">{isBn ? "এই নম্বরে পাঠান:" : "Send to this number:"}</p>
                       <div className="rounded-xl px-4 py-3 flex items-center justify-between border" style={{ backgroundColor: theme.lightBg, borderColor: `${theme.primary}30` }}>
                         <span className="text-lg font-bold font-['Manrope',sans-serif] tracking-wider" style={{ color: theme.primary }}>{checkoutData.receiverNumber}</span>
-                        <button onClick={() => navigator.clipboard?.writeText(checkoutData.receiverNumber)} className="rounded-lg p-1.5 transition-colors hover:bg-white/60" style={{ color: theme.primary }} title={isBn ? "কপি করুন" : "Copy"}>
-                          <span className="material-symbols-outlined text-xl">content_copy</span>
+                        <button onClick={() => copyToClipboard(checkoutData.receiverNumber, "receiver")} className="rounded-lg p-1.5 transition-colors hover:bg-white/60" style={{ color: copiedField === "receiver" ? "#00503a" : theme.primary }} title={isBn ? "কপি করুন" : "Copy"}>
+                          <span className="material-symbols-outlined text-xl">{copiedField === "receiver" ? "check" : "content_copy"}</span>
                         </button>
                       </div>
                     </div>
@@ -604,15 +628,6 @@ export default function SubscriptionPaymentStatusPage() {
                 </>
               )}
 
-              <button type="button" onClick={() => router.push("/subscription/upgrade")} className="w-full py-3 text-sm font-semibold text-[#404944] hover:text-[#191c1a] transition-colors">
-                {isBn ? "← ফিরে যান" : "← Go Back"}
-              </button>
-
-              {!isCompleted && (
-                <button type="button" onClick={() => router.push("/subscription/upgrade")} className="w-full py-2.5 text-sm font-medium text-[#404944] hover:text-[#191c1a] transition-colors">
-                  {isBn ? "পরে সম্পন্ন করব" : "Finish Later"}
-                </button>
-              )}
             </div>
 
             <p className="text-center text-[11px] text-[#404944] flex items-center justify-center gap-1">
