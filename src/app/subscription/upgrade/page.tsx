@@ -514,7 +514,7 @@ function SubscriptionUpgradeContent() {
                           {isBn ? mfs.labelBn : mfs.labelEn}
                         </span>
                         <div className="h-9 w-16 rounded-lg flex items-center justify-center overflow-hidden" style={{ backgroundColor: `${mfs.color}10` }}>
-                          <Image src={mfs.logo} alt={mfs.labelEn} width={48} height={24} className="object-contain" />
+                          <Image src={mfs.logo} alt={mfs.labelEn} width={48} height={24} className="object-contain" style={{ width: 'auto', height: 'auto' }} />
                         </div>
                       </div>
                     </button>

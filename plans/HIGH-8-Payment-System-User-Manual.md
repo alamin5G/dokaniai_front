@@ -171,8 +171,8 @@ Rahim wants to upgrade to Basic plan (৳149/month):
 2. Selects "bKash" as payment method
 3. Sees: "Send ৳149 to 01XXXXXXXXX (Admin bKash)"
 4. Opens bKash app → Send Money → 01XXXXXXXXX → ৳149
-5. Gets TrxID: "8K7X9Z2M"
-6. Goes back to DokaniAI → Enters "8K7X9Z2M" → Submit
+5. Gets TrxID: "DDJ8BQBVCM"
+6. Goes back to DokaniAI → Enters "DDJ8BQBVCM" → Submit
 7. Within 1-2 minutes: "✅ Payment verified! Basic plan activated."
 ```
 
@@ -312,16 +312,16 @@ Customer "Abul" owes ৳1,200 to "Karim Store":
 
 1. Abul opens bKash → Send Money → Karim's bKash (01XXXXXXXXX) → ৳500
 2. bKash sends SMS to Karim's phone
-3. Shopkeeper app captures SMS, extracts: Amount=৳500, Sender=01AAAAA, TrxID=7X2K9M
+3. Shopkeeper app captures SMS, extracts: Amount=৳500, Sender=01AAAAA, TxnID=754PTHMR
 4. App sends to DokaniAI server
 5. Server finds:
    - Karim's bKash 01XXXXXXXXX is APPROVED ✓
    - Customer with phone 01AAAAA exists in Karim's business ✓
    - Customer has ৳1,200 due balance ✓
 6. Server creates:
-   - DueTransaction: JOMA ৳500 (AUTO_MFS, TrxID: 7X2K9M)
+   - DueTransaction: JOMA ৳500 (AUTO_MFS, TxnID: 754PTHMR)
    - Customer balance: ৳1,200 - ৳500 = ৳700
-7. Karim sees in Due Ledger: "Auto-credited via bKash (TrxID: 7X2K9M)"
+7. Karim sees in Due Ledger: "Auto-credited via bKash (TxnID: 754PTHMR)"
 ```
 
 ### 5.5 What You See in Due Ledger
@@ -333,7 +333,7 @@ In the DokaniAI web app's Due Ledger, auto-credited payments appear with:
 | Type | JOMA | JOMA |
 | Amount | ৳500 | ৳500 |
 | Recorded Via | MANUAL | AUTO_MFS |
-| Description | "Cash payment from Abul" | "Auto-credited via bKash (TrxID: 7X2K9M)" |
+| Description | "Cash payment from Abul" | "Auto-credited via bKash (TxnID: 754PTHMR)" |
 | Reference | Sale #XXX | MFS SMS Report #YYY |
 
 ### 5.6 Important Notes

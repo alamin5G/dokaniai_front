@@ -2221,13 +2221,20 @@ The matching algorithm requires ALL four conditions to be satisfied:
   -------------------------------------------------------------------------
   **MFS Provider**   **SMS Format Example**
   ------------------ ------------------------------------------------------
-  bKash              "Tk 500 received from 017XXXXXX. TrxID: N8KJH2L.
-                     Balance: Tk 1,230"
+  bKash              Sender: "bKash". "You have received Tk 15.00 from
+                     01608237670. Fee Tk 0.00. Balance Tk 1,443.68.
+                     TrxID DDJ8BQBVCM at 19/04/2026 16:40"
+                     TrxID format: 10 alphanumeric (e.g. DDJ8BQBVCM)
 
-  Nagad              "৳500 পেয়েছেন 017XXXXXX থেকে। Ref: NG78RT9YZ"
+  Nagad              Sender: "NAGAD". "Money Received. Amount: Tk 360.00
+                     Sender: 01608237670. TxnID: 754PTHMR. Balance:
+                     Tk 365.41"
+                     TxnID format: 8 alphanumeric (e.g. 754PTHMR)
 
-  Rocket             "Tk 500.00 received from 017XXXXXX. TrxID:
-                     RK12AB3CD"
+  Rocket             Sender: "16216". "Tk300.00 received from
+                     A/C:016192162493 Fee:Tk2.70, Your A/C Balance:
+                     Tk316.53 TxnId:4661971574 Date:09-JUL-24"
+                     TxnId format: 10 digit numeric (e.g. 4661971574)
   -------------------------------------------------------------------------
 
 ### 10.6.3 Offline Handling
