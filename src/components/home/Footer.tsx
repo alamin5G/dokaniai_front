@@ -1,10 +1,13 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 
 export function Footer() {
   const t = useTranslations();
+  const locale = useLocale();
+  const isBn = locale.startsWith("bn");
 
   const navLinkClass =
     "inline-flex min-h-10 items-center text-sm text-on-surface-variant transition-colors hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/35 rounded-md";
@@ -74,6 +77,27 @@ export function Footer() {
                 <Link href="mailto:support@dokaniai.com" className={iconChipClass} aria-label="Email">
                   <span className="material-symbols-outlined home-icon">mail</span>
                 </Link>
+              </div>
+            </div>
+          </div>
+
+          {/* ── Payment Partners Section ── */}
+          <div className="mt-10 pt-8 border-t border-[#e5e7e4]">
+            <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
+              <div className="flex items-center gap-2">
+                <span className="material-symbols-outlined text-primary text-lg" style={{ fontVariationSettings: "'FILL' 1" }}>verified_user</span>
+                <span className="text-xs font-semibold text-on-surface-variant uppercase tracking-wider">
+                  {isBn ? "আমরা যে পেমেন্ট মাধ্যমসমূহ সাপোর্ট করি" : "Secure Payment Partners"}
+                </span>
+              </div>
+              <div className="flex items-center gap-5">
+                <Image
+                  src="/icons/payment/nagad_rocket_bkash.png"
+                  alt="bKash, Nagad, Rocket - Accepted Payment Methods"
+                  width={180}
+                  height={36}
+                  className="object-contain opacity-80 hover:opacity-100 transition-opacity"
+                />
               </div>
             </div>
           </div>

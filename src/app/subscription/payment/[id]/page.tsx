@@ -9,6 +9,7 @@ import { setRedirectAfterLogin } from "@/lib/authFlow";
 import type { MfsType, PaymentIntentStatusResponse } from "@/types/subscription";
 import { useLocale, useTranslations } from "next-intl";
 import { useParams, useRouter } from "next/navigation";
+import Image from "next/image";
 import { useCallback, useEffect, useMemo, useState } from "react";
 
 interface CheckoutData {
@@ -18,11 +19,80 @@ interface CheckoutData {
   expiresAt: string;
 }
 
-const MFS_STEPS: Record<MfsType, { color: string; labelBn: string; labelEn: string; icon: string }> = {
-  BKASH: { color: "#E2136E", labelBn: "বিকাশ", labelEn: "bKash", icon: "phone_iphone" },
-  NAGAD: { color: "#ED1C24", labelBn: "নগদ", labelEn: "Nagad", icon: "phone_iphone" },
-  ROCKET: { color: "#8B2F8B", labelBn: "রকেট", labelEn: "Rocket", icon: "phone_iphone" },
+/* ── Provider theme config ───────────────────────────────────────── */
+const MFS_THEMES: Record<
+  MfsType,
+  {
+    primary: string;
+    gradient: string;
+    lightBg: string;
+    logo: string;
+    labelBn: string;
+    labelEn: string;
+    trxPlaceholder: string;
+    trxHint: string;
+  }
+> = {
+  BKASH: {
+    primary: "#E2136E",
+    gradient: "linear-gradient(135deg, #E2136E 0%, #C4105E 100%)",
+    lightBg: "#FDE8F1",
+    logo: "/icons/payment/bkash.png",
+    labelBn: "বিকাশ",
+    labelEn: "bKash",
+    trxPlaceholder: "যেমন: DDJ8BQBVCM",
+    trxHint: "e.g. DDJ8BQBVCM",
+  },
+  NAGAD: {
+    primary: "#F6921E",
+    gradient: "linear-gradient(135deg, #F6921E 0%, #ED1C24 100%)",
+    lightBg: "#FFF3E0",
+    logo: "/icons/payment/nagad.png",
+    labelBn: "নগদ",
+    labelEn: "Nagad",
+    trxPlaceholder: "যেমন: 754PTHMR",
+    trxHint: "e.g. 754PTHMR",
+  },
+  ROCKET: {
+    primary: "#8B2F8B",
+    gradient: "linear-gradient(135deg, #8B2F8B 0%, #6B1F6B 100%)",
+    lightBg: "#F3E5F5",
+    logo: "/icons/payment/dbbl_rocket.jpeg",
+    labelBn: "রকেট",
+    labelEn: "Rocket",
+    trxPlaceholder: "যেমন: 4661971574",
+    trxHint: "e.g. 4661971574",
+  },
 };
+
+/* ── TrxID validation per provider ─────────────────────────────── */
+function validateTrxId(trxId: string, mfsMethod: MfsType): string | null {
+  const trimmed = trxId.trim();
+  if (!trimmed) return null; // empty handled elsewhere
+
+  switch (mfsMethod) {
+    case "BKASH": {
+      // bKash: ~10 alphanumeric uppercase
+      if (!/^[A-Z0-9]{10}$/.test(trimmed))
+        return "bKash TrxID must be 10 alphanumeric characters (e.g. DDJ8BQBVCM)";
+      return null;
+    }
+    case "NAGAD": {
+      // Nagad: ~8 alphanumeric uppercase
+      if (!/^[A-Z0-9]{8}$/.test(trimmed))
+        return "Nagad TxnID must be 8 alphanumeric characters (e.g. 754PTHMR)";
+      return null;
+    }
+    case "ROCKET": {
+      // Rocket: 10 digit numeric
+      if (!/^\d{10}$/.test(trimmed))
+        return "Rocket TxnId must be 10 digits (e.g. 4661971574)";
+      return null;
+    }
+    default:
+      return null;
+  }
+}
 
 function formatPrice(value: number, locale: string): string {
   return new Intl.NumberFormat(locale.startsWith("bn") ? "bn-BD" : "en-US").format(value);
@@ -42,6 +112,7 @@ export default function SubscriptionPaymentStatusPage() {
   const paymentIntentId = params.id;
   const [statusData, setStatusData] = useState<PaymentIntentStatusResponse | null>(null);
   const [trxId, setTrxId] = useState("");
+  const [trxError, setTrxError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [notice, setNotice] = useState<string | null>(null);
   const [checkoutData, setCheckoutData] = useState<CheckoutData | null>(null);
@@ -65,7 +136,7 @@ export default function SubscriptionPaymentStatusPage() {
     try {
       const raw = sessionStorage.getItem("payment_checkout");
       if (raw) setCheckoutData(JSON.parse(raw));
-    } catch {}
+    } catch { }
   }, []);
 
   const refreshStatus = useCallback(async () => {
@@ -102,6 +173,16 @@ export default function SubscriptionPaymentStatusPage() {
 
   const handleSubmitTrx = async () => {
     if (!trxId.trim()) { setNotice(t("payment.errors.enterTrx")); return; }
+
+    // Validate TrxID format per provider
+    if (checkoutData) {
+      const validationError = validateTrxId(trxId, checkoutData.mfsMethod);
+      if (validationError) {
+        setTrxError(validationError);
+        return;
+      }
+    }
+    setTrxError(null);
     setIsSubmitting(true);
     try {
       const next = await submitPaymentTrx(paymentIntentId, trxId.trim());
@@ -123,7 +204,7 @@ export default function SubscriptionPaymentStatusPage() {
     } finally { setIsSubmitting(false); }
   };
 
-  const mfs = checkoutData ? MFS_STEPS[checkoutData.mfsMethod] : null;
+  const theme = checkoutData ? MFS_THEMES[checkoutData.mfsMethod] : null;
   const isCompleted = statusData?.status === "COMPLETED";
   const isPending = !statusData || statusData.status === "PENDING";
 
@@ -145,7 +226,7 @@ export default function SubscriptionPaymentStatusPage() {
         )}
 
         {isCompleted ? (
-          <div className="bg-white rounded-xl p-8 shadow-[0_8px_30px_rgba(25,28,26,0.06)] text-center space-y-4">
+          <div className="bg-white rounded-2xl p-8 shadow-[0_8px_30px_rgba(25,28,26,0.06)] text-center space-y-4">
             <div className="w-16 h-16 rounded-full bg-[#00503a]/10 flex items-center justify-center mx-auto">
               <span className="material-symbols-outlined text-[#003727] text-4xl" style={{ fontVariationSettings: "'FILL' 1" }}>check_circle</span>
             </div>
@@ -157,67 +238,86 @@ export default function SubscriptionPaymentStatusPage() {
           </div>
         ) : (
           <>
-            {checkoutData && mfs && isPending && (
-              <div className="bg-white rounded-xl overflow-hidden shadow-[0_8px_30px_rgba(25,28,26,0.06)]">
-                <div className="px-6 py-4 flex items-center gap-3" style={{ backgroundColor: `${mfs.color}10` }}>
-                  <div className="w-10 h-10 rounded-full flex items-center justify-center" style={{ backgroundColor: `${mfs.color}20` }}>
-                    <span className="material-symbols-outlined" style={{ color: mfs.color, fontVariationSettings: "'FILL' 1" }}>{mfs.icon}</span>
+            {/* ── Provider-branded payment instruction card ── */}
+            {checkoutData && theme && isPending && (
+              <div className="rounded-2xl overflow-hidden shadow-[0_8px_30px_rgba(25,28,26,0.08)] border border-[#e5e7e4]">
+                {/* Provider header banner */}
+                <div className="relative px-6 py-5 flex items-center gap-4" style={{ background: theme.gradient }}>
+                  <div className="absolute inset-0 opacity-10" style={{ backgroundImage: "url(\"data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.4'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E\")" }} />
+                  <div className="relative w-12 h-12 rounded-xl bg-white/20 backdrop-blur-sm flex items-center justify-center p-1.5 shadow-lg">
+                    <Image src={theme.logo} alt={theme.labelEn} width={36} height={36} className="object-contain" />
                   </div>
-                  <div>
-                    <h3 className="font-bold text-[#191c1a]">{isBn ? mfs.labelBn : mfs.labelEn} {isBn ? "পেমেন্ট" : "Payment"}</h3>
-                    <p className="text-xs text-[#404944]">{isBn ? "নিচের নির্দেশনা অনুসরণ করুন" : "Follow the instructions below"}</p>
+                  <div className="relative">
+                    <h3 className="font-bold text-white text-lg">{isBn ? theme.labelBn : theme.labelEn} {isBn ? "পেমেন্ট" : "Payment"}</h3>
+                    <p className="text-xs text-white/80">{isBn ? "নিচের নির্দেশনা অনুসরণ করুন" : "Follow the instructions below"}</p>
                   </div>
                 </div>
 
-                <div className="p-6 space-y-5">
-                  <div className="space-y-3">
-                    <div className="flex items-start gap-3">
-                      <div className="w-6 h-6 rounded-full bg-[#ecefeb] flex items-center justify-center shrink-0 mt-0.5">
-                        <span className="text-xs font-bold text-[#003727]">1</span>
-                      </div>
-                      <p className="text-sm text-[#191c1a]">
-                        {isBn
-                          ? `${mfs.labelBn} অ্যাপ খুলুন → ${isBn ? "\"সেন্ড মানি\"" : "\"Send Money\""} এ যান`
-                          : `Open ${mfs.labelEn} App → Go to "Send Money"`}
-                      </p>
+                {/* Steps */}
+                <div className="bg-white p-6 space-y-4">
+                  {/* Step 1 */}
+                  <div className="flex items-start gap-3">
+                    <div className="w-7 h-7 rounded-full flex items-center justify-center shrink-0 mt-0.5 text-xs font-bold text-white shadow-sm" style={{ background: theme.gradient }}>
+                      1
                     </div>
-                    <div className="flex items-start gap-3">
-                      <div className="w-6 h-6 rounded-full bg-[#ecefeb] flex items-center justify-center shrink-0 mt-0.5">
-                        <span className="text-xs font-bold text-[#003727]">2</span>
-                      </div>
-                      <div className="text-sm text-[#191c1a]">
-                        <p>{isBn ? "এই নম্বরে পাঠান:" : "Send to this number:"}</p>
-                        <div className="mt-1.5 bg-[#f2f4f0] rounded-lg px-4 py-3 flex items-center justify-between">
-                          <span className="text-lg font-bold font-['Manrope',sans-serif] tracking-wider">{checkoutData.receiverNumber}</span>
-                          <button
-                            onClick={() => navigator.clipboard?.writeText(checkoutData.receiverNumber)}
-                            className="text-[#003727] hover:text-[#00503a] transition-colors"
-                            title={isBn ? "কপি করুন" : "Copy"}
-                          >
-                            <span className="material-symbols-outlined text-xl">content_copy</span>
-                          </button>
-                        </div>
-                      </div>
+                    <p className="text-sm text-[#191c1a] pt-0.5">
+                      {isBn
+                        ? `${theme.labelBn} অ্যাপ খুলুন → "সেন্ড মানি" এ যান`
+                        : `Open ${theme.labelEn} App → Go to "Send Money"`}
+                    </p>
+                  </div>
+
+                  {/* Divider */}
+                  <div className="ml-3.5 border-l-2 border-dashed border-[#e5e7e4] h-2" />
+
+                  {/* Step 2 */}
+                  <div className="flex items-start gap-3">
+                    <div className="w-7 h-7 rounded-full flex items-center justify-center shrink-0 mt-0.5 text-xs font-bold text-white shadow-sm" style={{ background: theme.gradient }}>
+                      2
                     </div>
-                    <div className="flex items-start gap-3">
-                      <div className="w-6 h-6 rounded-full bg-[#ecefeb] flex items-center justify-center shrink-0 mt-0.5">
-                        <span className="text-xs font-bold text-[#003727]">3</span>
-                      </div>
-                      <div className="text-sm text-[#191c1a]">
-                        <p>{isBn ? "পরিমাণ:" : "Amount:"}</p>
-                        <div className="mt-1.5 bg-[#00503a]/5 rounded-lg px-4 py-3">
-                          <span className="text-2xl font-black text-[#003727] font-['Manrope',sans-serif]">৳{formatPrice(checkoutData.amount, locale)}</span>
-                        </div>
+                    <div className="text-sm text-[#191c1a] flex-1">
+                      <p className="mb-1.5">{isBn ? "এই নম্বরে পাঠান:" : "Send to this number:"}</p>
+                      <div className="rounded-xl px-4 py-3 flex items-center justify-between border" style={{ backgroundColor: theme.lightBg, borderColor: `${theme.primary}30` }}>
+                        <span className="text-lg font-bold font-['Manrope',sans-serif] tracking-wider" style={{ color: theme.primary }}>{checkoutData.receiverNumber}</span>
+                        <button
+                          onClick={() => navigator.clipboard?.writeText(checkoutData.receiverNumber)}
+                          className="rounded-lg p-1.5 transition-colors hover:bg-white/60"
+                          style={{ color: theme.primary }}
+                          title={isBn ? "কপি করুন" : "Copy"}
+                        >
+                          <span className="material-symbols-outlined text-xl">content_copy</span>
+                        </button>
                       </div>
                     </div>
-                    <div className="flex items-start gap-3">
-                      <div className="w-6 h-6 rounded-full bg-[#ecefeb] flex items-center justify-center shrink-0 mt-0.5">
-                        <span className="text-xs font-bold text-[#003727]">4</span>
-                      </div>
-                      <p className="text-sm text-[#191c1a]">
-                        {isBn ? "PIN দিয়ে কনফার্ম করুন এবং Transaction ID কপি করুন" : "Confirm with PIN and copy the Transaction ID"}
-                      </p>
+                  </div>
+
+                  {/* Divider */}
+                  <div className="ml-3.5 border-l-2 border-dashed border-[#e5e7e4] h-2" />
+
+                  {/* Step 3 */}
+                  <div className="flex items-start gap-3">
+                    <div className="w-7 h-7 rounded-full flex items-center justify-center shrink-0 mt-0.5 text-xs font-bold text-white shadow-sm" style={{ background: theme.gradient }}>
+                      3
                     </div>
+                    <div className="text-sm text-[#191c1a] flex-1">
+                      <p className="mb-1.5">{isBn ? "পরিমাণ:" : "Amount:"}</p>
+                      <div className="rounded-xl px-4 py-3 border" style={{ backgroundColor: theme.lightBg, borderColor: `${theme.primary}30` }}>
+                        <span className="text-2xl font-black font-['Manrope',sans-serif]" style={{ color: theme.primary }}>৳{formatPrice(checkoutData.amount, locale)}</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Divider */}
+                  <div className="ml-3.5 border-l-2 border-dashed border-[#e5e7e4] h-2" />
+
+                  {/* Step 4 */}
+                  <div className="flex items-start gap-3">
+                    <div className="w-7 h-7 rounded-full flex items-center justify-center shrink-0 mt-0.5 text-xs font-bold text-white shadow-sm" style={{ background: theme.gradient }}>
+                      4
+                    </div>
+                    <p className="text-sm text-[#191c1a] pt-0.5">
+                      {isBn ? "PIN দিয়ে কনফার্ম করুন এবং Transaction ID কপি করুন" : "Confirm with PIN and copy the Transaction ID"}
+                    </p>
                   </div>
                 </div>
               </div>
@@ -233,7 +333,8 @@ export default function SubscriptionPaymentStatusPage() {
               </div>
             )}
 
-            <div className="bg-white rounded-xl p-6 shadow-[0_8px_30px_rgba(25,28,26,0.06)] space-y-4">
+            {/* ── Transaction status + TrxID input ── */}
+            <div className="bg-white rounded-2xl p-6 shadow-[0_8px_30px_rgba(25,28,26,0.06)] space-y-4 border border-[#e5e7e4]">
               <div className="flex items-center justify-between">
                 <h3 className="text-base font-semibold text-[#191c1a]">{isBn ? "লেনদেনের অবস্থা" : "Transaction Status"}</h3>
                 <span className={`text-xs font-semibold px-3 py-1 rounded-full ${isPending ? "bg-[#d1e4ff]/40 text-[#0061a4]" : isCompleted ? "bg-[#00503a]/10 text-[#003727]" : "bg-[#ffdad6]/50 text-[#ba1a1a]"}`}>
@@ -243,25 +344,47 @@ export default function SubscriptionPaymentStatusPage() {
 
               {isPending && (
                 <>
-                  <div className="bg-[#f2f4f0] rounded-xl px-4 py-3 flex items-center gap-3">
-                    <span className="material-symbols-outlined text-[#003727] text-lg">label</span>
+                  <div className={`rounded-xl px-4 py-3 flex items-center gap-3 border-2 transition-colors ${trxError ? "border-[#ba1a1a]/50 bg-[#ffdad6]/20" : "bg-[#f8faf6]"}`} style={!trxError && theme ? { borderColor: `${theme.primary}40` } : trxError ? {} : { borderColor: "#e5e7e4" }}>
+                    <span className="material-symbols-outlined text-[#707974] text-lg">label</span>
                     <div className="flex-1">
                       <span className="text-xs text-[#404944]">{isBn ? "Transaction ID লিখুন" : "Enter Transaction ID"}</span>
                       <input
                         value={trxId}
-                        onChange={(e) => setTrxId(e.target.value.toUpperCase())}
-                        placeholder={isBn ? "যেমন: TXN123456789" : "e.g. TXN123456789"}
+                        onChange={(e) => {
+                          const val = e.target.value.toUpperCase();
+                          setTrxId(val);
+                          setTrxError(null);
+                        }}
+                        placeholder={isBn ? theme?.trxPlaceholder ?? "যেমন: TXN123456789" : theme?.trxHint ?? "e.g. TXN123456789"}
                         className="w-full bg-transparent border-none focus:ring-0 focus:outline-none text-[#191c1a] text-base font-semibold placeholder:text-[#707974] placeholder:font-normal mt-0.5"
                       />
                     </div>
                   </div>
 
+                  {/* Validation error message */}
+                  {trxError && (
+                    <p className="text-xs text-[#ba1a1a] flex items-center gap-1">
+                      <span className="material-symbols-outlined text-sm">error</span>
+                      {trxError}
+                    </p>
+                  )}
+
+                  {/* Provider-specific hint */}
+                  {theme && !trxError && (
+                    <p className="text-[11px] text-[#707974] flex items-center gap-1">
+                      <span className="material-symbols-outlined text-[13px]">info</span>
+                      {checkoutData?.mfsMethod === "BKASH" && (isBn ? "bKash TrxID: ১০ অক্ষরের আলফানিউমেরিক (যেমন DDJ8BQBVCM)" : "bKash TrxID: 10 alphanumeric characters (e.g. DDJ8BQBVCM)")}
+                      {checkoutData?.mfsMethod === "NAGAD" && (isBn ? "Nagad TxnID: ৮ অক্ষরের আলফানিউমেরিক (যেমন 754PTHMR)" : "Nagad TxnID: 8 alphanumeric characters (e.g. 754PTHMR)")}
+                      {checkoutData?.mfsMethod === "ROCKET" && (isBn ? "Rocket TxnId: ১০ সংখ্যার ডিজিট (যেমন 4661971574)" : "Rocket TxnId: 10 digit number (e.g. 4661971574)")}
+                    </p>
+                  )}
+
                   <button
                     type="button"
                     onClick={handleSubmitTrx}
                     disabled={isSubmitting || !trxId.trim()}
-                    className="w-full py-3.5 text-white font-bold text-base rounded-full shadow-lg disabled:opacity-40 flex items-center justify-center gap-2"
-                    style={{ background: "linear-gradient(135deg, #003727, #00503a)" }}
+                    className="w-full py-3.5 text-white font-bold text-base rounded-full shadow-lg disabled:opacity-40 flex items-center justify-center gap-2 transition-transform active:scale-[0.98]"
+                    style={theme ? { background: theme.gradient } : { background: "linear-gradient(135deg, #003727, #00503a)" }}
                   >
                     {isSubmitting ? (
                       <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
@@ -305,3 +428,4 @@ export default function SubscriptionPaymentStatusPage() {
     </div>
   );
 }
+

@@ -17,12 +17,13 @@ import {
 import type { AppliedCoupon, MfsType, Plan, ReferralStatus, Subscription } from "@/types/subscription";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useLocale, useTranslations } from "next-intl";
+import Image from "next/image";
 import { Suspense, useEffect, useMemo, useRef, useState } from "react";
 
-const MFS_OPTIONS: { key: MfsType; labelBn: string; labelEn: string; color: string }[] = [
-  { key: "BKASH", labelBn: "বিকাশ", labelEn: "bKash", color: "#E2136E" },
-  { key: "NAGAD", labelBn: "নগদ", labelEn: "Nagad", color: "#ED1C24" },
-  { key: "ROCKET", labelBn: "রকেট", labelEn: "Rocket", color: "#8B2F8B" },
+const MFS_OPTIONS: { key: MfsType; labelBn: string; labelEn: string; color: string; gradient: string; logo: string }[] = [
+  { key: "BKASH", labelBn: "বিকাশ", labelEn: "bKash", color: "#E2136E", gradient: "linear-gradient(135deg, #E2136E, #C4105E)", logo: "/icons/payment/bkash.png" },
+  { key: "NAGAD", labelBn: "নগদ", labelEn: "Nagad", color: "#F6921E", gradient: "linear-gradient(135deg, #F6921E, #ED1C24)", logo: "/icons/payment/nagad.png" },
+  { key: "ROCKET", labelBn: "রকেট", labelEn: "Rocket", color: "#8B2F8B", gradient: "linear-gradient(135deg, #8B2F8B, #6B1F6B)", logo: "/icons/payment/dbbl_rocket.jpeg" },
 ];
 
 function formatPrice(value: number, locale: string): string {
@@ -36,13 +37,13 @@ function getPlanDisplayName(plan: Plan, isBn: boolean): string {
 function getFeatureList(plan: Plan, isBn: boolean): { icon: string; label: string }[] {
   const features: { icon: string; label: string }[] = [];
   if (plan.maxBusinesses > 0) {
-      features.push({ icon: "store", label: isBn ? `সর্বোচ্চ ব্যবসা: ${formatPrice(plan.maxBusinesses, isBn ? "bn-BD" : "en-US")}` : `Max businesses: ${plan.maxBusinesses}` });
+    features.push({ icon: "store", label: isBn ? `সর্বোচ্চ ব্যবসা: ${formatPrice(plan.maxBusinesses, isBn ? "bn-BD" : "en-US")}` : `Max businesses: ${plan.maxBusinesses}` });
   }
-    if (plan.maxProductsPerBusiness != null) {
-      const val = plan.maxProductsPerBusiness === -1
-        ? (isBn ? "আনলিমিটেড" : "Unlimited")
-        : formatPrice(plan.maxProductsPerBusiness, isBn ? "bn-BD" : "en-US");
-      features.push({ icon: "inventory_2", label: isBn ? `প্রতি ব্যবসায় পণ্য: ${val}` : `Products/business: ${val}` });
+  if (plan.maxProductsPerBusiness != null) {
+    const val = plan.maxProductsPerBusiness === -1
+      ? (isBn ? "আনলিমিটেড" : "Unlimited")
+      : formatPrice(plan.maxProductsPerBusiness, isBn ? "bn-BD" : "en-US");
+    features.push({ icon: "inventory_2", label: isBn ? `প্রতি ব্যবসায় পণ্য: ${val}` : `Products/business: ${val}` });
   }
   if (plan.aiQueriesPerDay != null) {
     const val = plan.aiQueriesPerDay === -1
@@ -167,7 +168,7 @@ function SubscriptionUpgradeContent() {
         couponCode: appliedCoupon?.code ?? (couponCode.trim() || undefined), billingCycle,
       });
       clearPendingUpgradePlan();
-      clearPendingPlan().catch(() => {});
+      clearPendingPlan().catch(() => { });
       sessionStorage.setItem("payment_checkout", JSON.stringify({
         receiverNumber: intent.receiverNumber,
         amount: intent.amount,
@@ -199,7 +200,7 @@ function SubscriptionUpgradeContent() {
     try {
       await consentTrialPlan(selectedPlan.id);
       clearPendingUpgradePlan();
-      clearPendingPlan().catch(() => {});
+      clearPendingPlan().catch(() => { });
       setShowTrialConfirm(false);
       router.push("/onboarding");
     } catch (error) {
@@ -417,20 +418,20 @@ function SubscriptionUpgradeContent() {
             )}
 
             {selectedPlan && (
-            <div className="rounded-xl p-6 flex items-start gap-4 relative overflow-hidden" style={{ background: "rgba(225,227,223,0.6)", backdropFilter: "blur(20px)", WebkitBackdropFilter: "blur(20px)" }}>
-              <div className="absolute -right-4 -top-4 w-24 h-24 bg-[#adf1d2] rounded-full blur-3xl opacity-30 pointer-events-none" />
-              <div className="w-11 h-11 rounded-full bg-[#d1e4ff] flex items-center justify-center text-[#001d36] shrink-0 shadow-[0_8px_24px_rgba(25,28,26,0.08)]">
-                <span className="material-symbols-outlined text-xl" style={{ fontVariationSettings: "'FILL' 1" }}>auto_awesome</span>
+              <div className="rounded-xl p-6 flex items-start gap-4 relative overflow-hidden" style={{ background: "rgba(225,227,223,0.6)", backdropFilter: "blur(20px)", WebkitBackdropFilter: "blur(20px)" }}>
+                <div className="absolute -right-4 -top-4 w-24 h-24 bg-[#adf1d2] rounded-full blur-3xl opacity-30 pointer-events-none" />
+                <div className="w-11 h-11 rounded-full bg-[#d1e4ff] flex items-center justify-center text-[#001d36] shrink-0 shadow-[0_8px_24px_rgba(25,28,26,0.08)]">
+                  <span className="material-symbols-outlined text-xl" style={{ fontVariationSettings: "'FILL' 1" }}>auto_awesome</span>
+                </div>
+                <div>
+                  <h3 className="font-semibold text-base text-[#191c1a] mb-1">{isBn ? "AI ইনসাইট" : "AI Insight"}</h3>
+                  <p className="text-sm text-[#404944] leading-relaxed">
+                    {isBn
+                      ? `${getPlanDisplayName(selectedPlan, true)} প্ল্যানে আপগ্রেড করলে আপনার ব্যবসার হিসাব রাখা আরও সহজ ও দ্রুত হবে। AI দিয়ে স্মার্ট রিপোর্ট পান।`
+                      : `Upgrade to ${getPlanDisplayName(selectedPlan, false)} for smarter business insights and faster bookkeeping.`}
+                  </p>
+                </div>
               </div>
-              <div>
-                <h3 className="font-semibold text-base text-[#191c1a] mb-1">{isBn ? "AI ইনসাইট" : "AI Insight"}</h3>
-                <p className="text-sm text-[#404944] leading-relaxed">
-                  {isBn
-                    ? `${getPlanDisplayName(selectedPlan, true)} প্ল্যানে আপগ্রেড করলে আপনার ব্যবসার হিসাব রাখা আরও সহজ ও দ্রুত হবে। AI দিয়ে স্মার্ট রিপোর্ট পান।`
-                    : `Upgrade to ${getPlanDisplayName(selectedPlan, false)} for smarter business insights and faster bookkeeping.`}
-                </p>
-              </div>
-            </div>
             )}
           </div>
 
@@ -498,22 +499,22 @@ function SubscriptionUpgradeContent() {
                       key={mfs.key}
                       type="button"
                       onClick={() => setCheckoutMethod(mfs.key)}
-                      className={`w-full flex items-center p-4 rounded-xl transition-all relative overflow-hidden cursor-pointer
+                      className={`w-full flex items-center p-3.5 rounded-xl transition-all relative overflow-hidden cursor-pointer border-2
                         ${isSelected
-                          ? "bg-[#ecefeb]"
-                          : "bg-white hover:bg-[#f8faf6]"
+                          ? "bg-white shadow-md scale-[1.01]"
+                          : "bg-white hover:bg-[#f8faf6] border-transparent"
                         }`}
+                      style={isSelected ? { borderColor: mfs.color, boxShadow: `0 4px 14px ${mfs.color}20` } : {}}
                     >
-                      {isSelected && <div className="absolute inset-0 bg-[#91d4b7]/10 pointer-events-none" />}
-                      <div className={`w-5 h-5 rounded-full border-2 mr-4 flex items-center justify-center transition-all ${isSelected ? "border-[#003727]" : "border-[#bfc9c2]"}`}>
-                        {isSelected && <div className="w-2.5 h-2.5 rounded-full bg-[#003727]" />}
+                      <div className={`w-5 h-5 rounded-full border-2 mr-3 flex items-center justify-center transition-all shrink-0 ${isSelected ? "border-[#003727]" : "border-[#bfc9c2]"}`}>
+                        {isSelected && <div className="w-2.5 h-2.5 rounded-full" style={{ background: mfs.gradient }} />}
                       </div>
                       <div className="flex-1 flex items-center justify-between">
                         <span className={`font-semibold ${isSelected ? "text-[#191c1a]" : "text-[#404944]"}`}>
                           {isBn ? mfs.labelBn : mfs.labelEn}
                         </span>
-                        <div className="h-8 w-14 rounded flex items-center justify-center" style={{ backgroundColor: `${mfs.color}15` }}>
-                          <span className="font-bold text-sm tracking-wide" style={{ color: mfs.color }}>{mfs.labelEn}</span>
+                        <div className="h-9 w-16 rounded-lg flex items-center justify-center overflow-hidden" style={{ backgroundColor: `${mfs.color}10` }}>
+                          <Image src={mfs.logo} alt={mfs.labelEn} width={48} height={24} className="object-contain" />
                         </div>
                       </div>
                     </button>
