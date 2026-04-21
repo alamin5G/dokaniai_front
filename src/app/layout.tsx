@@ -2,13 +2,13 @@ import { LocaleUpdater } from "@/components/LocaleUpdater";
 import { I18nProvider } from "@/i18n/provider";
 import SWRProvider from "@/providers/SWRProvider";
 import type { Metadata, Viewport } from "next";
-import { Hind_Siliguri, Plus_Jakarta_Sans, Inter } from "next/font/google";
+import { Noto_Sans_Bengali, Plus_Jakarta_Sans, Inter } from "next/font/google";
 import "./globals.css";
 
-const hindSiliguri = Hind_Siliguri({
-  subsets: ["bengali", "latin"],
+const notoSansBengali = Noto_Sans_Bengali({
+  subsets: ["bengali"],
   weight: ["300", "400", "500", "600", "700"],
-  variable: "--font-hind-siliguri",
+  variable: "--font-noto-sans-bengali",
   display: "swap",
 });
 
@@ -56,7 +56,7 @@ export default function RootLayout({
         <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL,GRAD,opsz@400,0,0,24&display=swap" rel="stylesheet" />
         <link rel="apple-touch-icon" href="/icons/icon-192x192.png" />
       </head>
-      <body suppressHydrationWarning className={`${hindSiliguri.variable} ${plusJakartaSans.variable} ${inter.variable} font-body bg-background text-on-surface min-h-screen antialiased`}>
+      <body suppressHydrationWarning className={`${notoSansBengali.variable} ${plusJakartaSans.variable} ${inter.variable} font-body bg-background text-on-surface min-h-screen antialiased`}>
         <SWRProvider>
           <I18nProvider>
             <LocaleUpdater />
