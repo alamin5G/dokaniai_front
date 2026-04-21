@@ -446,7 +446,10 @@ export default function PaymentsTab() {
                                                             <span className="material-symbols-outlined text-[14px]">{device.status === "ACTIVE" ? "sync" : "sync_problem"}</span>
                                                             {device.lastReportAt ? `${Math.floor((Date.now() - new Date(device.lastReportAt).getTime()) / 60000)}m ago` : "Never"}
                                                         </div>
-                                                        <div>v2.4.1</div>
+                                                        <div className="flex items-center gap-1">
+                                                            <span className="material-symbols-outlined text-[14px]">category</span>
+                                                            {device.appVariant || "—"}
+                                                        </div>
                                                     </div>
                                                 </div>
                                             ))
@@ -804,6 +807,8 @@ export default function PaymentsTab() {
                                     {(["bkash", "nagad", "rocket"] as const).map((key) => {
                                         const icons: Record<string, { bg: string; text: string; initial: string }> = { bkash: { bg: "bg-[#E2136E]/10", text: "text-[#E2136E]", initial: "bK" }, nagad: { bg: "bg-[#F37021]/10", text: "text-[#F37021]", initial: "Ng" }, rocket: { bg: "bg-purple-100", text: "text-purple-700", initial: "Rk" } };
                                         const ic = icons[key];
+                                        const val = settingsForm[key];
+                                        const isInvalid = val.length > 0 && !/^01[3-9]\d{8}$/.test(val);
                                         return (
                                             <div key={key} className="flex items-center gap-4">
                                                 <div className="w-12 h-12 rounded-full bg-surface-container-high flex items-center justify-center shrink-0">
@@ -811,13 +816,14 @@ export default function PaymentsTab() {
                                                 </div>
                                                 <div className="flex-1">
                                                     <label className="text-sm font-semibold text-on-surface capitalize">{key} {t("settings.receiverNumber")}</label>
-                                                    <input type="tel" value={settingsForm[key]} onChange={(e) => { setSettingsForm({ ...settingsForm, [key]: e.target.value }); setSettingsSaved(false); }} placeholder="01XXXXXXXXX" className="mt-1 w-full rounded-xl bg-surface-container-low px-4 py-2.5 text-sm text-on-surface placeholder:text-on-surface-variant/50 focus:ring-1 focus:ring-primary outline-none border-none" />
+                                                    <input type="tel" value={val} onChange={(e) => { setSettingsForm({ ...settingsForm, [key]: e.target.value }); setSettingsSaved(false); }} placeholder="01XXXXXXXXX" maxLength={11} className={`mt-1 w-full rounded-xl bg-surface-container-low px-4 py-2.5 text-sm text-on-surface placeholder:text-on-surface-variant/50 focus:ring-1 outline-none border-none ${isInvalid ? "ring-1 ring-error focus:ring-error" : "focus:ring-primary"}`} />
+                                                    {isInvalid && <p className="text-xs text-error mt-1">Must be 11 digits starting with 01 (e.g., 017XXXXXXXX)</p>}
                                                 </div>
                                             </div>
                                         );
                                     })}
                                 </div>
-                                <button type="button" onClick={async () => { setSettingsLoading(true); setSettingsSaved(false); setError(null); try { const updated = await updatePaymentSettings(settingsForm); setPaymentSettings(updated); setSettingsSaved(true); setNotice(t("settings.saved")); } catch { setError(t("settings.saveFailed")); } finally { setSettingsLoading(false); } }} disabled={settingsLoading} className="mt-6 rounded-full bg-gradient-to-r from-primary to-primary-container px-8 py-3 text-sm font-bold text-white hover:opacity-90 disabled:opacity-50 transition-opacity">
+                                <button type="button" onClick={async () => { const invalidKeys = (["bkash", "nagad", "rocket"] as const).filter(k => settingsForm[k].length > 0 && !/^01[3-9]\d{8}$/.test(settingsForm[k])); if (invalidKeys.length > 0) { setError(`Invalid number(s): ${invalidKeys.join(", ")}. Must be 11 digits starting with 01.`); return; } setSettingsLoading(true); setSettingsSaved(false); setError(null); try { const updated = await updatePaymentSettings(settingsForm); setPaymentSettings(updated); setSettingsSaved(true); setNotice(t("settings.saved")); } catch (err) { setError(err instanceof Error ? err.message : t("settings.saveFailed")); } finally { setSettingsLoading(false); } }} disabled={settingsLoading} className="mt-6 rounded-full bg-gradient-to-r from-primary to-primary-container px-8 py-3 text-sm font-bold text-white hover:opacity-90 disabled:opacity-50 transition-opacity">
                                     {settingsLoading ? t("settings.saving") : t("settings.save")}
                                 </button>
                             </div>
