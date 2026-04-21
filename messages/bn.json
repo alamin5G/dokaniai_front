@@ -3119,6 +3119,12 @@
         "value": "মান",
         "limit": "সীমা",
         "usage": "ব্যবহার",
+        "validity": "বৈধতা",
+        "perUser": "প্রতি ব্যবহারকারী",
+        "firstOnly": "শুধুমাত্র প্রথম ক্রয়",
+        "allPlans": "সব প্ল্যান",
+        "minPurchase": "সর্বনিম্ন ক্রয়",
+        "maxDiscount": "সর্বোচ্চ ছাড়",
         "edit": "সম্পাদনা",
         "deactivate": "নিষ্ক্রিয়",
         "activate": "সক্রিয়"

@@ -3096,6 +3096,12 @@
         "value": "Value",
         "limit": "Limit",
         "usage": "Usage",
+        "validity": "Validity",
+        "perUser": "Per User",
+        "firstOnly": "First Purchase Only",
+        "allPlans": "All Plans",
+        "minPurchase": "Min. Purchase",
+        "maxDiscount": "Max Discount",
         "edit": "Edit",
         "deactivate": "Deactivate",
         "activate": "Activate"

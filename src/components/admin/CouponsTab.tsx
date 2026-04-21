@@ -403,23 +403,50 @@ export default function CouponsTab() {
                                                 </div>
                                             )}
                                         </div>
-                                        <div className="flex flex-col gap-4 mb-6 relative z-10">
+                                        <div className="flex flex-col gap-3 mb-6 relative z-10">
+                                            {coupon.description && (
+                                                <p className="text-sm text-on-surface-variant italic border-b border-surface-container-high pb-3">{coupon.description}</p>
+                                            )}
                                             <div className="flex justify-between items-center border-b border-surface-container-high pb-3">
                                                 <span className="text-on-surface-variant text-sm font-medium">{t("card.value")}</span>
                                                 <span className="font-bold text-lg text-on-surface">{valueTypeLabel(coupon.type)} {valueLabel(coupon.type, coupon.value)}</span>
                                             </div>
                                             <div className="flex justify-between items-center border-b border-surface-container-high pb-3">
-                                                <span className="text-on-surface-variant text-sm font-medium">{t("card.limit")}</span>
-                                                <span className="font-bold text-lg text-on-surface">{coupon.usageLimit ?? "∞"}</span>
+                                                <span className="text-on-surface-variant text-sm font-medium">{t("card.validity")}</span>
+                                                <span className="text-sm font-semibold text-on-surface">
+                                                    {new Date(coupon.validFrom).toLocaleDateString(resolveLocale(locale), { month: "short", day: "numeric" })} → {new Date(coupon.validUntil).toLocaleDateString(resolveLocale(locale), { month: "short", day: "numeric", year: "numeric" })}
+                                                </span>
                                             </div>
-                                            <div className="flex justify-between items-center">
+                                            <div className="flex justify-between items-center border-b border-surface-container-high pb-3">
+                                                <span className="text-on-surface-variant text-sm font-medium">{t("card.limit")}</span>
+                                                <div className="flex items-center gap-2">
+                                                    <span className="font-bold text-on-surface">{coupon.usageLimit ?? "∞"}</span>
+                                                    <span className="text-on-surface-variant text-xs">/ {t("card.perUser")} {coupon.perUserLimit ?? "∞"}</span>
+                                                </div>
+                                            </div>
+                                            <div className="flex justify-between items-center border-b border-surface-container-high pb-3">
                                                 <span className="text-on-surface-variant text-sm font-medium">{t("card.usage")}</span>
                                                 <div className="flex items-center gap-3">
                                                     <div className="w-24 h-2 bg-surface-container-high rounded-full overflow-hidden">
                                                         <div className={`h-full ${colors.accent} rounded-full transition-all`} style={{ width: `${usagePercent}%` }} />
                                                     </div>
-                                                    <span className="font-bold text-lg text-on-surface">{coupon.usedCount}</span>
+                                                    <span className="font-bold text-on-surface">{coupon.usedCount}</span>
                                                 </div>
+                                            </div>
+                                            <div className="flex flex-wrap gap-1.5">
+                                                {coupon.firstPurchaseOnly && (
+                                                    <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-tertiary-container text-on-tertiary-container">{t("card.firstOnly")}</span>
+                                                )}
+                                                {coupon.applicablePlans && coupon.applicablePlans.length > 0 ? (
+                                                    coupon.applicablePlans.map((pid) => {
+                                                        const plan = plans.find((p) => p.id === pid);
+                                                        return plan ? (
+                                                            <span key={pid} className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-primary-container text-on-primary-container">{plan.name}</span>
+                                                        ) : null;
+                                                    })
+                                                ) : (
+                                                    <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-surface-container-high text-on-surface-variant">{t("card.allPlans")}</span>
+                                                )}
                                             </div>
                                         </div>
                                         <div className="flex gap-3 relative z-10">
@@ -671,11 +698,10 @@ export default function CouponsTab() {
                                                     key={plan.id}
                                                     type="button"
                                                     onClick={() => togglePlan(plan.id)}
-                                                    className={`px-3 py-1.5 rounded-full text-xs font-semibold border transition-colors ${
-                                                        selected
+                                                    className={`px-3 py-1.5 rounded-full text-xs font-semibold border transition-colors ${selected
                                                             ? "bg-primary text-on-primary border-primary"
                                                             : "bg-surface-container-low text-on-surface-variant border-outline-variant/30 hover:border-primary/50"
-                                                    }`}
+                                                        }`}
                                                 >
                                                     {plan.name}
                                                 </button>
