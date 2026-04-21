@@ -19,6 +19,7 @@ import {
     listCoupons,
     updateCoupon,
 } from "@/lib/couponApi";
+import { getAvailablePlans } from "@/lib/subscriptionApi";
 
 function resolveLocale(locale?: string): string {
     return locale?.toLowerCase().startsWith("bn") ? "bn-BD" : "en-US";
@@ -38,11 +39,17 @@ function timeAgo(dateStr: string): string {
     return `${days}d ago`;
 }
 
+interface PlanOption {
+    id: string;
+    name: string;
+}
+
 interface FormState {
     code: string;
     description: string;
     type: CouponType;
     value: string;
+    applicablePlans: string[];
     minPurchaseAmount: string;
     maxDiscountAmount: string;
     usageLimit: string;
@@ -57,6 +64,7 @@ const initialFormState: FormState = {
     description: "",
     type: "PERCENTAGE",
     value: "",
+    applicablePlans: [],
     minPurchaseAmount: "",
     maxDiscountAmount: "",
     usageLimit: "100",
@@ -72,6 +80,7 @@ function couponToForm(coupon: Coupon): FormState {
         description: coupon.description || "",
         type: coupon.type,
         value: String(coupon.value),
+        applicablePlans: coupon.applicablePlans || [],
         minPurchaseAmount: coupon.minPurchaseAmount ? String(coupon.minPurchaseAmount) : "",
         maxDiscountAmount: coupon.maxDiscountAmount ? String(coupon.maxDiscountAmount) : "",
         usageLimit: coupon.usageLimit ? String(coupon.usageLimit) : "",
@@ -125,6 +134,7 @@ export default function CouponsTab() {
     const [editingCoupon, setEditingCoupon] = useState<Coupon | null>(null);
     const [form, setForm] = useState<FormState>(initialFormState);
     const [submitting, setSubmitting] = useState(false);
+    const [plans, setPlans] = useState<PlanOption[]>([]);
 
     const [statsCoupon, setStatsCoupon] = useState<CouponStats | null>(null);
     const [statsLoading, setStatsLoading] = useState(false);
@@ -170,6 +180,22 @@ export default function CouponsTab() {
     useEffect(() => { loadCoupons(); }, [loadCoupons]);
     useEffect(() => { setPage(0); }, [typeFilter, statusFilter]);
 
+    // Load available plans for plan selector
+    useEffect(() => {
+        getAvailablePlans()
+            .then((p) => setPlans(p.map((pl: any) => ({ id: pl.id, name: pl.name }))))
+            .catch(() => { /* plans unavailable — selector will be empty */ });
+    }, []);
+
+    function togglePlan(planId: string) {
+        setForm((prev) => ({
+            ...prev,
+            applicablePlans: prev.applicablePlans.includes(planId)
+                ? prev.applicablePlans.filter((id) => id !== planId)
+                : [...prev.applicablePlans, planId],
+        }));
+    }
+
     function openCreateForm() {
         setEditingCoupon(null);
         setForm(initialFormState);
@@ -205,6 +231,7 @@ export default function CouponsTab() {
                 const updateReq: CouponUpdateRequest = {
                     description: form.description || undefined,
                     value: Number(form.value),
+                    applicablePlans: form.applicablePlans.length > 0 ? form.applicablePlans : undefined,
                     minPurchaseAmount: form.minPurchaseAmount ? Number(form.minPurchaseAmount) : undefined,
                     maxDiscountAmount: form.maxDiscountAmount ? Number(form.maxDiscountAmount) : undefined,
                     usageLimit: form.usageLimit ? Number(form.usageLimit) : undefined,
@@ -219,6 +246,7 @@ export default function CouponsTab() {
                     description: form.description || undefined,
                     type: form.type,
                     value: Number(form.value),
+                    applicablePlans: form.applicablePlans.length > 0 ? form.applicablePlans : undefined,
                     minPurchaseAmount: form.minPurchaseAmount ? Number(form.minPurchaseAmount) : undefined,
                     maxDiscountAmount: form.maxDiscountAmount ? Number(form.maxDiscountAmount) : undefined,
                     firstPurchaseOnly: form.firstPurchaseOnly,
@@ -629,6 +657,33 @@ export default function CouponsTab() {
                                     />
                                 </label>
                             </div>
+                            <label className="block">
+                                <span className="text-sm font-medium text-on-surface-variant">{t("form.applicablePlans")}</span>
+                                <p className="text-xs text-on-surface-variant/60 mb-2">{t("form.applicablePlansHint")}</p>
+                                {plans.length === 0 ? (
+                                    <p className="text-xs text-on-surface-variant/50">Loading plans…</p>
+                                ) : (
+                                    <div className="flex flex-wrap gap-2">
+                                        {plans.map((plan) => {
+                                            const selected = form.applicablePlans.includes(plan.id);
+                                            return (
+                                                <button
+                                                    key={plan.id}
+                                                    type="button"
+                                                    onClick={() => togglePlan(plan.id)}
+                                                    className={`px-3 py-1.5 rounded-full text-xs font-semibold border transition-colors ${
+                                                        selected
+                                                            ? "bg-primary text-on-primary border-primary"
+                                                            : "bg-surface-container-low text-on-surface-variant border-outline-variant/30 hover:border-primary/50"
+                                                    }`}
+                                                >
+                                                    {plan.name}
+                                                </button>
+                                            );
+                                        })}
+                                    </div>
+                                )}
+                            </label>
                             <div className="flex gap-3 justify-end pt-2">
                                 <button type="button" onClick={closeForm} className="rounded-xl px-5 py-2.5 text-sm font-medium text-on-surface-variant hover:bg-surface-container-low transition-colors">
                                     {t("form.cancel")}

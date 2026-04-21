@@ -2877,6 +2877,8 @@
         "perUserLimit": "প্রতি-ব্যবহারকারী সীমা",
         "perUserLimitPlaceholder": "প্রতি ব্যবহারকারী কতবার?",
         "firstPurchaseOnly": "শুধুমাত্র প্রথম ক্রয়",
+        "applicablePlans": "প্রযোজ্য প্ল্যান",
+        "applicablePlansHint": "সব প্ল্যানে প্রয়োগ করতে খালি রাখুন।",
         "validFrom": "শুরু তারিখ",
         "validUntil": "শেষ তারিখ",
         "submit": "কুপন তৈরি করুন",

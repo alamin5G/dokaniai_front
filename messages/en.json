@@ -2833,6 +2833,8 @@
         "perUserLimit": "Per-User Limit",
         "perUserLimitPlaceholder": "How many times per user?",
         "firstPurchaseOnly": "First Purchase Only",
+        "applicablePlans": "Applicable Plans",
+        "applicablePlansHint": "Leave empty to apply to all plans.",
         "validFrom": "Valid From",
         "validUntil": "Valid Until",
         "submit": "Create Coupon",

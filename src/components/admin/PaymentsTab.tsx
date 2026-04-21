@@ -292,21 +292,12 @@ export default function PaymentsTab() {
             )}
 
             {/* Header */}
-            <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
-                <div>
-                    <p className="font-label text-sm text-primary font-semibold tracking-wider uppercase mb-2">{t("title")}</p>
-                    <h2 className="font-headline text-3xl md:text-4xl font-extrabold text-on-surface tracking-tight leading-tight">{t("subtitle")}</h2>
-                </div>
-                <div className="flex items-center gap-3">
-                    <div className="hidden md:flex items-center gap-2 bg-surface-container-low px-4 py-2.5 rounded-full">
-                        <span className="material-symbols-outlined text-on-surface-variant text-lg">search</span>
-                        <input type="text" placeholder="Search TrxID or Phone..." className="bg-transparent border-none focus:ring-0 text-sm font-medium text-on-surface w-48 placeholder:text-on-surface-variant/50 outline-none" />
-                    </div>
-                    <button onClick={loadAll} disabled={loading} className="flex items-center gap-2 rounded-full bg-gradient-to-r from-primary to-primary-container px-5 py-2.5 text-sm font-bold text-on-primary hover:opacity-90 disabled:opacity-50 transition-opacity shadow-sm">
-                        <span className="material-symbols-outlined text-lg">refresh</span>
-                        {t("summary.refresh")}
-                    </button>
-                </div>
+            <div className="flex flex-col md:flex-row md:items-center justify-between gap-3">
+                <p className="font-body text-sm text-on-surface-variant">{t("subtitle")}</p>
+                <button onClick={loadAll} disabled={loading} className="flex items-center gap-2 rounded-full bg-gradient-to-r from-primary to-primary-container px-5 py-2.5 text-sm font-bold text-on-primary hover:opacity-90 disabled:opacity-50 transition-opacity shadow-sm self-start md:self-auto">
+                    <span className="material-symbols-outlined text-lg">refresh</span>
+                    {t("summary.refresh")}
+                </button>
             </div>
 
             {/* KPI Summary Row — per payment_management_manual/code.html */}
@@ -316,9 +307,6 @@ export default function PaymentsTab() {
                         <div className="absolute top-0 right-0 w-32 h-32 bg-primary-fixed/20 rounded-bl-full -mr-10 -mt-10 blur-2xl" />
                         <div className="text-on-surface-variant font-label text-sm mb-4">{t("summary.autoVerified")}</div>
                         <div className="font-headline text-4xl font-bold text-primary">{Math.round(summary.autoVerifiedRate)}%</div>
-                        <div className="text-primary-container text-xs mt-2 flex items-center gap-1 font-medium">
-                            <span className="material-symbols-outlined text-sm">trending_up</span> +1.2% from last week
-                        </div>
                     </div>
                     <div className="bg-surface-container-lowest p-6 rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] flex flex-col justify-between">
                         <div className="text-on-surface-variant font-label text-sm mb-4">{t("summary.pendingVolume")}</div>
