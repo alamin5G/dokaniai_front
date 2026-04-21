@@ -14,7 +14,8 @@ export type PaymentIntentStatus =
   | "COMPLETED"
   | "FAILED"
   | "MANUAL_REVIEW"
-  | "EXPIRED";
+  | "EXPIRED"
+  | "REJECTED";
 
 export interface Plan {
   id: string;
@@ -107,6 +108,7 @@ export interface PaymentIntentStatusResponse {
   failedAttempts: number | null;
   fraudFlag: boolean | null;
   expiresAt: string | null;
+  rejectionReason: string | null;
 }
 
 export interface ReferralStatus {

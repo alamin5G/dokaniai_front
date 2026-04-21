@@ -100,7 +100,7 @@ function formatPrice(value: number, locale: string): string {
 }
 
 function isTerminalStatus(status: string): boolean {
-  return status === "COMPLETED" || status === "FAILED" || status === "EXPIRED";
+  return status === "COMPLETED" || status === "FAILED" || status === "EXPIRED" || status === "REJECTED";
 }
 
 export default function SubscriptionPaymentStatusPage() {
@@ -179,7 +179,7 @@ export default function SubscriptionPaymentStatusPage() {
       sessionStorage.removeItem("payment_checkout");
       sessionStorage.removeItem("payment_trx_submitted");
     }
-    if (statusData?.status === "FAILED" || statusData?.status === "EXPIRED") {
+    if (statusData?.status === "FAILED" || statusData?.status === "EXPIRED" || statusData?.status === "REJECTED") {
       sessionStorage.removeItem("payment_trx_submitted");
     }
   }, [statusData?.status]);
@@ -233,6 +233,7 @@ export default function SubscriptionPaymentStatusPage() {
     if (statusData.status === "MANUAL_REVIEW") return t("payment.status.manualReview");
     if (statusData.status === "FAILED") return t("payment.status.failed");
     if (statusData.status === "EXPIRED") return t("payment.status.expired");
+    if (statusData.status === "REJECTED") return t("payment.status.rejected");
     return t("payment.status.pending");
   }, [statusData, t]);
 
@@ -299,7 +300,7 @@ export default function SubscriptionPaymentStatusPage() {
   const isCompleted = statusData?.status === "COMPLETED";
   const isPending = !statusData || statusData.status === "PENDING";
   const isManualReview = statusData?.status === "MANUAL_REVIEW";
-  const isFailed = statusData?.status === "FAILED";
+  const isFailed = statusData?.status === "FAILED" || statusData?.status === "REJECTED";
   const isExpired = statusData?.status === "EXPIRED";
   const showVerificationUI = isManualReview || (trxSubmitted && isPending);
   /* Display TrxID: prefer local state, fallback to API response */
@@ -451,24 +452,47 @@ export default function SubscriptionPaymentStatusPage() {
             </p>
           </div>
 
-          /* ══════ FAILED ══════ */
+          /* ══════ FAILED / REJECTED ══════ */
         ) : isFailed ? (
           <div className="bg-white rounded-2xl p-8 shadow-[0_8px_30px_rgba(25,28,26,0.06)] text-center space-y-4 border border-[#ffdad6]/50">
             <div className="w-16 h-16 rounded-full bg-[#ba1a1a]/10 flex items-center justify-center mx-auto">
-              <span className="material-symbols-outlined text-[#ba1a1a] text-4xl" style={{ fontVariationSettings: "'FILL' 1" }}>cancel</span>
+              <span className="material-symbols-outlined text-[#ba1a1a] text-4xl" style={{ fontVariationSettings: "'FILL' 1" }}>
+                {statusData?.status === "REJECTED" ? "block" : "cancel"}
+              </span>
             </div>
-            <h2 className="text-xl font-bold text-[#ba1a1a]">{isBn ? "পেমেন্ট ব্যর্থ হয়েছে" : "Payment Failed"}</h2>
-            <p className="text-sm text-[#404944]">{isBn ? "আপনার পেমেন্ট যাচাই করা যায়নি। আবার চেষ্টা করুন।" : "Your payment could not be verified. Please try again."}</p>
-            <button onClick={handleResubmit} disabled={isSubmitting} className="w-full py-3.5 text-white font-bold text-base rounded-full shadow-lg disabled:opacity-40 flex items-center justify-center gap-2" style={theme ? { background: theme.gradient } : { background: "linear-gradient(135deg, #003727, #00503a)" }}>
-              {isSubmitting ? (
-                <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-              ) : (
-                <>
-                  <span className="material-symbols-outlined text-lg">refresh</span>
-                  <span>{isBn ? "আবার চেষ্টা করুন" : "Try Again"}</span>
-                </>
-              )}
-            </button>
+            <h2 className="text-xl font-bold text-[#ba1a1a]">
+              {statusData?.status === "REJECTED"
+                ? (isBn ? "পেমেন্ট প্রত্যাখ্যাত হয়েছে" : "Payment Rejected")
+                : (isBn ? "পেমেন্ট ব্যর্থ হয়েছে" : "Payment Failed")}
+            </h2>
+            <p className="text-sm text-[#404944]">
+              {statusData?.status === "REJECTED"
+                ? (isBn ? "আপনার পেমেন্ট যাচাই করা যায়নি।" : "Your payment could not be verified.")
+                : (isBn ? "আপনার পেমেন্ট যাচাই করা যায়নি। আবার চেষ্টা করুন।" : "Your payment could not be verified. Please try again.")}
+            </p>
+            {statusData?.status === "REJECTED" && statusData.rejectionReason && (
+              <div className="rounded-xl bg-[#ffdad6]/30 px-4 py-3 text-left space-y-1">
+                <p className="text-xs font-semibold text-[#ba1a1a]">{isBn ? "কারণ:" : "Reason:"}</p>
+                <p className="text-sm text-[#404944]">{statusData.rejectionReason}</p>
+              </div>
+            )}
+            {statusData?.status === "REJECTED" ? (
+              <button onClick={() => router.push("/subscription/upgrade")} className="w-full py-3.5 text-white font-bold text-base rounded-full shadow-lg flex items-center justify-center gap-2" style={{ background: "linear-gradient(135deg, #003727, #00503a)" }}>
+                <span className="material-symbols-outlined text-lg">payments</span>
+                <span>{isBn ? "নতুন পেমেন্ট শুরু করুন" : "Start New Payment"}</span>
+              </button>
+            ) : (
+              <button onClick={handleResubmit} disabled={isSubmitting} className="w-full py-3.5 text-white font-bold text-base rounded-full shadow-lg disabled:opacity-40 flex items-center justify-center gap-2" style={theme ? { background: theme.gradient } : { background: "linear-gradient(135deg, #003727, #00503a)" }}>
+                {isSubmitting ? (
+                  <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                ) : (
+                  <>
+                    <span className="material-symbols-outlined text-lg">refresh</span>
+                    <span>{isBn ? "আবার চেষ্টা করুন" : "Try Again"}</span>
+                  </>
+                )}
+              </button>
+            )}
             <button onClick={() => router.push("/subscription/upgrade")} className="w-full py-2.5 text-sm font-medium text-[#404944] hover:text-[#191c1a] transition-colors">
               {isBn ? "← ফিরে যান" : "← Go Back"}
             </button>
@@ -482,8 +506,8 @@ export default function SubscriptionPaymentStatusPage() {
             </div>
             <h2 className="text-xl font-bold text-[#191c1a]">{isBn ? "সেশন মেয়াদোত্তীর্ণ" : "Session Expired"}</h2>
             <p className="text-sm text-[#404944]">{isBn ? "পেমেন্ট সেশনের সময় শেষ হয়ে গেছে। নতুন করে শুরু করুন।" : "The payment session has expired. Please start over."}</p>
-            <button onClick={() => router.push("/subscription/upgrade")} className="w-full py-3.5 text-white font-bold text-base rounded-full shadow-lg" style={{ background: "linear-gradient(135deg, #003727, #00503a)" }}>
-              {isBn ? "নতুন পেমেন্ট শুরু করুন" : "Start New Payment"}
+            <button onClick={() => router.push("/")} className="w-full py-3.5 text-white font-bold text-base rounded-full shadow-lg" style={{ background: "linear-gradient(135deg, #003727, #00503a)" }}>
+              {isBn ? "হোম পেজে যান" : "Go to Home"}
             </button>
           </div>
 

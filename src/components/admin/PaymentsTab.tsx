@@ -14,6 +14,7 @@ import type {
 import {
     getManualReviewQueue,
     getFraudFlaggedPayments,
+    getRejectedPayments,
     verifyPaymentIntent,
     rejectPaymentIntent,
     getAllDevices,
@@ -28,7 +29,7 @@ import {
     createBootstrap,
 } from "@/lib/paymentAdminApi";
 
-type InternalTab = "review" | "devices" | "smsPool" | "mfsNumbers" | "settings";
+type InternalTab = "review" | "rejected" | "devices" | "smsPool" | "mfsNumbers" | "settings";
 
 function MfsBadge({ method }: { method: string }) {
     const config: Record<string, { bg: string; text: string; label: string; initial: string }> = {
@@ -106,6 +107,7 @@ export default function PaymentsTab() {
     const [activeInternalTab, setActiveInternalTab] = useState<InternalTab>("review");
     const [reviewQueue, setReviewQueue] = useState<ManualReviewPaymentItem[]>([]);
     const [fraudFlags, setFraudFlags] = useState<ManualReviewPaymentItem[]>([]);
+    const [rejectedPayments, setRejectedPayments] = useState<ManualReviewPaymentItem[]>([]);
     const [devices, setDevices] = useState<AdminDevice[]>([]);
     const [smsPool, setSmsPool] = useState<SmsReportItem[]>([]);
     const [summary, setSummary] = useState<PaymentSummary | null>(null);
@@ -143,9 +145,10 @@ export default function PaymentsTab() {
         setLoading(true);
         setError(null);
         try {
-            const [review, fraud, dev, sms, sum, mfs, settings] = await Promise.all([
+            const [review, fraud, rejected, dev, sms, sum, mfs, settings] = await Promise.all([
                 getManualReviewQueue(),
                 getFraudFlaggedPayments(),
+                getRejectedPayments(),
                 getAllDevices(),
                 getUnmatchedSmsPool(),
                 getPaymentSummary(),
@@ -154,6 +157,7 @@ export default function PaymentsTab() {
             ]);
             setReviewQueue(review);
             setFraudFlags(fraud);
+            setRejectedPayments(rejected);
             setDevices(dev);
             setSmsPool(sms);
             setSummary(sum);
@@ -270,8 +274,10 @@ export default function PaymentsTab() {
     const pendingVolume = reviewQueue.reduce((s, i) => s + i.amount, 0);
     const highRiskCount = reviewQueue.filter((i) => i.fraudFlag).length;
 
-    const internalTabs: { key: InternalTab; label: string; icon: string }[] = [
+    const rejectedCount = rejectedPayments.length;
+    const internalTabs: { key: InternalTab; label: string; icon: string; badge?: number }[] = [
         { key: "review", label: t("tabs.review"), icon: "rate_review" },
+        { key: "rejected", label: t("tabs.rejected"), icon: "block", badge: rejectedCount },
         { key: "devices", label: t("tabs.devices"), icon: "screenshot_monitor" },
         { key: "smsPool", label: t("tabs.smsPool"), icon: "sms_failed" },
         { key: "mfsNumbers", label: t("tabs.mfsNumbers"), icon: "verified_user" },
@@ -337,6 +343,7 @@ export default function PaymentsTab() {
                     >
                         <span className="material-symbols-outlined text-lg" style={activeInternalTab === tab.key ? { fontVariationSettings: "'FILL' 1" } : undefined}>{tab.icon}</span>
                         {tab.label}
+                        {tab.badge ? <span className="ml-1 rounded-full bg-error/20 text-error px-2 py-0.5 text-[10px] font-bold">{tab.badge}</span> : null}
                     </button>
                 ))}
             </nav>
@@ -380,11 +387,23 @@ export default function PaymentsTab() {
                                                             )}
                                                         </div>
                                                         <div className="font-body text-xs text-on-surface-variant">{item.userPhone}</div>
+                                                        {item.planName && (
+                                                            <div className="font-label text-xs text-primary mt-0.5 flex items-center gap-1">
+                                                                <span className="material-symbols-outlined text-[12px]">workspace_premium</span>
+                                                                {item.planName} {item.billingCycle === "ANNUAL" ? "(Annual)" : ""}
+                                                            </div>
+                                                        )}
                                                     </div>
                                                 </div>
                                                 <div className="flex flex-col sm:items-end gap-1">
                                                     <div className="font-headline font-bold text-lg text-primary">৳ {item.amount.toLocaleString()}</div>
                                                     <div className="font-label text-xs text-on-surface-variant tracking-wider">TRX: {item.submittedTrxId}</div>
+                                                    {item.couponCode && (
+                                                        <div className="font-label text-xs text-secondary flex items-center gap-1 mt-0.5">
+                                                            <span className="material-symbols-outlined text-[12px]">sell</span>
+                                                            {item.couponCode} {item.discountAmount != null && <span>(-৳{item.discountAmount.toLocaleString()})</span>}
+                                                        </div>
+                                                    )}
                                                 </div>
                                                 <div className="flex items-center gap-2 mt-2 sm:mt-0">
                                                     <MfsBadge method={item.mfsMethod} />
@@ -464,6 +483,100 @@ export default function PaymentsTab() {
                                     </div>
                                 </div>
                             </section>
+                        </div>
+                    )}
+
+                    {/* ═══════════════════════════════════════════════════ */}
+                    {/* REJECTED TAB — Audit Trail for Rejected Payments */}
+                    {/* ═══════════════════════════════════════════════════ */}
+                    {activeInternalTab === "rejected" && (
+                        <div className="space-y-6">
+                            <div className="bg-surface-container-lowest rounded-3xl p-8 shadow-[0_4px_40px_rgb(0,0,0,0.02)]">
+                                <div className="flex justify-between items-center mb-8">
+                                    <div>
+                                        <h2 className="font-headline text-2xl font-bold text-error">{t("rejected.title")}</h2>
+                                        <p className="text-sm text-on-surface-variant mt-1">{t("rejected.subtitle")}</p>
+                                    </div>
+                                    <span className="bg-error-container text-on-error-container px-4 py-1.5 rounded-full font-label text-sm font-bold">{rejectedPayments.length} {t("rejected.countLabel")}</span>
+                                </div>
+
+                                {rejectedPayments.length === 0 ? (
+                                    <div className="py-16 text-center">
+                                        <span className="material-symbols-outlined text-6xl text-on-surface-variant/30 mb-4 block">verified</span>
+                                        <p className="text-on-surface-variant font-medium">{t("rejected.noRejected")}</p>
+                                    </div>
+                                ) : (
+                                    <div className="space-y-4">
+                                        {rejectedPayments.map((item) => (
+                                            <div key={item.paymentIntentId} className="group p-5 rounded-2xl bg-surface-container-low hover:bg-surface-container transition-colors relative overflow-hidden">
+                                                <div className="absolute left-0 top-0 bottom-0 w-1 bg-error" />
+                                                <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 pl-2">
+                                                    {/* Left: User + Payment Info */}
+                                                    <div className="flex items-center gap-4 flex-1 min-w-0">
+                                                        <AvatarInitials name={item.userName} />
+                                                        <div className="min-w-0">
+                                                            <div className="font-headline font-bold text-on-surface flex items-center gap-2">
+                                                                {item.userName}
+                                                                <span className="bg-error/10 text-error text-[10px] px-2 py-0.5 rounded-full font-label uppercase tracking-widest">{t("status.REJECTED")}</span>
+                                                            </div>
+                                                            <div className="font-body text-xs text-on-surface-variant">{item.userPhone}</div>
+                                                            <div className="font-label text-xs text-on-surface-variant tracking-wider mt-0.5">TRX: {item.submittedTrxId}</div>
+                                                            {item.planName && (
+                                                                <div className="font-label text-xs text-primary mt-0.5 flex items-center gap-1">
+                                                                    <span className="material-symbols-outlined text-[12px]">workspace_premium</span>
+                                                                    {item.planName} {item.billingCycle === "ANNUAL" ? "(Annual)" : ""}
+                                                                </div>
+                                                            )}
+                                                        </div>
+                                                    </div>
+
+                                                    {/* Middle: Amount + MFS */}
+                                                    <div className="flex items-center gap-3">
+                                                        <div className="flex flex-col items-end gap-0.5">
+                                                            <div className="font-headline font-bold text-lg text-on-surface">৳ {item.amount.toLocaleString()}</div>
+                                                            {item.couponCode && (
+                                                                <div className="font-label text-xs text-secondary flex items-center gap-1">
+                                                                    <span className="material-symbols-outlined text-[12px]">sell</span>
+                                                                    {item.couponCode} {item.discountAmount != null && <span>(-৳{item.discountAmount.toLocaleString()})</span>}
+                                                                </div>
+                                                            )}
+                                                        </div>
+                                                        <MfsBadge method={item.mfsMethod} />
+                                                    </div>
+
+                                                    {/* Right: Audit Trail */}
+                                                    <div className="bg-surface-container-high/50 rounded-xl p-4 min-w-[260px]">
+                                                        <p className="text-[10px] font-bold text-on-surface-variant uppercase tracking-wider mb-2">{t("rejected.auditTrail")}</p>
+                                                        <div className="space-y-2">
+                                                            <div className="flex items-start gap-2">
+                                                                <span className="material-symbols-outlined text-[16px] text-error mt-0.5">block</span>
+                                                                <div>
+                                                                    <p className="text-xs font-semibold text-on-surface">{t("rejected.reasonLabel")}</p>
+                                                                    <p className="text-xs text-on-surface-variant">{item.rejectionReason || "—"}</p>
+                                                                </div>
+                                                            </div>
+                                                            <div className="flex items-start gap-2">
+                                                                <span className="material-symbols-outlined text-[16px] text-primary mt-0.5">person</span>
+                                                                <div>
+                                                                    <p className="text-xs font-semibold text-on-surface">{t("rejected.reviewerLabel")}</p>
+                                                                    <p className="text-xs text-on-surface-variant">{item.reviewedByName || "—"}</p>
+                                                                </div>
+                                                            </div>
+                                                            <div className="flex items-start gap-2">
+                                                                <span className="material-symbols-outlined text-[16px] text-on-surface-variant mt-0.5">schedule</span>
+                                                                <div>
+                                                                    <p className="text-xs font-semibold text-on-surface">{t("rejected.rejectedAtLabel")}</p>
+                                                                    <p className="text-xs text-on-surface-variant">{item.reviewedAt ? new Date(item.reviewedAt).toLocaleString() : "—"}</p>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                )}
+                            </div>
                         </div>
                     )}
 

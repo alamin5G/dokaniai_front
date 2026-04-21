@@ -23,6 +23,13 @@ export interface ManualReviewPaymentItem {
     expiresAt: string;
     userName: string;
     userPhone: string;
+    rejectionReason: string | null;
+    reviewedByName: string | null;
+    reviewedAt: string | null;
+    planName: string | null;
+    billingCycle: string | null;
+    couponCode: string | null;
+    discountAmount: number | null;
 }
 
 // ─── Admin Device ──────────────────────────────────────────────────────────
@@ -62,6 +69,7 @@ export interface PaymentSummary {
     totalManualReview: number;
     totalFailed: number;
     totalFraudFlags: number;
+    totalRejected: number;
     autoVerifiedRate: number;
     todayCompleted: number;
     todayRevenue: number;

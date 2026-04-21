@@ -1104,6 +1104,7 @@
         "manualReview": "Manual review",
         "failed": "Failed",
         "expired": "Expired",
+        "rejected": "Rejected",
         "pending": "Pending"
       },
       "errors": {
@@ -2874,6 +2875,7 @@
         "tabs": {
           "review": "Review Queue",
           "fraud": "Fraud Flags",
+          "rejected": "Rejected",
           "devices": "Devices",
           "smsPool": "SMS Pool",
           "mfsNumbers": "MFS Numbers",
@@ -2901,6 +2903,16 @@
           "aiInsightDesc": "Pattern detected: multiple incoming transactions from similar geographical coordinates within the last 10 minutes. Recommended action: Elevate risk threshold for MFS provider bKash temporarily.",
           "applyThreshold": "Apply Threshold",
           "dismiss": "Dismiss"
+        },
+        "rejected": {
+          "title": "Rejected Payments",
+          "subtitle": "Audit trail of all admin-rejected payments",
+          "countLabel": "total rejections",
+          "noRejected": "No rejected payments — all clear!",
+          "auditTrail": "Audit Trail",
+          "reasonLabel": "Rejection Reason",
+          "reviewerLabel": "Rejected By",
+          "rejectedAtLabel": "Rejected At"
         },
         "devices": {
           "scanHint": "Scan QR to link",
@@ -3002,6 +3014,7 @@
           "MANUAL_REVIEW": "Manual Review",
           "FAILED": "Failed",
           "EXPIRED": "Expired",
+          "REJECTED": "Rejected",
           "MATCHED": "Matched",
           "UNMATCHED": "Unmatched",
           "IGNORED": "Ignored"

@@ -40,6 +40,17 @@ export async function getFraudFlaggedPayments(): Promise<ManualReviewPaymentItem
     }
 }
 
+// ─── Rejected Payments ─────────────────────────────────────────────────────
+
+export async function getRejectedPayments(): Promise<ManualReviewPaymentItem[]> {
+    try {
+        const { data } = await apiClient.get("/payments/admin/rejected");
+        return data.data;
+    } catch (error) {
+        throw new Error(getApiErrorMessage(error, "Failed to load rejected payments."));
+    }
+}
+
 // ─── Verify Payment Intent ─────────────────────────────────────────────────
 
 export async function verifyPaymentIntent(
