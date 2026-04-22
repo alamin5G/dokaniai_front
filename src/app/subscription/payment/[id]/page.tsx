@@ -96,6 +96,15 @@ function validateTrxId(trxId: string, mfsMethod: MfsType): string | null {
   }
 }
 
+function getTrxMaxLength(mfsMethod: MfsType | undefined): number {
+  switch (mfsMethod) {
+    case "BKASH": return 10;
+    case "NAGAD": return 8;
+    case "ROCKET": return 10;
+    default: return 10;
+  }
+}
+
 function formatPrice(value: number, locale: string): string {
   return new Intl.NumberFormat(locale.startsWith("bn") ? "bn-BD" : "en-US").format(value);
 }
@@ -611,10 +620,13 @@ export default function SubscriptionPaymentStatusPage() {
                       <input
                         value={trxId}
                         onChange={(e) => {
-                          const val = e.target.value.toUpperCase();
+                          const maxLen = getTrxMaxLength(checkoutData?.mfsMethod);
+                          const raw = e.target.value.toUpperCase();
+                          const val = raw.length > maxLen ? raw.slice(0, maxLen) : raw;
                           setTrxId(val);
                           setTrxError(null);
                         }}
+                        maxLength={getTrxMaxLength(checkoutData?.mfsMethod)}
                         placeholder={isBn ? theme?.trxPlaceholder ?? "যেমন: TXN123456789" : theme?.trxHint ?? "e.g. TXN123456789"}
                         className="w-full bg-transparent border-none focus:ring-0 focus:outline-none text-[#191c1a] text-base font-semibold placeholder:text-[#707974] placeholder:font-normal mt-0.5"
                       />

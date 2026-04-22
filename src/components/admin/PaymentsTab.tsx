@@ -96,11 +96,10 @@ function VerificationMethodBadge({ method }: { method: PaymentVerificationMethod
     if (!method) return null;
     const isAuto = method === "AUTO";
     return (
-        <span className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider ${
-            isAuto
+        <span className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider ${isAuto
                 ? "bg-emerald-100 text-emerald-700"
                 : "bg-blue-100 text-blue-700"
-        }`}>
+            }`}>
             <span className="material-symbols-outlined text-[12px]">{isAuto ? "bolt" : "person_check"}</span>
             {isAuto ? "Auto-verified" : "Manual"}
         </span>
@@ -580,7 +579,7 @@ export default function PaymentsTab() {
                                                         <div className="space-y-1">
                                                             <div className="flex items-center gap-2">
                                                                 <span className="material-symbols-outlined text-[16px] text-primary mt-0.5">check_circle</span>
-                                                                <p className="text-xs text-on-surface-variant">{t("approved.verifiedAt")} {item.reviewedAt ? new Date(item.reviewedAt).toLocaleString() : "—"}</p>
+                                                                <p className="text-xs text-on-surface-variant">{t("approved.verifiedAt")} {item.verifiedAt ? new Date(item.verifiedAt).toLocaleString() : item.reviewedAt ? new Date(item.reviewedAt).toLocaleString() : "—"}</p>
                                                             </div>
                                                             {item.reviewedByName && (
                                                                 <div className="flex items-center gap-2">

@@ -28,6 +28,7 @@ export interface ManualReviewPaymentItem {
     rejectionReason: string | null;
     reviewedByName: string | null;
     reviewedAt: string | null;
+    verifiedAt: string | null;
     planName: string | null;
     billingCycle: string | null;
     couponCode: string | null;
