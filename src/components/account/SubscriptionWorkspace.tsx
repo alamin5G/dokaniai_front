@@ -7,7 +7,9 @@ import {
   getCurrentSubscription,
   getPaymentIntentStatus,
   getPlanLimits,
+  getPublicCoupons,
   getReferralStatus,
+  getUpgradeProration,
   initializePaymentIntent,
   invalidateCurrentSubscriptionCache,
   resubmitPaymentIntent,
@@ -18,6 +20,7 @@ import {
 import apiClient from "@/lib/api";
 import type {
   AppliedCoupon,
+  UpgradeProrationResponse,
   DowngradeValidation,
   MfsType,
   PaymentInitializeResponse,
@@ -25,10 +28,12 @@ import type {
   PaymentIntentStatusResponse,
   Plan,
   PlanLimits,
+  PublicCoupon,
   ReferralStatus,
   Subscription,
   SubscriptionStatus,
 } from "@/types/subscription";
+import Link from "next/link";
 import { useLocale } from "next-intl";
 import { useCallback, useEffect, useMemo, useState } from "react";
 
@@ -192,6 +197,10 @@ export default function SubscriptionPage() {
   const [countdown, setCountdown] = useState<number | null>(null);
   const [downgradeValidation, setDowngradeValidation] = useState<DowngradeValidation | null>(null);
   const [downgradeLoading, setDowngradeLoading] = useState(false);
+  const [proration, setProration] = useState<UpgradeProrationResponse | null>(null);
+  const [prorationLoading, setProrationLoading] = useState(false);
+  const [publicCoupons, setPublicCoupons] = useState<PublicCoupon[]>([]);
+  const [referralCopied, setReferralCopied] = useState(false);
 
   /* Derived */
   const selectedPlan = useMemo(() => plans.find((p) => p.id === selectedPlanId) ?? null, [plans, selectedPlanId]);
@@ -269,6 +278,11 @@ export default function SubscriptionPage() {
     };
   }, [isBn]);
 
+  /* ── Fetch public coupons for plan badges ─────────────────── */
+  useEffect(() => {
+    getPublicCoupons().then(setPublicCoupons).catch(() => { });
+  }, []);
+
   /* ── Payment countdown timer ──────────────────────────────── */
   useEffect(() => {
     const expiry = paymentStatus?.expiresAt || paymentIntent?.expiresAt;
@@ -310,6 +324,32 @@ export default function SubscriptionPage() {
     const intervalId = window.setInterval(() => void refreshPaymentStatus(), 6000);
     return () => window.clearInterval(intervalId);
   }, [paymentIntent, paymentStatus, refreshPaymentStatus]);
+
+  /* ── Upgrade proration fetch ──────────────────────────────── */
+  useEffect(() => {
+    if (!selectedPlan || !currentSubscription || !currentPlan) {
+      setProration(null);
+      return;
+    }
+    // Only fetch proration when selecting a higher-tier plan (upgrade)
+    if (selectedPlan.tierLevel <= currentPlan.tierLevel) {
+      setProration(null);
+      return;
+    }
+    let cancelled = false;
+    setProrationLoading(true);
+    getUpgradeProration(selectedPlan.id)
+      .then((data) => {
+        if (!cancelled) setProration(data);
+      })
+      .catch(() => {
+        if (!cancelled) setProration(null);
+      })
+      .finally(() => {
+        if (!cancelled) setProrationLoading(false);
+      });
+    return () => { cancelled = true; };
+  }, [selectedPlan, currentSubscription, currentPlan]);
 
   /* ── Handlers ─────────────────────────────────────────────── */
   const handleApplyCoupon = async () => {
@@ -688,6 +728,27 @@ export default function SubscriptionPage() {
                       </span>
                     )}
 
+                    {/* Public coupon badge */}
+                    {(() => {
+                      const coupon = publicCoupons.find(c =>
+                        !c.applicablePlans || c.applicablePlans.length === 0 || c.applicablePlans.includes(plan.id)
+                      );
+                      if (!coupon) return null;
+                      const label = isBn ? (coupon.displayLabelBn || coupon.code) : (coupon.displayLabelEn || coupon.code);
+                      const discount = coupon.type === "PERCENTAGE"
+                        ? `${coupon.value}%`
+                        : coupon.type === "FIXED_AMOUNT"
+                          ? `৳${coupon.value}`
+                          : `+${coupon.value}d`;
+                      return (
+                        <div className="mt-2 flex items-center gap-1.5 rounded-lg bg-amber-50 border border-amber-200 px-2 py-1">
+                          <span className="material-symbols-outlined text-amber-600 text-[14px]">sell</span>
+                          <span className="text-[11px] font-semibold text-amber-700">{label}</span>
+                          <span className="text-[11px] font-bold text-amber-900">−{discount}</span>
+                        </div>
+                      );
+                    })()}
+
                     {/* Current plan indicator */}
                     {isCurrentPlan && (
                       <div className="flex items-center gap-1 mb-2">
@@ -758,6 +819,83 @@ export default function SubscriptionPage() {
               })}
             </div>
           </section>
+
+          {/* ══════════════════════════════════════════════════════
+              SECTION 2.5: Upgrade Proration Breakdown
+              ══════════════════════════════════════════════════════ */}
+          {proration && proration.isUpgrade && (
+            <section className="rounded-[1.5rem] border border-primary/20 bg-primary/5 p-5 space-y-3">
+              <div className="flex items-center gap-2">
+                <span className="material-symbols-outlined text-primary text-[18px]">trending_up</span>
+                <h2 className="text-base font-bold text-primary">
+                  {isBn ? "আপগ্রেড ব্রেকডাউন" : "Upgrade Breakdown"}
+                </h2>
+              </div>
+
+              {prorationLoading ? (
+                <div className="flex items-center gap-2 text-xs text-on-surface-variant">
+                  <span className="material-symbols-outlined text-[16px] animate-spin">progress_activity</span>
+                  {isBn ? "হিসাব করা হচ্ছে..." : "Calculating..."}
+                </div>
+              ) : (
+                <div className="space-y-2 text-sm">
+                  {/* Current plan credit */}
+                  <div className="flex justify-between items-center">
+                    <span className="text-on-surface-variant">
+                      {proration.currentPlanName} ({isBn ? "বর্তমান" : "current"})
+                    </span>
+                    <span className="text-on-surface font-medium">
+                      ৳{formatPrice(proration.currentPlanPrice, locale)}
+                    </span>
+                  </div>
+
+                  {/* Remaining days */}
+                  <div className="flex justify-between items-center">
+                    <span className="text-on-surface-variant">
+                      {isBn
+                        ? `বাকি দিন (${proration.remainingDays}/${proration.totalDaysInPeriod})`
+                        : `Days remaining (${proration.remainingDays}/${proration.totalDaysInPeriod})`}
+                    </span>
+                    <span className="text-emerald-600 font-semibold">
+                      −৳{formatPrice(proration.proratedCredit, locale)}
+                    </span>
+                  </div>
+
+                  {/* New plan price */}
+                  <div className="flex justify-between items-center">
+                    <span className="text-on-surface-variant">
+                      {proration.newPlanName}
+                    </span>
+                    <span className="text-on-surface font-medium">
+                      ৳{formatPrice(proration.newPlanPrice, locale)}
+                    </span>
+                  </div>
+
+                  {/* Divider */}
+                  <div className="border-t border-primary/20" />
+
+                  {/* Net upgrade amount */}
+                  <div className="flex justify-between items-center">
+                    <span className="font-bold text-on-surface">
+                      {isBn ? "আপগ্রেড খরচ" : "Upgrade cost"}
+                    </span>
+                    <span className="text-lg font-black text-primary">
+                      ৳{formatPrice(proration.upgradeAmount, locale)}
+                    </span>
+                  </div>
+
+                  {/* Hint */}
+                  {proration.proratedCredit > 0 && (
+                    <p className="text-[11px] text-on-surface-variant">
+                      {isBn
+                        ? `আপনার বর্তমান প্ল্যানের বাকি ${proration.remainingDays} দিনের ক্রেডিট ৳${formatPrice(proration.proratedCredit, locale)} কেটে নেওয়া হবে।`
+                        : `Your remaining ${proration.remainingDays} days credit of ৳${formatPrice(proration.proratedCredit, locale)} will be deducted from the new plan price.`}
+                    </p>
+                  )}
+                </div>
+              )}
+            </section>
+          )}
 
           {/* ══════════════════════════════════════════════════════
               SECTION 3: Coupon & Pricing
@@ -1092,9 +1230,38 @@ export default function SubscriptionPage() {
                   <p className="text-[10px] font-bold text-on-surface-variant uppercase tracking-wider">
                     {isBn ? "আপনার রেফারেল কোড" : "Your Referral Code"}
                   </p>
-                  <p className="text-sm font-black text-primary font-mono tracking-widest mt-1">
-                    {referralStatus.referralCode ?? "—"}
-                  </p>
+                  <div className="flex items-center gap-2 mt-1">
+                    <p className="text-sm font-black text-primary font-mono tracking-widest">
+                      {referralStatus.referralCode ?? "—"}
+                    </p>
+                    {referralStatus.referralCode && (
+                      <button
+                        type="button"
+                        onClick={async () => {
+                          try {
+                            await navigator.clipboard.writeText(referralStatus.referralCode!);
+                          } catch {
+                            const ta = document.createElement("textarea");
+                            ta.value = referralStatus.referralCode!;
+                            document.body.appendChild(ta);
+                            ta.select();
+                            document.execCommand("copy");
+                            document.body.removeChild(ta);
+                          }
+                          setReferralCopied(true);
+                          setTimeout(() => setReferralCopied(false), 2000);
+                        }}
+                        className="inline-flex items-center gap-1 rounded-lg px-2 py-1 text-[10px] font-semibold transition bg-primary/10 text-primary hover:bg-primary/20"
+                      >
+                        <span className="material-symbols-outlined text-sm">
+                          {referralCopied ? "check" : "content_copy"}
+                        </span>
+                        {referralCopied
+                          ? (isBn ? "কপি হয়েছে" : "Copied")
+                          : (isBn ? "কপি" : "Copy")}
+                      </button>
+                    )}
+                  </div>
                 </div>
 
                 {/* Total referrals */}
@@ -1136,6 +1303,15 @@ export default function SubscriptionPage() {
                     : `Earn ${referralStatus.rewardDays} free subscription days for each successful referral.`}
                 </p>
               )}
+
+              {/* Share & earn — link to full referral page */}
+              <Link
+                href="/account/referral"
+                className="inline-flex items-center gap-2 rounded-xl bg-primary px-5 py-2.5 text-sm font-semibold text-on-primary transition hover:bg-primary/90"
+              >
+                <span className="material-symbols-outlined text-lg">share</span>
+                {isBn ? "শেয়ার করে আয় করুন" : "Share & Earn"}
+              </Link>
             </section>
           )}
 

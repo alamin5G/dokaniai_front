@@ -121,3 +121,27 @@ export interface ReferralStatus {
   referredDiscountType: string | null;
   referredDiscountValue: number | null;
 }
+
+export interface UpgradeProrationResponse {
+  isUpgrade: boolean;
+  currentPlanName: string;
+  currentPlanPrice: number;
+  newPlanName: string;
+  newPlanPrice: number;
+  totalDaysInPeriod: number;
+  remainingDays: number;
+  proratedCredit: number;
+  upgradeAmount: number;
+}
+
+export interface PublicCoupon {
+  id: string;
+  code: string;
+  type: "PERCENTAGE" | "FIXED_AMOUNT" | "FREE_DAYS";
+  value: number;
+  displayLabelBn: string | null;
+  displayLabelEn: string | null;
+  applicablePlans: string[] | null;
+  validUntil: string | null;
+  description: string | null;
+}

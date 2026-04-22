@@ -10,8 +10,10 @@ import type {
   PaymentIntentStatusResponse,
   Plan,
   PlanLimits,
+  PublicCoupon,
   ReferralStatus,
   Subscription,
+  UpgradeProrationResponse,
 } from "@/types/subscription";
 
 interface ApiSuccess<T> {
@@ -225,4 +227,21 @@ export async function acceptTrial2(): Promise<void> {
 
 export async function clearPendingPlan(): Promise<void> {
   await apiClient.delete("/subscriptions/pending-plan");
+}
+
+export async function getUpgradeProration(planId: string): Promise<UpgradeProrationResponse> {
+  const response = await apiClient.get<ApiSuccess<UpgradeProrationResponse>>(
+    "/subscriptions/upgrade-proration",
+    { params: { planId } },
+  );
+  return unwrap(response);
+}
+
+export async function getPublicCoupons(): Promise<PublicCoupon[]> {
+  try {
+    const response = await apiClient.get<ApiSuccess<PublicCoupon[]>>("/coupons/public");
+    return unwrap(response);
+  } catch {
+    return [];
+  }
 }
