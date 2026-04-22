@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Ledger Admin - Payment Integrity</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&amp;family=Plus+Jakarta+Sans:wght@400;500;600;700&amp;family=Hind+Siliguri:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "on-primary-container": "#7fc1a5",
+                      "on-tertiary-container": "#f89a90",
+                      "on-secondary-fixed-variant": "#00497d",
+                      "tertiary": "#571a16",
+                      "on-tertiary-fixed": "#3c0605",
+                      "tertiary-fixed-dim": "#ffb4ab",
+                      "surface": "#f7faf6",
+                      "surface-container-lowest": "#ffffff",
+                      "on-secondary": "#ffffff",
+                      "primary-fixed-dim": "#91d4b7",
+                      "primary-fixed": "#adf1d2",
+                      "surface-container-high": "#e6e9e5",
+                      "on-secondary-fixed": "#001d36",
+                      "surface-tint": "#276a52",
+                      "on-primary": "#ffffff",
+                      "on-tertiary-fixed-variant": "#76312b",
+                      "on-tertiary": "#ffffff",
+                      "outline": "#707974",
+                      "secondary-container": "#77b7ff",
+                      "error": "#ba1a1a",
+                      "primary": "#003727",
+                      "outline-variant": "#bfc9c2",
+                      "tertiary-container": "#74302a",
+                      "inverse-on-surface": "#eef2ee",
+                      "on-primary-fixed-variant": "#02513b",
+                      "on-primary-fixed": "#002116",
+                      "surface-bright": "#f7faf6",
+                      "on-surface": "#181c1a",
+                      "inverse-surface": "#2d312f",
+                      "secondary-fixed-dim": "#9fcaff",
+                      "surface-variant": "#e0e3df",
+                      "surface-container-low": "#f1f4f0",
+                      "error-container": "#ffdad6",
+                      "surface-dim": "#d8dbd7",
+                      "secondary": "#0061a4",
+                      "on-surface-variant": "#404944",
+                      "on-error": "#ffffff",
+                      "on-error-container": "#93000a",
+                      "inverse-primary": "#91d4b7",
+                      "background": "#f7faf6",
+                      "surface-container": "#ecefeb",
+                      "on-secondary-container": "#00477b",
+                      "surface-container-highest": "#e0e3df",
+                      "primary-container": "#00503a",
+                      "tertiary-fixed": "#ffdad6",
+                      "secondary-fixed": "#d1e4ff",
+                      "on-background": "#181c1a"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.125rem",
+                      "lg": "0.25rem",
+                      "xl": "0.5rem",
+                      "full": "0.75rem"
+              },
+              "spacing": {},
+              "fontFamily": {
+                      "headline": [
+                              "Manrope"
+                      ],
+                      "body": [
+                              "Plus Jakarta Sans"
+                      ],
+                      "label": [
+                              "Plus Jakarta Sans"
+                      ]
+              }
+      },
+          },
+        }
+      </script>
+</head>
+<body class="bg-surface text-on-surface font-body antialiased selection:bg-primary-fixed selection:text-on-primary-fixed">
+<div class="flex h-screen overflow-hidden">
+<!-- SideNavBar Shared Component -->
+<nav class="hidden md:flex bg-[#f7faf6] dark:bg-[#0a0c0b] font-manrope font-semibold text-sm h-screen w-72 flex-col border-r-0 fixed left-0 top-0 py-8 gap-y-2 z-40 transition-all ease-out duration-200">
+<div class="px-8 mb-8">
+<div class="text-xl font-bold text-[#003727] dark:text-[#00f2ad]">Ledger Admin</div>
+<div class="text-slate-500 text-xs mt-1">Payment Integrity</div>
+</div>
+<div class="flex-1 flex flex-col gap-y-2 pr-4">
+<a class="flex items-center gap-4 px-8 py-3 bg-[#ebf2ea] dark:bg-[#1a2e22] text-[#003727] dark:text-[#00f2ad] rounded-r-full" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">rate_review</span>
+                    Manual Review
+                </a>
+<a class="flex items-center gap-4 px-8 py-3 text-slate-600 dark:text-slate-400 hover:translate-x-1 transition-transform hover:bg-[#f0f4f0] dark:hover:bg-[#14201a] rounded-r-full" href="#">
+<span class="material-symbols-outlined">sms_failed</span>
+                    SMS Pool
+                </a>
+<a class="flex items-center gap-4 px-8 py-3 text-slate-600 dark:text-slate-400 hover:translate-x-1 transition-transform hover:bg-[#f0f4f0] dark:hover:bg-[#14201a] rounded-r-full" href="#">
+<span class="material-symbols-outlined">screenshot_monitor</span>
+                    Devices
+                </a>
+<a class="flex items-center gap-4 px-8 py-3 text-slate-600 dark:text-slate-400 hover:translate-x-1 transition-transform hover:bg-[#f0f4f0] dark:hover:bg-[#14201a] rounded-r-full" href="#">
+<span class="material-symbols-outlined">verified_user</span>
+                    MFS Approval
+                </a>
+</div>
+<div class="px-4 mt-auto mb-6">
+<button class="w-full py-3 bg-gradient-to-r from-primary to-primary-container text-on-primary rounded-full font-headline font-semibold shadow-sm hover:shadow-md transition-shadow">Generate QR</button>
+</div>
+<div class="flex flex-col gap-y-2 pr-4 mt-4 border-t border-surface-container-highest pt-4">
+<a class="flex items-center gap-4 px-8 py-2 text-slate-600 dark:text-slate-400 hover:translate-x-1 transition-transform hover:bg-[#f0f4f0] dark:hover:bg-[#14201a] rounded-r-full" href="#">
+<span class="material-symbols-outlined">help</span>
+                    Support
+                </a>
+<a class="flex items-center gap-4 px-8 py-2 text-slate-600 dark:text-slate-400 hover:translate-x-1 transition-transform hover:bg-[#f0f4f0] dark:hover:bg-[#14201a] rounded-r-full" href="#">
+<span class="material-symbols-outlined">logout</span>
+                    Log Out
+                </a>
+</div>
+</nav>
+<!-- TopNavBar Shared Component (Mobile Priority) -->
+<nav class="md:hidden bg-[#f7faf6] dark:bg-[#0a0c0b] backdrop-blur-xl bg-opacity-80 font-manrope tracking-tight font-bold docked full-width top-0 z-50 flex justify-between items-center px-6 h-20 w-full fixed">
+<div class="flex items-center gap-4">
+<span class="material-symbols-outlined text-primary text-2xl">menu</span>
+<div class="text-2xl font-black text-[#003727] dark:text-[#00f2ad] tracking-tighter">DokaniAI</div>
+</div>
+<div class="flex items-center gap-4 text-primary">
+<span class="material-symbols-outlined scale-98 active:opacity-80 hover:bg-[#ebf2ea] dark:hover:bg-[#1a2e22] transition-all duration-300 p-2 rounded-full">notifications</span>
+<span class="material-symbols-outlined scale-98 active:opacity-80 hover:bg-[#ebf2ea] dark:hover:bg-[#1a2e22] transition-all duration-300 p-2 rounded-full">settings</span>
+<img alt="Admin User Profile" class="w-8 h-8 rounded-full ml-2" data-alt="Admin User Profile Picture" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDYDc_2Ks0mDXsOV9VmSM-g7suGyRTtBg-weRIvJo7fmL1-7OoRxT1MG3n3hkot8DzDPLFGe92RNyWfJD9Mn_ZE0PcctN-FKQ7erTGtWoVuBIwjNFB5SvaqnRyM3N4ax-vSTcrknCnrFk6foXcRzEN-_AmFNrzF5eCVOyOY3cWDlpJw3h3KIlogLRKTTHxrXhbMTTjFIjBHbgKheZvp_B87CH6Ncv8IDYCQyZ_pK5Y616c8ZW3E4myATteaolYpXODyYtYGxNcLuV4"/>
+</div>
+</nav>
+<!-- Main Content Area -->
+<main class="flex-1 ml-0 md:ml-72 mt-20 md:mt-0 p-6 md:p-12 overflow-y-auto bg-surface relative">
+<!-- Page Header -->
+<header class="mb-12 flex justify-between items-end">
+<div>
+<h1 class="font-headline text-4xl font-extrabold text-primary tracking-tight">Manual Review</h1>
+<p class="font-body text-on-surface-variant mt-2 text-lg">72 pending transactions require verification</p>
+</div>
+<div class="hidden lg:flex items-center gap-4 bg-surface-container-low px-4 py-2 rounded-full">
+<span class="material-symbols-outlined text-on-surface-variant">search</span>
+<input class="bg-transparent border-none focus:ring-0 text-sm font-body w-48 text-on-surface placeholder:text-on-surface-variant/50" placeholder="Search TrxID or Phone..." type="text"/>
+</div>
+</header>
+<!-- Bento Grid Layout -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8">
+<!-- KPI Summary (Spans top) -->
+<section class="lg:col-span-12 grid grid-cols-1 md:grid-cols-3 gap-6">
+<!-- KPI Card 1 -->
+<div class="bg-surface-container-lowest p-6 rounded-[1rem] shadow-[0_8px_30px_rgb(0,0,0,0.04)] hover:shadow-[0_8px_40px_rgb(0,0,0,0.08)] transition-all duration-300 flex flex-col justify-between relative overflow-hidden">
+<div class="absolute top-0 right-0 w-32 h-32 bg-primary-fixed/20 rounded-bl-full -mr-10 -mt-10 blur-2xl"></div>
+<div class="text-on-surface-variant font-label text-sm mb-4">Auto-verify Rate</div>
+<div class="font-headline text-4xl font-bold text-primary">94.2%</div>
+<div class="text-primary-container text-xs mt-2 flex items-center gap-1 font-medium">
+<span class="material-symbols-outlined text-sm">trending_up</span> +1.2% from last week
+                        </div>
+</div>
+<!-- KPI Card 2 -->
+<div class="bg-surface-container-lowest p-6 rounded-[1rem] shadow-[0_8px_30px_rgb(0,0,0,0.04)] flex flex-col justify-between">
+<div class="text-on-surface-variant font-label text-sm mb-4">Total Pending Volume</div>
+<div class="font-headline text-4xl font-bold text-on-surface">৳ 42,500</div>
+<div class="text-on-surface-variant text-xs mt-2 font-medium">Across 72 transactions</div>
+</div>
+<!-- KPI Card 3 -->
+<div class="bg-surface-container-lowest p-6 rounded-[1rem] shadow-[0_8px_30px_rgb(0,0,0,0.04)] flex flex-col justify-between relative">
+<div class="absolute left-0 top-0 bottom-0 w-1 bg-error rounded-l-[1rem]"></div>
+<div class="text-on-surface-variant font-label text-sm mb-4 pl-2">High-Risk Flags</div>
+<div class="font-headline text-4xl font-bold text-error pl-2">12</div>
+<div class="text-error text-xs mt-2 pl-2 flex items-center gap-1 font-medium">
+<span class="material-symbols-outlined text-sm">warning</span> Immediate review required
+                        </div>
+</div>
+</section>
+<!-- Review Queue (Main Canvas) -->
+<section class="lg:col-span-8 bg-surface-container-lowest rounded-[1.5rem] p-8 shadow-[0_4px_40px_rgb(0,0,0,0.02)]">
+<div class="flex justify-between items-center mb-8">
+<h2 class="font-headline text-2xl font-bold text-primary">Review Queue</h2>
+<div class="flex gap-2">
+<button class="px-4 py-1.5 rounded-full bg-primary-fixed text-on-primary-fixed font-label text-sm font-semibold">All</button>
+<button class="px-4 py-1.5 rounded-full bg-surface-container-high text-on-surface font-label text-sm hover:bg-surface-container-highest transition-colors">High Risk</button>
+</div>
+</div>
+<div class="space-y-4">
+<!-- Transaction Item 1 -->
+<div class="group bg-surface-container-low hover:bg-surface-container p-5 rounded-xl transition-colors duration-200 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+<div class="flex items-center gap-4">
+<div class="w-10 h-10 rounded-full bg-primary-container text-on-primary flex items-center justify-center font-headline font-bold">
+                                    RA
+                                </div>
+<div>
+<div class="font-headline font-bold text-on-surface">Rahim Ali</div>
+<div class="font-body text-xs text-on-surface-variant">01711-XXXXXX</div>
+</div>
+</div>
+<div class="flex flex-col sm:items-end gap-1">
+<div class="font-headline font-bold text-lg text-primary">৳ 1,500.00</div>
+<div class="font-label text-xs text-on-surface-variant tracking-wider">TRX: 8A2B9C4F</div>
+</div>
+<div class="flex items-center gap-2 mt-2 sm:mt-0">
+<button class="flex-1 sm:flex-none px-6 py-2 bg-gradient-to-r from-primary to-primary-container text-on-primary rounded-full font-label text-sm font-semibold hover:shadow-md transition-all">Verify</button>
+<button class="p-2 text-error hover:bg-error-container rounded-full transition-colors">
+<span class="material-symbols-outlined">block</span>
+</button>
+</div>
+</div>
+<!-- Transaction Item 2 (Flagged) -->
+<div class="group bg-error-container/30 hover:bg-error-container/50 p-5 rounded-xl transition-colors duration-200 flex flex-col sm:flex-row sm:items-center justify-between gap-4 relative overflow-hidden">
+<div class="absolute left-0 top-0 bottom-0 w-1 bg-error"></div>
+<div class="flex items-center gap-4">
+<div class="w-10 h-10 rounded-full bg-surface-container-highest text-on-surface flex items-center justify-center font-headline font-bold">
+                                    SK
+                                </div>
+<div>
+<div class="font-headline font-bold text-on-surface flex items-center gap-2">
+                                        Sumon Khan
+                                        <span class="bg-error text-on-error text-[10px] px-2 py-0.5 rounded-full font-label uppercase tracking-widest">Flagged</span>
+</div>
+<div class="font-body text-xs text-error font-medium">Multiple failed attempts</div>
+</div>
+</div>
+<div class="flex flex-col sm:items-end gap-1">
+<div class="font-headline font-bold text-lg text-on-surface">৳ 12,000.00</div>
+<div class="font-label text-xs text-on-surface-variant tracking-wider">TRX: 9X4Y2Z1W</div>
+</div>
+<div class="flex items-center gap-2 mt-2 sm:mt-0">
+<button class="flex-1 sm:flex-none px-6 py-2 bg-gradient-to-r from-primary to-primary-container text-on-primary rounded-full font-label text-sm font-semibold hover:shadow-md transition-all">Verify</button>
+<button class="p-2 text-error hover:bg-error-container rounded-full transition-colors">
+<span class="material-symbols-outlined">block</span>
+</button>
+</div>
+</div>
+<!-- Transaction Item 3 -->
+<div class="group bg-surface-container-low hover:bg-surface-container p-5 rounded-xl transition-colors duration-200 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+<div class="flex items-center gap-4">
+<div class="w-10 h-10 rounded-full bg-secondary-container text-on-secondary-container flex items-center justify-center font-headline font-bold">
+                                    FH
+                                </div>
+<div>
+<div class="font-headline font-bold text-on-surface">Faria Haque</div>
+<div class="font-body text-xs text-on-surface-variant">01822-XXXXXX</div>
+</div>
+</div>
+<div class="flex flex-col sm:items-end gap-1">
+<div class="font-headline font-bold text-lg text-primary">৳ 500.00</div>
+<div class="font-label text-xs text-on-surface-variant tracking-wider">TRX: 3K9M4P7L</div>
+</div>
+<div class="flex items-center gap-2 mt-2 sm:mt-0">
+<button class="flex-1 sm:flex-none px-6 py-2 bg-gradient-to-r from-primary to-primary-container text-on-primary rounded-full font-label text-sm font-semibold hover:shadow-md transition-all">Verify</button>
+<button class="p-2 text-error hover:bg-error-container rounded-full transition-colors">
+<span class="material-symbols-outlined">block</span>
+</button>
+</div>
+</div>
+</div>
+<button class="w-full mt-6 py-4 text-primary font-label font-semibold hover:bg-surface-container-low rounded-xl transition-colors flex items-center justify-center gap-2">
+                        Load More <span class="material-symbols-outlined text-sm">expand_more</span>
+</button>
+</section>
+<!-- Right Sidebar (Devices & Quick Actions) -->
+<section class="lg:col-span-4 flex flex-col gap-6">
+<!-- Device Health Module -->
+<div class="bg-surface-container-lowest rounded-[1.5rem] p-6 shadow-[0_4px_40px_rgb(0,0,0,0.02)]">
+<div class="flex items-center justify-between mb-6">
+<h3 class="font-headline text-lg font-bold text-on-surface">Companion Devices</h3>
+<span class="material-symbols-outlined text-on-surface-variant">devices</span>
+</div>
+<div class="space-y-4">
+<!-- Device 1 -->
+<div class="bg-surface-container-low p-4 rounded-xl">
+<div class="flex justify-between items-start mb-2">
+<div class="font-headline font-semibold text-sm">Pixel 6a - Pool A</div>
+<div class="flex items-center gap-1 text-primary text-xs font-bold">
+<div class="w-2 h-2 rounded-full bg-primary"></div> Online
+                                    </div>
+</div>
+<div class="flex justify-between text-xs text-on-surface-variant font-label mt-3">
+<div class="flex items-center gap-1"><span class="material-symbols-outlined text-[14px]">battery_charging_80</span> 82%</div>
+<div class="flex items-center gap-1"><span class="material-symbols-outlined text-[14px]">sync</span> 2m ago</div>
+<div>v2.4.1</div>
+</div>
+</div>
+<!-- Device 2 -->
+<div class="bg-surface-container-low p-4 rounded-xl">
+<div class="flex justify-between items-start mb-2">
+<div class="font-headline font-semibold text-sm">Samsung A53 - Pool B</div>
+<div class="flex items-center gap-1 text-error text-xs font-bold">
+<div class="w-2 h-2 rounded-full bg-error"></div> Offline
+                                    </div>
+</div>
+<div class="flex justify-between text-xs text-on-surface-variant font-label mt-3">
+<div class="flex items-center gap-1 text-error"><span class="material-symbols-outlined text-[14px]">battery_alert</span> 15%</div>
+<div class="flex items-center gap-1"><span class="material-symbols-outlined text-[14px]">sync_problem</span> 45m ago</div>
+<div>v2.4.0</div>
+</div>
+</div>
+</div>
+<button class="w-full mt-4 py-2 bg-surface-container-high hover:bg-surface-container-highest text-on-surface rounded-full font-label text-sm font-medium transition-colors">Manage Devices</button>
+</div>
+<!-- AI Insights Glass Card -->
+<div class="relative overflow-hidden rounded-[1.5rem] p-6 bg-surface-container-lowest/60 backdrop-blur-xl border border-outline-variant/10 shadow-lg">
+<div class="absolute -right-10 -top-10 w-32 h-32 bg-secondary-container/30 rounded-full blur-3xl"></div>
+<div class="flex items-center gap-2 mb-4 relative z-10">
+<span class="material-symbols-outlined text-secondary font-variation-settings-'FILL'-1">auto_awesome</span>
+<h3 class="font-headline font-bold text-secondary">AI Insight</h3>
+</div>
+<p class="font-body text-sm text-on-surface-variant relative z-10 leading-relaxed">
+                            Pattern detected: 14 incoming transactions from similar geographical coordinates within the last 10 minutes. Recommended action: Elevate risk threshold for MFS provider <span class="font-bold text-on-surface">bKash</span> temporarily.
+                        </p>
+<div class="mt-4 flex gap-2 relative z-10">
+<button class="px-4 py-2 bg-secondary text-on-secondary rounded-full font-label text-xs font-semibold">Apply Threshold</button>
+<button class="px-4 py-2 bg-surface text-on-surface rounded-full font-label text-xs font-medium">Dismiss</button>
+</div>
+</div>
+</section>
+</div>
+<!-- Bottom Space for mobile nav -->
+<div class="h-24 md:hidden"></div>
+</main>
+</div>
+</body></html>

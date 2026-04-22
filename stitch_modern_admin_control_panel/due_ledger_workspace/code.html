@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+
+<html lang="bn"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Due Ledger Workspace - DokaniAI</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;700;800&amp;family=Plus+Jakarta+Sans:wght@400;500;600;700&amp;family=Hind+Siliguri:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "secondary-fixed-dim": "#9fcaff",
+                      "tertiary-fixed": "#ffdad6",
+                      "on-secondary-container": "#00477b",
+                      "tertiary-container": "#74302a",
+                      "tertiary-fixed-dim": "#ffb4ab",
+                      "surface-container-high": "#e6e9e5",
+                      "on-secondary": "#ffffff",
+                      "inverse-surface": "#2d312f",
+                      "surface-container-lowest": "#ffffff",
+                      "surface-container": "#ecefeb",
+                      "secondary": "#0061a4",
+                      "background": "#f7faf6",
+                      "on-tertiary-fixed": "#3c0605",
+                      "on-surface-variant": "#404944",
+                      "surface-variant": "#e0e3df",
+                      "on-primary-container": "#7fc1a5",
+                      "secondary-fixed": "#d1e4ff",
+                      "error": "#ba1a1a",
+                      "surface-bright": "#f7faf6",
+                      "surface": "#f7faf6",
+                      "inverse-primary": "#91d4b7",
+                      "error-container": "#ffdad6",
+                      "primary-fixed-dim": "#91d4b7",
+                      "primary": "#003727",
+                      "on-primary-fixed-variant": "#02513b",
+                      "on-primary-fixed": "#002116",
+                      "on-primary": "#ffffff",
+                      "surface-container-low": "#f1f4f0",
+                      "on-tertiary": "#ffffff",
+                      "on-secondary-fixed": "#001d36",
+                      "on-error-container": "#93000a",
+                      "secondary-container": "#77b7ff",
+                      "on-tertiary-fixed-variant": "#76312b",
+                      "primary-fixed": "#adf1d2",
+                      "on-tertiary-container": "#f89a90",
+                      "tertiary": "#571a16",
+                      "surface-tint": "#276a52",
+                      "on-secondary-fixed-variant": "#00497d",
+                      "inverse-on-surface": "#eef2ee",
+                      "outline-variant": "#bfc9c2",
+                      "surface-container-highest": "#e0e3df",
+                      "primary-container": "#00503a",
+                      "surface-dim": "#d8dbd7",
+                      "outline": "#707974",
+                      "on-surface": "#181c1a",
+                      "on-error": "#ffffff",
+                      "on-background": "#181c1a"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.125rem",
+                      "lg": "0.25rem",
+                      "xl": "0.5rem",
+                      "full": "0.75rem"
+              },
+              "spacing": {},
+              "fontFamily": {
+                      "headline": [
+                              "Manrope"
+                      ],
+                      "body": [
+                              "Plus Jakarta Sans"
+                      ],
+                      "label": [
+                              "Plus Jakarta Sans"
+                      ],
+                      "bengali": [
+                              "Hind Siliguri"
+                      ]
+              }
+            },
+          },
+        }
+      </script>
+<style>
+        body { font-family: 'Plus Jakarta Sans', sans-serif; }
+        .font-headline { font-family: 'Manrope', sans-serif; }
+        .font-bengali { font-family: 'Hind Siliguri', sans-serif; line-height: 1.6; }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .icon-fill {
+            font-variation-settings: 'FILL' 1;
+        }
+      </style>
+</head>
+<body class="bg-background text-on-surface flex min-h-screen">
+<!-- SideNavBar -->
+<nav class="fixed left-0 top-0 h-screen w-72 bg-[#ebf2e9] dark:bg-[#1d2421] hidden md:flex flex-col py-10 gap-2 border-r-0 z-50">
+<div class="px-6 mb-8">
+<h1 class="text-xl font-bold tracking-tight text-[#003727] dark:text-[#f7faf6] font-headline">DokaniAI</h1>
+<p class="text-sm text-[#003727]/70 font-bengali mt-1">The Resilient Ledger</p>
+</div>
+<div class="flex-1 flex flex-col gap-2 relative">
+<!-- Navigation Track styling (tonal layering) -->
+<div class="absolute inset-y-0 right-0 w-1 bg-surface-container-high hidden"></div>
+<a class="flex items-center gap-3 px-6 py-4 text-[#003727]/70 dark:text-[#f7faf6]/70 hover:translate-x-1 transition-transform duration-200" href="#">
+<span class="material-symbols-outlined">grid_view</span>
+<span class="font-body font-medium">Dashboard</span>
+</a>
+<a class="flex items-center gap-3 px-6 py-4 text-[#003727]/70 dark:text-[#f7faf6]/70 hover:translate-x-1 transition-transform duration-200" href="#">
+<span class="material-symbols-outlined">sell</span>
+<span class="font-body font-medium">Sales</span>
+</a>
+<a class="flex items-center gap-3 px-6 py-4 text-[#003727]/70 dark:text-[#f7faf6]/70 hover:translate-x-1 transition-transform duration-200" href="#">
+<span class="material-symbols-outlined">inventory_2</span>
+<span class="font-body font-medium">Products</span>
+</a>
+<a class="flex items-center gap-3 px-6 py-4 bg-gradient-to-r from-[#003727] to-[#00503a] text-white rounded-r-full shadow-lg shadow-emerald-900/10 hover:translate-x-1 transition-transform duration-200 tactile scale-95 on click" href="#">
+<span class="material-symbols-outlined icon-fill">menu_book</span>
+<span class="font-body font-medium">Due Ledger</span>
+</a>
+<a class="flex items-center gap-3 px-6 py-4 text-[#003727]/70 dark:text-[#f7faf6]/70 hover:translate-x-1 transition-transform duration-200 mt-auto" href="#">
+<span class="material-symbols-outlined">settings</span>
+<span class="font-body font-medium">Settings</span>
+</a>
+</div>
+<div class="px-6 mt-4">
+<button class="w-full py-3 bg-gradient-to-r from-primary to-primary-container text-on-primary rounded-xl font-body font-semibold hover:shadow-lg transition-shadow">Add New Transaction</button>
+</div>
+</nav>
+<!-- Main Content Area -->
+<main class="flex-1 md:ml-72 flex flex-col min-h-screen">
+<!-- TopAppBar -->
+<header class="fixed top-0 right-0 w-full md:w-[calc(100%-18rem)] z-40 bg-surface/80 backdrop-blur-xl h-20 px-10 flex items-center justify-between">
+<div class="flex items-center gap-4">
+<!-- Search Bar Placeholder to match search_bar: "on_left" constraint, though detailed UI wasn't strictly required, space is allocated -->
+<div class="relative hidden sm:block">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant">search</span>
+<input class="pl-10 pr-4 py-2 bg-surface-container-low rounded-xl border-none text-on-surface focus:ring-0 focus:border-b-2 focus:border-secondary w-64 font-body text-sm" placeholder="Search customer or amount..." type="text"/>
+</div>
+</div>
+<div class="flex items-center gap-6">
+<!-- AI Indicator -->
+<button class="w-10 h-10 rounded-full bg-primary-fixed/20 flex items-center justify-center text-primary hover:bg-primary/5 transition-colors">
+<span class="material-symbols-outlined text-xl">smart_toy</span>
+</button>
+<button class="text-on-surface-variant hover:text-primary transition-colors">
+<span class="material-symbols-outlined">notifications</span>
+</button>
+<button class="w-10 h-10 rounded-full bg-surface-container-high overflow-hidden border border-surface-container-highest">
+<img alt="Shopkeeper Profile" class="w-full h-full object-cover" data-alt="Portrait of a smiling South Asian shopkeeper in a well-lit store, soft focus background" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDvVDQG0Qdr-RqHKSPK5XTZkkLB7um6tkXPqP90IwUdUuu3JS9dt18FfBbyz_2dh-RPRUsaVyzV82OaDqVU7iPyRIAFwgp3w0CveM51-7dxSOc-aE2VS2PAuuUTSwGzKAFQ_gWu850Kv-85BgxjT_8B1XyxxEA5rHG7AS3KzFJy0Aj4dnXfh-xuWNUyziYsSUEUE79SfDMvO2GbZzLGLebUTj2NJx1sGDk_4sFcAJ-XTgrpvuP0EHndyTr1e-hp6WK-izt_YJchsUA"/>
+</button>
+</div>
+</header>
+<!-- Content Canvas -->
+<div class="flex-1 mt-20 p-8 grid grid-cols-1 lg:grid-cols-12 gap-8">
+<!-- Left Column: Customer List -->
+<div class="lg:col-span-4 flex flex-col gap-6">
+<div class="flex flex-col gap-1">
+<h2 class="text-2xl font-headline font-extrabold text-primary tracking-tighter">Due Ledger</h2>
+<p class="font-bengali text-sm text-on-surface-variant">বাকি খাতা (Baki Khata)</p>
+</div>
+<!-- Customer Cards -->
+<div class="flex flex-col gap-4">
+<!-- Selected Customer -->
+<div class="bg-surface-container-lowest rounded-xl p-5 cursor-pointer relative overflow-hidden group">
+<!-- Active indicator gradient -->
+<div class="absolute left-0 top-0 bottom-0 w-1 bg-gradient-to-b from-primary to-primary-container"></div>
+<div class="flex justify-between items-start">
+<div>
+<h3 class="font-headline font-bold text-lg text-on-surface">Rahim Uddin</h3>
+<p class="font-bengali text-sm text-on-surface-variant mt-1">01711-XXXXXX</p>
+</div>
+<div class="text-right">
+<p class="font-headline font-extrabold text-error">৳ ৪,৫০০</p>
+<p class="font-body text-xs text-on-surface-variant mt-1">Total Due</p>
+</div>
+</div>
+</div>
+<!-- Inactive Customer 1 -->
+<div class="bg-surface-container-low rounded-xl p-5 cursor-pointer hover:bg-surface-container transition-colors">
+<div class="flex justify-between items-start">
+<div>
+<h3 class="font-headline font-semibold text-base text-on-surface">Mokbul Hossain</h3>
+<p class="font-bengali text-sm text-on-surface-variant mt-1">01822-XXXXXX</p>
+</div>
+<div class="text-right">
+<p class="font-headline font-bold text-error">৳ ১,২০০</p>
+<p class="font-body text-xs text-on-surface-variant mt-1">Total Due</p>
+</div>
+</div>
+</div>
+<!-- Inactive Customer 2 -->
+<div class="bg-surface-container-low rounded-xl p-5 cursor-pointer hover:bg-surface-container transition-colors">
+<div class="flex justify-between items-start">
+<div>
+<h3 class="font-headline font-semibold text-base text-on-surface">Fatema Begum</h3>
+<p class="font-bengali text-sm text-on-surface-variant mt-1">01933-XXXXXX</p>
+</div>
+<div class="text-right">
+<p class="font-headline font-bold text-error">৳ ৮৫০</p>
+<p class="font-body text-xs text-on-surface-variant mt-1">Total Due</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Right Column: Detail View -->
+<div class="lg:col-span-8 flex flex-col gap-6">
+<!-- Detail Header -->
+<div class="bg-surface-container-lowest rounded-xl p-8 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-6">
+<div>
+<h2 class="text-3xl font-headline font-extrabold text-on-surface tracking-tighter">Rahim Uddin</h2>
+<div class="flex items-center gap-3 mt-2">
+<span class="inline-flex items-center gap-1 text-sm font-bengali text-on-surface-variant bg-surface-container-high px-3 py-1 rounded-full">
+<span class="material-symbols-outlined text-sm">history</span>
+                                Last active 2 days ago
+                            </span>
+<span class="inline-flex items-center gap-1 text-sm font-bengali text-error bg-error-container/30 px-3 py-1 rounded-full">
+                                Aged Due: 45 Days
+                            </span>
+</div>
+</div>
+<button class="flex items-center gap-2 bg-gradient-to-r from-primary to-primary-container text-on-primary px-6 py-3 rounded-xl font-body font-semibold hover:shadow-lg transition-shadow">
+<svg fill="currentColor" height="20" viewbox="0 0 16 16" width="20" xmlns="http://www.w3.org/2000/svg">
+<path d="M13.601 2.326A7.85 7.85 0 0 0 7.994 0C3.627 0 .068 3.558.064 7.926c0 1.399.366 2.76 1.057 3.965L0 16l4.204-1.102a7.9 7.9 0 0 0 3.79.965h.004c4.368 0 7.926-3.558 7.93-7.93A7.9 7.9 0 0 0 13.6 2.326zM7.994 14.521a6.6 6.6 0 0 1-3.356-.92l-.24-.144-2.494.654.666-2.433-.156-.251a6.56 6.56 0 0 1-1.007-3.505c0-3.626 2.957-6.584 6.591-6.584a6.56 6.56 0 0 1 4.66 1.931 6.56 6.56 0 0 1 1.928 4.66c-.004 3.639-2.961 6.592-6.592 6.592m3.615-4.934c-.197-.099-1.17-.578-1.353-.646-.182-.065-.315-.099-.445.099-.133.197-.513.646-.627.775-.114.133-.232.148-.43.05-.197-.1-.836-.308-1.592-.985-.59-.525-.985-1.175-1.103-1.372-.114-.198-.011-.304.088-.403.087-.088.197-.232.296-.346.1-.114.133-.198.198-.33.065-.134.034-.248-.015-.347-.05-.099-.445-1.076-.612-1.47-.16-.389-.323-.335-.445-.34-.114-.007-.247-.007-.38-.007a.73.73 0 0 0-.529.247c-.182.198-.691.677-.691 1.654s.71 1.916.81 2.049c.098.133 1.394 2.132 3.383 2.992.47.205.84.326 1.129.418.475.152.904.129 1.246.08.38-.058 1.171-.48 1.338-.943.164-.464.164-.86.114-.943-.049-.084-.182-.133-.38-.232"></path>
+</svg>
+                        Send WhatsApp Reminder
+                    </button>
+</div>
+<!-- Transaction History -->
+<div class="bg-surface-container-low rounded-xl p-8 flex-1">
+<h3 class="text-lg font-headline font-bold text-on-surface mb-6">Transaction History <span class="text-sm font-normal text-on-surface-variant font-bengali ml-2">লেনদেনের বিবরণ</span></h3>
+<div class="flex flex-col gap-4">
+<!-- Auto-credited via MFS Transaction (JOMA) -->
+<div class="bg-primary-fixed/20 rounded-xl p-5 border-l-4 border-primary relative overflow-hidden">
+<!-- Glassmorphism AI/Auto hint -->
+<div class="absolute right-0 top-0 bottom-0 w-32 bg-gradient-to-l from-primary-fixed/40 to-transparent pointer-events-none"></div>
+<div class="flex justify-between items-center">
+<div class="flex items-center gap-4">
+<div class="w-12 h-12 rounded-full bg-surface-container-lowest flex items-center justify-center text-primary shadow-sm">
+<span class="material-symbols-outlined icon-fill">account_balance_wallet</span>
+</div>
+<div>
+<h4 class="font-headline font-semibold text-on-surface">Auto-credited via MFS (JOMA)</h4>
+<p class="font-bengali text-sm text-on-surface-variant mt-0.5">Bkash ending in 4521 • Oct 24, 2023</p>
+</div>
+</div>
+<div class="text-right">
+<p class="font-headline font-bold text-primary">+ ৳ ১,০০০</p>
+<p class="font-body text-xs text-on-surface-variant mt-0.5">Payment Received</p>
+</div>
+</div>
+</div>
+<!-- Regular Purchase (BAKI) -->
+<div class="bg-surface-container-lowest rounded-xl p-5">
+<div class="flex justify-between items-center">
+<div class="flex items-center gap-4">
+<div class="w-12 h-12 rounded-full bg-surface-container-low flex items-center justify-center text-on-surface-variant">
+<span class="material-symbols-outlined">shopping_bag</span>
+</div>
+<div>
+<h4 class="font-headline font-semibold text-on-surface">Groceries &amp; Rice Sack (BAKI)</h4>
+<p class="font-bengali text-sm text-on-surface-variant mt-0.5">Oct 12, 2023</p>
+</div>
+</div>
+<div class="text-right">
+<p class="font-headline font-bold text-error">- ৳ ৩,৫০০</p>
+<p class="font-body text-xs text-on-surface-variant mt-0.5">Credit Added</p>
+</div>
+</div>
+</div>
+<!-- Regular Purchase (BAKI) -->
+<div class="bg-surface-container-lowest rounded-xl p-5">
+<div class="flex justify-between items-center">
+<div class="flex items-center gap-4">
+<div class="w-12 h-12 rounded-full bg-surface-container-low flex items-center justify-center text-on-surface-variant">
+<span class="material-symbols-outlined">shopping_bag</span>
+</div>
+<div>
+<h4 class="font-headline font-semibold text-on-surface">Oil &amp; Spices (BAKI)</h4>
+<p class="font-bengali text-sm text-on-surface-variant mt-0.5">Sep 28, 2023</p>
+</div>
+</div>
+<div class="text-right">
+<p class="font-headline font-bold text-error">- ৳ ২,০০০</p>
+<p class="font-body text-xs text-on-surface-variant mt-0.5">Credit Added</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</main>
+</body></html>

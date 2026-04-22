@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Category Taxonomy &amp; Moderation - Amanat Ledger</title>
+<!-- Fonts: Manrope, Plus Jakarta Sans, Hind Siliguri -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600&amp;family=Manrope:wght@400;500;600;700;800&amp;family=Plus+Jakarta+Sans:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<!-- Material Symbols -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Tailwind Config -->
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "primary-fixed": "#adf1d2",
+                    "on-primary": "#ffffff",
+                    "outline-variant": "#bfc9c2",
+                    "on-tertiary-fixed": "#3c0605",
+                    "on-error": "#ffffff",
+                    "surface-container-highest": "#e0e3df",
+                    "on-secondary-fixed-variant": "#00497d",
+                    "primary": "#003727",
+                    "on-primary-container": "#7fc1a5",
+                    "inverse-primary": "#91d4b7",
+                    "surface-container": "#ecefeb",
+                    "surface": "#f7faf6",
+                    "error-container": "#ffdad6",
+                    "surface-container-low": "#f1f4f0",
+                    "secondary-fixed-dim": "#9fcaff",
+                    "secondary-container": "#77b7ff",
+                    "on-secondary-container": "#00477b",
+                    "surface-variant": "#e0e3df",
+                    "on-tertiary-container": "#f89a90",
+                    "on-background": "#181c1a",
+                    "primary-container": "#00503a",
+                    "on-secondary-fixed": "#001d36",
+                    "on-surface": "#181c1a",
+                    "on-secondary": "#ffffff",
+                    "on-primary-fixed-variant": "#02513b",
+                    "tertiary-container": "#74302a",
+                    "secondary-fixed": "#d1e4ff",
+                    "surface-container-high": "#e6e9e5",
+                    "secondary": "#0061a4",
+                    "on-tertiary": "#ffffff",
+                    "on-primary-fixed": "#002116",
+                    "on-error-container": "#93000a",
+                    "tertiary": "#571a16",
+                    "surface-container-lowest": "#ffffff",
+                    "surface-dim": "#d8dbd7",
+                    "primary-fixed-dim": "#91d4b7",
+                    "inverse-surface": "#2d312f",
+                    "inverse-on-surface": "#eef2ee",
+                    "tertiary-fixed": "#ffdad6",
+                    "outline": "#707974",
+                    "surface-tint": "#276a52",
+                    "background": "#f7faf6",
+                    "surface-bright": "#f7faf6",
+                    "on-tertiary-fixed-variant": "#76312b",
+                    "error": "#ba1a1a",
+                    "on-surface-variant": "#404944",
+                    "tertiary-fixed-dim": "#ffb4ab"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.125rem",
+                    "lg": "0.25rem",
+                    "xl": "0.5rem",
+                    "full": "0.75rem"
+            },
+            "spacing": {},
+            "fontFamily": {
+                    "headline": ["Manrope", "sans-serif"],
+                    "body": ["Plus Jakarta Sans", "sans-serif"],
+                    "label": ["Plus Jakarta Sans", "sans-serif"],
+                    "bengali": ["Hind Siliguri", "sans-serif"]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        /* Custom scrollbar to maintain premium feel */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #e0e3df; /* surface-variant */
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #bfc9c2; /* outline-variant */
+        }
+    </style>
+</head>
+<body class="bg-background text-on-background font-body flex h-screen overflow-hidden antialiased selection:bg-primary-fixed selection:text-on-primary-fixed">
+<!-- SideNavBar (Shared Component) -->
+<nav aria-label="Sidebar" class="hidden md:flex flex-col h-full w-64 fixed left-0 top-0 bg-surface-container-lowest border-r border-surface-container-highest z-40 p-4 transition-all">
+<!-- Brand -->
+<div class="mb-10 px-4 mt-2">
+<h1 class="text-2xl font-black text-on-surface font-headline tracking-tighter">Amanat Ledger</h1>
+</div>
+<!-- Navigation Links -->
+<div class="flex flex-col gap-2 flex-1">
+<!-- Dashboard (Inactive) -->
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant font-medium hover:bg-surface-container-high transition-colors rounded-xl" href="#">
+<span class="material-symbols-outlined text-xl">dashboard</span>
+<span class="font-label text-sm">Dashboard</span>
+</a>
+<!-- Taxonomy (Active) -->
+<a class="flex items-center gap-3 px-4 py-3 bg-surface-container-high text-primary font-bold rounded-xl transition-colors" href="#">
+<span class="material-symbols-outlined text-xl" style="font-variation-settings: 'FILL' 1;">account_tree</span>
+<span class="font-label text-sm">Taxonomy</span>
+</a>
+<!-- Moderation (Inactive) -->
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant font-medium hover:bg-surface-container-high transition-colors rounded-xl" href="#">
+<span class="material-symbols-outlined text-xl">pending_actions</span>
+<span class="font-label text-sm">Moderation</span>
+</a>
+<!-- Settings (Inactive) -->
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant font-medium hover:bg-surface-container-high transition-colors rounded-xl" href="#">
+<span class="material-symbols-outlined text-xl">settings</span>
+<span class="font-label text-sm">Settings</span>
+</a>
+</div>
+<!-- Admin Profile & CTA -->
+<div class="mt-auto space-y-4">
+<button class="w-full flex items-center justify-center gap-2 py-3 px-4 bg-gradient-to-r from-primary to-primary-container text-on-primary rounded-full font-label text-sm font-semibold shadow-sm hover:shadow-md transition-all">
+<span class="material-symbols-outlined text-sm">add</span>
+                New Category
+            </button>
+<div class="flex items-center gap-3 px-4 py-3 bg-surface-container-low rounded-xl">
+<div class="w-10 h-10 rounded-full bg-surface-variant overflow-hidden flex-shrink-0">
+<img alt="System Admin" class="w-full h-full object-cover" data-alt="professional headshot of a south asian man in a smart casual shirt with a neutral expression against a light background" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBChUps18P3lVU9cd1Vg_glAI5G6Y9n2ipyArfzyKAUIfHe1lYR4NVka74NgEiNa1V4pu8BYEF7t-tUks-bvawCoMdAtTEslK3NB8jnAnlQfAqYN9dN0aapP8tOvgGQ-JyuYPNZff6E5Bk1aNR_so6GHop7qiTGY7pL1UiNQV8xrI_pLmdhdUeaw9SOgFN5k1XX1idFnxnaeiVAHWsQvuli6BiBmFUOwrUVo4HOz-M5jTyKOndbQk8M38_IA6-Tlwqnl-6DDX9rJdM"/>
+</div>
+<div class="flex-col hidden lg:flex">
+<span class="text-sm font-bold text-on-surface font-headline leading-tight">System Admin</span>
+<span class="text-xs text-on-surface-variant font-label leading-tight">Category Manager</span>
+</div>
+</div>
+<!-- Footer Links -->
+<div class="flex flex-col gap-1 px-2 pt-2">
+<a class="flex items-center gap-3 px-2 py-2 text-on-surface-variant text-xs hover:text-on-surface transition-colors" href="#">
+<span class="material-symbols-outlined text-sm">help</span>
+                    Support
+                </a>
+<a class="flex items-center gap-3 px-2 py-2 text-on-surface-variant text-xs hover:text-on-surface transition-colors" href="#">
+<span class="material-symbols-outlined text-sm">logout</span>
+                    Logout
+                </a>
+</div>
+</div>
+</nav>
+<!-- Main Content Area -->
+<main class="flex-1 md:ml-64 flex flex-col h-screen overflow-hidden bg-background relative">
+<!-- TopAppBar (Shared Component) -->
+<header class="flex justify-between items-center w-full px-8 py-4 docked full-width top-0 sticky z-30 bg-surface-container-lowest/80 backdrop-blur-xl transition-all">
+<!-- Search Bar on Left -->
+<div class="flex-1 max-w-md">
+<div class="relative flex items-center w-full bg-surface-container-low rounded-full px-4 py-2 group focus-within:bg-surface-container-high transition-colors">
+<span class="material-symbols-outlined text-on-surface-variant mr-3 group-focus-within:text-primary transition-colors">search</span>
+<input class="w-full bg-transparent border-none focus:ring-0 text-sm font-body text-on-surface placeholder:text-on-surface-variant/70 p-0" placeholder="Search taxonomy, requests, tags..." type="text"/>
+</div>
+</div>
+<!-- Trailing Icons -->
+<div class="flex items-center gap-4 ml-4 text-on-surface-variant">
+<button class="p-2 rounded-full hover:bg-surface-container-high transition-colors relative">
+<span class="material-symbols-outlined">notifications</span>
+<span class="absolute top-2 right-2 w-2 h-2 bg-error rounded-full"></span>
+</button>
+<button class="p-2 rounded-full hover:bg-surface-container-high transition-colors hidden md:block">
+<span class="material-symbols-outlined">account_circle</span>
+</button>
+</div>
+</header>
+<!-- Scrollable Content Canvas -->
+<div class="flex-1 overflow-y-auto px-6 md:px-10 lg:px-16 py-8 space-y-16">
+<!-- Page Header -->
+<div class="flex flex-col md:flex-row md:items-end justify-between gap-6">
+<div>
+<h2 class="text-4xl md:text-5xl font-headline font-extrabold tracking-tight text-on-surface leading-tight">Taxonomy &amp; Moderation</h2>
+<p class="text-on-surface-variant font-body mt-2 text-lg max-w-2xl">Curate and refine the global category ledger. Review shopkeeper submissions and maintain the two-tier hierarchy.</p>
+</div>
+<div class="flex-shrink-0">
+<button class="flex items-center gap-2 py-3 px-6 bg-surface-container-highest text-on-surface rounded-full font-label text-sm font-bold hover:bg-surface-variant transition-colors">
+<span class="material-symbols-outlined text-sm">add_circle</span>
+                        Add Root Category
+                    </button>
+</div>
+</div>
+<!-- Asymmetric Grid Layout -->
+<div class="grid grid-cols-1 xl:grid-cols-12 gap-8 lg:gap-12 items-start">
+<!-- Pending Requests (Left Column - 4 spans) -->
+<section class="xl:col-span-4 flex flex-col gap-6">
+<div class="flex items-center justify-between">
+<h3 class="text-xl font-headline font-bold text-on-surface">Pending Requests</h3>
+<a class="text-sm font-label font-semibold text-primary hover:text-primary-container transition-colors flex items-center gap-1" href="#">
+                            View All <span class="material-symbols-outlined text-xs">arrow_forward</span>
+</a>
+</div>
+<!-- Tonal Containment for List -->
+<div class="flex flex-col gap-3">
+<!-- Request Card 1 -->
+<div class="bg-surface-container-lowest p-5 rounded-2xl group hover:bg-surface-container-low transition-colors cursor-pointer">
+<div class="flex justify-between items-start mb-4">
+<span class="inline-flex items-center px-2.5 py-1 rounded-md text-[10px] font-bold uppercase tracking-wider bg-error-container text-on-error-container">
+                                    Pending
+                                </span>
+<span class="text-xs font-label font-semibold text-secondary flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]">storefront</span> GROCERY
+                                </span>
+</div>
+<div class="mb-4">
+<h4 class="text-2xl font-bengali font-semibold text-on-surface leading-tight">বিস্কুট</h4>
+<p class="text-sm text-on-surface-variant mt-1 font-body">Requested by: <span class="font-medium text-on-surface">Mayer Doa Store</span></p>
+</div>
+<div class="flex gap-2">
+<button class="flex-1 py-2 bg-gradient-to-r from-primary to-primary-container text-on-primary rounded-full font-label text-xs font-bold transition-all hover:opacity-90">Approve</button>
+<button class="flex-1 py-2 bg-surface-container-highest text-on-surface rounded-full font-label text-xs font-bold transition-all hover:bg-surface-variant">Review</button>
+</div>
+</div>
+<!-- Request Card 2 -->
+<div class="bg-surface-container-lowest p-5 rounded-2xl group hover:bg-surface-container-low transition-colors cursor-pointer">
+<div class="flex justify-between items-start mb-4">
+<span class="inline-flex items-center px-2.5 py-1 rounded-md text-[10px] font-bold uppercase tracking-wider bg-secondary-container text-on-secondary-container">
+                                    Under Review
+                                </span>
+<span class="text-xs font-label font-semibold text-secondary flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]">apparel</span> FASHION
+                                </span>
+</div>
+<div class="mb-4">
+<h4 class="text-2xl font-bengali font-semibold text-on-surface leading-tight">শীতের কাপড়</h4>
+<p class="text-sm text-on-surface-variant mt-1 font-body">Requested by: <span class="font-medium text-on-surface">Fashion House BD</span></p>
+</div>
+<div class="flex gap-2">
+<button class="flex-1 py-2 bg-gradient-to-r from-primary to-primary-container text-on-primary rounded-full font-label text-xs font-bold transition-all hover:opacity-90">Approve</button>
+<button class="flex-1 py-2 bg-surface-container-highest text-on-surface rounded-full font-label text-xs font-bold transition-all hover:bg-surface-variant">Review</button>
+</div>
+</div>
+</div>
+</section>
+<!-- Global Hierarchy Explorer (Right Column - 8 spans) -->
+<section class="xl:col-span-8 flex flex-col gap-6">
+<div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+<h3 class="text-xl font-headline font-bold text-on-surface">Global Hierarchy</h3>
+<!-- Embedded Search for Taxonomy -->
+<div class="relative flex items-center w-full sm:w-64 bg-surface-container-lowest rounded-full px-4 py-2">
+<span class="material-symbols-outlined text-on-surface-variant mr-2 text-sm">filter_list</span>
+<input class="w-full bg-transparent border-none focus:ring-0 text-sm font-body text-on-surface placeholder:text-on-surface-variant/70 p-0" placeholder="Filter categories..." type="text"/>
+</div>
+</div>
+<!-- Bento Grid for Categories -->
+<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+<!-- Category Card: Grocery -->
+<div class="bg-surface-container-lowest p-6 rounded-[24px] flex flex-col h-full relative overflow-hidden group">
+<!-- Subtle Background Accent -->
+<div class="absolute -right-10 -top-10 w-40 h-40 bg-primary-fixed/20 rounded-full blur-3xl group-hover:bg-primary-fixed/30 transition-all duration-500"></div>
+<div class="flex justify-between items-start mb-6 relative z-10">
+<div class="flex items-center gap-3">
+<div class="w-12 h-12 rounded-full bg-surface-container-low flex items-center justify-center text-primary">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">shopping_cart</span>
+</div>
+<div>
+<h4 class="font-headline font-bold text-lg text-on-surface tracking-tight uppercase">Grocery</h4>
+<p class="text-xs text-on-surface-variant font-label">14 Root Categories</p>
+</div>
+</div>
+<button class="text-on-surface-variant hover:text-primary transition-colors">
+<span class="material-symbols-outlined">more_vert</span>
+</button>
+</div>
+<div class="space-y-4 relative z-10 flex-1">
+<!-- Tier 2 Example -->
+<div>
+<div class="flex items-center gap-2 mb-2">
+<span class="text-sm font-bengali font-semibold text-on-surface">চাল-ডাল</span>
+<span class="material-symbols-outlined text-on-surface-variant text-[14px]">chevron_right</span>
+</div>
+<div class="flex flex-wrap gap-2">
+<span class="px-3 py-1 bg-surface-container-low text-on-surface text-sm font-bengali rounded-lg">চাল</span>
+<span class="px-3 py-1 bg-surface-container-low text-on-surface text-sm font-bengali rounded-lg">মসুর ডাল</span>
+<span class="px-3 py-1 bg-surface-container-low text-on-surface text-sm font-bengali rounded-lg">মুগ ডাল</span>
+<span class="px-3 py-1 bg-surface-container-low text-on-surface-variant text-xs font-label rounded-lg flex items-center">+4</span>
+</div>
+</div>
+<!-- Tier 2 Example -->
+<div>
+<div class="flex items-center gap-2 mb-2">
+<span class="text-sm font-bengali font-semibold text-on-surface">তেল ও মশলা</span>
+<span class="material-symbols-outlined text-on-surface-variant text-[14px]">chevron_right</span>
+</div>
+<div class="flex flex-wrap gap-2">
+<span class="px-3 py-1 bg-surface-container-low text-on-surface text-sm font-bengali rounded-lg">সয়াবিন তেল</span>
+<span class="px-3 py-1 bg-surface-container-low text-on-surface text-sm font-bengali rounded-lg">সরিষার তেল</span>
+<span class="px-3 py-1 bg-surface-container-low text-on-surface text-sm font-bengali rounded-lg">লবণ</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Category Card: Fashion -->
+<div class="bg-surface-container-lowest p-6 rounded-[24px] flex flex-col h-full relative overflow-hidden group">
+<!-- Subtle Background Accent -->
+<div class="absolute -right-10 -top-10 w-40 h-40 bg-secondary-container/20 rounded-full blur-3xl group-hover:bg-secondary-container/30 transition-all duration-500"></div>
+<div class="flex justify-between items-start mb-6 relative z-10">
+<div class="flex items-center gap-3">
+<div class="w-12 h-12 rounded-full bg-surface-container-low flex items-center justify-center text-secondary">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">styler</span>
+</div>
+<div>
+<h4 class="font-headline font-bold text-lg text-on-surface tracking-tight uppercase">Fashion</h4>
+<p class="text-xs text-on-surface-variant font-label">8 Root Categories</p>
+</div>
+</div>
+<button class="text-on-surface-variant hover:text-secondary transition-colors">
+<span class="material-symbols-outlined">more_vert</span>
+</button>
+</div>
+<div class="space-y-4 relative z-10 flex-1">
+<!-- Tier 2 Example -->
+<div>
+<div class="flex items-center gap-2 mb-2">
+<span class="text-sm font-bengali font-semibold text-on-surface">ছেলেদের পোশাক</span>
+<span class="material-symbols-outlined text-on-surface-variant text-[14px]">chevron_right</span>
+</div>
+<div class="flex flex-wrap gap-2">
+<span class="px-3 py-1 bg-surface-container-low text-on-surface text-sm font-bengali rounded-lg">শার্ট</span>
+<span class="px-3 py-1 bg-surface-container-low text-on-surface text-sm font-bengali rounded-lg">প্যান্ট</span>
+<span class="px-3 py-1 bg-surface-container-low text-on-surface text-sm font-bengali rounded-lg">পাঞ্জাবি</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Category Card: Electronics (Spans full width on md) -->
+<div class="bg-surface-container-lowest p-6 rounded-[24px] flex flex-col h-full relative overflow-hidden group md:col-span-2">
+<div class="flex justify-between items-start mb-6 relative z-10">
+<div class="flex items-center gap-3">
+<div class="w-12 h-12 rounded-full bg-surface-container-low flex items-center justify-center text-on-surface">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">devices</span>
+</div>
+<div>
+<h4 class="font-headline font-bold text-lg text-on-surface tracking-tight uppercase">Electronics</h4>
+<p class="text-xs text-on-surface-variant font-label">12 Root Categories</p>
+</div>
+</div>
+</div>
+<div class="grid grid-cols-1 sm:grid-cols-2 gap-6 relative z-10">
+<div>
+<div class="flex items-center gap-2 mb-2">
+<span class="text-sm font-bengali font-semibold text-on-surface">মোবাইল ও এক্সেসরিজ</span>
+<span class="material-symbols-outlined text-on-surface-variant text-[14px]">chevron_right</span>
+</div>
+<div class="flex flex-wrap gap-2">
+<span class="px-3 py-1 bg-surface-container-low text-on-surface text-sm font-bengali rounded-lg">স্মার্টফোন</span>
+<span class="px-3 py-1 bg-surface-container-low text-on-surface text-sm font-bengali rounded-lg">চার্জার</span>
+<span class="px-3 py-1 bg-surface-container-low text-on-surface text-sm font-bengali rounded-lg">হেডফোন</span>
+</div>
+</div>
+<div>
+<div class="flex items-center gap-2 mb-2">
+<span class="text-sm font-bengali font-semibold text-on-surface">হোম অ্যাপ্লায়েন্স</span>
+<span class="material-symbols-outlined text-on-surface-variant text-[14px]">chevron_right</span>
+</div>
+<div class="flex flex-wrap gap-2">
+<span class="px-3 py-1 bg-surface-container-low text-on-surface text-sm font-bengali rounded-lg">ফ্যান</span>
+<span class="px-3 py-1 bg-surface-container-low text-on-surface text-sm font-bengali rounded-lg">লাইট</span>
+<span class="px-3 py-1 bg-surface-container-low text-on-surface text-sm font-bengali rounded-lg">ব্লেন্ডার</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+</div>
+<!-- Bottom Spacer -->
+<div class="h-12"></div>
+</div>
+</main>
+</body></html>

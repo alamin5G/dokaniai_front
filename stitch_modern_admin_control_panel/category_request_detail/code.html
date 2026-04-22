@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Category Request Detail - DokaniAI Admin</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&amp;family=Manrope:wght@400;500;600;700;800&amp;family=Plus+Jakarta+Sans:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "primary-fixed": "#adf1d2",
+                        "on-primary": "#ffffff",
+                        "outline-variant": "#bfc9c2",
+                        "on-tertiary-fixed": "#3c0605",
+                        "on-error": "#ffffff",
+                        "surface-container-highest": "#e0e3df",
+                        "on-secondary-fixed-variant": "#00497d",
+                        "primary": "#003727",
+                        "on-primary-container": "#7fc1a5",
+                        "inverse-primary": "#91d4b7",
+                        "surface-container": "#ecefeb",
+                        "surface": "#f7faf6",
+                        "error-container": "#ffdad6",
+                        "surface-container-low": "#f1f4f0",
+                        "secondary-fixed-dim": "#9fcaff",
+                        "secondary-container": "#77b7ff",
+                        "on-secondary-container": "#00477b",
+                        "surface-variant": "#e0e3df",
+                        "on-tertiary-container": "#f89a90",
+                        "on-background": "#181c1a",
+                        "primary-container": "#00503a",
+                        "on-secondary-fixed": "#001d36",
+                        "on-surface": "#181c1a",
+                        "on-secondary": "#ffffff",
+                        "on-primary-fixed-variant": "#02513b",
+                        "tertiary-container": "#74302a",
+                        "secondary-fixed": "#d1e4ff",
+                        "surface-container-high": "#e6e9e5",
+                        "secondary": "#0061a4",
+                        "on-tertiary": "#ffffff",
+                        "on-primary-fixed": "#002116",
+                        "on-error-container": "#93000a",
+                        "tertiary": "#571a16",
+                        "surface-container-lowest": "#ffffff",
+                        "surface-dim": "#d8dbd7",
+                        "primary-fixed-dim": "#91d4b7",
+                        "inverse-surface": "#2d312f",
+                        "inverse-on-surface": "#eef2ee",
+                        "tertiary-fixed": "#ffdad6",
+                        "outline": "#707974",
+                        "surface-tint": "#276a52",
+                        "background": "#f7faf6",
+                        "surface-bright": "#f7faf6",
+                        "on-tertiary-fixed-variant": "#76312b",
+                        "error": "#ba1a1a",
+                        "on-surface-variant": "#404944",
+                        "tertiary-fixed-dim": "#ffb4ab"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "fontFamily": {
+                        "headline": ["Manrope"],
+                        "body": ["Plus Jakarta Sans"],
+                        "label": ["Plus Jakarta Sans"]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        body { font-family: 'Plus Jakarta Sans', sans-serif; }
+        h1, h2, h3, h4, h5, h6, .font-headline { font-family: 'Manrope', sans-serif; }
+        .font-bengali { font-family: 'Hind Siliguri', sans-serif; }
+    </style>
+</head>
+<body class="bg-background text-on-background antialiased min-h-screen flex">
+<!-- SideNavBar (Shared Component) -->
+<nav class="bg-emerald-50 dark:bg-zinc-950 text-emerald-900 dark:text-emerald-400 font-manrope text-sm font-semibold tracking-normal text-2xl font-black text-emerald-950 dark:text-emerald-50 h-screen w-64 fixed left-0 top-0 bg-zinc-100 dark:bg-zinc-900/30 flat no shadows flex flex-col p-4 border-r border-zinc-100 dark:border-zinc-900 z-40 hidden md:flex">
+<!-- Header -->
+<div class="mb-8 px-2 flex items-center gap-3">
+<span class="material-symbols-outlined text-3xl" data-icon="account_balance">account_balance</span>
+<span class="text-xl font-bold tracking-tighter">Amanat Ledger</span>
+</div>
+<div class="flex items-center gap-3 px-2 mb-8">
+<img alt="Admin Profile" class="w-10 h-10 rounded-full object-cover" data-alt="professional portrait of system admin" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBSkLlCVjmfiyEYetzMlFOCM7x89lhVNBbAAtC6XBte7bJdACnln9EBwNKEGKQJ1ubAmbJ83JTap4dvGzotHPMkpwBtJEf8b3xn-fXp7uLc2sL25AoTJSbAwf6eMGeIPi7hEgVR3JcYUWBU309Oi2YCUdi3YfAU80GKDehjM2_FThonGREpJP0jHY7YjCpUdDV9Lqlt1ywQJd74tTB0oS9yPqwDlFhaVAfDc9pIacTQLOLniN5zHMvPlb1dQ_WwE44Nv51oxTdtAJY"/>
+<div>
+<p class="text-sm font-bold text-emerald-950">System Admin</p>
+<p class="text-xs text-zinc-500 font-medium">Category Manager</p>
+</div>
+</div>
+<!-- Navigation Tabs -->
+<ul class="flex flex-col gap-2 flex-grow">
+<li>
+<a class="flex items-center gap-3 px-4 py-3 text-zinc-600 dark:text-zinc-400 hover:text-emerald-800 hover:bg-emerald-100/40 dark:hover:bg-zinc-800/40 transition-colors rounded-xl translate-x-1 duration-150" href="#">
+<span class="material-symbols-outlined" data-icon="dashboard">dashboard</span>
+                    Dashboard
+                </a>
+</li>
+<li>
+<a class="flex items-center gap-3 px-4 py-3 text-zinc-600 dark:text-zinc-400 hover:text-emerald-800 hover:bg-emerald-100/40 dark:hover:bg-zinc-800/40 transition-colors rounded-xl translate-x-1 duration-150" href="#">
+<span class="material-symbols-outlined" data-icon="account_tree">account_tree</span>
+                    Taxonomy
+                </a>
+</li>
+<li>
+<!-- ACTIVE NAV -->
+<a class="flex items-center gap-3 px-4 py-3 bg-emerald-100 dark:bg-emerald-900/20 text-emerald-900 dark:text-emerald-300 rounded-xl translate-x-1 duration-150" href="#">
+<span class="material-symbols-outlined" data-icon="pending_actions" data-weight="fill" style="font-variation-settings: 'FILL' 1;">pending_actions</span>
+                    Moderation
+                </a>
+</li>
+<li>
+<a class="flex items-center gap-3 px-4 py-3 text-zinc-600 dark:text-zinc-400 hover:text-emerald-800 hover:bg-emerald-100/40 dark:hover:bg-zinc-800/40 transition-colors rounded-xl translate-x-1 duration-150" href="#">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+                    Settings
+                </a>
+</li>
+</ul>
+<!-- CTA & Footer -->
+<div class="mt-auto flex flex-col gap-4">
+<button class="w-full py-3 bg-gradient-to-r from-primary to-primary-container text-on-primary rounded-xl font-bold shadow-sm hover:opacity-90 transition-opacity">
+                New Category
+            </button>
+<ul class="flex flex-col gap-1">
+<li>
+<a class="flex items-center gap-3 px-4 py-2 text-zinc-600 hover:text-emerald-800 hover:bg-emerald-100/40 transition-colors rounded-xl text-sm" href="#">
+<span class="material-symbols-outlined text-lg" data-icon="help">help</span>
+                        Support
+                    </a>
+</li>
+<li>
+<a class="flex items-center gap-3 px-4 py-2 text-zinc-600 hover:text-emerald-800 hover:bg-emerald-100/40 transition-colors rounded-xl text-sm" href="#">
+<span class="material-symbols-outlined text-lg" data-icon="logout">logout</span>
+                        Logout
+                    </a>
+</li>
+</ul>
+</div>
+</nav>
+<!-- Main Content Area -->
+<main class="flex-1 md:ml-64 flex flex-col relative min-h-screen">
+<!-- TopAppBar (Shared Component) -->
+<header class="bg-emerald-50/80 dark:bg-zinc-950/80 backdrop-blur-xl text-emerald-900 dark:text-emerald-500 font-manrope tracking-tight font-bold text-lg text-xl font-bold tracking-tighter text-emerald-950 dark:text-emerald-100 docked full-width top-0 sticky z-50 no borders, tonal shift using bg-emerald-50/80 flat no shadows flex justify-between items-center w-full px-8 py-3">
+<div class="flex items-center gap-4">
+<!-- Mobile Menu Toggle (Visible only on mobile) -->
+<button class="md:hidden text-emerald-900 flex items-center p-2 rounded-lg hover:bg-emerald-100/50 transition-all scale-95 duration-200 ease-in-out">
+<span class="material-symbols-outlined" data-icon="menu">menu</span>
+</button>
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-zinc-500 cursor-pointer hover:text-emerald-900 transition-colors" data-icon="arrow_back">arrow_back</span>
+<span class="text-zinc-500 font-medium text-sm ml-2">Moderation / </span>
+<span>Request Details</span>
+</div>
+</div>
+<div class="flex items-center gap-4">
+<!-- Search Bar -->
+<div class="relative hidden sm:block">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-zinc-400 text-sm" data-icon="search">search</span>
+<input class="bg-surface-container-lowest border-none focus:ring-2 focus:ring-primary-fixed rounded-full pl-10 pr-4 py-1.5 text-sm w-64 shadow-sm text-on-surface" placeholder="Search requests..." type="text"/>
+</div>
+<button class="text-emerald-900 hover:bg-emerald-100/50 p-2 rounded-full transition-all scale-95 duration-200 ease-in-out">
+<span class="material-symbols-outlined" data-icon="notifications">notifications</span>
+</button>
+<button class="text-emerald-900 hover:bg-emerald-100/50 p-2 rounded-full transition-all scale-95 duration-200 ease-in-out">
+<span class="material-symbols-outlined" data-icon="account_circle">account_circle</span>
+</button>
+</div>
+</header>
+<!-- Canvas -->
+<div class="p-8 max-w-7xl mx-auto w-full flex-1 flex flex-col gap-8">
+<!-- Header Section -->
+<div class="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-4">
+<div>
+<div class="flex items-center gap-3 mb-2">
+<span class="px-3 py-1 bg-surface-container-high text-on-surface text-xs font-bold rounded-full tracking-wider uppercase">REQ-2023-089</span>
+<span class="px-3 py-1 bg-secondary-fixed text-on-secondary-fixed text-xs font-bold rounded-full flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]" data-icon="schedule">schedule</span>
+                            Pending Review
+                        </span>
+</div>
+<h1 class="text-4xl font-headline font-extrabold text-on-surface tracking-tight mb-1 flex items-baseline gap-3">
+<span class="font-bengali">বিস্কুট</span>
+<span class="text-2xl text-on-surface-variant font-medium">(Biscuit)</span>
+</h1>
+<p class="text-sm text-on-surface-variant flex items-center gap-2">
+                        Requested by <span class="font-bold text-primary">Rahim Store</span> • 2 hours ago
+                    </p>
+</div>
+</div>
+<!-- Bento Grid Layout -->
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+<!-- Left Panel: Request Details (Takes up 2 columns on lg) -->
+<div class="lg:col-span-2 flex flex-col gap-6">
+<div class="bg-surface-container-lowest rounded-xl p-8 shadow-sm h-full flex flex-col">
+<h2 class="text-lg font-headline font-bold text-on-surface mb-6 border-b-2 border-surface-container-low pb-2 inline-block">Request Attributes</h2>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-y-8 gap-x-12 flex-1">
+<!-- Attribute Block -->
+<div>
+<p class="text-xs font-bold text-on-surface-variant uppercase tracking-wider mb-2">Primary Label (Bengali)</p>
+<p class="text-2xl font-bengali text-on-surface">বিস্কুট</p>
+</div>
+<!-- Attribute Block -->
+<div>
+<p class="text-xs font-bold text-on-surface-variant uppercase tracking-wider mb-2">Secondary Label (English)</p>
+<p class="text-lg text-on-surface">Biscuit</p>
+</div>
+<!-- Attribute Block -->
+<div>
+<p class="text-xs font-bold text-on-surface-variant uppercase tracking-wider mb-2">Business Category</p>
+<div class="flex items-center gap-2">
+<span class="p-1.5 bg-surface-container-low rounded-lg text-primary">
+<span class="material-symbols-outlined text-[20px]" data-icon="storefront">storefront</span>
+</span>
+<span class="text-md font-medium text-on-surface">Grocery</span>
+</div>
+</div>
+<!-- Attribute Block -->
+<div>
+<p class="text-xs font-bold text-on-surface-variant uppercase tracking-wider mb-2">Requested Scope</p>
+<div class="flex items-center gap-2">
+<span class="p-1.5 bg-surface-container-low rounded-lg text-primary">
+<span class="material-symbols-outlined text-[20px]" data-icon="public">public</span>
+</span>
+<span class="text-md font-medium text-on-surface">Global Taxonomy</span>
+</div>
+</div>
+<!-- Full Width Attribute -->
+<div class="md:col-span-2 mt-4 bg-surface-container-low rounded-lg p-6">
+<p class="text-xs font-bold text-on-surface-variant uppercase tracking-wider mb-3">Merchant Justification</p>
+<p class="text-md text-on-surface italic leading-relaxed border-l-4 border-outline-variant pl-4 py-1">
+                                    "We sell a large variety of local and imported biscuits. Grouping them under 'Snacks' is too broad for our inventory management and customers."
+                                </p>
+</div>
+</div>
+</div>
+</div>
+<!-- Right Panel: AI Suggestions / Existing Categories -->
+<div class="flex flex-col gap-6">
+<!-- AI Glassmorphism Card -->
+<div class="bg-surface-container-lowest/80 backdrop-blur-xl rounded-xl p-6 relative overflow-hidden border border-outline-variant/15 flex flex-col h-full shadow-[0_8px_30px_rgb(0,0,0,0.04)]">
+<!-- AI Accent Glow -->
+<div class="absolute -top-10 -right-10 w-32 h-32 bg-primary-fixed/30 rounded-full blur-3xl pointer-events-none"></div>
+<div class="flex items-center gap-2 mb-6 relative z-10">
+<span class="material-symbols-outlined text-primary-container" data-icon="auto_awesome">auto_awesome</span>
+<h2 class="text-lg font-headline font-bold text-primary-container">AI Similarity Analysis</h2>
+</div>
+<p class="text-sm text-on-surface-variant mb-6 relative z-10">
+                            Found existing categories in the Global Taxonomy that closely match this request. Consider merging to prevent duplication.
+                        </p>
+<div class="flex flex-col gap-4 relative z-10 flex-1">
+<!-- Match Item -->
+<div class="bg-surface-container-low rounded-lg p-4 flex justify-between items-center group hover:bg-surface-container transition-colors cursor-pointer">
+<div>
+<p class="font-bengali font-bold text-lg text-on-surface">স্ন্যাকস</p>
+<p class="text-xs text-on-surface-variant">Snacks • 85% Match</p>
+</div>
+<button class="text-primary opacity-0 group-hover:opacity-100 transition-opacity p-2 hover:bg-surface-container-highest rounded-full">
+<span class="material-symbols-outlined" data-icon="call_merge">call_merge</span>
+</button>
+</div>
+<!-- Match Item -->
+<div class="bg-surface-container-low rounded-lg p-4 flex justify-between items-center group hover:bg-surface-container transition-colors cursor-pointer">
+<div>
+<p class="font-bengali font-bold text-lg text-on-surface">কেক ও বেকারি</p>
+<p class="text-xs text-on-surface-variant">Cake &amp; Bakery • 62% Match</p>
+</div>
+<button class="text-primary opacity-0 group-hover:opacity-100 transition-opacity p-2 hover:bg-surface-container-highest rounded-full">
+<span class="material-symbols-outlined" data-icon="call_merge">call_merge</span>
+</button>
+</div>
+<div class="mt-auto pt-4 text-center">
+<a class="text-xs font-bold text-primary hover:underline" href="#">View All Taxonomy Branches</a>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Decision Panel (Bottom Sticky-ish area) -->
+<div class="bg-surface-container-lowest rounded-xl p-8 shadow-sm mt-4">
+<h2 class="text-lg font-headline font-bold text-on-surface mb-6 border-b-2 border-surface-container-low pb-2 inline-block">Moderation Decision</h2>
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+<!-- Approve Global -->
+<button class="bg-gradient-to-br from-primary to-primary-container text-on-primary p-6 rounded-xl text-left flex flex-col justify-between hover:shadow-md transition-all hover:-translate-y-1 group h-32">
+<span class="material-symbols-outlined mb-2 group-hover:scale-110 transition-transform" data-icon="public">public</span>
+<div>
+<p class="font-bold text-sm">Approve to Global</p>
+<p class="text-xs opacity-80 mt-1">Available to all merchants</p>
+</div>
+</button>
+<!-- Approve Business -->
+<button class="bg-surface-container-high text-on-surface p-6 rounded-xl text-left flex flex-col justify-between hover:bg-surface-container-highest transition-all h-32">
+<span class="material-symbols-outlined text-primary mb-2" data-icon="storefront">storefront</span>
+<div>
+<p class="font-bold text-sm">Approve to Business</p>
+<p class="text-xs text-on-surface-variant mt-1">Restrict to Grocery only</p>
+</div>
+</button>
+<!-- Merge -->
+<div class="bg-surface-container-low rounded-xl p-4 flex flex-col justify-between h-32 border-2 border-transparent focus-within:border-secondary transition-colors relative">
+<div class="flex items-center gap-2 mb-2 text-secondary">
+<span class="material-symbols-outlined text-[20px]" data-icon="call_merge">call_merge</span>
+<span class="font-bold text-sm">Merge</span>
+</div>
+<div class="relative w-full">
+<select class="w-full bg-surface-container-lowest border-none rounded-lg text-sm py-2 px-3 text-on-surface focus:ring-0 cursor-pointer appearance-none">
+<option disabled="" selected="" value="">Select Target...</option>
+<option value="snacks">স্ন্যাকস (Snacks)</option>
+<option value="bakery">কেক ও বেকারি (Bakery)</option>
+</select>
+<span class="material-symbols-outlined absolute right-2 top-1/2 -translate-y-1/2 text-on-surface-variant pointer-events-none" data-icon="expand_more">expand_more</span>
+</div>
+</div>
+<!-- Reject -->
+<div class="bg-error-container/30 rounded-xl p-4 flex flex-col justify-between h-32 border-2 border-transparent focus-within:border-error transition-colors">
+<div class="flex items-center gap-2 mb-2 text-error">
+<span class="material-symbols-outlined text-[20px]" data-icon="block">block</span>
+<span class="font-bold text-sm">Reject</span>
+</div>
+<input class="w-full bg-surface-container-lowest border-none rounded-lg text-sm py-2 px-3 text-on-surface focus:ring-0 placeholder:text-on-surface-variant/50" placeholder="Reason (e.g. Too specific)" type="text"/>
+</div>
+</div>
+</div>
+</div>
+</main>
+</body></html>

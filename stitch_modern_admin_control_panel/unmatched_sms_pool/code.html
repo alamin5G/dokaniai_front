@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Unmatched SMS Pool - DokaniAI</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;800;900&amp;family=Plus+Jakarta+Sans:wght@400;500;600;700&amp;family=Hind+Siliguri:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "tertiary-fixed-dim": "#ffb4ab",
+                    "on-primary-container": "#7fc1a5",
+                    "on-primary-fixed-variant": "#02513b",
+                    "on-surface": "#181c1a",
+                    "surface": "#f7faf6",
+                    "inverse-on-surface": "#eef2ee",
+                    "tertiary": "#571a16",
+                    "on-secondary-fixed-variant": "#00497d",
+                    "on-background": "#181c1a",
+                    "inverse-surface": "#2d312f",
+                    "surface-container-high": "#e6e9e5",
+                    "surface-container": "#ecefeb",
+                    "background": "#f7faf6",
+                    "on-tertiary-fixed-variant": "#76312b",
+                    "tertiary-container": "#74302a",
+                    "secondary-fixed": "#d1e4ff",
+                    "on-secondary-container": "#00477b",
+                    "secondary-fixed-dim": "#9fcaff",
+                    "inverse-primary": "#91d4b7",
+                    "primary-container": "#00503a",
+                    "surface-bright": "#f7faf6",
+                    "secondary": "#0061a4",
+                    "tertiary-fixed": "#ffdad6",
+                    "on-primary-fixed": "#002116",
+                    "surface-container-highest": "#e0e3df",
+                    "on-tertiary": "#ffffff",
+                    "surface-tint": "#276a52",
+                    "surface-container-lowest": "#ffffff",
+                    "outline": "#707974",
+                    "surface-container-low": "#f1f4f0",
+                    "on-tertiary-container": "#f89a90",
+                    "outline-variant": "#bfc9c2",
+                    "on-tertiary-fixed": "#3c0605",
+                    "surface-dim": "#d8dbd7",
+                    "on-primary": "#ffffff",
+                    "on-surface-variant": "#404944",
+                    "on-error": "#ffffff",
+                    "on-secondary-fixed": "#001d36",
+                    "on-error-container": "#93000a",
+                    "secondary-container": "#77b7ff",
+                    "surface-variant": "#e0e3df",
+                    "primary-fixed": "#adf1d2",
+                    "on-secondary": "#ffffff",
+                    "error-container": "#ffdad6",
+                    "primary": "#003727",
+                    "error": "#ba1a1a",
+                    "primary-fixed-dim": "#91d4b7"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.125rem",
+                    "lg": "0.25rem",
+                    "xl": "0.5rem",
+                    "full": "0.75rem"
+            },
+            "spacing": {},
+            "fontFamily": {
+                    "headline": [
+                            "Manrope"
+                    ],
+                    "body": [
+                            "Plus Jakarta Sans"
+                    ],
+                    "label": [
+                            "Plus Jakarta Sans"
+                    ],
+                    "bengali": [
+                            "Hind Siliguri"
+                    ]
+            }
+    },
+        },
+      }
+    </script>
+<style>
+        body { font-family: 'Plus Jakarta Sans', sans-serif; }
+        .font-headline { font-family: 'Manrope', sans-serif; }
+        .font-bengali { font-family: 'Hind Siliguri', sans-serif; line-height: 1.6; }
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+        }
+        .primary-gradient {
+            background: linear-gradient(135deg, #003727 0%, #00503a 100%);
+        }
+    </style>
+</head>
+<body class="bg-background text-on-background min-h-screen flex overflow-hidden">
+<!-- SideNavBar Component -->
+<nav class="h-screen w-64 flex flex-col bg-[#f7faf6] dark:bg-[#0a0c0b] font-['Manrope'] tracking-tight text-sm font-semibold fixed left-0 top-0 p-4 border-r-0 z-50">
+<div class="mb-8 px-4 flex items-center gap-3">
+<div class="w-10 h-10 rounded-full bg-surface-container-highest overflow-hidden flex items-center justify-center">
+<span class="material-symbols-outlined text-primary" style="font-variation-settings: 'FILL' 1;">account_circle</span>
+</div>
+<div>
+<h2 class="text-xl font-bold tracking-tighter text-[#003727] dark:text-emerald-500 leading-tight">Amanat Admin</h2>
+<p class="text-xs text-on-surface-variant font-medium">The Resilient Ledger</p>
+</div>
+</div>
+<div class="flex-1 space-y-2 flex flex-col">
+<!-- Navigation Items -->
+<a class="flex items-center gap-4 px-4 py-3 rounded-lg text-[#444945] dark:text-[#a0a8a1] hover:bg-[#ebf0ea] dark:hover:bg-[#181c1a] transition-colors duration-200 scale-95 active:scale-90 transition-transform" href="#">
+<span class="material-symbols-outlined" data-icon="grid_view">grid_view</span>
+<span>Dashboard</span>
+</a>
+<a class="flex items-center gap-4 px-4 py-3 bg-white dark:bg-[#1c221f] text-[#00503a] dark:text-[#4ade80] shadow-sm rounded-lg transition-colors duration-200 scale-95 active:scale-90 transition-transform relative" href="#">
+<div class="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-6 bg-primary rounded-r-full"></div>
+<span class="material-symbols-outlined" data-icon="sms_failed" style="font-variation-settings: 'FILL' 1;">sms_failed</span>
+<span>Unmatched Pool</span>
+</a>
+<a class="flex items-center gap-4 px-4 py-3 rounded-lg text-[#444945] dark:text-[#a0a8a1] hover:bg-[#ebf0ea] dark:hover:bg-[#181c1a] transition-colors duration-200 scale-95 active:scale-90 transition-transform" href="#">
+<span class="material-symbols-outlined" data-icon="account_balance">account_balance</span>
+<span>Reconciliation</span>
+</a>
+<a class="flex items-center gap-4 px-4 py-3 rounded-lg text-[#444945] dark:text-[#a0a8a1] hover:bg-[#ebf0ea] dark:hover:bg-[#181c1a] transition-colors duration-200 scale-95 active:scale-90 transition-transform" href="#">
+<span class="material-symbols-outlined" data-icon="history_edu">history_edu</span>
+<span>Audit Logs</span>
+</a>
+<a class="flex items-center gap-4 px-4 py-3 rounded-lg text-[#444945] dark:text-[#a0a8a1] hover:bg-[#ebf0ea] dark:hover:bg-[#181c1a] transition-colors duration-200 scale-95 active:scale-90 transition-transform mt-auto" href="#">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+<span>Settings</span>
+</a>
+</div>
+<div class="mt-4 px-2">
+<button class="w-full primary-gradient text-on-primary py-3 px-4 rounded-xl font-bold tracking-wide flex items-center justify-center gap-2 hover:shadow-lg transition-shadow duration-300">
+<span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 1;">add</span>
+                New Report
+            </button>
+</div>
+</nav>
+<!-- Main Content Area -->
+<div class="flex-1 ml-64 flex flex-col h-screen overflow-hidden bg-surface-container-low">
+<!-- TopAppBar Component -->
+<header class="w-full h-16 sticky top-0 z-40 flex items-center justify-between px-8 bg-[#f7faf6]/80 dark:bg-[#0a0c0b]/80 backdrop-blur-xl transition-all duration-300">
+<div class="flex items-center gap-6">
+<h1 class="font-['Manrope'] text-lg font-extrabold text-[#003727] dark:text-emerald-400 tracking-tight">Unmatched SMS Workspace</h1>
+</div>
+<div class="flex items-center gap-6">
+<!-- Search on Right as per JSON -->
+<div class="relative group hidden md:block">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant text-sm group-focus-within:text-primary transition-colors">search</span>
+<input class="pl-10 pr-4 py-2 bg-surface-container-lowest text-on-surface text-sm rounded-full border-none focus:ring-0 focus:border-none focus:bg-surface-container-lowest w-64 transition-all duration-300 placeholder-on-surface-variant/50 shadow-[inset_0_-2px_0_0_transparent] focus:shadow-[inset_0_-2px_0_0_#0061a4]" placeholder="Search TrxID or Number..." type="text"/>
+</div>
+<div class="flex items-center gap-4">
+<button class="text-[#444945] dark:text-[#a0a8a1] hover:text-[#003727] dark:hover:text-white transition-colors duration-200 relative">
+<span class="material-symbols-outlined" data-icon="notifications">notifications</span>
+<span class="absolute top-0 right-0 w-2 h-2 bg-error rounded-full"></span>
+</button>
+<button class="text-[#444945] dark:text-[#a0a8a1] hover:text-[#003727] dark:hover:text-white transition-colors duration-200">
+<span class="material-symbols-outlined" data-icon="help_outline">help_outline</span>
+</button>
+<div class="w-8 h-8 rounded-full bg-surface-container-highest overflow-hidden cursor-pointer">
+<img alt="User Avatar" class="w-full h-full object-cover" data-alt="professional headshot of a person with neutral background" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDQqkyBSfSImwUO5Rw37IPsueDDWw9rRorURrNOo3HFOZWEwkzsmEK8ab2mLOnwvDlyNXlwx8-lIT5tEVGJJQHSR0hhdJpY1ZbdADeVbuioHP7N0MRmZ9KI1QCbGT3wSgPk7xZB-ry2eBcGKeJTZS5eQAjTMBGJpLMJV55iQmrBkDY42hPuwxI8jcGUYL-X2dDCxylLqh_PWuF-Y7QamRENzQFOVtJ2GAH8yE12jiWVK4BHne8jSfqr5m-w-sgZTmD-4VBegXBpbiM"/>
+</div>
+</div>
+</div>
+</header>
+<!-- Main Canvas -->
+<main class="flex-1 overflow-y-auto p-8 relative">
+<!-- Page Header -->
+<div class="flex justify-between items-end mb-8">
+<div>
+<h2 class="font-headline text-4xl font-extrabold text-primary tracking-tight mb-2">Unmatched SMS Pool</h2>
+<p class="text-on-surface-variant text-sm font-medium flex items-center gap-2">
+<span class="inline-flex items-center justify-center bg-error-container text-on-error-container px-2 py-0.5 rounded-full text-xs font-bold">142</span>
+                        reports requiring manual reconciliation
+                    </p>
+</div>
+<!-- Filters -->
+<div class="flex gap-3 bg-surface-container-lowest p-2 rounded-xl shadow-sm">
+<button class="px-4 py-2 bg-primary-fixed text-on-primary-fixed font-semibold text-sm rounded-lg transition-colors">All</button>
+<button class="px-4 py-2 text-on-surface-variant hover:bg-surface-container-high font-medium text-sm rounded-lg transition-colors">bKash</button>
+<button class="px-4 py-2 text-on-surface-variant hover:bg-surface-container-high font-medium text-sm rounded-lg transition-colors">Nagad</button>
+<button class="px-4 py-2 text-on-surface-variant hover:bg-surface-container-high font-medium text-sm rounded-lg transition-colors">Rocket</button>
+</div>
+</div>
+<!-- Content Area - Table/List -->
+<div class="bg-surface-container-lowest rounded-xl overflow-hidden mb-12">
+<!-- Table Header -->
+<div class="grid grid-cols-[auto_1fr_1fr_1fr_1fr_1fr_auto] gap-4 p-4 bg-surface-container-low text-xs font-bold text-on-surface-variant uppercase tracking-wider items-center">
+<div class="w-10 text-center">Provider</div>
+<div>Sender Number</div>
+<div>Receiver (Shop)</div>
+<div>Amount</div>
+<div>TrxID</div>
+<div>Received Time</div>
+<div class="text-right pr-4">Action</div>
+</div>
+<!-- List Items -->
+<div class="flex flex-col">
+<!-- Row 1 -->
+<div class="grid grid-cols-[auto_1fr_1fr_1fr_1fr_1fr_auto] gap-4 p-4 items-center bg-surface-container-lowest hover:bg-surface-container-low transition-colors duration-200">
+<div class="w-10 h-10 rounded-full bg-pink-100 flex items-center justify-center text-pink-600 font-bold text-xs" title="bKash">bK</div>
+<div class="font-medium text-on-surface">+880 1711-223344</div>
+<div class="text-on-surface-variant text-sm">+880 1899-556677</div>
+<div class="font-bengali font-bold text-lg text-primary">৳ ৪,৫০০</div>
+<div class="font-mono text-sm text-on-surface-variant">BX992FKLM</div>
+<div class="text-sm text-on-surface-variant">Today, 10:42 AM</div>
+<div class="flex items-center gap-3">
+<span class="px-2 py-1 bg-surface-variant text-on-surface-variant text-[10px] font-bold uppercase rounded-md tracking-wider">Unmatched</span>
+<button class="text-secondary hover:text-on-secondary-container bg-secondary-fixed hover:bg-secondary-fixed-dim px-4 py-2 rounded-lg text-sm font-semibold transition-colors flex items-center gap-2">
+                                Link to Intent
+                                <span class="material-symbols-outlined text-sm">arrow_forward</span>
+</button>
+</div>
+</div>
+<!-- Row 2 -->
+<div class="grid grid-cols-[auto_1fr_1fr_1fr_1fr_1fr_auto] gap-4 p-4 items-center bg-surface-container-lowest hover:bg-surface-container-low transition-colors duration-200">
+<div class="w-10 h-10 rounded-full bg-orange-100 flex items-center justify-center text-orange-600 font-bold text-xs" title="Nagad">Ng</div>
+<div class="font-medium text-on-surface">+880 1922-334455</div>
+<div class="text-on-surface-variant text-sm">+880 1899-556677</div>
+<div class="font-bengali font-bold text-lg text-primary">৳ ১,২০০</div>
+<div class="font-mono text-sm text-on-surface-variant">NG455XCVB</div>
+<div class="text-sm text-on-surface-variant">Yesterday, 04:15 PM</div>
+<div class="flex items-center gap-3">
+<span class="px-2 py-1 bg-surface-variant text-on-surface-variant text-[10px] font-bold uppercase rounded-md tracking-wider">Unmatched</span>
+<button class="text-secondary hover:text-on-secondary-container bg-secondary-fixed hover:bg-secondary-fixed-dim px-4 py-2 rounded-lg text-sm font-semibold transition-colors flex items-center gap-2">
+                                Link to Intent
+                                <span class="material-symbols-outlined text-sm">arrow_forward</span>
+</button>
+</div>
+</div>
+<!-- Row 3 -->
+<div class="grid grid-cols-[auto_1fr_1fr_1fr_1fr_1fr_auto] gap-4 p-4 items-center bg-surface-container-lowest hover:bg-surface-container-low transition-colors duration-200">
+<div class="w-10 h-10 rounded-full bg-purple-100 flex items-center justify-center text-purple-600 font-bold text-xs" title="Rocket">Rk</div>
+<div class="font-medium text-on-surface">+880 1633-445566</div>
+<div class="text-on-surface-variant text-sm">+880 1899-556677</div>
+<div class="font-bengali font-bold text-lg text-primary">৳ ৮,৯০০</div>
+<div class="font-mono text-sm text-on-surface-variant">RK778PLQM</div>
+<div class="text-sm text-on-surface-variant">Yesterday, 09:30 AM</div>
+<div class="flex items-center gap-3">
+<span class="px-2 py-1 bg-surface-variant text-on-surface-variant text-[10px] font-bold uppercase rounded-md tracking-wider">Unmatched</span>
+<button class="text-secondary hover:text-on-secondary-container bg-secondary-fixed hover:bg-secondary-fixed-dim px-4 py-2 rounded-lg text-sm font-semibold transition-colors flex items-center gap-2">
+                                Link to Intent
+                                <span class="material-symbols-outlined text-sm">arrow_forward</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+<!-- Empty State Concept (Hidden by default in this mockup, structure provided) -->
+<!-- 
+            <div class="flex flex-col items-center justify-center py-24 bg-surface-container-lowest rounded-xl">
+                <div class="w-24 h-24 bg-surface-container-low rounded-full flex items-center justify-center mb-6">
+                    <span class="material-symbols-outlined text-4xl text-outline-variant">check_circle</span>
+                </div>
+                <h3 class="font-headline text-2xl font-bold text-on-surface mb-2">Ledger Balanced</h3>
+                <p class="text-on-surface-variant max-w-md text-center mb-8">All SMS reports have been successfully reconciled with their respective intents. No unmatched records found.</p>
+                <button class="bg-surface-container-high text-on-surface px-6 py-2 rounded-lg font-semibold hover:bg-surface-container-highest transition-colors">View Reconciliation History</button>
+            </div>
+            -->
+</main>
+</div>
+</body></html>

@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>DokaniAI - Category Management</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&amp;family=Plus+Jakarta+Sans:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          "colors": {
+            "on-error": "#ffffff",
+            "tertiary-fixed": "#ffdad6",
+            "surface-container": "#ecefeb",
+            "secondary-fixed-dim": "#9fcaff",
+            "surface-container-low": "#f1f4f0",
+            "tertiary-container": "#74302a",
+            "surface-container-highest": "#e0e3df",
+            "on-surface": "#181c1a",
+            "primary-fixed": "#adf1d2",
+            "on-primary-container": "#7fc1a5",
+            "primary-container": "#00503a",
+            "tertiary": "#571a16",
+            "on-tertiary": "#ffffff",
+            "inverse-on-surface": "#eef2ee",
+            "on-tertiary-fixed": "#3c0605",
+            "on-tertiary-fixed-variant": "#76312b",
+            "surface-dim": "#d8dbd7",
+            "on-surface-variant": "#404944",
+            "secondary-container": "#77b7ff",
+            "on-tertiary-container": "#f89a90",
+            "background": "#f7faf6",
+            "outline": "#707974",
+            "on-primary": "#ffffff",
+            "surface-container-high": "#e6e9e5",
+            "outline-variant": "#bfc9c2",
+            "tertiary-fixed-dim": "#ffb4ab",
+            "on-primary-fixed": "#002116",
+            "error-container": "#ffdad6",
+            "on-secondary-container": "#00477b",
+            "inverse-surface": "#2d312f",
+            "on-error-container": "#93000a",
+            "error": "#ba1a1a",
+            "primary": "#003727",
+            "inverse-primary": "#91d4b7",
+            "primary-fixed-dim": "#91d4b7",
+            "on-background": "#181c1a",
+            "secondary": "#0061a4",
+            "on-secondary": "#ffffff",
+            "on-secondary-fixed": "#001d36",
+            "surface-variant": "#e0e3df",
+            "surface-container-lowest": "#ffffff",
+            "on-primary-fixed-variant": "#02513b",
+            "surface-bright": "#f7faf6",
+            "on-secondary-fixed-variant": "#00497d",
+            "surface-tint": "#276a52",
+            "secondary-fixed": "#d1e4ff",
+            "surface": "#f7faf6"
+          },
+          "borderRadius": {
+            "DEFAULT": "0.125rem",
+            "lg": "0.25rem",
+            "xl": "0.5rem",
+            "full": "0.75rem"
+          },
+          "fontFamily": {
+            "headline": ["Manrope", "sans-serif"],
+            "body": ["Plus Jakarta Sans", "sans-serif"],
+            "label": ["Plus Jakarta Sans", "sans-serif"]
+          }
+        }
+      }
+    }
+  </script>
+<style>
+    body { font-family: 'Plus Jakarta Sans', sans-serif; }
+    h1, h2, h3, h4, h5, h6 { font-family: 'Manrope', sans-serif; }
+  </style>
+</head>
+<body class="bg-background text-on-background antialiased flex min-h-screen">
+<!-- Side Navigation -->
+<div class="w-64 flex-shrink-0 bg-surface-container-lowest hidden md:flex flex-col">
+<div class="p-6">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 bg-primary rounded-full flex items-center justify-center text-on-primary font-headline font-bold">D</div>
+<div class="font-headline font-bold text-lg text-on-surface">DokaniAI</div>
+</div>
+</div>
+<nav class="flex-1 px-4 py-4 space-y-2">
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-on-surface-variant hover:bg-surface-container-high transition-colors font-body font-medium text-sm" href="#">
+<span class="material-symbols-outlined text-[20px]">home</span>
+        Dashboard
+      </a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg bg-surface-container-highest text-on-surface font-body font-medium text-sm" href="#">
+<span class="material-symbols-outlined text-[20px]" style="font-variation-settings: 'FILL' 1;">category</span>
+        Categories
+      </a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-on-surface-variant hover:bg-surface-container-high transition-colors font-body font-medium text-sm" href="#">
+<span class="material-symbols-outlined text-[20px]">storefront</span>
+        Businesses
+      </a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-on-surface-variant hover:bg-surface-container-high transition-colors font-body font-medium text-sm" href="#">
+<span class="material-symbols-outlined text-[20px]">group</span>
+        Users
+      </a>
+</nav>
+<div class="p-4 mt-auto">
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-on-surface-variant hover:bg-surface-container-high transition-colors font-body font-medium text-sm" href="#">
+<span class="material-symbols-outlined text-[20px]">settings</span>
+        Settings
+      </a>
+</div>
+</div>
+<!-- Main Content -->
+<div class="flex-1 flex flex-col min-w-0 bg-background">
+<!-- Top App Bar -->
+<header class="h-16 bg-surface-container-lowest flex items-center justify-between px-6 z-10 relative">
+<div class="flex items-center gap-4">
+<button class="md:hidden text-on-surface-variant hover:text-on-surface">
+<span class="material-symbols-outlined">menu</span>
+</button>
+<h1 class="font-headline font-semibold text-xl text-on-surface hidden sm:block">Category Management</h1>
+</div>
+<div class="flex items-center gap-4">
+<div class="relative hidden sm:block">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant text-[20px]">search</span>
+<input class="bg-surface-container-low text-on-surface placeholder:text-on-surface-variant rounded-full pl-10 pr-4 py-2 border-none focus:ring-0 focus:border-b-2 focus:border-b-secondary text-sm font-body w-64 transition-all outline-none" placeholder="Search categories..." type="text"/>
+</div>
+<button class="text-on-surface-variant hover:text-on-surface relative">
+<span class="material-symbols-outlined">notifications</span>
+<span class="absolute top-0 right-0 w-2 h-2 bg-error rounded-full"></span>
+</button>
+<div class="w-8 h-8 rounded-full bg-surface-container-high flex items-center justify-center overflow-hidden">
+<img alt="Profile" class="w-full h-full object-cover" data-alt="close up portrait of a man smiling with short hair wearing a dark shirt in soft lighting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAj4C-GQ5PGWK22dWd3dn61ypvO-W3FMtv6338pWmbN7HuHqn8o9G1JVDLfDaiATUBFyZkKFNbcsx6sGzhheUg9Duyun4iyzVfbswOqZZMl9MFPj9DTOCan4QI_G6dXJ8XaVJTIm4Z1cxzcUzYeSQizT2SI_DrSYdkGQwF3UeYsGcT5h0Mvnn2EtFuLcNtPZESqny_DldZtn5G9PHlz1OIysfbXN70sdXWb1ZgjPpGwGIdO0LXoKol7AqllaZRpgVizwxubiQDkAqI"/>
+</div>
+</div>
+</header>
+<!-- Page Content -->
+<main class="flex-1 overflow-y-auto p-6 lg:p-8 space-y-8">
+<!-- Header Section -->
+<div class="flex flex-col md:flex-row md:items-end justify-between gap-4">
+<div class="space-y-1">
+<h2 class="font-headline text-4xl font-bold text-on-surface tracking-tight">Category Taxonomy</h2>
+<p class="font-body text-on-surface-variant text-base">Manage and organize the global business category structure.</p>
+</div>
+<button class="bg-gradient-to-r from-primary to-primary-container text-on-primary font-body font-semibold px-6 py-3 rounded-xl flex items-center gap-2 hover:opacity-90 transition-opacity w-fit shadow-sm">
+<span class="material-symbols-outlined text-[20px]">add</span>
+          Create Category
+        </button>
+</div>
+<!-- Pending Requests Alert (High Priority) -->
+<section class="bg-surface-container-lowest rounded-xl p-6 relative overflow-hidden">
+<div class="absolute top-0 left-0 w-1 h-full bg-error"></div>
+<div class="flex items-start gap-4">
+<div class="bg-error-container text-on-error-container p-2 rounded-lg flex-shrink-0">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">assignment_late</span>
+</div>
+<div class="flex-1">
+<h3 class="font-headline font-semibold text-lg text-on-surface mb-1">Pending Shopkeeper Requests</h3>
+<p class="font-body text-sm text-on-surface-variant mb-4">3 businesses have requested new categories that don't exist in the current taxonomy.</p>
+<div class="space-y-3">
+<!-- Request Item 1 -->
+<div class="bg-surface-container-low rounded-lg p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+<div class="flex-1">
+<div class="flex items-center gap-2 mb-1">
+<span class="font-body font-medium text-sm text-on-surface">"Artisanal Coffee"</span>
+<span class="text-xs font-body text-on-surface-variant bg-surface-container-highest px-2 py-0.5 rounded">Requested by: Bean &amp; Brew</span>
+</div>
+<p class="font-body text-xs text-on-surface-variant">Suggested parent: Food &amp; Beverage &gt; Cafes</p>
+</div>
+<div class="flex items-center gap-2">
+<button class="bg-primary-fixed text-on-primary-fixed font-body text-sm font-medium px-4 py-2 rounded-lg hover:bg-primary-fixed-dim transition-colors">Approve</button>
+<button class="bg-surface-container-high text-on-surface font-body text-sm font-medium px-4 py-2 rounded-lg hover:bg-surface-container-highest transition-colors">Merge</button>
+<button class="text-error hover:bg-error-container px-3 py-2 rounded-lg transition-colors">
+<span class="material-symbols-outlined text-[20px]">close</span>
+</button>
+</div>
+</div>
+<!-- Request Item 2 -->
+<div class="bg-surface-container-low rounded-lg p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+<div class="flex-1">
+<div class="flex items-center gap-2 mb-1">
+<span class="font-body font-medium text-sm text-on-surface">"Vintage Electronics Repair"</span>
+<span class="text-xs font-body text-on-surface-variant bg-surface-container-highest px-2 py-0.5 rounded">Requested by: RetroTech Fix</span>
+</div>
+<p class="font-body text-xs text-on-surface-variant">Suggested parent: Services &gt; Repair</p>
+</div>
+<div class="flex items-center gap-2">
+<button class="bg-primary-fixed text-on-primary-fixed font-body text-sm font-medium px-4 py-2 rounded-lg hover:bg-primary-fixed-dim transition-colors">Approve</button>
+<button class="bg-surface-container-high text-on-surface font-body text-sm font-medium px-4 py-2 rounded-lg hover:bg-surface-container-highest transition-colors">Merge</button>
+<button class="text-error hover:bg-error-container px-3 py-2 rounded-lg transition-colors">
+<span class="material-symbols-outlined text-[20px]">close</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Main Layout: Sidebar & Content -->
+<div class="flex flex-col lg:flex-row gap-8">
+<!-- Taxonomy Tree (Sidebar) -->
+<div class="lg:w-1/3 bg-surface-container-lowest rounded-xl p-6">
+<div class="flex items-center justify-between mb-6">
+<h3 class="font-headline font-semibold text-xl text-on-surface">Global Hierarchy</h3>
+<button class="text-on-surface-variant hover:text-on-surface">
+<span class="material-symbols-outlined text-[20px]">filter_list</span>
+</button>
+</div>
+<div class="space-y-1 font-body text-sm">
+<!-- Root Category -->
+<div class="group">
+<div class="flex items-center gap-2 p-2 rounded-lg bg-surface-container-high text-on-surface cursor-pointer">
+<span class="material-symbols-outlined text-[18px]">keyboard_arrow_down</span>
+<span class="material-symbols-outlined text-[18px]" style="font-variation-settings: 'FILL' 1;">local_mall</span>
+<span class="font-medium flex-1">Retail &amp; Shopping</span>
+<span class="text-xs text-on-surface-variant bg-surface-container-highest px-1.5 py-0.5 rounded">124</span>
+</div>
+<!-- Sub Categories -->
+<div class="pl-6 mt-1 space-y-1">
+<div class="flex items-center gap-2 p-2 rounded-lg bg-primary-fixed text-on-primary-fixed cursor-pointer">
+<span class="material-symbols-outlined text-[18px]">keyboard_arrow_right</span>
+<span class="font-medium flex-1">Groceries</span>
+<span class="text-xs opacity-70 bg-white/30 px-1.5 py-0.5 rounded">45</span>
+</div>
+<div class="flex items-center gap-2 p-2 rounded-lg text-on-surface-variant hover:bg-surface-container-low cursor-pointer">
+<span class="material-symbols-outlined text-[18px]">keyboard_arrow_right</span>
+<span class="font-medium flex-1">Electronics</span>
+<span class="text-xs bg-surface-container-highest px-1.5 py-0.5 rounded">32</span>
+</div>
+<div class="flex items-center gap-2 p-2 rounded-lg text-on-surface-variant hover:bg-surface-container-low cursor-pointer">
+<span class="material-symbols-outlined text-[18px]">keyboard_arrow_right</span>
+<span class="font-medium flex-1">Apparel</span>
+<span class="text-xs bg-surface-container-highest px-1.5 py-0.5 rounded">47</span>
+</div>
+</div>
+</div>
+<!-- Root Category 2 -->
+<div class="flex items-center gap-2 p-2 rounded-lg text-on-surface-variant hover:bg-surface-container-low cursor-pointer mt-2">
+<span class="material-symbols-outlined text-[18px]">keyboard_arrow_right</span>
+<span class="material-symbols-outlined text-[18px]">restaurant</span>
+<span class="font-medium flex-1">Food &amp; Beverage</span>
+<span class="text-xs bg-surface-container-highest px-1.5 py-0.5 rounded">89</span>
+</div>
+<!-- Root Category 3 -->
+<div class="flex items-center gap-2 p-2 rounded-lg text-on-surface-variant hover:bg-surface-container-low cursor-pointer mt-1">
+<span class="material-symbols-outlined text-[18px]">keyboard_arrow_right</span>
+<span class="material-symbols-outlined text-[18px]">handyman</span>
+<span class="font-medium flex-1">Services</span>
+<span class="text-xs bg-surface-container-highest px-1.5 py-0.5 rounded">56</span>
+</div>
+</div>
+</div>
+<!-- Category Details Area -->
+<div class="lg:w-2/3 space-y-6">
+<!-- Selected Category Info -->
+<div class="bg-surface-container-lowest rounded-xl p-6">
+<div class="flex items-start justify-between mb-4">
+<div>
+<div class="flex items-center gap-2 text-sm font-body text-on-surface-variant mb-2">
+<span>Retail &amp; Shopping</span>
+<span class="material-symbols-outlined text-[16px]">chevron_right</span>
+<span class="text-on-surface font-medium">Groceries</span>
+</div>
+<h3 class="font-headline font-bold text-2xl text-on-surface">Groceries</h3>
+</div>
+<div class="flex gap-2">
+<button class="bg-surface-container-high text-on-surface font-body text-sm font-medium px-4 py-2 rounded-lg hover:bg-surface-container-highest transition-colors flex items-center gap-2">
+<span class="material-symbols-outlined text-[18px]">edit</span> Edit
+                </button>
+</div>
+</div>
+<p class="font-body text-sm text-on-surface-variant max-w-2xl mb-6">Essential food items, household supplies, and daily necessities. Includes fresh produce, packaged goods, and beverages.</p>
+<div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+<div class="bg-surface-container-low p-4 rounded-lg">
+<div class="text-xs font-body text-on-surface-variant mb-1">Status</div>
+<div class="font-body font-medium text-sm text-on-surface flex items-center gap-1">
+<span class="w-2 h-2 rounded-full bg-primary-fixed"></span> Active
+                </div>
+</div>
+<div class="bg-surface-container-low p-4 rounded-lg">
+<div class="text-xs font-body text-on-surface-variant mb-1">Total Businesses</div>
+<div class="font-body font-medium text-lg text-on-surface">45</div>
+</div>
+<div class="bg-surface-container-low p-4 rounded-lg">
+<div class="text-xs font-body text-on-surface-variant mb-1">Sub-categories</div>
+<div class="font-body font-medium text-lg text-on-surface">8</div>
+</div>
+<div class="bg-surface-container-low p-4 rounded-lg">
+<div class="text-xs font-body text-on-surface-variant mb-1">Monthly Search Vol</div>
+<div class="font-body font-medium text-lg text-on-surface">12.4k</div>
+</div>
+</div>
+<!-- Tag/Attribute Configuration (AI Feature) -->
+<div class="bg-surface-container-low p-5 rounded-lg relative">
+<!-- AI Glass Effect Overlay -->
+<div class="absolute inset-0 bg-surface-container-lowest/60 backdrop-blur-md rounded-lg pointer-events-none"></div>
+<div class="relative z-10 flex items-start gap-4">
+<div class="bg-gradient-to-br from-primary to-primary-container text-on-primary w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0">
+<span class="material-symbols-outlined text-[18px]">auto_awesome</span>
+</div>
+<div class="flex-1">
+<h4 class="font-headline font-semibold text-sm text-on-surface mb-2">AI Suggested Attributes for "Groceries"</h4>
+<div class="flex flex-wrap gap-2">
+<span class="bg-primary-fixed text-on-primary-fixed text-xs font-body font-medium px-3 py-1 rounded-full flex items-center gap-1">Organic <span class="material-symbols-outlined text-[14px] cursor-pointer">close</span></span>
+<span class="bg-primary-fixed text-on-primary-fixed text-xs font-body font-medium px-3 py-1 rounded-full flex items-center gap-1">Fresh Produce <span class="material-symbols-outlined text-[14px] cursor-pointer">close</span></span>
+<span class="bg-surface-container-high text-on-surface-variant hover:text-on-surface text-xs font-body font-medium px-3 py-1 rounded-full cursor-pointer flex items-center gap-1 border border-outline-variant/30">+ Add "Vegan"</span>
+<span class="bg-surface-container-high text-on-surface-variant hover:text-on-surface text-xs font-body font-medium px-3 py-1 rounded-full cursor-pointer flex items-center gap-1 border border-outline-variant/30">+ Add "Halal"</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Business-Scoped View -->
+<div class="bg-surface-container-lowest rounded-xl p-6">
+<h3 class="font-headline font-semibold text-lg text-on-surface mb-4">Businesses in this Category</h3>
+<div class="overflow-x-auto">
+<table class="w-full text-left font-body text-sm">
+<thead>
+<tr class="text-on-surface-variant border-b-2 border-surface-container-low">
+<th class="pb-3 font-medium">Business Name</th>
+<th class="pb-3 font-medium">Primary Category</th>
+<th class="pb-3 font-medium">Custom Tags</th>
+<th class="pb-3 font-medium text-right">Action</th>
+</tr>
+</thead>
+<tbody class="text-on-surface">
+<tr class="border-b border-surface-container-high hover:bg-surface-container-low/50 transition-colors">
+<td class="py-4">
+<div class="font-medium">Dhaka Super Store</div>
+<div class="text-xs text-on-surface-variant">Gulshan, Dhaka</div>
+</td>
+<td class="py-4">Groceries</td>
+<td class="py-4">
+<div class="flex gap-1">
+<span class="bg-surface-container-high px-2 py-0.5 rounded text-xs">24/7</span>
+<span class="bg-surface-container-high px-2 py-0.5 rounded text-xs">Delivery</span>
+</div>
+</td>
+<td class="py-4 text-right">
+<button class="text-on-surface-variant hover:text-primary transition-colors">
+<span class="material-symbols-outlined text-[20px]">more_vert</span>
+</button>
+</td>
+</tr>
+<tr class="border-b border-surface-container-high hover:bg-surface-container-low/50 transition-colors">
+<td class="py-4">
+<div class="font-medium">Green Mart</div>
+<div class="text-xs text-on-surface-variant">Banani, Dhaka</div>
+</td>
+<td class="py-4">Groceries</td>
+<td class="py-4">
+<div class="flex gap-1">
+<span class="bg-surface-container-high px-2 py-0.5 rounded text-xs">Organic</span>
+</div>
+</td>
+<td class="py-4 text-right">
+<button class="text-on-surface-variant hover:text-primary transition-colors">
+<span class="material-symbols-outlined text-[20px]">more_vert</span>
+</button>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="mt-4 flex justify-center">
+<button class="text-sm font-body font-medium text-primary hover:text-primary-container transition-colors">View All 45 Businesses</button>
+</div>
+</div>
+</div>
+</div>
+</main>
+</div>
+</body></html>

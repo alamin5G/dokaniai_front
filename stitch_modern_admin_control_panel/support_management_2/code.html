@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>DokaniAI Support Tickets</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@300;400;500;600;700&amp;family=Manrope:wght@200..800&amp;family=Plus+Jakarta+Sans:ital,wght@0,200..800;1,200..800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "surface-container": "#ecefeb",
+                        "surface-container-highest": "#e0e3df",
+                        "inverse-surface": "#2d312f",
+                        "tertiary-fixed": "#ffdad6",
+                        "on-tertiary-fixed-variant": "#76312b",
+                        "on-error": "#ffffff",
+                        "on-surface": "#181c1a",
+                        "error-container": "#ffdad6",
+                        "inverse-primary": "#91d4b7",
+                        "on-tertiary-fixed": "#3c0605",
+                        "on-background": "#181c1a",
+                        "on-secondary": "#ffffff",
+                        "inverse-on-surface": "#eef2ee",
+                        "surface": "#f7faf6",
+                        "background": "#f7faf6",
+                        "surface-variant": "#e0e3df",
+                        "secondary-fixed": "#d1e4ff",
+                        "primary-fixed": "#adf1d2",
+                        "outline-variant": "#bfc9c2",
+                        "on-surface-variant": "#404944",
+                        "on-secondary-fixed-variant": "#00497d",
+                        "on-secondary-container": "#00477b",
+                        "secondary-fixed-dim": "#9fcaff",
+                        "surface-container-low": "#f1f4f0",
+                        "surface-container-high": "#e6e9e5",
+                        "on-tertiary": "#ffffff",
+                        "primary-fixed-dim": "#91d4b7",
+                        "on-tertiary-container": "#f89a90",
+                        "secondary": "#0061a4",
+                        "on-primary-container": "#7fc1a5",
+                        "tertiary-container": "#74302a",
+                        "surface-container-lowest": "#ffffff",
+                        "on-secondary-fixed": "#001d36",
+                        "secondary-container": "#77b7ff",
+                        "surface-bright": "#f7faf6",
+                        "error": "#ba1a1a",
+                        "on-primary-fixed": "#002116",
+                        "surface-tint": "#276a52",
+                        "on-error-container": "#93000a",
+                        "primary": "#003727",
+                        "primary-container": "#00503a",
+                        "on-primary-fixed-variant": "#02513b",
+                        "on-primary": "#ffffff",
+                        "outline": "#707974",
+                        "tertiary-fixed-dim": "#ffb4ab",
+                        "tertiary": "#571a16",
+                        "surface-dim": "#d8dbd7"
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    fontFamily: {
+                        "headline": ["Manrope", "sans-serif"],
+                        "body": ["Plus Jakarta Sans", "sans-serif"],
+                        "label": ["Plus Jakarta Sans", "sans-serif"]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        body { font-family: 'Plus Jakarta Sans', sans-serif; }
+        h1, h2, h3, h4, h5, h6, .font-headline { font-family: 'Manrope', sans-serif; }
+        .bengali-text { font-family: 'Hind Siliguri', sans-serif; }
+    </style>
+</head>
+<body class="bg-background text-on-background antialiased flex h-screen overflow-hidden">
+<!-- SideNavBar -->
+<aside class="h-screen w-72 fixed left-0 top-0 bg-white/70 dark:bg-emerald-950/70 backdrop-blur-2xl flex flex-col gap-2 p-6 border-r border-emerald-100/10 z-50">
+<div class="mb-8 px-4">
+<h1 class="text-2xl font-black text-emerald-900 dark:text-emerald-50 tracking-tighter font-headline">DokaniAI</h1>
+<p class="text-emerald-800/60 dark:text-emerald-100/60 text-sm font-medium">SaaS Admin</p>
+</div>
+<nav class="flex-1 space-y-2 font-headline font-semibold tracking-tighter">
+<a class="flex items-center gap-4 text-emerald-800/60 dark:text-emerald-100/60 px-4 py-3 hover:bg-emerald-100/50 dark:hover:bg-emerald-800/50 transition-all duration-300 rounded-xl scale-95 active:scale-90" href="#">
+<span class="material-symbols-outlined" data-icon="dashboard">dashboard</span>
+<span>Dashboard</span>
+</a>
+<a class="flex items-center gap-4 text-emerald-800/60 dark:text-emerald-100/60 px-4 py-3 hover:bg-emerald-100/50 dark:hover:bg-emerald-800/50 transition-all duration-300 rounded-xl scale-95 active:scale-90" href="#">
+<span class="material-symbols-outlined" data-icon="group">group</span>
+<span>Users</span>
+</a>
+<a class="flex items-center gap-4 text-emerald-800/60 dark:text-emerald-100/60 px-4 py-3 hover:bg-emerald-100/50 dark:hover:bg-emerald-800/50 transition-all duration-300 rounded-xl scale-95 active:scale-90" href="#">
+<span class="material-symbols-outlined" data-icon="payments">payments</span>
+<span>Payments</span>
+</a>
+<a class="flex items-center gap-4 text-emerald-800/60 dark:text-emerald-100/60 px-4 py-3 hover:bg-emerald-100/50 dark:hover:bg-emerald-800/50 transition-all duration-300 rounded-xl scale-95 active:scale-90" href="#">
+<span class="material-symbols-outlined" data-icon="confirmation_number">confirmation_number</span>
+<span>Coupons</span>
+</a>
+<a class="flex items-center gap-4 text-emerald-800/60 dark:text-emerald-100/60 px-4 py-3 hover:bg-emerald-100/50 dark:hover:bg-emerald-800/50 transition-all duration-300 rounded-xl scale-95 active:scale-90" href="#">
+<span class="material-symbols-outlined" data-icon="category">category</span>
+<span>Categories</span>
+</a>
+<a class="flex items-center gap-4 text-emerald-800/60 dark:text-emerald-100/60 px-4 py-3 hover:bg-emerald-100/50 dark:hover:bg-emerald-800/50 transition-all duration-300 rounded-xl scale-95 active:scale-90" href="#">
+<span class="material-symbols-outlined" data-icon="share">share</span>
+<span>Referrals</span>
+</a>
+<a class="flex items-center gap-4 bg-emerald-900 dark:bg-emerald-100 text-white dark:text-emerald-900 rounded-xl px-4 py-3 shadow-lg shadow-emerald-900/10 scale-95 active:scale-90" href="#">
+<span class="material-symbols-outlined" data-icon="support_agent">support_agent</span>
+<span>Support</span>
+</a>
+<a class="flex items-center gap-4 text-emerald-800/60 dark:text-emerald-100/60 px-4 py-3 hover:bg-emerald-100/50 dark:hover:bg-emerald-800/50 transition-all duration-300 rounded-xl scale-95 active:scale-90" href="#">
+<span class="material-symbols-outlined" data-icon="receipt_long">receipt_long</span>
+<span>Audit Logs</span>
+</a>
+</nav>
+</aside>
+<!-- Main Content Area -->
+<main class="flex-1 ml-72 flex flex-col h-screen relative bg-surface">
+<!-- TopAppBar -->
+<header class="sticky top-0 w-full flex justify-between items-center h-20 px-10 bg-[#f7faf6]/80 dark:bg-emerald-950/80 backdrop-blur-md z-40 font-plus-jakarta-sans text-sm font-medium">
+<div class="flex items-center focus-within:bg-white/50 transition-all rounded-full px-4 py-2 bg-surface-container-low">
+<span class="material-symbols-outlined text-emerald-600 dark:text-emerald-400 mr-2" data-icon="search">search</span>
+<input class="bg-transparent border-none focus:ring-0 text-emerald-900 dark:text-emerald-50 placeholder-emerald-600/50 outline-none w-64" placeholder="Search tickets..." type="text"/>
+</div>
+<div class="flex items-center gap-6">
+<button class="text-emerald-600 dark:text-emerald-400 hover:text-emerald-950 dark:hover:text-white transition-colors">
+<span class="material-symbols-outlined" data-icon="notifications">notifications</span>
+</button>
+<button class="text-emerald-600 dark:text-emerald-400 hover:text-emerald-950 dark:hover:text-white transition-colors">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+</button>
+<div class="w-10 h-10 rounded-full bg-surface-container-highest overflow-hidden cursor-pointer border border-outline-variant/15">
+<img alt="Administrator Profile" class="w-full h-full object-cover" data-alt="professional headshot of a man with short hair and a subtle smile wearing a dark shirt against a soft neutral background" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDv7Y8Um9TTw-PVro8P864ku5hdOXoYKeaxVfBndd1HBuqW9sgLWH_lpGZDffi3UZ16klT_-L1Xo66_9mdErkoiqPb2UUvSgyMSTCNVxI7gPwsL557bkZabSgQ4jQRBJLFeBBqQH4y6Sy03zPBvfAhbQbSmevltLeqYUpkQoSiKk--3bOlZLAGgqzUelsuOoD6ZAd4Rkguh1cdUu5SuzayaFzuQ456fx6hNWFqe65sXRgvGpW9a3i60qj3PuLN3Mfx_puHdwgW3HqY"/>
+</div>
+</div>
+</header>
+<!-- Canvas -->
+<div class="flex-1 overflow-y-auto p-10 flex gap-8">
+<!-- Left Column: Ticket List -->
+<div class="w-2/5 flex flex-col gap-6">
+<div class="space-y-2">
+<h2 class="text-4xl tracking-tight font-headline text-primary font-bold">Support Tickets</h2>
+<p class="text-on-surface-variant text-sm">Manage and respond to customer inquiries.</p><p class="text-[10px] uppercase font-bold text-primary/50 tracking-widest mt-1">Sorted by Subscriber Tier: Plus &gt; Pro &gt; Basic</p>
+</div>
+<!-- Filters -->
+<div class="flex flex-wrap gap-2">
+<button class="px-4 py-2 rounded-full bg-primary-fixed text-on-primary-fixed text-sm font-medium transition-colors">All</button>
+<button class="px-4 py-2 rounded-full bg-surface-container-high text-on-surface text-sm font-medium hover:bg-surface-container-highest transition-colors">Open</button>
+<button class="px-4 py-2 rounded-full bg-surface-container-high text-on-surface text-sm font-medium hover:bg-surface-container-highest transition-colors">In-Progress</button>
+<button class="px-4 py-2 rounded-full bg-surface-container-high text-on-surface text-sm font-medium hover:bg-surface-container-highest transition-colors">Resolved</button>
+<button class="px-4 py-2 rounded-full bg-surface-container-high text-error text-sm font-medium hover:bg-error-container transition-colors flex items-center gap-1">
+<span class="material-symbols-outlined text-sm" data-icon="priority_high">priority_high</span> High Priority
+                    </button>
+</div>
+<!-- Ticket List -->
+<div class="flex flex-col gap-3">
+<!-- Selected Ticket Card -->
+<div class="bg-surface-container-lowest p-5 rounded-xl cursor-pointer relative overflow-hidden transition-all shadow-[0_8px_30px_rgb(0,0,0,0.04)] ring-1 ring-outline-variant/15">
+<div class="absolute left-0 top-0 bottom-0 w-1 bg-primary"></div>
+<div class="flex justify-between items-start mb-2">
+<h3 class="font-headline font-bold text-on-surface text-lg leading-tight">Subscription upgrade failed</h3>
+<span class="bg-error-container text-on-error-container text-xs px-2 py-1 rounded-md font-bold uppercase tracking-wider flex items-center gap-1">
+                                High
+                            </span><span class="bg-primary-container text-on-primary text-[10px] px-2 py-0.5 rounded-full font-black uppercase tracking-tighter flex items-center gap-1 shadow-sm"><span class="material-symbols-outlined text-[12px]" data-icon="workspace_premium">workspace_premium</span>Plus</span>
+</div>
+<div class="flex justify-between items-end mt-4">
+<div class="flex flex-col gap-1">
+<span class="text-on-surface-variant text-xs flex items-center gap-1"><span class="material-symbols-outlined text-[14px]" data-icon="phone_iphone">phone_iphone</span> +880 1711-223344</span>
+<span class="text-on-surface-variant text-xs flex items-center gap-1"><span class="material-symbols-outlined text-[14px]" data-icon="schedule">schedule</span> 10 mins ago</span>
+</div>
+<div class="flex items-center gap-2">
+<div class="w-6 h-6 rounded-full bg-surface-container-highest overflow-hidden">
+<img alt="Admin" class="w-full h-full object-cover" data-alt="professional headshot of a young woman with dark hair against a soft background" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBVsBxk4CpW2XhP1cfBSEv4iKjdk2f8M4hS5uPpm1oiF2jPtbUZ-sE0GNDGcV2EnDp_xP_6Fj0XjPRUhU1NMzv-BlgGuZAar0FAbDmr--9xfdVEMg0ohB56T2Z96bT3wWbhr_rI4xItJdkBm1ukgNA5Kzs5LsPdmngMY02SHj6it9erv7GNbsu9kIPGT5e76LLyX_3H02JDV36eQvv0CZ2GEvUMLMH4vBbQ7dLJ7-KN0RBu0V6XnQ03zIrhS7TYDPyz7IHuBUGv9nI"/>
+</div>
+<span class="text-xs font-medium text-on-surface">Sarah J.</span>
+</div>
+</div>
+</div>
+<!-- Unselected Ticket Card -->
+<div class="bg-surface-container-low p-5 rounded-xl cursor-pointer hover:bg-surface-container-lowest transition-all group">
+<div class="flex justify-between items-start mb-2">
+<h3 class="font-headline font-semibold text-on-surface-variant group-hover:text-on-surface text-lg leading-tight">Invoice #INV-2023-089 not received</h3>
+<span class="bg-surface-container-highest text-on-surface text-xs px-2 py-1 rounded-md font-medium uppercase tracking-wider">
+                                Normal
+                            </span><span class="bg-secondary-container/30 text-secondary-container text-[10px] px-2 py-0.5 rounded-full font-black uppercase tracking-tighter flex items-center gap-1 mt-1"><span class="material-symbols-outlined text-[12px]" data-icon="stars">stars</span>Pro</span>
+</div>
+<div class="flex justify-between items-end mt-4">
+<div class="flex flex-col gap-1">
+<span class="text-on-surface-variant text-xs flex items-center gap-1"><span class="material-symbols-outlined text-[14px]" data-icon="phone_iphone">phone_iphone</span> +880 1822-556677</span>
+<span class="text-on-surface-variant text-xs flex items-center gap-1"><span class="material-symbols-outlined text-[14px]" data-icon="schedule">schedule</span> 2 hours ago</span>
+</div>
+<div class="flex items-center gap-2">
+<div class="w-6 h-6 rounded-full bg-surface-container-highest overflow-hidden">
+<span class="w-full h-full flex items-center justify-center text-xs font-bold text-on-surface-variant">U</span>
+</div>
+<span class="text-xs font-medium text-on-surface-variant">Unassigned</span>
+</div>
+</div>
+</div>
+<!-- Unselected Ticket Card -->
+<div class="bg-surface-container-low p-5 rounded-xl cursor-pointer hover:bg-surface-container-lowest transition-all group">
+<div class="flex justify-between items-start mb-2">
+<h3 class="font-headline font-semibold text-on-surface-variant group-hover:text-on-surface text-lg leading-tight">Cannot connect WhatsApp Business API</h3>
+<span class="bg-secondary-fixed text-on-secondary-fixed text-xs px-2 py-1 rounded-md font-medium uppercase tracking-wider">
+                                Medium
+                            </span><span class="bg-surface-container-highest text-on-surface-variant text-[10px] px-2 py-0.5 rounded-full font-black uppercase tracking-tighter flex items-center gap-1 mt-1"><span class="material-symbols-outlined text-[12px]" data-icon="person">person</span>Basic</span>
+</div>
+<div class="flex justify-between items-end mt-4">
+<div class="flex flex-col gap-1">
+<span class="text-on-surface-variant text-xs flex items-center gap-1"><span class="material-symbols-outlined text-[14px]" data-icon="phone_iphone">phone_iphone</span> +880 1933-889900</span>
+<span class="text-on-surface-variant text-xs flex items-center gap-1"><span class="material-symbols-outlined text-[14px]" data-icon="schedule">schedule</span> 1 day ago</span>
+</div>
+<div class="flex items-center gap-2">
+<div class="w-6 h-6 rounded-full bg-surface-container-highest overflow-hidden">
+<img alt="Admin" class="w-full h-full object-cover" data-alt="professional headshot of a young man with glasses against a light background" src="https://lh3.googleusercontent.com/aida-public/AB6AXuC7J-AAkSIsC02SZnEngO2w6f_EwnDM0ejYhDoeFDMpyDUGBSDOhN_d1ezDXmyHKMQYtdL1aodHR9beulqlMi4ty-Ohy-onrzoM-hAn0HDeaj27g-AhB4foPP_6-RjDMG2IYuooksHJm_KzZmIBhn7MR6OVshS9qouWAowTgOcVEz62zVIxTgzJkK5XN4TPcDjm1Xq8HZqAXvtrlVS-Ij_0BxMAfzulLhDS_ebkJZorR9DWo_gxHxMyuqnjebwMlJnlxVJqCFzrPAo"/>
+</div>
+<span class="text-xs font-medium text-on-surface-variant">Mike T.</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Right Column: Ticket Detail View -->
+<div class="w-3/5 bg-surface-container-lowest rounded-2xl flex flex-col relative overflow-hidden ring-1 ring-outline-variant/15">
+<!-- Ticket Header -->
+<div class="p-8 pb-6 bg-surface-container-low/50">
+<div class="flex justify-between items-start mb-4">
+<div class="flex gap-3 items-center">
+<span class="bg-error-container text-on-error-container text-xs px-3 py-1.5 rounded-md font-bold uppercase tracking-wider bg-primary-container text-on-primary ring-1 ring-primary/20"><span class="flex items-center gap-1.5"><span class="material-symbols-outlined text-[14px]" data-icon="workspace_premium">workspace_premium</span> Highest Priority (Plus Subscriber)</span></span>
+<span class="text-on-surface-variant text-sm font-medium">Ticket #TCK-9921</span>
+</div>
+<div class="flex gap-2">
+<button class="p-2 rounded-full bg-surface-container hover:bg-surface-container-highest text-on-surface transition-colors">
+<span class="material-symbols-outlined" data-icon="more_vert">more_vert</span>
+</button>
+</div>
+</div>
+<h2 class="text-3xl font-headline font-bold text-on-surface mb-2">Subscription upgrade failed</h2>
+<div class="flex items-center gap-6 mt-6 pt-6 border-t border-surface-container-highest/50">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-full bg-surface-container-highest flex items-center justify-center text-on-surface-variant font-bold text-lg">
+                                R
+                            </div>
+<div class="flex flex-col">
+<span class="text-sm font-bold text-on-surface">Rahim Uddin</span>
+<span class="text-xs text-on-surface-variant">+880 1711-223344</span>
+</div>
+</div>
+<div class="w-px h-8 bg-surface-container-highest"></div>
+<div class="flex flex-col">
+<span class="text-xs text-on-surface-variant uppercase tracking-wider font-semibold mb-1">Assigned To</span>
+<div class="flex items-center gap-2">
+<div class="w-6 h-6 rounded-full bg-surface-container-highest overflow-hidden">
+<img alt="Admin" class="w-full h-full object-cover" data-alt="professional headshot of a young woman with dark hair against a soft background" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBz2pYib9stS6J59TvVHAuuSzO_CbsK8zzSNnyBfDZEayq2n-noPPiINTfh5C20duaYnewHlh_mdNMsL-0jXq8KKTE2nbchEG5qUOmBebeAB0_AnL6S9xzYTBjWZINQEyyhlknfRdICvM4k3KqjsIB3WrUfsSLBjfa1JoUIBvP4n5iFMakFEfBVoRqLPt7CQ2vVhiqRzJsyB5Dvz_boVtbocgeGeAt2bE3IaMGd2UdWCK0ahTJrrxxI9SglLTZECBimuLNPkKaSgX4"/>
+</div>
+<span class="text-sm font-medium text-on-surface">Sarah J.</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Conversation Thread -->
+<div class="flex-1 p-8 overflow-y-auto flex flex-col gap-6 bg-surface-container-lowest">
+<!-- Customer Message -->
+<div class="flex gap-4 max-w-3xl">
+<div class="w-8 h-8 rounded-full bg-surface-container-highest flex-shrink-0 flex items-center justify-center text-on-surface-variant font-bold text-xs mt-1">R</div>
+<div class="flex flex-col gap-1">
+<div class="flex items-baseline gap-2">
+<span class="font-bold text-sm text-on-surface">Rahim Uddin</span>
+<span class="text-xs text-on-surface-variant">Today, 10:23 AM</span>
+</div>
+<div class="bg-surface-container-low p-4 rounded-2xl rounded-tl-none text-on-surface text-sm leading-relaxed">
+<p>Hi support team,</p>
+<p class="mt-2">I tried to upgrade my account to the Pro tier this morning, but my card was declined and the system threw an Error 500. Can you please look into this urgently? I need the advanced features for a campaign launching tomorrow.</p>
+<p class="mt-2">Thanks.</p>
+</div>
+</div>
+</div>
+<!-- System Note -->
+<div class="flex justify-center my-4">
+<span class="bg-surface-container-low text-on-surface-variant text-xs px-4 py-1.5 rounded-full font-medium flex items-center gap-2">
+<span class="material-symbols-outlined text-[14px]" data-icon="info">info</span>
+                            System: Payment attempt failed. Gateway response: Insufficient Funds.
+                        </span>
+</div>
+</div>
+<!-- Quick Reply AI Bar -->
+<div class="p-6 bg-surface/80 backdrop-blur-xl border-t border-outline-variant/10 relative">
+<!-- Glassmorphism AI Glow -->
+<div class="absolute inset-0 bg-primary-fixed/5 pointer-events-none"></div>
+<div class="relative flex flex-col gap-3">
+<div class="flex items-center justify-between px-2">
+<span class="text-xs font-bold text-primary uppercase tracking-wider flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]" data-icon="auto_awesome">auto_awesome</span> Quick Reply
+                            </span>
+<div class="flex gap-2">
+<button class="text-xs bg-surface-container text-on-surface px-3 py-1 rounded-full hover:bg-surface-container-highest transition-colors">Request Info</button>
+<button class="text-xs bg-surface-container text-on-surface px-3 py-1 rounded-full hover:bg-surface-container-highest transition-colors">Resolve</button>
+</div>
+</div>
+<div class="relative bg-surface-container-lowest rounded-xl shadow-[0_4px_20px_rgb(0,0,0,0.03)] ring-1 ring-outline-variant/20 focus-within:ring-primary/30 transition-all overflow-hidden flex items-end p-2">
+<textarea class="w-full bg-transparent border-none focus:ring-0 text-sm text-on-surface resize-none p-2" placeholder="Type your response..." rows="3"></textarea>
+<div class="flex gap-2 p-2">
+<button class="p-2 rounded-full text-on-surface-variant hover:bg-surface-container transition-colors">
+<span class="material-symbols-outlined" data-icon="attach_file">attach_file</span>
+</button>
+<button class="px-5 py-2 rounded-xl bg-gradient-to-r from-primary to-primary-container text-on-primary font-medium text-sm hover:shadow-lg transition-all flex items-center gap-2">
+                                    Send <span class="material-symbols-outlined text-[18px]" data-icon="send">send</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</main>
+</body></html>

@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>MFS Number Approval - Ledger Admin</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&amp;family=Plus+Jakarta+Sans:wght@400;500;600;700&amp;family=Hind+Siliguri:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-primary-container": "#7fc1a5",
+                        "on-tertiary-container": "#f89a90",
+                        "on-secondary-fixed-variant": "#00497d",
+                        "tertiary": "#571a16",
+                        "on-tertiary-fixed": "#3c0605",
+                        "tertiary-fixed-dim": "#ffb4ab",
+                        "surface": "#f7faf6",
+                        "surface-container-lowest": "#ffffff",
+                        "on-secondary": "#ffffff",
+                        "primary-fixed-dim": "#91d4b7",
+                        "primary-fixed": "#adf1d2",
+                        "surface-container-high": "#e6e9e5",
+                        "on-secondary-fixed": "#001d36",
+                        "surface-tint": "#276a52",
+                        "on-primary": "#ffffff",
+                        "on-tertiary-fixed-variant": "#76312b",
+                        "on-tertiary": "#ffffff",
+                        "outline": "#707974",
+                        "secondary-container": "#77b7ff",
+                        "error": "#ba1a1a",
+                        "primary": "#003727",
+                        "outline-variant": "#bfc9c2",
+                        "tertiary-container": "#74302a",
+                        "inverse-on-surface": "#eef2ee",
+                        "on-primary-fixed-variant": "#02513b",
+                        "on-primary-fixed": "#002116",
+                        "surface-bright": "#f7faf6",
+                        "on-surface": "#181c1a",
+                        "inverse-surface": "#2d312f",
+                        "secondary-fixed-dim": "#9fcaff",
+                        "surface-variant": "#e0e3df",
+                        "surface-container-low": "#f1f4f0",
+                        "error-container": "#ffdad6",
+                        "surface-dim": "#d8dbd7",
+                        "secondary": "#0061a4",
+                        "on-surface-variant": "#404944",
+                        "on-error": "#ffffff",
+                        "on-error-container": "#93000a",
+                        "inverse-primary": "#91d4b7",
+                        "background": "#f7faf6",
+                        "surface-container": "#ecefeb",
+                        "on-secondary-container": "#00477b",
+                        "surface-container-highest": "#e0e3df",
+                        "primary-container": "#00503a",
+                        "tertiary-fixed": "#ffdad6",
+                        "secondary-fixed": "#d1e4ff",
+                        "on-background": "#181c1a"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "spacing": {},
+                    "fontFamily": {
+                        "headline": ["Manrope"],
+                        "body": ["Plus Jakarta Sans"],
+                        "label": ["Plus Jakarta Sans"]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        body { font-family: 'Plus Jakarta Sans', sans-serif; }
+        h1, h2, h3, h4, h5, h6, .font-headline { font-family: 'Manrope', sans-serif; }
+        .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+        .glass-panel { background: rgba(255, 255, 255, 0.7); backdrop-filter: blur(16px); }
+        .gradient-text { background: linear-gradient(to right, #003727, #00503a); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+    </style>
+</head>
+<body class="bg-surface text-on-surface antialiased flex h-screen overflow-hidden">
+<!-- SideNavBar (Shared Component) -->
+<nav class="bg-[#f7faf6] dark:bg-[#0a0c0b] text-[#00503a] dark:text-[#00f2ad] font-manrope font-semibold text-sm h-screen w-72 flex flex-col border-r-0 tonal shift using surface-container-low background flat no-borders transition-all ease-out duration-200 fixed left-0 top-0 h-full py-8 flex flex-col gap-y-2 z-40 hidden md:flex shadow-sm">
+<div class="px-8 mb-8">
+<h1 class="text-xl font-bold text-[#003727] dark:text-[#00f2ad] tracking-tight">Ledger Admin</h1>
+<p class="text-xs text-on-surface-variant mt-1 font-body">Payment Integrity</p>
+</div>
+<div class="px-6 mb-6">
+<button class="w-full py-3 px-4 rounded-full bg-primary text-on-primary font-bold shadow-md hover:shadow-lg transition-all flex items-center justify-center gap-2">
+<span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 1;">qr_code_2</span>
+                Generate QR
+            </button>
+</div>
+<div class="flex-1 overflow-y-auto px-4 flex flex-col gap-1">
+<a class="flex items-center gap-3 px-4 py-3 rounded-r-full text-slate-600 dark:text-slate-400 hover:translate-x-1 transition-transform hover:bg-[#f0f4f0] dark:hover:bg-[#14201a]" href="#">
+<span class="material-symbols-outlined">rate_review</span>
+                Manual Review
+            </a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-r-full text-slate-600 dark:text-slate-400 hover:translate-x-1 transition-transform hover:bg-[#f0f4f0] dark:hover:bg-[#14201a]" href="#">
+<span class="material-symbols-outlined">sms_failed</span>
+                SMS Pool
+            </a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-r-full text-slate-600 dark:text-slate-400 hover:translate-x-1 transition-transform hover:bg-[#f0f4f0] dark:hover:bg-[#14201a]" href="#">
+<span class="material-symbols-outlined">screenshot_monitor</span>
+                Devices
+            </a>
+<!-- Active State -->
+<a class="flex items-center gap-3 px-4 py-3 rounded-r-full bg-[#ebf2ea] dark:bg-[#1a2e22] text-[#003727] dark:text-[#00f2ad]" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">verified_user</span>
+                MFS Approval
+            </a>
+</div>
+<div class="px-4 mt-auto flex flex-col gap-1 pt-4 border-t border-surface-container-highest">
+<a class="flex items-center gap-3 px-4 py-3 rounded-r-full text-slate-600 dark:text-slate-400 hover:translate-x-1 transition-transform hover:bg-[#f0f4f0] dark:hover:bg-[#14201a]" href="#">
+<span class="material-symbols-outlined">help</span>
+                Support
+            </a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-r-full text-slate-600 dark:text-slate-400 hover:translate-x-1 transition-transform hover:bg-[#f0f4f0] dark:hover:bg-[#14201a]" href="#">
+<span class="material-symbols-outlined">logout</span>
+                Log Out
+            </a>
+</div>
+</nav>
+<!-- Main Content Area -->
+<main class="flex-1 ml-0 md:ml-72 flex flex-col h-screen overflow-hidden bg-surface-container-low">
+<!-- TopNavBar (Shared Component - Mobile Only & Adjusted for Desktop Layout) -->
+<header class="bg-[#f7faf6] dark:bg-[#0a0c0b] backdrop-blur-xl bg-opacity-80 text-[#00503a] dark:text-[#00f2ad] font-manrope tracking-tight font-bold docked full-width top-0 z-50 no-line tonal layering via surface-container-low flat no-shadows scale-98 active:opacity-80 flex justify-between items-center px-8 h-20 w-full shrink-0">
+<!-- Mobile Menu Toggle (Hidden on Desktop) -->
+<button class="md:hidden text-primary">
+<span class="material-symbols-outlined">menu</span>
+</button>
+<!-- Page Title Area -->
+<div class="flex flex-col">
+<h2 class="text-2xl font-black text-[#003727] dark:text-[#00f2ad] tracking-tighter">MFS Number Approval</h2>
+<span class="text-xs font-body text-on-surface-variant font-medium">v1.1 Auto-Collection Integrity</span>
+</div>
+<!-- Actions & Profile -->
+<div class="flex items-center gap-4">
+<div class="relative hidden sm:flex items-center">
+<span class="material-symbols-outlined absolute left-3 text-on-surface-variant text-sm">search</span>
+<input class="bg-surface-container rounded-full py-2 pl-9 pr-4 text-sm font-body focus:outline-none focus:ring-0 border-none w-64 placeholder:text-on-surface-variant" placeholder="Search Shop or Number..." type="text"/>
+</div>
+<button class="p-2 rounded-full hover:bg-[#ebf2ea] dark:hover:bg-[#1a2e22] transition-all duration-300 text-on-surface-variant relative">
+<span class="material-symbols-outlined">notifications</span>
+<span class="absolute top-1 right-1 w-2 h-2 bg-error rounded-full"></span>
+</button>
+<button class="p-2 rounded-full hover:bg-[#ebf2ea] dark:hover:bg-[#1a2e22] transition-all duration-300 text-on-surface-variant">
+<span class="material-symbols-outlined">settings</span>
+</button>
+<div class="w-10 h-10 rounded-full bg-surface-container-highest overflow-hidden ml-2 border-2 border-surface flex items-center justify-center">
+<img alt="Admin User Profile" class="w-full h-full object-cover" data-alt="Close-up portrait of a professional man with short dark hair and a slight smile, wearing a dark shirt against a blurred background, soft natural lighting." src="https://lh3.googleusercontent.com/aida-public/AB6AXuB_-R3ZaTeZH8OcIBDdThJqbRFfudQDsxn00piP3sRz-cJLeR3dlV1FtdhDKugjrBVF4E80zDlPoTljwduz9qx9LM3hRp_sZusCKiBuCFSRm_5ZPHmchBTLiKm0YVX8vQNvnnYYOjYrGnnfbjrs6_Orpdio96hWzrFbrHZwhZcFdp1lthUgHhg9okPEbTEKx3UgBaFZ7CKqvp2cj9s43ppjy0iSBhKCjBjs0TilWQU-iWO1hsLRvf__8VcOO93v8e04R2Ks88maS6g"/>
+</div>
+</div>
+</header>
+<!-- Scrollable Canvas -->
+<div class="flex-1 overflow-y-auto p-4 md:p-8 relative">
+<div class="max-w-7xl mx-auto flex flex-col lg:flex-row gap-8 items-start">
+<!-- Left Column: Pending List -->
+<div class="flex-1 w-full space-y-6">
+<div class="flex justify-between items-end mb-4">
+<div>
+<h3 class="font-headline font-bold text-lg text-primary tracking-tight">Pending Approvals</h3>
+<p class="text-sm text-on-surface-variant font-body mt-1">Reviewing 12 submitted numbers</p>
+</div>
+<div class="flex gap-2">
+<button class="px-4 py-2 rounded-full bg-surface-container-high text-sm font-semibold text-on-surface flex items-center gap-2 hover:bg-surface-container-highest transition-colors">
+<span class="material-symbols-outlined text-sm">filter_list</span>
+                                Filter
+                            </button>
+</div>
+</div>
+<!-- Approval Card 1 -->
+<div class="bg-surface-container-lowest rounded-xl p-6 transition-all hover:bg-surface relative overflow-hidden group">
+<div class="absolute top-0 left-0 w-1 h-full bg-secondary-container"></div>
+<div class="flex flex-col sm:flex-row sm:items-center justify-between gap-6">
+<!-- Shop Details -->
+<div class="flex items-start gap-4">
+<div class="w-12 h-12 rounded-full bg-surface-container flex items-center justify-center text-primary shrink-0">
+<span class="material-symbols-outlined">storefront</span>
+</div>
+<div>
+<h4 class="font-headline font-bold text-on-surface text-base">Bismillah Telecom</h4>
+<p class="text-sm text-on-surface-variant font-body flex items-center gap-1 mt-0.5">
+<span class="material-symbols-outlined text-[16px]">call</span>
+                                        01711-223344
+                                    </p>
+<div class="flex items-center gap-2 mt-2">
+<span class="px-2.5 py-1 rounded-full bg-surface-container-high text-xs font-semibold text-on-surface flex items-center gap-1">
+<span class="w-2 h-2 rounded-full bg-green-500"></span> Active
+                                        </span>
+<span class="text-xs text-on-surface-variant">Dhaka South</span>
+</div>
+</div>
+</div>
+<!-- MFS Details -->
+<div class="bg-surface p-4 rounded-lg flex-1 sm:max-w-xs border border-surface-container-highest/30">
+<p class="text-xs text-on-surface-variant font-semibold uppercase tracking-wider mb-2">Submitted Number</p>
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-full bg-pink-100 flex items-center justify-center text-pink-700 font-bold text-xs shrink-0">
+                                            bK
+                                        </div>
+<div>
+<p class="font-headline font-extrabold text-primary text-lg tracking-tight">01711-223344</p>
+<p class="text-xs text-on-surface-variant font-medium flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]">sim_card</span> SIM 1
+                                            </p>
+</div>
+</div>
+</div>
+</div>
+<!-- Actions -->
+<div class="flex sm:flex-col gap-2 shrink-0">
+<button class="flex-1 sm:flex-none px-6 py-2.5 rounded-full bg-primary text-on-primary font-semibold text-sm hover:bg-primary-container transition-colors flex items-center justify-center gap-2">
+<span class="material-symbols-outlined text-sm">check_circle</span>
+                                    Approve
+                                </button>
+<button class="flex-1 sm:flex-none px-6 py-2.5 rounded-full bg-error-container text-on-error-container font-semibold text-sm hover:bg-red-200 transition-colors flex items-center justify-center gap-2">
+<span class="material-symbols-outlined text-sm">cancel</span>
+                                    Reject
+                                </button>
+</div>
+</div>
+</div>
+<!-- Approval Card 2 -->
+<div class="bg-surface-container-lowest rounded-xl p-6 transition-all hover:bg-surface relative overflow-hidden group">
+<div class="absolute top-0 left-0 w-1 h-full bg-orange-200"></div>
+<div class="flex flex-col sm:flex-row sm:items-center justify-between gap-6">
+<!-- Shop Details -->
+<div class="flex items-start gap-4">
+<div class="w-12 h-12 rounded-full bg-surface-container flex items-center justify-center text-primary shrink-0">
+<span class="material-symbols-outlined">storefront</span>
+</div>
+<div>
+<h4 class="font-headline font-bold text-on-surface text-base">Maa Enterprise</h4>
+<p class="text-sm text-on-surface-variant font-body flex items-center gap-1 mt-0.5">
+<span class="material-symbols-outlined text-[16px]">call</span>
+                                        01922-334455
+                                    </p>
+<div class="flex items-center gap-2 mt-2">
+<span class="px-2.5 py-1 rounded-full bg-surface-container-high text-xs font-semibold text-on-surface flex items-center gap-1">
+<span class="w-2 h-2 rounded-full bg-green-500"></span> Active
+                                        </span>
+<span class="text-xs text-on-surface-variant">Chittagong</span>
+</div>
+</div>
+</div>
+<!-- MFS Details -->
+<div class="bg-surface p-4 rounded-lg flex-1 sm:max-w-xs border border-surface-container-highest/30">
+<p class="text-xs text-on-surface-variant font-semibold uppercase tracking-wider mb-2">Submitted Number</p>
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-full bg-orange-100 flex items-center justify-center text-orange-700 font-bold text-xs shrink-0">
+                                            Ng
+                                        </div>
+<div>
+<p class="font-headline font-extrabold text-primary text-lg tracking-tight">01922-334455</p>
+<p class="text-xs text-on-surface-variant font-medium flex items-center gap-1 text-orange-600">
+<span class="material-symbols-outlined text-[14px]">warning</span> Mismatch
+                                            </p>
+</div>
+</div>
+</div>
+</div>
+<!-- Actions -->
+<div class="flex sm:flex-col gap-2 shrink-0">
+<button class="flex-1 sm:flex-none px-6 py-2.5 rounded-full bg-primary text-on-primary font-semibold text-sm hover:bg-primary-container transition-colors flex items-center justify-center gap-2">
+<span class="material-symbols-outlined text-sm">check_circle</span>
+                                    Approve
+                                </button>
+<button class="flex-1 sm:flex-none px-6 py-2.5 rounded-full bg-error-container text-on-error-container font-semibold text-sm hover:bg-red-200 transition-colors flex items-center justify-center gap-2">
+<span class="material-symbols-outlined text-sm">cancel</span>
+                                    Reject
+                                </button>
+</div>
+</div>
+</div>
+</div>
+<!-- Right Column: Context/Policy (Glassmorphic) -->
+<aside class="w-full lg:w-80 shrink-0">
+<div class="glass-panel rounded-xl p-6 relative overflow-hidden shadow-[0_20px_40px_rgba(0,0,0,0.04)]">
+<!-- Abstract AI glow -->
+<div class="absolute -top-10 -right-10 w-32 h-32 bg-primary-fixed rounded-full blur-3xl opacity-30"></div>
+<div class="flex items-center gap-3 mb-6 relative z-10">
+<div class="w-10 h-10 rounded-full bg-primary-container flex items-center justify-center text-on-primary shrink-0">
+<span class="material-symbols-outlined">policy</span>
+</div>
+<h3 class="font-headline font-bold text-primary text-lg">Policy Info</h3>
+</div>
+<div class="space-y-4 relative z-10">
+<div class="bg-surface/50 rounded-lg p-4 border border-surface-container-highest/50">
+<h4 class="font-semibold text-sm text-on-surface mb-1">v1.1 Auto-Collection Rules</h4>
+<p class="text-xs text-on-surface-variant font-body leading-relaxed">
+                                    Numbers collected automatically via Device SMS Sync (v1.1) require manual verification if the primary registered phone number does not match the provided MFS number.
+                                </p>
+</div>
+<div class="bg-surface/50 rounded-lg p-4 border border-surface-container-highest/50">
+<h4 class="font-semibold text-sm text-on-surface mb-1">SIM Slot Verification</h4>
+<p class="text-xs text-on-surface-variant font-body leading-relaxed">
+                                    Ensure the designated SIM slot matches the operator's standard usage profile. Reject if slot configuration appears suspicious or highly irregular.
+                                </p>
+</div>
+</div>
+<div class="mt-6 pt-6 border-t border-surface-container-highest/50 relative z-10">
+<p class="text-xs text-on-surface-variant flex items-center gap-2">
+<span class="material-symbols-outlined text-[16px] text-primary">info</span>
+                                For escalating suspicious patterns, contact Level 2 Support.
+                            </p>
+</div>
+</div>
+</aside>
+</div>
+</div>
+</main>
+</body></html>

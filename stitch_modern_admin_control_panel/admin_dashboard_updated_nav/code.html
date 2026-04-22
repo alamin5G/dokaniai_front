@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>DokaniAI Admin Dashboard</title>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;700;800&amp;family=Plus+Jakarta+Sans:wght@400;500;700&amp;family=Hind+Siliguri:wght@400;500;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+  tailwind.config = {
+    darkMode: "class",
+    theme: {
+      extend: {
+        "colors": {
+                "primary-fixed-dim": "#91d4b7",
+                "on-error": "#ffffff",
+                "surface-container": "#ecefeb",
+                "tertiary-fixed-dim": "#ffb4ab",
+                "surface-container-high": "#e6e9e5",
+                "surface-container-highest": "#e0e3df",
+                "error-container": "#ffdad6",
+                "surface-container-lowest": "#ffffff",
+                "background": "#f7faf6",
+                "on-tertiary-fixed": "#3c0605",
+                "tertiary-fixed": "#ffdad6",
+                "on-primary-fixed-variant": "#02513b",
+                "secondary": "#0061a4",
+                "on-primary-container": "#7fc1a5",
+                "surface-variant": "#e0e3df",
+                "on-error-container": "#93000a",
+                "on-secondary": "#ffffff",
+                "on-primary": "#ffffff",
+                "outline-variant": "#bfc9c2",
+                "tertiary": "#571a16",
+                "primary-container": "#00503a",
+                "inverse-on-surface": "#eef2ee",
+                "on-secondary-fixed-variant": "#00497d",
+                "secondary-fixed": "#d1e4ff",
+                "on-surface": "#181c1a",
+                "secondary-fixed-dim": "#9fcaff",
+                "inverse-primary": "#91d4b7",
+                "secondary-container": "#77b7ff",
+                "primary": "#003727",
+                "surface": "#f7faf6",
+                "on-tertiary-fixed-variant": "#76312b",
+                "on-tertiary-container": "#f89a90",
+                "outline": "#707974",
+                "on-background": "#181c1a",
+                "on-secondary-fixed": "#001d36",
+                "error": "#ba1a1a",
+                "tertiary-container": "#74302a",
+                "on-secondary-container": "#00477b",
+                "on-primary-fixed": "#002116",
+                "surface-tint": "#276a52",
+                "surface-dim": "#d8dbd7",
+                "on-tertiary": "#ffffff",
+                "on-surface-variant": "#404944",
+                "surface-container-low": "#f1f4f0",
+                "primary-fixed": "#adf1d2",
+                "inverse-surface": "#2d312f",
+                "surface-bright": "#f7faf6"
+        },
+        "borderRadius": {
+                "DEFAULT": "0.125rem",
+                "lg": "0.25rem",
+                "xl": "0.5rem",
+                "full": "0.75rem"
+        },
+        "spacing": {},
+        "fontFamily": {
+                "headline": [
+                        "Manrope", "sans-serif"
+                ],
+                "body": [
+                        "Plus Jakarta Sans", "sans-serif"
+                ],
+                "label": [
+                        "Plus Jakarta Sans", "sans-serif"
+                ]
+        }
+},
+    },
+  }
+</script>
+<style>
+  body {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+  }
+  h1, h2, h3, h4, h5, h6, .font-headline {
+    font-family: 'Manrope', sans-serif;
+    letter-spacing: -0.02em;
+  }
+  .bengali-text {
+    font-family: 'Hind Siliguri', sans-serif;
+    line-height: 1.6;
+  }
+</style>
+</head>
+<body class="bg-background text-on-background min-h-screen flex overflow-x-hidden">
+<div class="relative flex h-auto min-h-screen w-full flex-col bg-background group/design-root overflow-x-hidden">
+<div class="layout-container flex h-full grow flex-col md:flex-row">
+<!-- SideNavBar -->
+<div class="hidden md:flex flex-col w-64 bg-surface-container-lowest h-screen sticky top-0 border-r border-outline-variant/15 p-4 justify-between z-10 shadow-[40px_0_60px_rgba(24,28,26,0.04)]">
+<div class="flex flex-col gap-4">
+<div class="flex gap-3 mb-8 items-center">
+<div class="bg-surface-container-low aspect-square rounded-full size-10 flex items-center justify-center text-primary" data-icon="Dashboard">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">dashboard</span>
+</div>
+<div class="flex flex-col">
+<h1 class="text-on-surface font-headline text-base font-bold leading-tight">DokaniAI Admin</h1>
+<p class="text-on-surface-variant font-label text-sm font-medium">Superadmin</p>
+</div>
+</div>
+<nav class="flex flex-col gap-2">
+<a class="flex items-center gap-3 px-4 py-3 rounded-xl bg-surface-container text-on-surface transition-colors hover:bg-surface-container-high" href="#">
+<span class="material-symbols-outlined text-primary" data-icon="Dashboard" style="font-variation-settings: 'FILL' 1;">dashboard</span>
+<span class="font-label text-sm font-bold">Dashboard</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-xl text-on-surface-variant hover:bg-surface-container-low transition-colors" href="#">
+<span class="material-symbols-outlined" data-icon="Group">group</span>
+<span class="font-label text-sm font-medium">Users</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-xl text-on-surface-variant hover:bg-surface-container-low transition-colors" href="#">
+<span class="material-symbols-outlined" data-icon="Payments">payments</span>
+<span class="font-label text-sm font-medium">Payments</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-xl text-on-surface-variant hover:bg-surface-container-low transition-colors" href="#">
+<span class="material-symbols-outlined" data-icon="ConfirmationNumber">confirmation_number</span>
+<span class="font-label text-sm font-medium">Coupons</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-xl text-on-surface-variant hover:bg-surface-container-low transition-colors" href="#">
+<span class="material-symbols-outlined" data-icon="Category">category</span>
+<span class="font-label text-sm font-medium">Categories</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-xl text-on-surface-variant hover:bg-surface-container-low transition-colors" href="#">
+<span class="material-symbols-outlined" data-icon="Share">share</span>
+<span class="font-label text-sm font-medium">Referrals</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-xl text-on-surface-variant hover:bg-surface-container-low transition-colors" href="#">
+<span class="material-symbols-outlined" data-icon="SupportAgent">support_agent</span>
+<span class="font-label text-sm font-medium">Support</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-xl text-on-surface-variant hover:bg-surface-container-low transition-colors" href="#">
+<span class="material-symbols-outlined" data-icon="ReceiptLong">receipt_long</span>
+<span class="font-label text-sm font-medium">Audit Logs</span>
+</a>
+</nav>
+</div>
+<div class="flex flex-col gap-2">
+<a class="flex items-center gap-3 px-4 py-3 rounded-xl text-on-surface-variant hover:bg-surface-container-low transition-colors" href="#">
+<span class="material-symbols-outlined" data-icon="Gear">settings</span>
+<span class="font-label text-sm font-medium">Settings</span>
+</a>
+</div>
+</div>
+<!-- Main Content Area -->
+<div class="flex-1 flex flex-col min-w-0 bg-background">
+<!-- TopAppBar -->
+<header class="flex items-center justify-between px-8 py-6 sticky top-0 bg-background/80 backdrop-blur-xl z-10">
+<div class="flex items-center gap-4 text-on-surface md:hidden">
+<span class="material-symbols-outlined text-2xl" data-icon="Menu">menu</span>
+<h2 class="font-headline text-xl font-bold">DokaniAI</h2>
+</div>
+<div class="hidden md:flex items-center gap-4 text-on-surface">
+</div>
+<div class="flex flex-1 justify-end gap-6 items-center">
+<div class="relative w-full max-w-sm hidden md:block">
+<div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+<span class="material-symbols-outlined text-on-surface-variant" data-icon="MagnifyingGlass">search</span>
+</div>
+<input class="block w-full pl-11 pr-4 py-3 bg-surface-container-low border-0 rounded-full text-on-surface placeholder-on-surface-variant font-body text-sm focus:ring-0 focus:bg-surface-container-high transition-colors" placeholder="Search shops, users, transactions..." type="text"/>
+</div>
+<button class="size-10 rounded-full bg-surface-container-low flex items-center justify-center text-on-surface-variant hover:bg-surface-container-high transition-colors relative">
+<span class="material-symbols-outlined" data-icon="Notifications">notifications</span>
+<span class="absolute top-2 right-2 size-2 bg-error rounded-full"></span>
+</button>
+<div class="size-10 rounded-full bg-surface-container-highest bg-cover bg-center ring-2 ring-background overflow-hidden" data-alt="Portrait of a young professional admin user smiling subtly, soft studio lighting, light gray background" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuCklMFlI98669gDhBvtHJBtLRolLRxLVgJ_0RNfFS38wt59R3E_EwRrgnfzX4gSsyS5XXleR5pQgC_a52oDiPztBm2z-aHGr66kUNqLk2dm0y2qCj01vMvtmEvdcM7_oYZQr7INFwqkgF1BA1ZjbRRiwn9t6jjwfe7Tu8yV7MV0_kgMIg6r7Sd0Cl4sG_9KvTZnWTkyQSKcLlD13MPvlZOhv47YXaX0h98fPn9CUlNuBTx1zwXxTf7m2TL7PlrIdOv07dU_SfHk3ZM");'></div>
+</div>
+</header>
+<main class="flex-1 p-4 md:p-8 flex flex-col gap-8 max-w-7xl mx-auto w-full">
+<!-- Section Header -->
+<div class="flex flex-wrap justify-between items-end gap-4 mb-2">
+<div class="flex flex-col gap-2">
+<h2 class="font-headline text-4xl md:text-5xl font-extrabold text-on-surface tracking-tight">Platform Overview</h2>
+<p class="font-body text-on-surface-variant text-lg">Your intelligent command center for DokaniAI.</p>
+</div>
+<button class="bg-gradient-to-r from-primary to-primary-container text-on-primary font-label text-sm font-bold py-3 px-6 rounded-full flex items-center gap-2 hover:opacity-90 transition-opacity shadow-[0_8px_16px_rgba(0,55,39,0.15)]">
+<span class="material-symbols-outlined text-lg" data-icon="Download">download</span>
+    Generate Report
+  </button>
+</div>
+<!-- Top Metrics -->
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
+<div class="bg-surface-container-lowest rounded-2xl p-6 flex flex-col gap-4 shadow-[0_20px_40px_rgba(24,28,26,0.02)]">
+<div class="flex justify-between items-start">
+<div class="size-12 rounded-xl bg-primary-fixed/20 text-primary flex items-center justify-center">
+<span class="material-symbols-outlined text-2xl" data-icon="Payments" style="font-variation-settings: 'FILL' 1;">payments</span>
+</div>
+<span class="bg-surface-container px-2 py-1 rounded-md text-on-surface-variant font-label text-xs font-bold">+12%</span>
+</div>
+<div class="flex flex-col gap-1">
+<p class="font-label text-on-surface-variant text-sm font-medium">Total MRR</p>
+<p class="font-headline text-3xl font-bold text-on-surface bengali-text">৳৪,৫০,০০০</p>
+</div>
+</div>
+<div class="bg-surface-container-lowest rounded-2xl p-6 flex flex-col gap-4 shadow-[0_20px_40px_rgba(24,28,26,0.02)]">
+<div class="flex justify-between items-start">
+<div class="size-12 rounded-xl bg-secondary-fixed/50 text-secondary flex items-center justify-center">
+<span class="material-symbols-outlined text-2xl" data-icon="Storefront" style="font-variation-settings: 'FILL' 1;">storefront</span>
+</div>
+<span class="bg-surface-container px-2 py-1 rounded-md text-on-surface-variant font-label text-xs font-bold">+5.2%</span>
+</div>
+<div class="flex flex-col gap-1">
+<p class="font-label text-on-surface-variant text-sm font-medium">Active Shops</p>
+<p class="font-headline text-3xl font-bold text-on-surface bengali-text">১২,৪৫০</p>
+</div>
+</div>
+<div class="bg-surface-container-lowest rounded-2xl p-6 flex flex-col gap-4 shadow-[0_20px_40px_rgba(24,28,26,0.02)] relative overflow-hidden">
+<div class="absolute inset-0 bg-gradient-to-br from-error-container/30 to-transparent pointer-events-none"></div>
+<div class="flex justify-between items-start relative z-10">
+<div class="size-12 rounded-xl bg-error-container text-on-error-container flex items-center justify-center">
+<span class="material-symbols-outlined text-2xl" data-icon="PendingActions" style="font-variation-settings: 'FILL' 1;">pending_actions</span>
+</div>
+<span class="bg-error-container text-on-error-container px-2 py-1 rounded-md font-label text-xs font-bold">Action Needed</span>
+</div>
+<div class="flex flex-col gap-1 relative z-10">
+<p class="font-label text-on-surface-variant text-sm font-medium">Pending Verifications</p>
+<p class="font-headline text-3xl font-bold text-on-surface bengali-text">৮৫০</p>
+</div>
+</div>
+<div class="bg-surface-container-lowest rounded-2xl p-6 flex flex-col gap-4 shadow-[0_20px_40px_rgba(24,28,26,0.02)]">
+<div class="flex justify-between items-start">
+<div class="size-12 rounded-xl bg-tertiary-fixed/50 text-tertiary flex items-center justify-center">
+<span class="material-symbols-outlined text-2xl" data-icon="GroupAdd" style="font-variation-settings: 'FILL' 1;">group_add</span>
+</div>
+<span class="bg-surface-container px-2 py-1 rounded-md text-on-surface-variant font-label text-xs font-bold">Stable</span>
+</div>
+<div class="flex flex-col gap-1">
+<p class="font-label text-on-surface-variant text-sm font-medium">Referral Payouts</p>
+<p class="font-headline text-3xl font-bold text-on-surface bengali-text">৳১২,০০০</p>
+</div>
+</div>
+</div>
+<!-- Main Area Split -->
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-8 mt-4">
+<!-- Revenue Growth Chart -->
+<div class="lg:col-span-2 bg-surface-container-lowest rounded-3xl p-6 md:p-8 flex flex-col gap-8 shadow-[0_20px_40px_rgba(24,28,26,0.02)]">
+<div class="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-4">
+<div class="flex flex-col gap-2">
+<h3 class="font-headline text-2xl font-bold text-on-surface">Revenue Growth</h3>
+<p class="font-body text-on-surface-variant text-sm">Monthly recurring revenue trends over the last 30 days.</p>
+</div>
+<div class="flex gap-2 bg-surface-container p-1 rounded-xl">
+<button class="px-4 py-2 rounded-lg bg-surface-container-lowest text-on-surface font-label text-sm font-bold shadow-sm">30D</button>
+<button class="px-4 py-2 rounded-lg text-on-surface-variant font-label text-sm font-medium hover:bg-surface-container-lowest/50 transition-colors">90D</button>
+<button class="px-4 py-2 rounded-lg text-on-surface-variant font-label text-sm font-medium hover:bg-surface-container-lowest/50 transition-colors">1Y</button>
+</div>
+</div>
+<div class="relative w-full h-72 flex items-end pt-8">
+<!-- Simplified Recharts Style Visualization -->
+<div class="absolute top-0 left-0 w-full h-full flex flex-col justify-between pointer-events-none pb-8 text-xs font-label text-on-surface-variant/50">
+<div class="w-full border-t border-outline-variant/20 flex items-center"><span class="bg-surface-container-lowest pr-2 -mt-2">5M</span></div>
+<div class="w-full border-t border-outline-variant/20 flex items-center"><span class="bg-surface-container-lowest pr-2 -mt-2">4M</span></div>
+<div class="w-full border-t border-outline-variant/20 flex items-center"><span class="bg-surface-container-lowest pr-2 -mt-2">3M</span></div>
+<div class="w-full border-t border-outline-variant/20 flex items-center"><span class="bg-surface-container-lowest pr-2 -mt-2">2M</span></div>
+</div>
+<svg class="w-full h-full relative z-10" preserveaspectratio="none" viewbox="0 0 800 200">
+<defs>
+<lineargradient id="colorRevenue" x1="0" x2="0" y1="0" y2="1">
+<stop offset="5%" stop-color="#003727" stop-opacity="0.3"></stop>
+<stop offset="95%" stop-color="#003727" stop-opacity="0"></stop>
+</lineargradient>
+</defs>
+<path d="M0,150 L100,120 L200,130 L300,90 L400,100 L500,60 L600,70 L700,30 L800,20 L800,200 L0,200 Z" fill="url(#colorRevenue)"></path>
+<path d="M0,150 L100,120 L200,130 L300,90 L400,100 L500,60 L600,70 L700,30 L800,20" fill="none" stroke="#003727" stroke-linecap="round" stroke-linejoin="round" stroke-width="4"></path>
+<!-- Data Points -->
+<circle cx="100" cy="120" fill="#ffffff" r="4" stroke="#003727" stroke-width="2"></circle>
+<circle cx="300" cy="90" fill="#ffffff" r="4" stroke="#003727" stroke-width="2"></circle>
+<circle cx="500" cy="60" fill="#ffffff" r="4" stroke="#003727" stroke-width="2"></circle>
+<circle cx="700" cy="30" fill="#ffffff" r="4" stroke="#003727" stroke-width="2"></circle>
+</svg>
+<div class="absolute bottom-0 left-0 w-full flex justify-between px-4 text-xs font-label text-on-surface-variant font-medium">
+<span>Week 1</span>
+<span>Week 2</span>
+<span>Week 3</span>
+<span>Week 4</span>
+</div>
+</div>
+</div>
+<!-- Support Activity -->
+<div class="bg-surface-container-lowest rounded-3xl p-6 md:p-8 flex flex-col gap-6 shadow-[0_20px_40px_rgba(24,28,26,0.02)]">
+<div class="flex justify-between items-center mb-2">
+<h3 class="font-headline text-xl font-bold text-on-surface">Recent Support</h3>
+<button class="text-primary font-label text-sm font-bold hover:underline">View All</button>
+</div>
+<div class="flex flex-col gap-6">
+<!-- Item 1 -->
+<div class="flex gap-4 items-start group cursor-pointer">
+<div class="size-10 rounded-full bg-surface-container-high flex items-center justify-center shrink-0 mt-1 group-hover:bg-primary group-hover:text-on-primary transition-colors">
+<span class="material-symbols-outlined text-xl" data-icon="ReportProblem">report_problem</span>
+</div>
+<div class="flex flex-col gap-1">
+<div class="flex justify-between items-baseline gap-2">
+<h4 class="font-body text-on-surface font-semibold text-base line-clamp-1">Payment Gateway Issue</h4>
+<span class="font-label text-xs text-on-surface-variant shrink-0">10m ago</span>
+</div>
+<p class="font-body text-sm text-on-surface-variant line-clamp-2 bengali-text">দোকান আইডি #৪৫০২ পেমেন্ট রিসিভ করতে পারছে না।</p>
+</div>
+</div>
+<!-- Item 2 -->
+<div class="flex gap-4 items-start group cursor-pointer">
+<div class="size-10 rounded-full bg-surface-container-high flex items-center justify-center shrink-0 mt-1 group-hover:bg-primary group-hover:text-on-primary transition-colors">
+<span class="material-symbols-outlined text-xl" data-icon="HelpCenter">help_center</span>
+</div>
+<div class="flex flex-col gap-1">
+<div class="flex justify-between items-baseline gap-2">
+<h4 class="font-body text-on-surface font-semibold text-base line-clamp-1">Inventory Sync Delay</h4>
+<span class="font-label text-xs text-on-surface-variant shrink-0">1h ago</span>
+</div>
+<p class="font-body text-sm text-on-surface-variant line-clamp-2">Shopify integration is reporting delayed stock updates for fashion category.</p>
+</div>
+</div>
+<!-- Item 3 -->
+<div class="flex gap-4 items-start group cursor-pointer">
+<div class="size-10 rounded-full bg-surface-container-high flex items-center justify-center shrink-0 mt-1 group-hover:bg-primary group-hover:text-on-primary transition-colors">
+<span class="material-symbols-outlined text-xl" data-icon="VerifiedUser">verified_user</span>
+</div>
+<div class="flex flex-col gap-1">
+<div class="flex justify-between items-baseline gap-2">
+<h4 class="font-body text-on-surface font-semibold text-base line-clamp-1">Account Verification</h4>
+<span class="font-label text-xs text-on-surface-variant shrink-0">3h ago</span>
+</div>
+<p class="font-body text-sm text-on-surface-variant line-clamp-2">New enterprise client 'Bhai Bhai Traders' waiting for NID approval.</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+</main>
+</div>
+</div>
+<!-- Speak to AI FAB -->
+<div class="fixed bottom-8 right-8 z-50">
+<button class="group flex items-center gap-3 bg-surface-container-lowest/80 backdrop-blur-xl p-3 pr-6 rounded-full shadow-[0_30px_60px_rgba(0,55,39,0.15)] hover:shadow-[0_40px_80px_rgba(0,55,39,0.2)] transition-all duration-300 transform hover:-translate-y-1">
+<div class="size-12 rounded-full bg-gradient-to-br from-primary to-primary-container flex items-center justify-center text-on-primary shadow-inner">
+<span class="material-symbols-outlined text-2xl" data-icon="Mic" style="font-variation-settings: 'FILL' 1;">mic</span>
+</div>
+<div class="flex flex-col items-start pr-2">
+<span class="font-label text-xs font-bold text-primary tracking-wider uppercase">Assistant</span>
+<span class="font-headline text-sm font-extrabold text-on-surface">Speak to AI</span>
+</div>
+</button>
+</div>
+</div>
+</body></html>

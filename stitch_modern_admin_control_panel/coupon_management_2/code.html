@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>DokaniAI - Coupon Management</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&amp;family=Plus+Jakarta+Sans:wght@400;500;600;700&amp;family=Hind+Siliguri:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style>
+  body { font-family: 'Plus Jakarta Sans', sans-serif; }
+  .font-manrope { font-family: 'Manrope', sans-serif; }
+  .font-hind { font-family: 'Hind Siliguri', sans-serif; }
+  .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+  .material-symbols-outlined.fill { font-variation-settings: 'FILL' 1; }
+</style>
+<script id="tailwind-config">
+  tailwind.config = {
+    darkMode: "class",
+    theme: {
+      extend: {
+        "colors": {
+                "surface-container": "#ecefeb",
+                "surface-container-highest": "#e0e3df",
+                "inverse-surface": "#2d312f",
+                "tertiary-fixed": "#ffdad6",
+                "on-tertiary-fixed-variant": "#76312b",
+                "on-error": "#ffffff",
+                "on-surface": "#181c1a",
+                "error-container": "#ffdad6",
+                "inverse-primary": "#91d4b7",
+                "on-tertiary-fixed": "#3c0605",
+                "on-background": "#181c1a",
+                "on-secondary": "#ffffff",
+                "inverse-on-surface": "#eef2ee",
+                "surface": "#f7faf6",
+                "background": "#f7faf6",
+                "surface-variant": "#e0e3df",
+                "secondary-fixed": "#d1e4ff",
+                "primary-fixed": "#adf1d2",
+                "outline-variant": "#bfc9c2",
+                "on-surface-variant": "#404944",
+                "on-secondary-fixed-variant": "#00497d",
+                "on-secondary-container": "#00477b",
+                "secondary-fixed-dim": "#9fcaff",
+                "surface-container-low": "#f1f4f0",
+                "surface-container-high": "#e6e9e5",
+                "on-tertiary": "#ffffff",
+                "primary-fixed-dim": "#91d4b7",
+                "on-tertiary-container": "#f89a90",
+                "secondary": "#0061a4",
+                "on-primary-container": "#7fc1a5",
+                "tertiary-container": "#74302a",
+                "surface-container-lowest": "#ffffff",
+                "on-secondary-fixed": "#001d36",
+                "secondary-container": "#77b7ff",
+                "surface-bright": "#f7faf6",
+                "error": "#ba1a1a",
+                "on-primary-fixed": "#002116",
+                "surface-tint": "#276a52",
+                "on-error-container": "#93000a",
+                "primary": "#003727",
+                "primary-container": "#00503a",
+                "on-primary-fixed-variant": "#02513b",
+                "on-primary": "#ffffff",
+                "outline": "#707974",
+                "tertiary-fixed-dim": "#ffb4ab",
+                "tertiary": "#571a16",
+                "surface-dim": "#d8dbd7"
+        },
+        "borderRadius": {
+                "DEFAULT": "0.125rem",
+                "lg": "0.25rem",
+                "xl": "0.5rem",
+                "full": "0.75rem"
+        },
+        "spacing": {},
+        "fontFamily": {
+                "headline": [
+                        "Manrope"
+                ],
+                "body": [
+                        "Plus Jakarta Sans"
+                ],
+                "label": [
+                        "Plus Jakarta Sans"
+                ]
+        }
+},
+    },
+  }
+</script>
+</head>
+<body class="bg-background text-on-surface antialiased min-h-screen">
+<!-- SideNavBar -->
+<nav class="h-screen w-72 fixed left-0 top-0 bg-white/70 dark:bg-emerald-950/70 backdrop-blur-2xl flex flex-col gap-2 p-6 border-r border-emerald-100/10 z-50">
+<div class="mb-8 px-4">
+<h1 class="text-2xl font-black text-emerald-900 dark:text-emerald-50 tracking-tighter">DokaniAI</h1>
+<p class="text-emerald-800/60 dark:text-emerald-100/60 text-sm font-medium">SaaS Admin</p>
+</div>
+<div class="flex flex-col gap-2">
+<a class="flex items-center gap-4 text-emerald-800/60 dark:text-emerald-100/60 px-4 py-3 hover:bg-emerald-100/50 dark:hover:bg-emerald-800/50 transition-all duration-300 rounded-xl font-manrope font-semibold tracking-tighter scale-95 active:scale-90" href="#">
+<span class="material-symbols-outlined" data-icon="dashboard">dashboard</span>
+<span>Dashboard</span>
+</a>
+<a class="flex items-center gap-4 text-emerald-800/60 dark:text-emerald-100/60 px-4 py-3 hover:bg-emerald-100/50 dark:hover:bg-emerald-800/50 transition-all duration-300 rounded-xl font-manrope font-semibold tracking-tighter scale-95 active:scale-90" href="#">
+<span class="material-symbols-outlined" data-icon="group">group</span>
+<span>Users</span>
+</a>
+<a class="flex items-center gap-4 text-emerald-800/60 dark:text-emerald-100/60 px-4 py-3 hover:bg-emerald-100/50 dark:hover:bg-emerald-800/50 transition-all duration-300 rounded-xl font-manrope font-semibold tracking-tighter scale-95 active:scale-90" href="#">
+<span class="material-symbols-outlined" data-icon="payments">payments</span>
+<span>Payments</span>
+</a>
+<a class="flex items-center gap-4 bg-emerald-900 dark:bg-emerald-100 text-white dark:text-emerald-900 rounded-xl px-4 py-3 shadow-lg shadow-emerald-900/10 font-manrope font-semibold tracking-tighter scale-95 active:scale-90" href="#">
+<span class="material-symbols-outlined fill" data-icon="confirmation_number">confirmation_number</span>
+<span>Coupons</span>
+</a>
+<a class="flex items-center gap-4 text-emerald-800/60 dark:text-emerald-100/60 px-4 py-3 hover:bg-emerald-100/50 dark:hover:bg-emerald-800/50 transition-all duration-300 rounded-xl font-manrope font-semibold tracking-tighter scale-95 active:scale-90" href="#">
+<span class="material-symbols-outlined" data-icon="category">category</span>
+<span>Categories</span>
+</a>
+<a class="flex items-center gap-4 text-emerald-800/60 dark:text-emerald-100/60 px-4 py-3 hover:bg-emerald-100/50 dark:hover:bg-emerald-800/50 transition-all duration-300 rounded-xl font-manrope font-semibold tracking-tighter scale-95 active:scale-90" href="#">
+<span class="material-symbols-outlined" data-icon="share">share</span>
+<span>Referrals</span>
+</a>
+<a class="flex items-center gap-4 text-emerald-800/60 dark:text-emerald-100/60 px-4 py-3 hover:bg-emerald-100/50 dark:hover:bg-emerald-800/50 transition-all duration-300 rounded-xl font-manrope font-semibold tracking-tighter scale-95 active:scale-90" href="#">
+<span class="material-symbols-outlined" data-icon="support_agent">support_agent</span>
+<span>Support</span>
+</a>
+<a class="flex items-center gap-4 text-emerald-800/60 dark:text-emerald-100/60 px-4 py-3 hover:bg-emerald-100/50 dark:hover:bg-emerald-800/50 transition-all duration-300 rounded-xl font-manrope font-semibold tracking-tighter scale-95 active:scale-90" href="#">
+<span class="material-symbols-outlined" data-icon="receipt_long">receipt_long</span>
+<span>Audit Logs</span>
+</a>
+</div>
+</nav>
+<!-- Main Content Wrapper -->
+<div class="ml-72 min-h-screen flex flex-col relative">
+<!-- TopAppBar -->
+<header class="sticky top-0 w-full z-40 bg-[#f7faf6]/80 dark:bg-emerald-950/80 backdrop-blur-md flex justify-between items-center h-20 px-10">
+<div class="flex-1 flex items-center">
+<div class="relative w-96 focus-within:bg-white/50 transition-all rounded-full bg-surface-container-low px-4 py-2 flex items-center gap-3">
+<span class="material-symbols-outlined text-on-surface-variant" data-icon="search">search</span>
+<input class="bg-transparent border-none focus:ring-0 text-sm font-plus-jakarta-sans font-medium w-full text-on-surface placeholder-on-surface-variant outline-none" placeholder="Search coupons..." type="text"/>
+</div>
+</div>
+<div class="flex items-center gap-6">
+<button class="text-emerald-600 dark:text-emerald-400 hover:text-emerald-950 dark:hover:text-white transition-all">
+<span class="material-symbols-outlined" data-icon="notifications">notifications</span>
+</button>
+<button class="text-emerald-600 dark:text-emerald-400 hover:text-emerald-950 dark:hover:text-white transition-all">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+</button>
+<div class="w-10 h-10 rounded-full overflow-hidden border-2 border-surface-container-highest">
+<img alt="Administrator Profile" class="w-full h-full object-cover" data-alt="professional portrait of an administrator in a modern office" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCJTZpL8kZeFIzrBi-6MmKNdHpyI978wVVJeMZ6mS9iKSVmIvTW5WIrcbmHAuGMOn1GeM3rnoRfo2QUI-tFtUBL1eawtXXkasJJAR6dsfYd4XQti68ftNrfaC0dbQPLAqnREg-vuTAhZljuwSR_r4MSNB4u_6omQWNw8Qoz25H-WSsUTA-rAxkizfFdYS2WAUVroqPaR0ftG63s7OCbe70SZbWXrlT3omd8ox-MglLfyJ2R5UKdUir29YTfoLT5_P7tGSSh-EPvDFQ"/>
+</div>
+</div>
+</header>
+<!-- Canvas -->
+<main class="flex-1 p-10 flex flex-col gap-12">
+<!-- Header Section -->
+<div class="flex items-end justify-between">
+<div class="flex flex-col gap-2">
+<h2 class="font-manrope text-5xl font-extrabold tracking-tight text-on-surface">Promotional Coupons</h2>
+<p class="text-on-surface-variant font-medium text-lg">Manage active campaigns and track redemption metrics.</p>
+</div>
+<button class="bg-gradient-to-r from-primary to-primary-container text-on-primary px-6 py-3 rounded-xl font-bold tracking-wide shadow-lg shadow-primary/20 hover:opacity-90 transition-opacity flex items-center gap-2">
+<span class="material-symbols-outlined" data-icon="add">add</span>
+          Create New Coupon
+        </button>
+</div>
+<!-- Bento Grid Layout -->
+<div class="grid grid-cols-1 xl:grid-cols-3 gap-8">
+<!-- Active Coupons Modules (2 columns span) -->
+<div class="xl:col-span-2 flex flex-col gap-6">
+<h3 class="font-manrope text-xl font-bold text-on-surface flex items-center gap-2">
+<span class="material-symbols-outlined text-primary" data-icon="local_activity">local_activity</span>
+            Active Campaigns
+          </h3>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+<!-- Coupon Card 1 -->
+<div class="bg-surface-container-lowest rounded-2xl p-6 relative overflow-hidden group">
+<div class="absolute -right-6 -top-6 w-32 h-32 bg-primary-fixed/20 rounded-full blur-3xl group-hover:bg-primary-fixed/30 transition-colors"></div>
+<div class="flex justify-between items-start mb-6">
+<div class="bg-surface-container-low px-4 py-2 rounded-lg font-mono font-bold text-xl tracking-widest text-primary">RAMADAN50</div>
+<div class="bg-primary-fixed text-on-primary-fixed px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider">Active</div>
+</div>
+<div class="flex flex-col gap-4 mb-6">
+<div class="flex justify-between items-center border-b border-surface-container-high pb-3">
+<span class="text-on-surface-variant text-sm font-medium">Value</span>
+<span class="font-hind font-bold text-lg text-on-surface">Fixed ৳৫০</span>
+</div>
+<div class="flex justify-between items-center border-b border-surface-container-high pb-3">
+<span class="text-on-surface-variant text-sm font-medium">Limit</span>
+<span class="font-hind font-bold text-lg text-on-surface">১০০</span>
+</div>
+<div class="flex justify-between items-center">
+<span class="text-on-surface-variant text-sm font-medium">Usage</span>
+<div class="flex items-center gap-3">
+<div class="w-24 h-2 bg-surface-container-high rounded-full overflow-hidden">
+<div class="h-full bg-primary" style="width: 45%;"></div>
+</div>
+<span class="font-hind font-bold text-lg text-on-surface">৪৫</span>
+</div>
+</div>
+</div>
+<div class="flex gap-3">
+<button class="flex-1 bg-surface-container-high hover:bg-surface-container-highest text-on-surface py-2 rounded-lg font-semibold text-sm transition-colors">Edit</button>
+<button class="flex-1 bg-error-container hover:bg-error-container/80 text-on-error-container py-2 rounded-lg font-semibold text-sm transition-colors">Deactivate</button>
+</div>
+</div>
+<!-- Coupon Card 2 -->
+<div class="bg-surface-container-lowest rounded-2xl p-6 relative overflow-hidden group">
+<div class="absolute -right-6 -top-6 w-32 h-32 bg-secondary-container/20 rounded-full blur-3xl group-hover:bg-secondary-container/30 transition-colors"></div>
+<div class="flex justify-between items-start mb-6">
+<div class="bg-surface-container-low px-4 py-2 rounded-lg font-mono font-bold text-xl tracking-widest text-secondary">EID2026</div>
+<div class="bg-primary-fixed text-on-primary-fixed px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider">Active</div>
+</div>
+<div class="flex flex-col gap-4 mb-6">
+<div class="flex justify-between items-center border-b border-surface-container-high pb-3">
+<span class="text-on-surface-variant text-sm font-medium">Value</span>
+<span class="font-hind font-bold text-lg text-on-surface">Percentage ২০%</span>
+</div>
+<div class="flex justify-between items-center border-b border-surface-container-high pb-3">
+<span class="text-on-surface-variant text-sm font-medium">Limit</span>
+<span class="font-hind font-bold text-lg text-on-surface">৫০০</span>
+</div>
+<div class="flex justify-between items-center">
+<span class="text-on-surface-variant text-sm font-medium">Usage</span>
+<div class="flex items-center gap-3">
+<div class="w-24 h-2 bg-surface-container-high rounded-full overflow-hidden">
+<div class="h-full bg-secondary" style="width: 4%;"></div>
+</div>
+<span class="font-hind font-bold text-lg text-on-surface">২০</span>
+</div>
+</div>
+</div>
+<div class="flex gap-3">
+<button class="flex-1 bg-surface-container-high hover:bg-surface-container-highest text-on-surface py-2 rounded-lg font-semibold text-sm transition-colors">Edit</button>
+<button class="flex-1 bg-error-container hover:bg-error-container/80 text-on-error-container py-2 rounded-lg font-semibold text-sm transition-colors">Deactivate</button>
+</div>
+</div>
+</div>
+</div>
+<!-- Redemption History Sidebar -->
+<div class="xl:col-span-1 flex flex-col gap-6">
+<h3 class="font-manrope text-xl font-bold text-on-surface flex items-center gap-2">
+<span class="material-symbols-outlined text-on-surface-variant" data-icon="history">history</span>
+            Recent Redemptions
+          </h3>
+<div class="bg-surface-container-lowest rounded-2xl p-2 h-full">
+<div class="flex flex-col">
+<!-- Header Row -->
+<div class="flex justify-between px-4 py-3 bg-surface-container-low/50 rounded-xl mb-2">
+<span class="text-xs font-bold text-on-surface-variant uppercase tracking-wider">User Phone</span>
+<span class="text-xs font-bold text-on-surface-variant uppercase tracking-wider">Timestamp</span>
+</div>
+<!-- History Rows -->
+<div class="flex justify-between items-center px-4 py-3 hover:bg-surface-container-low rounded-xl transition-colors">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-primary text-xl" data-icon="person">person</span>
+<span class="font-hind font-medium text-sm">+8801711***234</span>
+</div>
+<span class="text-xs text-on-surface-variant font-medium">10 mins ago</span>
+</div>
+<div class="flex justify-between items-center px-4 py-3 hover:bg-surface-container-low rounded-xl transition-colors">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-secondary text-xl" data-icon="person">person</span>
+<span class="font-hind font-medium text-sm">+8801822***567</span>
+</div>
+<span class="text-xs text-on-surface-variant font-medium">45 mins ago</span>
+</div>
+<div class="flex justify-between items-center px-4 py-3 hover:bg-surface-container-low rounded-xl transition-colors">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-primary text-xl" data-icon="person">person</span>
+<span class="font-hind font-medium text-sm">+8801933***890</span>
+</div>
+<span class="text-xs text-on-surface-variant font-medium">2 hours ago</span>
+</div>
+<div class="flex justify-between items-center px-4 py-3 hover:bg-surface-container-low rounded-xl transition-colors">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-primary text-xl" data-icon="person">person</span>
+<span class="font-hind font-medium text-sm">+8801544***112</span>
+</div>
+<span class="text-xs text-on-surface-variant font-medium">Yesterday, 14:30</span>
+</div>
+<div class="flex justify-between items-center px-4 py-3 hover:bg-surface-container-low rounded-xl transition-colors">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-secondary text-xl" data-icon="person">person</span>
+<span class="font-hind font-medium text-sm">+8801655***334</span>
+</div>
+<span class="text-xs text-on-surface-variant font-medium">Yesterday, 09:15</span>
+</div>
+</div>
+<div class="mt-4 px-4 pb-2">
+<button class="w-full text-center text-sm font-bold text-primary hover:text-primary-container py-2 transition-colors">View Full Ledger →</button>
+</div>
+</div>
+</div>
+</div>
+</main>
+</div>
+</body></html>
