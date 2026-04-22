@@ -32,10 +32,23 @@ export async function getAvailablePlans(): Promise<Plan[]> {
 let _currentSubCache: { key: string; promise: Promise<Subscription | null> } | null = null;
 
 export async function getCurrentSubscription(): Promise<Subscription | null> {
-  const token = apiClient.defaults.headers.common["Authorization"];
-  if (!token) return null;
+  // The auth token is attached by apiClient's request interceptor.
+  // Reading axios default headers here is unreliable because we never set
+  // defaults.Authorization globally.
+  let key = "current-user";
+  if (typeof window !== "undefined") {
+    try {
+      const raw = localStorage.getItem("dokaniai-auth-storage");
+      const parsed = raw ? JSON.parse(raw) : null;
+      const token = parsed?.state?.accessToken;
+      if (typeof token === "string" && token.length > 0) {
+        key = token;
+      }
+    } catch {
+      // ignore malformed storage payload
+    }
+  }
 
-  const key = String(token);
   if (_currentSubCache && _currentSubCache.key === key) {
     return _currentSubCache.promise;
   }
