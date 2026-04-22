@@ -5,6 +5,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import QRCode from "qrcode";
 import type {
     ManualReviewPaymentItem,
+    PaymentVerificationMethod,
     AdminDevice,
     SmsReportItem,
     PaymentSummary,
@@ -87,6 +88,21 @@ function MatchStatusBadge({ status }: { status: string }) {
     return (
         <span className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ${config[status] || "bg-gray-100 text-gray-800"}`}>
             {status}
+        </span>
+    );
+}
+
+function VerificationMethodBadge({ method }: { method: PaymentVerificationMethod | null }) {
+    if (!method) return null;
+    const isAuto = method === "AUTO";
+    return (
+        <span className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider ${
+            isAuto
+                ? "bg-emerald-100 text-emerald-700"
+                : "bg-blue-100 text-blue-700"
+        }`}>
+            <span className="material-symbols-outlined text-[12px]">{isAuto ? "bolt" : "person_check"}</span>
+            {isAuto ? "Auto-verified" : "Manual"}
         </span>
     );
 }
@@ -533,6 +549,7 @@ export default function PaymentsTab() {
                                                             <div className="font-headline font-bold text-on-surface flex items-center gap-2">
                                                                 {item.userName}
                                                                 <span className="bg-primary/10 text-primary text-[10px] px-2 py-0.5 rounded-full font-label uppercase tracking-widest">{t("status.COMPLETED")}</span>
+                                                                <VerificationMethodBadge method={item.verificationMethod} />
                                                             </div>
                                                             <div className="font-body text-xs text-on-surface-variant">{item.userPhone}</div>
                                                             <div className="font-label text-xs text-on-surface-variant tracking-wider mt-0.5">TRX: {item.submittedTrxId}</div>
@@ -852,32 +869,32 @@ export default function PaymentsTab() {
                                                 <th className="px-6 py-4">{t("table.receiver")}</th>
                                                 <th className="px-6 py-4">{t("table.receivedAt")}</th>
                                                 <th className="px-6 py-4">{t("table.matchStatus")}</th>
-                            <th className="px-6 py-4"></th>
+                                                <th className="px-6 py-4"></th>
                                             </tr>
                                         </thead>
-                                         <tbody className="divide-y divide-surface-container">
-                                             {filteredSmsPool.length === 0 ? (
-                                                 <tr><td colSpan={8} className="px-6 py-12 text-center text-on-surface-variant">{t("messages.noSms")}</td></tr>
-                                             ) : (
-                                                 filteredSmsPool.map((sms) => (
-                                                     <tr key={sms.id} className="hover:bg-surface-container-low transition-colors">
-                                                         <td className="px-6 py-4 text-sm font-mono text-on-surface">{sms.trxId}</td>
-                                                         <td className="px-6 py-4 text-sm font-medium text-on-surface">৳ {sms.amount.toLocaleString()}</td>
-                                                         <td className="px-6 py-4"><MfsBadge method={sms.mfsType} /></td>
-                                                         <td className="px-6 py-4 text-sm text-on-surface-variant">{sms.senderNumber}</td>
-                                                         <td className="px-6 py-4 text-sm text-on-surface-variant">{sms.receiverNumber}</td>
-                                                         <td className="px-6 py-4 text-sm text-on-surface-variant whitespace-nowrap">{new Date(sms.smsReceivedAt).toLocaleString()}</td>
-                                                         <td className="px-6 py-4"><MatchStatusBadge status={sms.matchStatus} /></td>
-                                                         <td className="px-6 py-4">
-                                                             <button
-                                                                 onClick={() => handleDeleteSms(sms.id)}
-                                                                 className="text-error text-sm hover:underline cursor-pointer"
-                                                             >Delete</button>
-                                                         </td>
-                                                     </tr>
-                                                 ))
-                                             )}
-                                         </tbody>
+                                        <tbody className="divide-y divide-surface-container">
+                                            {filteredSmsPool.length === 0 ? (
+                                                <tr><td colSpan={8} className="px-6 py-12 text-center text-on-surface-variant">{t("messages.noSms")}</td></tr>
+                                            ) : (
+                                                filteredSmsPool.map((sms) => (
+                                                    <tr key={sms.id} className="hover:bg-surface-container-low transition-colors">
+                                                        <td className="px-6 py-4 text-sm font-mono text-on-surface">{sms.trxId}</td>
+                                                        <td className="px-6 py-4 text-sm font-medium text-on-surface">৳ {sms.amount.toLocaleString()}</td>
+                                                        <td className="px-6 py-4"><MfsBadge method={sms.mfsType} /></td>
+                                                        <td className="px-6 py-4 text-sm text-on-surface-variant">{sms.senderNumber}</td>
+                                                        <td className="px-6 py-4 text-sm text-on-surface-variant">{sms.receiverNumber}</td>
+                                                        <td className="px-6 py-4 text-sm text-on-surface-variant whitespace-nowrap">{new Date(sms.smsReceivedAt).toLocaleString()}</td>
+                                                        <td className="px-6 py-4"><MatchStatusBadge status={sms.matchStatus} /></td>
+                                                        <td className="px-6 py-4">
+                                                            <button
+                                                                onClick={() => handleDeleteSms(sms.id)}
+                                                                className="text-error text-sm hover:underline cursor-pointer"
+                                                            >Delete</button>
+                                                        </td>
+                                                    </tr>
+                                                ))
+                                            )}
+                                        </tbody>
                                     </table>
                                 </div>
                             </div>

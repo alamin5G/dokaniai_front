@@ -10,6 +10,8 @@ export type { MfsType, PaymentIntentStatus } from "@/types/subscription";
 
 // ─── Manual Review Payment Item ────────────────────────────────────────────
 
+export type PaymentVerificationMethod = "AUTO" | "MANUAL";
+
 export interface ManualReviewPaymentItem {
     paymentIntentId: string;
     userId: string;
@@ -30,6 +32,7 @@ export interface ManualReviewPaymentItem {
     billingCycle: string | null;
     couponCode: string | null;
     discountAmount: number | null;
+    verificationMethod: PaymentVerificationMethod | null;
 }
 
 // ─── Admin Device ──────────────────────────────────────────────────────────
