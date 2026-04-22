@@ -2,6 +2,7 @@
 
 import {
   getPaymentIntentStatus,
+  invalidateCurrentSubscriptionCache,
   resubmitPaymentIntent,
   submitPaymentTrx,
 } from "@/lib/subscriptionApi";
@@ -178,6 +179,8 @@ export default function SubscriptionPaymentStatusPage() {
     if (statusData?.status === "COMPLETED") {
       sessionStorage.removeItem("payment_checkout");
       sessionStorage.removeItem("payment_trx_submitted");
+      // Invalidate subscription cache so onboarding/dashboard sees the new active subscription
+      invalidateCurrentSubscriptionCache();
     }
     if (statusData?.status === "FAILED" || statusData?.status === "EXPIRED" || statusData?.status === "REJECTED") {
       sessionStorage.removeItem("payment_trx_submitted");

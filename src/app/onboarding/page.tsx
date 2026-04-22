@@ -8,7 +8,7 @@ import { createProduct } from "@/lib/productApi";
 import { formatLocalizedNumber, sanitizeNumericInput } from "@/lib/localeNumber";
 import { getSampleProductsByBusinessType } from "@/lib/onboardingSampleProducts";
 import { getFallbackCategoryPreview } from "@/lib/onboardingFallbackCategories";
-import { getCurrentSubscription } from "@/lib/subscriptionApi";
+import { getCurrentSubscription, invalidateCurrentSubscriptionCache } from "@/lib/subscriptionApi";
 import { useAuthStore } from "@/store/authStore";
 import { useBusinessStore } from "@/store/businessStore";
 import type { CategoryResponse } from "@/types/category";
@@ -358,6 +358,8 @@ function OnboardingPageContent() {
         let cancelled = false;
         const checkSubscription = async () => {
             try {
+                // Always bust cache — this page may be reached right after payment completion
+                invalidateCurrentSubscriptionCache();
                 const sub = await getCurrentSubscription();
                 if (cancelled) return;
                 setSubscription(sub);
@@ -369,7 +371,14 @@ function OnboardingPageContent() {
             }
         };
         void checkSubscription();
-        return () => { cancelled = true; };
+
+        // Also re-check when payment page signals subscription refresh
+        const onRefresh = () => { void checkSubscription(); };
+        window.addEventListener("dokaniai:subscription-refresh", onRefresh);
+        return () => {
+            cancelled = true;
+            window.removeEventListener("dokaniai:subscription-refresh", onRefresh);
+        };
     }, [isHydrated, accessToken]);
 
     // ---------------------------------------------------------------------------
@@ -1633,12 +1642,12 @@ function OnboardingPageContent() {
 
             {/* Trial Expiry Banner */}
             {subscription?.status === "TRIAL" && subscription.currentPeriodEnd && (
-              (() => {
-                const daysLeft = Math.max(0, Math.ceil(Math.abs(
-                  new Date(subscription.currentPeriodEnd).getTime() - Date.now()
-                ) / (1000 * 60 * 60 * 24)));
-                return daysLeft <= 7 ? <TrialExpiryBanner daysRemaining={daysLeft} /> : null;
-              })()
+                (() => {
+                    const daysLeft = Math.max(0, Math.ceil(Math.abs(
+                        new Date(subscription.currentPeriodEnd).getTime() - Date.now()
+                    ) / (1000 * 60 * 60 * 24)));
+                    return daysLeft <= 7 ? <TrialExpiryBanner daysRemaining={daysLeft} /> : null;
+                })()
             )}
 
             {/* Main wizard card */}

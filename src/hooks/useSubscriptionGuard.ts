@@ -1,6 +1,6 @@
 "use client";
 
-import { getCurrentSubscription } from "@/lib/subscriptionApi";
+import { getCurrentSubscription, invalidateCurrentSubscriptionCache } from "@/lib/subscriptionApi";
 import { useAuthStore } from "@/store/authStore";
 import type { SubscriptionStatus } from "@/types/subscription";
 import { useEffect, useRef, useState } from "react";
@@ -66,6 +66,7 @@ export function useSubscriptionGuard(): SubscriptionGuardResult {
     void check();
 
     const onRefresh = () => {
+      invalidateCurrentSubscriptionCache();
       checkedRef.current = false;
       refreshGenerationRef.current += 1;
       void check();
