@@ -116,6 +116,8 @@ const apiClient = axios.create({
   },
 });
 
+let refreshPromise: Promise<{ accessToken: string; refreshToken: string }> | null = null;
+
 // Request interceptor to attach token
 apiClient.interceptors.request.use((config) => {
   const publicNoAuthRequest = isPublicNoAuthEndpoint(config.url);
@@ -202,19 +204,26 @@ apiClient.interceptors.response.use(
       originalRequest._retry = true;
 
       try {
-        const { refreshToken } = useAuthStore.getState();
+        const currentStore = useAuthStore.getState();
+        const { refreshToken } = currentStore;
         if (!refreshToken) throw new Error('No refresh token available');
 
-        const response = await axios.post(`${apiClient.defaults.baseURL}/auth/refresh`, {
-          refreshToken,
-        }, {
-          headers: {
-            "X-Device-Id": getOrCreateClientDeviceId(),
-          },
-        });
+        if (!refreshPromise) {
+          refreshPromise = axios.post(`${apiClient.defaults.baseURL}/auth/refresh`, {
+            refreshToken,
+          }, {
+            headers: {
+              "X-Device-Id": getOrCreateClientDeviceId(),
+            },
+          }).then((response) => {
+            const { accessToken: newAccess, refreshToken: newRefresh } = response.data.data;
+            return { accessToken: newAccess, refreshToken: newRefresh };
+          }).finally(() => {
+            refreshPromise = null;
+          });
+        }
 
-        const { accessToken: newAccess, refreshToken: newRefresh } = response.data.data;
-        const currentStore = useAuthStore.getState();
+        const { accessToken: newAccess, refreshToken: newRefresh } = await refreshPromise;
         currentStore.setTokens(newAccess, newRefresh, currentStore.userId!, currentStore.status);
 
         originalRequest.headers.Authorization = `Bearer ${newAccess}`;

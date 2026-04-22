@@ -365,6 +365,8 @@ function OnboardingPageContent() {
                 setSubscription(sub);
                 if (!sub || !["ACTIVE", "TRIAL", "GRACE"].includes(sub.status)) {
                     setShowSubscriptionModal(true);
+                } else {
+                    setShowSubscriptionModal(false);
                 }
             } catch {
                 setShowSubscriptionModal(true);
@@ -728,6 +730,10 @@ function OnboardingPageContent() {
             const resp = err && typeof err === "object" && "response" in err
                 ? (err as { response?: { status?: number; data?: { message?: string } } }).response
                 : undefined;
+            if (resp?.status === 402) {
+                setShowSubscriptionModal(true);
+                return;
+            }
             const isLimitError = resp?.status === 400
                 || (resp?.data?.message?.toLowerCase().includes("limit"));
             setError(isLimitError ? tb("list.errorCreateLimitReached") : tb("list.errorCreate"));
