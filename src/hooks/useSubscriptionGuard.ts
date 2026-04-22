@@ -77,4 +77,6 @@ export function useSubscriptionGuard(): SubscriptionGuardResult {
       window.removeEventListener(SUBSCRIPTION_REFRESH_EVENT, onRefresh);
     };
   }, [accessToken]);
+
+  return { loading, hasSubscription, subscriptionStatus };
 }
