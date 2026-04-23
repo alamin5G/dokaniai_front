@@ -41,6 +41,8 @@ export interface AIParseRequest {
     text: string;
     confirmationToken?: string;
     idempotencyKey?: string;
+    /** Optional scope restriction: "PRODUCT_ONLY" = only ADD_PRODUCT allowed */
+    scope?: string;
 }
 
 export interface VoiceSessionCreateRequest {

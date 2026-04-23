@@ -35,7 +35,7 @@ export function useSSE() {
                 sourceRef.current.close();
             }
 
-            const url = `${process.env.NEXT_PUBLIC_API_BASE_URL || ""}/api/v1/sse/subscribe?token=${encodeURIComponent(accessToken)}`;
+            const url = `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:8082/api/v1"}/sse/subscribe?token=${encodeURIComponent(accessToken)}`;
             const source = new EventSource(url);
             sourceRef.current = source;
 
