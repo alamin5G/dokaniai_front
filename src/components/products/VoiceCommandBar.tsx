@@ -6,6 +6,8 @@ import type { ParsedAction } from "@/types/ai";
 import { useTranslations } from "next-intl";
 import { useCallback, useRef, useState } from "react";
 
+const STT_URL = process.env.NEXT_PUBLIC_STT_URL || "http://localhost:5000";
+
 // ---------------------------------------------------------------------------
 // Inline SVG Icons
 // ---------------------------------------------------------------------------
@@ -118,24 +120,29 @@ export default function VoiceCommandBar() {
                 const blob = new Blob(chunksRef.current, { type: "audio/webm" });
                 chunksRef.current = [];
 
-                if (!activeBusinessId) {
-                    setMicState("idle");
-                    return;
-                }
-
                 setMicState("transcribing");
 
                 try {
-                    // Send audio to Spring Boot API → STT service → get transcript
-                    // We use the /ai/voice endpoint which returns AIResponse with content
-                    const { sendVoiceQuery } = await import("@/lib/aiApi");
-                    const result = await sendVoiceQuery(blob, activeBusinessId);
-                    const transcript = result.content ?? "";
+                    // Send audio to Bangla STT service (port 5000)
+                    const formData = new FormData();
+                    formData.append("audio", blob, "recording.webm");
+
+                    const res = await fetch(`${STT_URL}/transcribe`, {
+                        method: "POST",
+                        body: formData,
+                    });
+
+                    if (!res.ok) throw new Error("STT request failed");
+
+                    const data = await res.json();
+                    const transcript: string = data.text ?? "";
+
                     if (transcript) {
                         setTextInput(transcript);
                     }
                 } catch {
-                    // STT failed — user can still type manually
+                    // STT failed — show product-specific error
+                    setParseError(t("parseError"));
                 } finally {
                     setMicState("idle");
                 }
@@ -149,7 +156,7 @@ export default function VoiceCommandBar() {
         } catch {
             setMicState("idle");
         }
-    }, [activeBusinessId]);
+    }, [t]);
 
     // -----------------------------------------------------------------------
     // Stop recording
@@ -244,10 +251,10 @@ export default function VoiceCommandBar() {
                     onClick={isRecording ? stopRecording : startRecording}
                     disabled={isTranscribing || isParsing}
                     className={`flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-full transition-all ${isRecording
-                            ? "bg-red-500 text-white animate-pulse"
-                            : isTranscribing
-                                ? "bg-primary/30 text-primary cursor-wait"
-                                : "bg-primary text-on-primary hover:brightness-105 active:scale-95"
+                        ? "bg-red-500 text-white animate-pulse"
+                        : isTranscribing
+                            ? "bg-primary/30 text-primary cursor-wait"
+                            : "bg-primary text-on-primary hover:brightness-105 active:scale-95"
                         }`}
                     title={isRecording ? "রেকর্ড বন্ধ করুন" : "রেকর্ড শুরু করুন"}
                 >
