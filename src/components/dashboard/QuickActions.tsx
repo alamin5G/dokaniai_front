@@ -1,6 +1,9 @@
 "use client";
 
+import { buildShopPath } from "@/lib/shopRouting";
+import { useBusinessStore } from "@/store/businessStore";
 import { useTranslations } from "next-intl";
+import { useRouter } from "next/navigation";
 
 // ---------------------------------------------------------------------------
 // Inline SVG Icons
@@ -126,6 +129,8 @@ function IconBolt({ className = "w-5 h-5" }: { className?: string }) {
 
 export default function QuickActions() {
     const t = useTranslations("dashboard.quickActions");
+    const router = useRouter();
+    const { activeBusinessId } = useBusinessStore();
 
     const primaryActions = [
         {
@@ -133,18 +138,21 @@ export default function QuickActions() {
             icon: <IconCart className="w-7 h-7" />,
             style:
                 "bg-primary text-on-primary hover:brightness-105 active:scale-95",
+            section: "/sales",
         },
         {
             label: t("addProduct"),
             icon: <IconProduct className="w-7 h-7" />,
             style:
                 "bg-secondary text-on-secondary hover:brightness-105 active:scale-95",
+            section: "/products",
         },
         {
             label: t("addDue"),
             icon: <IconDue className="w-7 h-7" />,
             style:
                 "bg-tertiary text-on-tertiary hover:brightness-105 active:scale-95",
+            section: "/due-ledger",
         },
     ];
 
@@ -152,12 +160,19 @@ export default function QuickActions() {
         {
             label: t("recordExpense"),
             icon: <IconExpense className="w-5 h-5" />,
+            section: "/expenses",
         },
         {
             label: t("recordReturn"),
             icon: <IconReturn className="w-5 h-5" />,
+            section: "/reports",
         },
     ];
+
+    function handleNavigate(section: string) {
+        if (!activeBusinessId) return;
+        router.push(buildShopPath(activeBusinessId, section));
+    }
 
     return (
         <section>
@@ -174,6 +189,7 @@ export default function QuickActions() {
                     {primaryActions.map((action) => (
                         <button
                             key={action.label}
+                            onClick={() => handleNavigate(action.section)}
                             className={`flex flex-col items-center justify-center p-6 rounded-2xl transition-all gap-3 min-h-[100px] ${action.style}`}
                         >
                             {action.icon}
@@ -187,6 +203,7 @@ export default function QuickActions() {
                     {secondaryActions.map((action) => (
                         <button
                             key={action.label}
+                            onClick={() => handleNavigate(action.section)}
                             className="flex items-center justify-center gap-3 py-4 bg-surface-container-high text-on-surface-variant rounded-xl hover:bg-surface-container-highest transition-colors min-h-[48px]"
                         >
                             {action.icon}
