@@ -101,7 +101,7 @@ export async function getFastestMovingProducts(
     limit = 10,
 ): Promise<ProductVelocityReport[]> {
     return apiFetch<ProductVelocityReport[]>(
-        `${API_BASE}/products/analytics/fastest-moving?businessId=${businessId}&limit=${limit}`,
+        `${API_BASE}/businesses/${businessId}/products/analytics/fastest-moving?limit=${limit}`,
     );
 }
 
@@ -110,7 +110,7 @@ export async function getSlowestMovingProducts(
     limit = 10,
 ): Promise<ProductPerformanceItem[]> {
     return apiFetch<ProductPerformanceItem[]>(
-        `${API_BASE}/products/analytics/slowest-moving?businessId=${businessId}&limit=${limit}`,
+        `${API_BASE}/businesses/${businessId}/products/analytics/slowest-moving?limit=${limit}`,
     );
 }
 
@@ -118,7 +118,7 @@ export async function getReorderSuggestions(
     businessId: string,
 ): Promise<SmartReorderSuggestion[]> {
     return apiFetch<SmartReorderSuggestion[]>(
-        `${API_BASE}/products/analytics/reorder-suggestions?businessId=${businessId}`,
+        `${API_BASE}/businesses/${businessId}/products/analytics/reorder-suggestions`,
     );
 }
 
@@ -127,7 +127,7 @@ export async function getProductPerformance(
     days = 30,
 ): Promise<ProductPerformanceReport> {
     return apiFetch<ProductPerformanceReport>(
-        `${API_BASE}/products/analytics/performance?businessId=${businessId}&days=${days}`,
+        `${API_BASE}/businesses/${businessId}/products/analytics/performance?days=${days}`,
     );
 }
 
@@ -137,7 +137,7 @@ export async function getProductVelocity(
     days = 30,
 ): Promise<ProductVelocityReport> {
     return apiFetch<ProductVelocityReport>(
-        `${API_BASE}/products/analytics/${productId}/velocity?businessId=${businessId}&days=${days}`,
+        `${API_BASE}/businesses/${businessId}/products/analytics/${productId}/velocity?days=${days}`,
     );
 }
 
@@ -146,7 +146,7 @@ export async function getRestockPattern(
     productId: string,
 ): Promise<RestockPatternReport> {
     return apiFetch<RestockPatternReport>(
-        `${API_BASE}/products/analytics/${productId}/restock-pattern?businessId=${businessId}`,
+        `${API_BASE}/businesses/${businessId}/products/analytics/${productId}/restock-pattern`,
     );
 }
 
@@ -156,47 +156,59 @@ export async function getAIInsights(
     businessId: string,
     options?: { type?: string; unread?: boolean },
 ): Promise<AIInsight[]> {
-    const params = new URLSearchParams({ businessId });
+    const params = new URLSearchParams();
     if (options?.type) params.set("type", options.type);
     if (options?.unread) params.set("unread", "true");
 
     return apiFetch<AIInsight[]>(
-        `${API_BASE}/ai/insights?${params.toString()}`,
+        `${API_BASE}/businesses/${businessId}/ai/insights?${params.toString()}`,
     );
 }
 
 export async function getInsightDashboardStats(
     businessId: string,
 ): Promise<{ unreadCount: number; criticalCount: number; reorderSuggestions: number }> {
-    return apiFetch(`${API_BASE}/ai/insights/dashboard?businessId=${businessId}`);
+    return apiFetch(`${API_BASE}/businesses/${businessId}/ai/insights/dashboard`);
 }
 
 export async function getCriticalInsights(
     businessId: string,
 ): Promise<AIInsight[]> {
     return apiFetch<AIInsight[]>(
-        `${API_BASE}/ai/insights/critical?businessId=${businessId}`,
+        `${API_BASE}/businesses/${businessId}/ai/insights/critical`,
     );
 }
 
-export async function markInsightRead(insightId: string): Promise<AIInsight> {
-    return apiFetch<AIInsight>(`${API_BASE}/ai/insights/${insightId}/read`, {
-        method: "PATCH",
-    });
+export async function markInsightRead(
+    businessId: string,
+    insightId: string,
+): Promise<AIInsight> {
+    return apiFetch<AIInsight>(
+        `${API_BASE}/businesses/${businessId}/ai/insights/${insightId}/read`,
+        { method: "PATCH" },
+    );
 }
 
-export async function markInsightActedUpon(insightId: string): Promise<AIInsight> {
-    return apiFetch<AIInsight>(`${API_BASE}/ai/insights/${insightId}/act`, {
-        method: "PATCH",
-    });
+export async function markInsightActedUpon(
+    businessId: string,
+    insightId: string,
+): Promise<AIInsight> {
+    return apiFetch<AIInsight>(
+        `${API_BASE}/businesses/${businessId}/ai/insights/${insightId}/act`,
+        { method: "PATCH" },
+    );
 }
 
 export async function addInsightFeedback(
+    businessId: string,
     insightId: string,
     feedback: string,
 ): Promise<AIInsight> {
-    return apiFetch<AIInsight>(`${API_BASE}/ai/insights/${insightId}/feedback`, {
-        method: "PATCH",
-        body: JSON.stringify({ feedback }),
-    });
+    return apiFetch<AIInsight>(
+        `${API_BASE}/businesses/${businessId}/ai/insights/${insightId}/feedback`,
+        {
+            method: "PATCH",
+            body: JSON.stringify({ feedback }),
+        },
+    );
 }
