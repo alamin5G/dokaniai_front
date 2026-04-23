@@ -8,6 +8,7 @@ export interface ReferralConfig {
     referredDiscountValue: number;
     maxReferralsPerMonth: number | null;
     isActive: boolean;
+    couponValidityDays: number;
     updatedBy: string | null;
     updatedAt: string;
     createdAt: string;
@@ -20,6 +21,7 @@ export interface ReferralConfigUpdateRequest {
     referredDiscountValue?: number;
     maxReferralsPerMonth?: number | null;
     isActive?: boolean;
+    couponValidityDays?: number;
 }
 
 export async function getReferralConfig(): Promise<ReferralConfig> {

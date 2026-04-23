@@ -3159,7 +3159,9 @@
       "saved": "রেফারেল কনফিগ সংরক্ষিত হয়েছে",
       "save": "সংরক্ষণ",
       "rewardType": "পুরস্কারের ধরন",
-      "discountType": "ছাড়ের ধরন"
+      "discountType": "ছাড়ের ধরন",
+      "couponValidityDays": "কুপন মেয়াদ (দিন)",
+      "couponValidityDaysHint": "রেফারার পুরস্কার কুপন কত দিন ব্যবহারযোগ্য থাকবে।"
     },
     "referralEvents": {
       "stats": {

@@ -3099,7 +3099,9 @@
       "saved": "Referral config saved",
       "save": "Save",
       "rewardType": "Reward type",
-      "discountType": "Discount type"
+      "discountType": "Discount type",
+      "couponValidityDays": "Coupon Validity (Days)",
+      "couponValidityDaysHint": "How many days the referral reward coupon remains valid for the referrer to use."
     },
     "referralEvents": {
       "stats": {

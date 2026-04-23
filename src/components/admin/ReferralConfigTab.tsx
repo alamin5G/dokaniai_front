@@ -22,6 +22,7 @@ export default function ReferralConfigTab() {
     const [referredDiscountType, setReferredDiscountType] = useState("DISCOUNT_PERCENT");
     const [referredDiscountValue, setReferredDiscountValue] = useState(50);
     const [maxReferralsPerMonth, setMaxReferralsPerMonth] = useState(10);
+    const [couponValidityDays, setCouponValidityDays] = useState(90);
 
     const loadConfig = useCallback(async () => {
         setLoading(true);
@@ -34,6 +35,7 @@ export default function ReferralConfigTab() {
             setReferredDiscountType(cfg.referredDiscountType);
             setReferredDiscountValue(cfg.referredDiscountValue);
             setMaxReferralsPerMonth(cfg.maxReferralsPerMonth ?? 10);
+            setCouponValidityDays(cfg.couponValidityDays ?? 90);
         } catch {
             setNotice("Failed to load referral config");
         } finally {
@@ -56,6 +58,7 @@ export default function ReferralConfigTab() {
                 referredDiscountType,
                 referredDiscountValue,
                 maxReferralsPerMonth,
+                couponValidityDays,
             };
             const updated = await referralConfigApi.updateReferralConfig(request);
             setConfig(updated);
@@ -172,6 +175,23 @@ export default function ReferralConfigTab() {
                         onChange={(e) => setMaxReferralsPerMonth(Number(e.target.value))}
                         className="w-full max-w-xs rounded-[0.75rem] bg-surface-container-highest px-4 py-2.5 text-sm text-on-surface"
                     />
+                </div>
+
+                {/* Coupon Validity Days */}
+                <div className="space-y-2">
+                    <label className="block text-sm font-medium text-on-surface-variant">
+                        {t("couponValidityDays")}
+                    </label>
+                    <input
+                        type="number"
+                        min={1}
+                        value={couponValidityDays}
+                        onChange={(e) => setCouponValidityDays(Number(e.target.value))}
+                        className="w-full max-w-xs rounded-[0.75rem] bg-surface-container-highest px-4 py-2.5 text-sm text-on-surface"
+                    />
+                    <p className="text-xs text-on-surface-variant">
+                        {t("couponValidityDaysHint")}
+                    </p>
                 </div>
 
                 {/* Notice */}

@@ -1,5 +1,6 @@
 "use client";
 
+import ReferralCodeCard from "@/components/account/ReferralCodeCard";
 import { FormInput } from "@/components/ui/FormPrimitives";
 import {
   changePassword,
@@ -225,6 +226,9 @@ export default function AccountProfilePage() {
           </button>
         </div>
       </section>
+
+      {/* Referral Program — self-contained card with copy/share */}
+      <ReferralCodeCard />
     </main>
   );
 }

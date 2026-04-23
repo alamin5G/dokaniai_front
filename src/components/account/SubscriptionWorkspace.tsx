@@ -1,5 +1,6 @@
 "use client";
 
+import ReferralCodeCard from "@/components/account/ReferralCodeCard";
 import { FormInput } from "@/components/ui/FormPrimitives";
 import {
   applyCoupon,
@@ -33,7 +34,6 @@ import type {
   Subscription,
   SubscriptionStatus,
 } from "@/types/subscription";
-import Link from "next/link";
 import { useLocale } from "next-intl";
 import { useCallback, useEffect, useMemo, useState } from "react";
 
@@ -145,6 +145,21 @@ function getTrxMaxLength(mfsMethod: MfsType | undefined): number {
   }
 }
 
+function validateTrxId(trxId: string, mfsMethod: MfsType | undefined): string | null {
+  const trimmed = trxId.trim();
+  if (!trimmed) return null; // empty is handled by required check
+  switch (mfsMethod) {
+    case "BKASH":
+      return /^[A-Z0-9]{10}$/.test(trimmed) ? null : "bKash TrxID must be exactly 10 alphanumeric characters";
+    case "NAGAD":
+      return /^[A-Z0-9]{8}$/.test(trimmed) ? null : "Nagad TrxID must be exactly 8 alphanumeric characters";
+    case "ROCKET":
+      return /^\d{10}$/.test(trimmed) ? null : "Rocket TrxID must be exactly 10 digits";
+    default:
+      return null;
+  }
+}
+
 function getTrxHint(mfsMethod: MfsType | undefined, isBn: boolean): string {
   switch (mfsMethod) {
     case "BKASH": return isBn ? "১০ অক্ষরের আলফানিউমেরিক (যেমন DDJ8BQBVCM)" : "10 alphanumeric chars (e.g. DDJ8BQBVCM)";
@@ -200,7 +215,6 @@ export default function SubscriptionPage() {
   const [proration, setProration] = useState<UpgradeProrationResponse | null>(null);
   const [prorationLoading, setProrationLoading] = useState(false);
   const [publicCoupons, setPublicCoupons] = useState<PublicCoupon[]>([]);
-  const [referralCopied, setReferralCopied] = useState(false);
 
   /* Derived */
   const selectedPlan = useMemo(() => plans.find((p) => p.id === selectedPlanId) ?? null, [plans, selectedPlanId]);
@@ -417,6 +431,11 @@ export default function SubscriptionPage() {
   const handleSubmitTrx = async () => {
     if (!paymentIntent || !trxIdInput.trim()) {
       setNotice(isBn ? "TrxID দিন।" : "Enter TrxID first.");
+      return;
+    }
+    const trxError = validateTrxId(trxIdInput, checkoutMethod);
+    if (trxError) {
+      setNotice(isBn ? `অবৈধ TrxID: ${trxError}` : `Invalid TrxID: ${trxError}`);
       return;
     }
     setCheckoutLoading(true);
@@ -1052,6 +1071,7 @@ export default function SubscriptionPage() {
                           setTrxIdInput(raw.length > maxLen ? raw.slice(0, maxLen) : raw);
                         }}
                         maxLength={getTrxMaxLength(checkoutMethod)}
+                        minLength={getTrxMaxLength(checkoutMethod)}
                       />
                       <p className="text-[11px] text-on-surface-variant flex items-center gap-1">
                         <span className="material-symbols-outlined text-[13px]">info</span>
@@ -1061,7 +1081,7 @@ export default function SubscriptionPage() {
                         <button
                           type="button"
                           onClick={handleSubmitTrx}
-                          disabled={checkoutLoading || !trxIdInput.trim()}
+                          disabled={checkoutLoading || !trxIdInput.trim() || !!validateTrxId(trxIdInput, checkoutMethod)}
                           className="rounded-full bg-primary px-5 py-3 text-sm font-semibold text-white disabled:opacity-50"
                         >
                           {isBn ? "TrxID জমা দিন" : "Submit TrxID"}
@@ -1218,102 +1238,7 @@ export default function SubscriptionPage() {
           {/* ══════════════════════════════════════════════════════
               SECTION 6: Referral
               ══════════════════════════════════════════════════════ */}
-          {referralStatus && (
-            <section className="rounded-[1.5rem] border border-outline-variant/30 bg-surface p-5 space-y-4">
-              <h2 className="text-lg font-semibold text-on-surface">
-                {isBn ? "রেফারেল প্রোগ্রাম" : "Referral Program"}
-              </h2>
-
-              <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-                {/* Referral code */}
-                <div className="rounded-xl bg-surface-container px-4 py-3">
-                  <p className="text-[10px] font-bold text-on-surface-variant uppercase tracking-wider">
-                    {isBn ? "আপনার রেফারেল কোড" : "Your Referral Code"}
-                  </p>
-                  <div className="flex items-center gap-2 mt-1">
-                    <p className="text-sm font-black text-primary font-mono tracking-widest">
-                      {referralStatus.referralCode ?? "—"}
-                    </p>
-                    {referralStatus.referralCode && (
-                      <button
-                        type="button"
-                        onClick={async () => {
-                          try {
-                            await navigator.clipboard.writeText(referralStatus.referralCode!);
-                          } catch {
-                            const ta = document.createElement("textarea");
-                            ta.value = referralStatus.referralCode!;
-                            document.body.appendChild(ta);
-                            ta.select();
-                            document.execCommand("copy");
-                            document.body.removeChild(ta);
-                          }
-                          setReferralCopied(true);
-                          setTimeout(() => setReferralCopied(false), 2000);
-                        }}
-                        className="inline-flex items-center gap-1 rounded-lg px-2 py-1 text-[10px] font-semibold transition bg-primary/10 text-primary hover:bg-primary/20"
-                      >
-                        <span className="material-symbols-outlined text-sm">
-                          {referralCopied ? "check" : "content_copy"}
-                        </span>
-                        {referralCopied
-                          ? (isBn ? "কপি হয়েছে" : "Copied")
-                          : (isBn ? "কপি" : "Copy")}
-                      </button>
-                    )}
-                  </div>
-                </div>
-
-                {/* Total referrals */}
-                <div className="rounded-xl bg-surface-container px-4 py-3">
-                  <p className="text-[10px] font-bold text-on-surface-variant uppercase tracking-wider">
-                    {isBn ? "মোট রেফারেল" : "Total Referrals"}
-                  </p>
-                  <p className="text-sm font-bold text-on-surface mt-1">
-                    {referralStatus.totalReferrals}
-                  </p>
-                </div>
-
-                {/* Earned credits */}
-                <div className="rounded-xl bg-surface-container px-4 py-3">
-                  <p className="text-[10px] font-bold text-on-surface-variant uppercase tracking-wider">
-                    {isBn ? "অর্জিত ক্রেডিট" : "Earned Credits"}
-                  </p>
-                  <p className="text-sm font-bold text-on-surface mt-1">
-                    {referralStatus.earnedCredits} {isBn ? "দিন" : "days"}
-                  </p>
-                </div>
-
-                {/* Pending rewards */}
-                <div className="rounded-xl bg-surface-container px-4 py-3">
-                  <p className="text-[10px] font-bold text-on-surface-variant uppercase tracking-wider">
-                    {isBn ? "অপেক্ষমাণ পুরস্কার" : "Pending Rewards"}
-                  </p>
-                  <p className="text-sm font-bold text-on-surface mt-1">
-                    {referralStatus.pendingRewardCount}
-                  </p>
-                </div>
-              </div>
-
-              {/* Referral reward info */}
-              {referralStatus.rewardDays > 0 && (
-                <p className="text-xs text-on-surface-variant">
-                  {isBn
-                    ? `প্রতিটি সফল রেফারেলে ${referralStatus.rewardDays} দিনের ফ্রি সাবস্ক্রিপশন পাবেন।`
-                    : `Earn ${referralStatus.rewardDays} free subscription days for each successful referral.`}
-                </p>
-              )}
-
-              {/* Share & earn — link to full referral page */}
-              <Link
-                href="/account/referral"
-                className="inline-flex items-center gap-2 rounded-xl bg-primary px-5 py-2.5 text-sm font-semibold text-on-primary transition hover:bg-primary/90"
-              >
-                <span className="material-symbols-outlined text-lg">share</span>
-                {isBn ? "শেয়ার করে আয় করুন" : "Share & Earn"}
-              </Link>
-            </section>
-          )}
+          <ReferralCodeCard referralStatus={referralStatus} />
 
           {/* ══════════════════════════════════════════════════════
               SECTION 7: Downgrade (if current plan is not lowest)
