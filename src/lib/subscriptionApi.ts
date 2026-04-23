@@ -65,6 +65,7 @@ async function _doGetCurrentSubscription(): Promise<Subscription | null> {
     const response = await apiClient.get<ApiSuccess<Subscription>>("/subscriptions/current");
     return unwrap(response);
   } catch (error: unknown) {
+    _currentSubCache = null;
     if (axios.isAxiosError(error) && error.response?.status === 404) {
       return null;
     }

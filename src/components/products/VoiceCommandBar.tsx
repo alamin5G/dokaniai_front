@@ -178,16 +178,25 @@ export default function VoiceCommandBar() {
             const result = await parseText({
                 businessId: activeBusinessId,
                 text,
+                scope: "PRODUCT_ONLY",
             });
-            setParsedResult(result);
+
+            // Scope-restricted: backend returns UNKNOWN with product-only message
+            if (result.actionType === "UNKNOWN" && result.uncertaintyReason) {
+                setParseError(result.uncertaintyReason);
+            } else {
+                setParsedResult(result);
+            }
         } catch (err) {
             setParseError(
-                err instanceof Error ? err.message : "পার্সিং ব্যর্থ হয়েছে",
+                err instanceof Error
+                    ? err.message
+                    : t("parseError"),
             );
         } finally {
             setIsParsing(false);
         }
-    }, [textInput, activeBusinessId]);
+    }, [textInput, activeBusinessId, t]);
 
     // -----------------------------------------------------------------------
     // Handle Enter key in text input

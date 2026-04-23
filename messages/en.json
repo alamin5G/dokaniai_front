@@ -1237,10 +1237,11 @@
         "confirmArchive": "Archive \"{name}\"?"
       },
       "voice": {
-        "title": "Quick Command",
-        "example": "Example: \"Add 25kg miniket rice\" or \"Show low stock products\"",
+        "title": "Product Voice Command",
+        "example": "Example: \"Add 25kg miniket rice\" or \"Rice price 60 taka\"",
         "comingSoon": "Voice & NLP product flow coming soon",
-        "placeholder": "Say: 'Add 10kg rice'..."
+        "placeholder": "Say: 'Add 10kg rice'...",
+        "parseError": "Could not understand your command. Only product add/update commands are allowed. Example: \"Add 25kg rice\""
       },
       "sidebar": {
         "inventoryStatus": "Inventory Status",

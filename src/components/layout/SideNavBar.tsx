@@ -160,17 +160,6 @@ export default function SideNavBar({ businessId }: SideNavBarProps) {
         })}
       </nav>
 
-      {/* ---- New Entry CTA ---- */}
-      <div className="mt-auto px-2 mb-4">
-        <Link
-          href={businessId ? `${buildShopPath(businessId, "/sales")}?action=new` : "/businesses"}
-          className="w-full flex items-center justify-center gap-2 bg-primary text-on-primary py-3 rounded-xl font-bold hover:brightness-105 active:scale-95 transition-all"
-        >
-          <IconPlus className="w-5 h-5" />
-          <span className="text-sm">{t("newEntry")}</span>
-        </Link>
-      </div>
-
       {/* ---- User Section ---- */}
       <div className="px-2">
         <Link

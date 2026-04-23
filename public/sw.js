@@ -11,6 +11,7 @@
 self.addEventListener('push', (event) => {
     let data = {
         title: 'DokaniAI',
+        icon: '/icons/icon.svg',
         body: 'You have a new notification.',
         url: '/dashboard',
     };
@@ -27,8 +28,8 @@ self.addEventListener('push', (event) => {
 
     const options = {
         body: data.body,
-        icon: '/logo192.png',
-        badge: '/logo192.png',
+        icon: data.icon || '/icons/icon.svg',
+        badge: '/icons/apple-icon-180.png',
         data: {
             url: data.url || '/dashboard',
         },

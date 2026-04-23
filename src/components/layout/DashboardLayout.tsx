@@ -153,10 +153,10 @@ export default function DashboardLayout({ children, title, businessId }: Dashboa
             }
           }
         } catch {
-          clearTimeout(timeoutId);
-          router.replace("/subscription/upgrade");
-          return;
-        }
+         clearTimeout(timeoutId);
+         setIsReady(true);
+         return;
+       }
       }
 
       // 2. Read latest state from store (bypasses stale React closure).

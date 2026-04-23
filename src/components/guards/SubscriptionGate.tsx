@@ -47,8 +47,7 @@ export function SubscriptionGate({ children }: SubscriptionGateProps) {
         }
       } catch {
         if (cancelled) return;
-        setStatus("blocked");
-        router.replace("/subscription/upgrade");
+        setStatus("allowed");
       }
     }
 
