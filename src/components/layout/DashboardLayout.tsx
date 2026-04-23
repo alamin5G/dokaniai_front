@@ -372,7 +372,7 @@ export default function DashboardLayout({ children, title, businessId }: Dashboa
       <main className="md:ml-64 min-h-screen pb-28 md:pb-8">
         <TopAppBar title={title} businessId={activeBusinessId ?? businessId} />
 
-        <div className="px-6 py-8 max-w-7xl mx-auto">
+        <div className="px-4 py-6 md:px-6 lg:px-8">
           {ft2DaysRemaining !== null && (
             <div className="mb-6">
               <TrialExpiryBanner daysRemaining={ft2DaysRemaining} />

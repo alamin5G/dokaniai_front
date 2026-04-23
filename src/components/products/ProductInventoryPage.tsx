@@ -300,58 +300,55 @@ export default function ProductInventoryPage({
     ];
 
     return (
-        <section className="space-y-8">
+        <section className="space-y-6">
             {/* Page Header */}
-            <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
-                <div>
-                    <p className="text-sm font-bold uppercase tracking-[0.28em] text-secondary">
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
+                    <span className="text-xs font-bold uppercase tracking-[0.2em] text-secondary">
                         {t("label")}
-                    </p>
-                    <h1 className="mt-2 text-4xl font-black tracking-tight text-primary">
+                    </span>
+                    <h1 className="text-xl font-bold tracking-tight text-primary">
                         {t("title")}
                     </h1>
-                    <p className="mt-3 max-w-2xl text-sm leading-7 text-on-surface-variant">
+                    <span className="text-xs text-on-surface-variant">
                         {t("subtitle", {
                             businessName: activeBusiness?.name ?? "Business",
                         })}
-                    </p>
+                    </span>
                 </div>
 
-                {/* Products tab action buttons */}
+                {/* Products tab icon-only action buttons */}
                 {activeTopTab === "products" && (
-                    <div className="flex flex-col gap-3 sm:flex-row">
+                    <div className="flex items-center gap-2">
+                        {/* CSV Import — icon button */}
                         <button
                             type="button"
                             onClick={() => fileInputRef.current?.click()}
-                            disabled={!canBulkImport}
-                            className="rounded-full bg-surface-container px-5 py-3 text-sm font-semibold text-on-surface transition hover:bg-surface-container-high disabled:cursor-not-allowed disabled:opacity-50"
+                            disabled={!canBulkImport || isImporting}
+                            title={isImporting ? t("actions.importing") : t("actions.csvImport")}
+                            className="flex h-9 w-9 items-center justify-center rounded-full bg-surface-container text-on-surface transition hover:bg-surface-container-high disabled:cursor-not-allowed disabled:opacity-50"
                         >
-                            {isImporting ? t("actions.importing") : t("actions.csvImport")}
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5">
+                                <path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5m-13.5-9L12 3m0 0 4.5 4.5M12 3v13.5" />
+                            </svg>
                         </button>
+                        {/* Template Download — icon button */}
                         <button
                             type="button"
                             onClick={handleTemplateDownload}
-                            className="rounded-full bg-surface-container-lowest px-5 py-3 text-sm font-semibold text-primary transition hover:bg-primary-fixed"
+                            title={t("actions.templateDownload")}
+                            className="flex h-9 w-9 items-center justify-center rounded-full bg-surface-container-lowest text-primary transition hover:bg-primary-fixed"
                         >
-                            {t("actions.templateDownload")}
-                        </button>
-                        <button
-                            type="button"
-                            onClick={handleExport}
-                            className="rounded-full bg-surface-container-lowest px-5 py-3 text-sm font-semibold text-primary transition hover:bg-primary-fixed"
-                        >
-                            {t("actions.csvExport")}
-                        </button>
-                        <button
-                            type="button"
-                            onClick={resetEditor}
-                            className="rounded-full bg-gradient-to-br from-primary to-primary-container px-6 py-3 text-sm font-semibold text-white shadow-[0_16px_40px_rgba(0,55,39,0.18)] transition hover:opacity-95"
-                        >
-                            {t("actions.addNew")}
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5">
+                                <path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5M16.5 12 12 16.5m0 0L7.5 12m4.5 4.5V3" />
+                            </svg>
                         </button>
                     </div>
                 )}
             </div>
+
+            {/* AI Voice Command Bar — right below header */}
+            <VoiceCommandBar />
 
             {/* ─── Top-level Tab Navigation ─────────────────── */}
             <div className="flex gap-2 border-b border-surface-container pb-0">
@@ -386,9 +383,6 @@ export default function ProductInventoryPage({
                     {t("messages.importLocked")}
                 </div>
             ) : null}
-
-            {/* AI Voice Command Bar */}
-            <VoiceCommandBar />
 
             {/* Error / Notice banners */}
             {error ? (

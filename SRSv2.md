@@ -1429,6 +1429,31 @@ For QA and developer reference:
 
 **Normative rule:** Raw STT output SHALL NOT trigger direct database writes.
 
+### 9.1.4 Frontend Voice Command Bar Implementation
+
+-   **Component:** `VoiceCommandBar` (located at
+    `src/components/products/VoiceCommandBar.tsx`)
+
+-   **Placement:** Directly below the page header on the Products page, above
+    the tab navigation (পণ্যসমূহ / ইনভেন্টরি).
+
+-   **Recording:** Uses browser `MediaRecorder` API with `audio/webm;codecs=opus`
+    MIME type (falls back to `audio/webm`). Microphone access requested via
+    `navigator.mediaDevices.getUserMedia`.
+
+-   **Flow:** User taps mic button → recording starts (red pulse indicator) →
+    tap stop → audio blob sent to Spring Boot API via `sendVoiceQuery()` →
+    backend forwards to Python STT at `localhost:5000` → transcript returned
+    and displayed in editable text field → user can edit/correct before
+    submitting for AI parsing.
+
+-   **States:** idle → recording → processing → done (with editable text) or
+    error. Reset button clears state.
+
+-   **Security boundary maintained:** Frontend never calls STT service
+    directly; all audio goes through the authenticated Spring Boot API gateway
+    (`/api/v1/ai/voice`).
+
 ## 9.2 LLM Provider Chain
 
   --------------------------------------------------------------------------------
