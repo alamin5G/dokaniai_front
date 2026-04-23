@@ -339,6 +339,25 @@ export default function SubscriptionPage() {
     return () => window.clearInterval(intervalId);
   }, [paymentIntent, paymentStatus, refreshPaymentStatus]);
 
+  /* ── SSE-driven real-time updates ─────────────────────────── */
+  useEffect(() => {
+    const handlePaymentSSE = () => void refreshPaymentStatus();
+    window.addEventListener("sse:payment-status-changed", handlePaymentSSE);
+    return () => window.removeEventListener("sse:payment-status-changed", handlePaymentSSE);
+  }, [refreshPaymentStatus]);
+
+  useEffect(() => {
+    const handleSubChanged = async () => {
+      try {
+        invalidateCurrentSubscriptionCache();
+        const updated = await getCurrentSubscription();
+        setCurrentSubscription(updated);
+      } catch { /* silent */ }
+    };
+    window.addEventListener("sse:subscription-changed", handleSubChanged);
+    return () => window.removeEventListener("sse:subscription-changed", handleSubChanged);
+  }, []);
+
   /* ── Upgrade proration fetch ──────────────────────────────── */
   useEffect(() => {
     if (!selectedPlan || !currentSubscription || !currentPlan) {

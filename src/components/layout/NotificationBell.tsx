@@ -121,7 +121,15 @@ export default function NotificationBell() {
     useEffect(() => {
         fetchUnreadCount();
         const interval = setInterval(fetchUnreadCount, 60_000);
-        return () => clearInterval(interval);
+
+        // Listen for real-time SSE notification events
+        const handleSSENotification = () => fetchUnreadCount();
+        window.addEventListener("sse:notification-new", handleSSENotification);
+
+        return () => {
+            clearInterval(interval);
+            window.removeEventListener("sse:notification-new", handleSSENotification);
+        };
     }, [fetchUnreadCount]);
 
     // ─── Load notifications when panel opens ─────────────

@@ -1,4 +1,5 @@
 import { LocaleUpdater } from "@/components/LocaleUpdater";
+import SSEListener from "@/components/providers/SSEListener";
 import { I18nProvider } from "@/i18n/provider";
 import SWRProvider from "@/providers/SWRProvider";
 import type { Metadata, Viewport } from "next";
@@ -59,6 +60,7 @@ export default function RootLayout({
       <body suppressHydrationWarning className={`${notoSansBengali.variable} ${plusJakartaSans.variable} ${inter.variable} font-body bg-background text-on-surface min-h-screen antialiased`}>
         <SWRProvider>
           <I18nProvider>
+            <SSEListener />
             <LocaleUpdater />
             {children}
           </I18nProvider>

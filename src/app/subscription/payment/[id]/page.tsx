@@ -183,6 +183,18 @@ export default function SubscriptionPaymentStatusPage() {
     return () => { window.clearInterval(intervalId); };
   }, [refreshStatus, statusData]);
 
+  /* ── SSE-driven instant refresh ── */
+  useEffect(() => {
+    const handleSSEPayment = (e: Event) => {
+      const detail = (e as CustomEvent).detail;
+      if (detail?.paymentIntentId === paymentIntentId) {
+        void refreshStatus();
+      }
+    };
+    window.addEventListener("sse:payment-status-changed", handleSSEPayment);
+    return () => window.removeEventListener("sse:payment-status-changed", handleSSEPayment);
+  }, [paymentIntentId, refreshStatus]);
+
   /* ── Cleanup on terminal states ── */
   useEffect(() => {
     if (statusData?.status === "COMPLETED") {
