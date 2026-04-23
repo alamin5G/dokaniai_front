@@ -5,21 +5,23 @@ import { FormInput } from "@/components/ui/FormPrimitives";
 import {
   changePassword,
   getCurrentUser,
+  requestEmailChange,
   requestPhoneChange,
   updateCurrentUser,
+  verifyEmailChange,
   verifyPhoneChange,
 } from "@/lib/userAccountApi";
-import { useLocale } from "next-intl";
+import { useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
 
 export default function AccountProfilePage() {
-  const locale = useLocale();
-  const isBn = locale.startsWith("bn");
+  const t = useTranslations("profilePage");
 
   const [loading, setLoading] = useState(true);
   const [savingProfile, setSavingProfile] = useState(false);
   const [savingPassword, setSavingPassword] = useState(false);
   const [savingPhone, setSavingPhone] = useState(false);
+  const [savingEmail, setSavingEmail] = useState(false);
   const [notice, setNotice] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
@@ -36,6 +38,10 @@ export default function AccountProfilePage() {
   const [newPhone, setNewPhone] = useState("");
   const [phoneOtp, setPhoneOtp] = useState("");
   const [otpRequested, setOtpRequested] = useState(false);
+
+  const [newEmail, setNewEmail] = useState("");
+  const [emailToken, setEmailToken] = useState("");
+  const [emailOtpRequested, setEmailOtpRequested] = useState(false);
 
   useEffect(() => {
     const load = async () => {
@@ -60,21 +66,15 @@ export default function AccountProfilePage() {
     setError(null);
     setNotice(null);
     if (!name.trim()) {
-      setError(isBn ? "নাম দিন।" : "Name is required.");
-      return;
-    }
-    const trimmedEmail = email.trim();
-    if (trimmedEmail && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(trimmedEmail)) {
-      setError(isBn ? "সঠিক ইমেইল দিন।" : "Enter a valid email address.");
+      setError(t("nameRequired"));
       return;
     }
     setSavingProfile(true);
     try {
       await updateCurrentUser({
         name: name.trim(),
-        email: trimmedEmail || undefined,
       });
-      setNotice(isBn ? "প্রোফাইল আপডেট হয়েছে।" : "Profile updated.");
+      setNotice(t("profileUpdated"));
     } catch (e) {
       setError(e instanceof Error ? e.message : "Profile update failed");
     } finally {
@@ -84,11 +84,11 @@ export default function AccountProfilePage() {
 
   const savePassword = async () => {
     if (!currentPassword || !newPassword) {
-      setError(isBn ? "বর্তমান ও নতুন পাসওয়ার্ড দিন।" : "Provide current and new password.");
+      setError(t("providePasswords"));
       return;
     }
     if (newPassword !== confirmPassword) {
-      setError(isBn ? "নতুন পাসওয়ার্ড মিলছে না।" : "New password confirmation does not match.");
+      setError(t("passwordMismatch"));
       return;
     }
     setSavingPassword(true);
@@ -99,7 +99,7 @@ export default function AccountProfilePage() {
       setCurrentPassword("");
       setNewPassword("");
       setConfirmPassword("");
-      setNotice(isBn ? "পাসওয়ার্ড পরিবর্তন হয়েছে।" : "Password changed.");
+      setNotice(t("passwordChanged"));
     } catch (e) {
       setError(e instanceof Error ? e.message : "Password change failed");
     } finally {
@@ -109,7 +109,7 @@ export default function AccountProfilePage() {
 
   const sendPhoneOtp = async () => {
     if (!newPhone.trim()) {
-      setError(isBn ? "নতুন ফোন নম্বর দিন।" : "Provide new phone number.");
+      setError(t("newPhoneRequired"));
       return;
     }
     setSavingPhone(true);
@@ -118,7 +118,7 @@ export default function AccountProfilePage() {
     try {
       await requestPhoneChange(newPhone.trim());
       setOtpRequested(true);
-      setNotice(isBn ? "OTP পাঠানো হয়েছে।" : "OTP sent to new phone.");
+      setNotice(t("otpSent"));
     } catch (e) {
       setError(e instanceof Error ? e.message : "OTP request failed");
     } finally {
@@ -128,7 +128,7 @@ export default function AccountProfilePage() {
 
   const confirmPhoneChange = async () => {
     if (!newPhone.trim() || !phoneOtp.trim()) {
-      setError(isBn ? "ফোন ও OTP দিন।" : "Provide phone and OTP.");
+      setError(t("phoneAndOtpRequired"));
       return;
     }
     setSavingPhone(true);
@@ -140,11 +140,56 @@ export default function AccountProfilePage() {
       setNewPhone("");
       setPhoneOtp("");
       setOtpRequested(false);
-      setNotice(isBn ? "ফোন নম্বর আপডেট হয়েছে।" : "Phone number updated.");
+      setNotice(t("phoneUpdated"));
     } catch (e) {
       setError(e instanceof Error ? e.message : "Phone verify failed");
     } finally {
       setSavingPhone(false);
+    }
+  };
+
+  const sendEmailCode = async () => {
+    if (!newEmail.trim()) {
+      setError(t("newEmailRequired"));
+      return;
+    }
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(newEmail.trim())) {
+      setError(t("validEmailRequired"));
+      return;
+    }
+    setSavingEmail(true);
+    setError(null);
+    setNotice(null);
+    try {
+      await requestEmailChange(newEmail.trim());
+      setEmailOtpRequested(true);
+      setNotice(t("emailCodeSent"));
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "Email change request failed");
+    } finally {
+      setSavingEmail(false);
+    }
+  };
+
+  const confirmEmailChange = async () => {
+    if (!newEmail.trim() || !emailToken.trim()) {
+      setError(t("emailAndCodeRequired"));
+      return;
+    }
+    setSavingEmail(true);
+    setError(null);
+    setNotice(null);
+    try {
+      await verifyEmailChange(newEmail.trim(), emailToken.trim());
+      setEmail(newEmail.trim());
+      setNewEmail("");
+      setEmailToken("");
+      setEmailOtpRequested(false);
+      setNotice(t("emailUpdated"));
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "Email verify failed");
+    } finally {
+      setSavingEmail(false);
     }
   };
 
@@ -155,12 +200,12 @@ export default function AccountProfilePage() {
   return (
     <main className="space-y-6">
       <section className="rounded-[1.5rem] border border-outline-variant/30 bg-surface p-6">
-        <h1 className="text-2xl font-bold text-on-surface">{isBn ? "ইউজার প্রোফাইল" : "User Profile"}</h1>
+        <h1 className="text-2xl font-bold text-on-surface">{t("title")}</h1>
         <p className="mt-2 text-sm text-on-surface-variant">
-          {isBn ? "অ্যাকাউন্ট তথ্য, পাসওয়ার্ড এবং ফোন নম্বর ম্যানেজ করুন।" : "Manage account info, password, and phone number."}
+          {t("subtitle")}
         </p>
         <p className="mt-2 text-xs text-on-surface-variant">
-          Role: {role || "-"} | Status: {status || "-"}
+          {t("roleStatus", { role: role || "-", status: status || "-" })}
         </p>
       </section>
 
@@ -168,11 +213,11 @@ export default function AccountProfilePage() {
       {error ? <div className="rounded-xl bg-rose-50 px-4 py-3 text-rose-700">{error}</div> : null}
 
       <section className="rounded-[1.5rem] border border-outline-variant/30 bg-surface p-6 space-y-4">
-        <h2 className="text-lg font-semibold text-on-surface">{isBn ? "বেসিক তথ্য" : "Basic info"}</h2>
+        <h2 className="text-lg font-semibold text-on-surface">{t("basicInfo")}</h2>
         <div className="grid gap-4 md:grid-cols-2">
-          <FormInput label={isBn ? "নাম" : "Name"} value={name} onChange={(e) => setName(e.target.value)} />
-          <FormInput label={isBn ? "ইমেইল" : "Email"} type="email" value={email} onChange={(e) => setEmail(e.target.value)} />
-          <FormInput label={isBn ? "বর্তমান ফোন" : "Current phone"} value={phone} readOnly />
+          <FormInput label={t("name")} value={name} onChange={(e) => setName(e.target.value)} />
+          <FormInput label={t("currentEmail")} value={email} readOnly />
+          <FormInput label={t("currentPhone")} value={phone} readOnly />
         </div>
         <button
           type="button"
@@ -180,16 +225,16 @@ export default function AccountProfilePage() {
           disabled={savingProfile}
           className="rounded-full bg-primary px-5 py-3 text-sm font-semibold text-white disabled:opacity-50"
         >
-          {savingProfile ? (isBn ? "সেভ হচ্ছে..." : "Saving...") : (isBn ? "প্রোফাইল সেভ" : "Save profile")}
+          {savingProfile ? t("saving") : t("saveProfile")}
         </button>
       </section>
 
       <section className="rounded-[1.5rem] border border-outline-variant/30 bg-surface p-6 space-y-4">
-        <h2 className="text-lg font-semibold text-on-surface">{isBn ? "পাসওয়ার্ড পরিবর্তন" : "Change password"}</h2>
+        <h2 className="text-lg font-semibold text-on-surface">{t("changePassword")}</h2>
         <div className="grid gap-4 md:grid-cols-3">
-          <FormInput type="password" label={isBn ? "বর্তমান পাসওয়ার্ড" : "Current password"} value={currentPassword} onChange={(e) => setCurrentPassword(e.target.value)} />
-          <FormInput type="password" label={isBn ? "নতুন পাসওয়ার্ড" : "New password"} value={newPassword} onChange={(e) => setNewPassword(e.target.value)} />
-          <FormInput type="password" label={isBn ? "নতুন পাসওয়ার্ড নিশ্চিত" : "Confirm new password"} value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} />
+          <FormInput type="password" label={t("currentPassword")} value={currentPassword} onChange={(e) => setCurrentPassword(e.target.value)} />
+          <FormInput type="password" label={t("newPassword")} value={newPassword} onChange={(e) => setNewPassword(e.target.value)} />
+          <FormInput type="password" label={t("confirmNewPassword")} value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} />
         </div>
         <button
           type="button"
@@ -197,15 +242,15 @@ export default function AccountProfilePage() {
           disabled={savingPassword}
           className="rounded-full bg-primary px-5 py-3 text-sm font-semibold text-white disabled:opacity-50"
         >
-          {savingPassword ? (isBn ? "আপডেট হচ্ছে..." : "Updating...") : (isBn ? "পাসওয়ার্ড আপডেট" : "Update password")}
+          {savingPassword ? t("updating") : t("updatePassword")}
         </button>
       </section>
 
       <section className="rounded-[1.5rem] border border-outline-variant/30 bg-surface p-6 space-y-4">
-        <h2 className="text-lg font-semibold text-on-surface">{isBn ? "ফোন নম্বর পরিবর্তন (OTP)" : "Change phone (OTP)"}</h2>
+        <h2 className="text-lg font-semibold text-on-surface">{t("changePhone")}</h2>
         <div className="grid gap-4 md:grid-cols-2">
-          <FormInput label={isBn ? "নতুন ফোন নম্বর" : "New phone"} value={newPhone} onChange={(e) => setNewPhone(e.target.value)} />
-          <FormInput label="OTP" value={phoneOtp} onChange={(e) => setPhoneOtp(e.target.value)} />
+          <FormInput label={t("newPhone")} value={newPhone} onChange={(e) => setNewPhone(e.target.value)} />
+          <FormInput label={t("otp")} value={phoneOtp} onChange={(e) => setPhoneOtp(e.target.value)} />
         </div>
         <div className="flex flex-wrap gap-3">
           <button
@@ -214,7 +259,7 @@ export default function AccountProfilePage() {
             disabled={savingPhone}
             className="rounded-full bg-surface-container-high px-5 py-3 text-sm font-semibold text-on-surface disabled:opacity-50"
           >
-            {isBn ? "OTP পাঠান" : "Send OTP"}
+            {t("sendOtp")}
           </button>
           <button
             type="button"
@@ -222,7 +267,36 @@ export default function AccountProfilePage() {
             disabled={savingPhone || !otpRequested}
             className="rounded-full bg-primary px-5 py-3 text-sm font-semibold text-white disabled:opacity-50"
           >
-            {isBn ? "ফোন নিশ্চিত করুন" : "Verify phone change"}
+            {t("verifyPhoneChange")}
+          </button>
+        </div>
+      </section>
+
+      <section className="rounded-[1.5rem] border border-outline-variant/30 bg-surface p-6 space-y-4">
+        <h2 className="text-lg font-semibold text-on-surface">{t("changeEmail")}</h2>
+        <p className="text-xs text-on-surface-variant">
+          {t("changeEmailDesc")}
+        </p>
+        <div className="grid gap-4 md:grid-cols-2">
+          <FormInput label={t("newEmail")} type="email" value={newEmail} onChange={(e) => setNewEmail(e.target.value)} />
+          <FormInput label={t("verificationCode")} value={emailToken} onChange={(e) => setEmailToken(e.target.value)} />
+        </div>
+        <div className="flex flex-wrap gap-3">
+          <button
+            type="button"
+            onClick={sendEmailCode}
+            disabled={savingEmail}
+            className="rounded-full bg-surface-container-high px-5 py-3 text-sm font-semibold text-on-surface disabled:opacity-50"
+          >
+            {t("sendCode")}
+          </button>
+          <button
+            type="button"
+            onClick={confirmEmailChange}
+            disabled={savingEmail || !emailOtpRequested}
+            className="rounded-full bg-primary px-5 py-3 text-sm font-semibold text-white disabled:opacity-50"
+          >
+            {t("verifyEmailChange")}
           </button>
         </div>
       </section>

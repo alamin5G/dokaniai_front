@@ -70,3 +70,19 @@ export async function verifyPhoneChange(newPhone: string, otp: string): Promise<
     throw new Error(getApiErrorMessage(error, "ফোন পরিবর্তন নিশ্চিত করা যায়নি।"));
   }
 }
+
+export async function requestEmailChange(newEmail: string): Promise<void> {
+  try {
+    await apiClient.post("/users/me/email-change/request", { newEmail });
+  } catch (error) {
+    throw new Error(getApiErrorMessage(error, "ইমেইল পরিবর্তনের কোড পাঠানো যায়নি।"));
+  }
+}
+
+export async function verifyEmailChange(newEmail: string, token: string): Promise<void> {
+  try {
+    await apiClient.post("/users/me/email-change/verify", { newEmail, token });
+  } catch (error) {
+    throw new Error(getApiErrorMessage(error, "ইমেইল পরিবর্তন নিশ্চিত করা যায়নি।"));
+  }
+}

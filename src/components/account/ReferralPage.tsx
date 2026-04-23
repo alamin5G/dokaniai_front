@@ -73,12 +73,6 @@ export default function ReferralPage() {
         <div className="space-y-6">
             {/* Header */}
             <header>
-                <p className="text-sm font-bold uppercase tracking-[0.28em] text-secondary">
-                    {t("title")}
-                </p>
-                <h1 className="mt-2 text-4xl font-black tracking-tight text-primary">
-                    {t("title")}
-                </h1>
                 <p className="mt-3 max-w-2xl text-sm leading-7 text-on-surface-variant">
                     {t("subtitle")}
                 </p>
