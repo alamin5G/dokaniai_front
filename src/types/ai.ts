@@ -12,6 +12,7 @@ export type AIActionType =
     | "DUE_BAKI"
     | "DUE_JOMA"
     | "DISCOUNT"
+    | "ADD_PRODUCT"
     | "RETURN"
     | "QUERY"
     | "UNKNOWN";

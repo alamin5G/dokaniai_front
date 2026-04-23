@@ -1,0 +1,93 @@
+"use client";
+
+import { useTranslations } from "next-intl";
+import type { AIInsight } from "@/lib/productAnalyticsApi";
+
+interface AIInsightCardProps {
+    insight: AIInsight;
+    onMarkRead?: (id: string) => void;
+    onAct?: (id: string) => void;
+    onDismiss?: (id: string) => void;
+}
+
+const severityColors: Record<string, { bg: string; border: string; icon: string }> = {
+    CRITICAL: { bg: "bg-red-50", border: "border-l-red-500", icon: "🔴" },
+    WARNING: { bg: "bg-amber-50", border: "border-l-amber-500", icon: "🟡" },
+    INFO: { bg: "bg-blue-50", border: "border-l-blue-500", icon: "🔵" },
+};
+
+const actionLabels: Record<string, string> = {
+    restock: "অর্ডার দিন",
+    discount: "ডিসকাউন্ট দিন",
+    adjust_price: "দাম আপডেট করুন",
+    send_reminder: "রিমাইন্ডার পাঠান",
+    increase_stock: "স্টক বাড়ান",
+};
+
+export default function AIInsightCard({
+    insight,
+    onMarkRead,
+    onAct,
+    onDismiss,
+}: AIInsightCardProps) {
+    const t = useTranslations("shop.products");
+    const severity = severityColors[insight.severity] || severityColors.INFO;
+
+    return (
+        <div
+            className={`rounded-[20px] ${severity.bg} p-4 border-l-4 ${severity.border} transition hover:shadow-md`}
+        >
+            <div className="flex items-start gap-3">
+                <span className="text-lg">{severity.icon}</span>
+                <div className="flex-1 min-w-0">
+                    <p className="text-sm font-semibold text-on-surface truncate">
+                        {insight.title}
+                    </p>
+                    <p className="mt-1 text-xs text-on-surface-variant line-clamp-2">
+                        {insight.message}
+                    </p>
+
+                    {insight.actionSuggested && (
+                        <div className="mt-3 flex flex-wrap gap-2">
+                            {onAct && (
+                                <button
+                                    type="button"
+                                    onClick={() => onAct(insight.id)}
+                                    className="rounded-full bg-primary px-3 py-1 text-xs font-medium text-on-primary hover:bg-primary-container"
+                                >
+                                    {actionLabels[insight.actionSuggested] ||
+                                        insight.actionSuggested}
+                                </button>
+                            )}
+                            {onDismiss && (
+                                <button
+                                    type="button"
+                                    onClick={() => onDismiss(insight.id)}
+                                    className="rounded-full bg-surface px-3 py-1 text-xs font-medium text-on-surface-variant hover:bg-surface-variant"
+                                >
+                                    এড়িয়ে যান
+                                </button>
+                            )}
+                        </div>
+                    )}
+                </div>
+
+                {insight.isRead === false && onMarkRead && (
+                    <button
+                        type="button"
+                        onClick={() => onMarkRead(insight.id)}
+                        className="shrink-0 rounded-full p-1 text-on-surface-variant hover:bg-surface-variant"
+                        title="Mark as read"
+                    >
+                        <span
+                            className="material-symbols-outlined text-base"
+                            style={{ fontVariationSettings: "'FILL' 0" }}
+                        >
+                            check_circle
+                        </span>
+                    </button>
+                )}
+            </div>
+        </div>
+    );
+}
