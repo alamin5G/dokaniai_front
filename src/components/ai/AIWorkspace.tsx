@@ -39,6 +39,7 @@ const ACTION_META: Record<AIActionType, { icon: string; color: string }> = {
     DUE_BAKI: { icon: "menu_book", color: "text-tertiary" },
     DUE_JOMA: { icon: "savings", color: "text-secondary" },
     DISCOUNT: { icon: "sell", color: "text-primary" },
+    ADD_PRODUCT: { icon: "add_box", color: "text-primary" },
     RETURN: { icon: "undo", color: "text-tertiary" },
     QUERY: { icon: "help", color: "text-on-surface-variant" },
     UNKNOWN: { icon: "question_mark", color: "text-on-surface-variant" },

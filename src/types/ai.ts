@@ -172,6 +172,21 @@ export interface ConfirmationRequiredResponse {
     confirmationToken: string;
 }
 
+// ─── Parsed Product (from AI voice/text parse) ───────────
+
+export interface ParsedProduct {
+    name: string | null;
+    unit: string | null;
+    costPrice: number | null;
+    sellPrice: number | null;
+    stockQty: number | null;
+    reorderPoint: number | null;
+    categoryName: string | null;
+    existingProductId: string | null;
+    isNew: boolean;
+    confidenceScore: number | null;
+}
+
 // ─── Paged Results ───────────────────────────────────────
 
 export interface PagedConversations {

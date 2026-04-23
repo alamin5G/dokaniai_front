@@ -1,8 +1,10 @@
 "use client";
 
 import { parseText } from "@/lib/aiApi";
+import { createProduct, updateProduct } from "@/lib/productApi";
 import { useBusinessStore } from "@/store/businessStore";
-import type { ParsedAction } from "@/types/ai";
+import type { ParsedAction, ParsedProduct } from "@/types/ai";
+import ParsedProductModal from "@/components/products/ParsedProductModal";
 import { useTranslations } from "next-intl";
 import { useCallback, useRef, useState } from "react";
 
@@ -88,7 +90,9 @@ export default function VoiceCommandBar() {
     // NLP parse result
     const [parsedResult, setParsedResult] = useState<ParsedAction | null>(null);
     const [isParsing, setIsParsing] = useState(false);
+    const [isExecuting, setIsExecuting] = useState(false);
     const [parseError, setParseError] = useState<string | null>(null);
+    const [successMsg, setSuccessMsg] = useState<string | null>(null);
 
     const mediaRecorderRef = useRef<MediaRecorder | null>(null);
     const chunksRef = useRef<Blob[]>([]);
@@ -221,12 +225,62 @@ export default function VoiceCommandBar() {
     // -----------------------------------------------------------------------
     // Confirm / Cancel parsed result
     // -----------------------------------------------------------------------
-    const handleConfirm = useCallback(() => {
-        // TODO: Execute the parsed action (e.g., create sale, add product)
-        // For now, clear the bar after confirmation
-        setParsedResult(null);
-        setTextInput("");
-    }, []);
+    const handleConfirm = useCallback(
+        async (edited: ParsedProduct) => {
+            if (!activeBusinessId) return;
+
+            setIsExecuting(true);
+            setParseError(null);
+
+            try {
+                if (edited.existingProductId && !edited.isNew) {
+                    // ── Update existing product ──
+                    await updateProduct(activeBusinessId, edited.existingProductId, {
+                        name: edited.name ?? undefined,
+                        unit: edited.unit ?? undefined,
+                        costPrice: edited.costPrice ?? undefined,
+                        sellPrice: edited.sellPrice ?? undefined,
+                        reorderPoint: edited.reorderPoint ?? undefined,
+                        description: "AI ভয়েস কমান্ড দিয়ে আপডেট",
+                    });
+                    setSuccessMsg(
+                        edited.name
+                            ? t("modal.updateSuccess", { name: edited.name })
+                            : t("modal.updateSuccessGeneric"),
+                    );
+                } else {
+                    // ── Create new product ──
+                    await createProduct(activeBusinessId, {
+                        name: edited.name ?? "পণ্য",
+                        unit: edited.unit ?? "pcs",
+                        costPrice: edited.costPrice ?? 0,
+                        sellPrice: edited.sellPrice ?? 0,
+                        stockQty: edited.stockQty ?? 0,
+                        reorderPoint: edited.reorderPoint ?? undefined,
+                        description: "AI ভয়েস কমান্ড দিয়ে যোগ",
+                    });
+                    setSuccessMsg(
+                        edited.name
+                            ? t("modal.addSuccess", { name: edited.name })
+                            : t("modal.addSuccessGeneric"),
+                    );
+                }
+
+                setParsedResult(null);
+                setTextInput("");
+
+                // Auto-dismiss success message after 4s
+                setTimeout(() => setSuccessMsg(null), 4000);
+            } catch (err) {
+                setParseError(
+                    err instanceof Error ? err.message : t("modal.executeError"),
+                );
+            } finally {
+                setIsExecuting(false);
+            }
+        },
+        [activeBusinessId, t],
+    );
 
     const handleCancelParse = useCallback(() => {
         setParsedResult(null);
@@ -310,6 +364,20 @@ export default function VoiceCommandBar() {
                 </div>
             )}
 
+            {/* Success message */}
+            {successMsg && (
+                <div className="flex items-center justify-between gap-2 rounded-xl bg-emerald-50 px-4 py-2 text-xs text-emerald-700">
+                    <span>{successMsg}</span>
+                    <button
+                        type="button"
+                        onClick={() => setSuccessMsg(null)}
+                        className="font-semibold hover:underline"
+                    >
+                        ✕
+                    </button>
+                </div>
+            )}
+
             {/* Parse error */}
             {parseError && (
                 <div className="flex items-center justify-between gap-2 rounded-xl bg-rose-50 px-4 py-2 text-xs text-rose-700">
@@ -324,50 +392,14 @@ export default function VoiceCommandBar() {
                 </div>
             )}
 
-            {/* Parsed result confirmation */}
+            {/* Parsed product confirmation modal */}
             {parsedResult && (
-                <div className="rounded-xl bg-emerald-50 px-4 py-3 text-sm">
-                    <p className="mb-2 font-semibold text-emerald-800">
-                        AI বুঝেছে — নিশ্চিত করুন
-                    </p>
-                    <div className="space-y-1 text-xs text-emerald-700">
-                        <p>
-                            <span className="font-medium">অ্যাকশন:</span>{" "}
-                            {parsedResult.actionType}
-                        </p>
-                        {parsedResult.structuredOutput && (
-                            <p>
-                                <span className="font-medium">ডেটা:</span>{" "}
-                                {parsedResult.structuredOutput}
-                            </p>
-                        )}
-                        <p>
-                            <span className="font-medium">কনফিডেন্স:</span>{" "}
-                            {Math.round((parsedResult.confidenceScore ?? 0) * 100)}%
-                        </p>
-                        {parsedResult.uncertaintyReason && (
-                            <p className="text-amber-600">
-                                ⚠️ {parsedResult.uncertaintyReason}
-                            </p>
-                        )}
-                    </div>
-                    <div className="mt-3 flex gap-2">
-                        <button
-                            type="button"
-                            onClick={handleConfirm}
-                            className="rounded-lg bg-emerald-600 px-4 py-1.5 text-xs font-semibold text-white hover:bg-emerald-700 transition-colors"
-                        >
-                            ✓ ঠিক আছে
-                        </button>
-                        <button
-                            type="button"
-                            onClick={handleCancelParse}
-                            className="rounded-lg bg-emerald-100 px-4 py-1.5 text-xs font-semibold text-emerald-700 hover:bg-emerald-200 transition-colors"
-                        >
-                            ✗ ভুল হয়েছে
-                        </button>
-                    </div>
-                </div>
+                <ParsedProductModal
+                    parsedAction={parsedResult}
+                    onConfirm={(edited) => void handleConfirm(edited)}
+                    onCancel={handleCancelParse}
+                    isExecuting={isExecuting}
+                />
             )}
         </div>
     );
