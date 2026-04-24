@@ -20,6 +20,7 @@ export interface ProductFormState {
     reorderPoint: string;
     categoryId: string;
     subCategoryId: string;
+    restockQty: string;
 }
 
 export const initialFormState: ProductFormState = {
@@ -34,6 +35,7 @@ export const initialFormState: ProductFormState = {
     reorderPoint: "",
     categoryId: "",
     subCategoryId: "",
+    restockQty: "",
 };
 
 export function toFormState(product: Product): ProductFormState {
@@ -49,6 +51,7 @@ export function toFormState(product: Product): ProductFormState {
         reorderPoint: product.reorderPoint?.toString() ?? "",
         categoryId: product.categoryId ?? "",
         subCategoryId: product.subCategoryId ?? "",
+        restockQty: "",
     };
 }
 
@@ -247,21 +250,50 @@ export default function ProductForm({
                         </select>
                     </label>
 
-                    <label className="block">
-                        <span className="mb-2 block text-sm font-medium text-on-surface">
-                            {t("form.initialStock")}
-                        </span>
-                        <input
-                            type="number"
-                            min="0"
-                            step="0.001"
-                            value={form.stockQty}
-                            onChange={(event) => onUpdateForm("stockQty", event.target.value)}
-                            disabled={editorMode === "edit"}
-                            className="w-full rounded-[20px] bg-surface-container-highest px-4 py-3 text-sm text-on-surface outline-none disabled:opacity-60"
-                            placeholder="0"
-                        />
-                    </label>
+                    {editorMode === "edit" ? (
+                        <div className="space-y-3">
+                            <label className="block">
+                                <span className="mb-2 block text-sm font-medium text-on-surface">
+                                    {t("form.currentStock")}
+                                </span>
+                                <input
+                                    type="text"
+                                    value={form.stockQty}
+                                    disabled
+                                    className="w-full rounded-[20px] bg-surface-container-highest px-4 py-3 text-sm text-on-surface outline-none opacity-60"
+                                />
+                            </label>
+                            <label className="block">
+                                <span className="mb-2 block text-sm font-medium text-primary">
+                                    {t("form.restockQty")}
+                                </span>
+                                <input
+                                    type="number"
+                                    min="0"
+                                    step="0.001"
+                                    value={form.restockQty}
+                                    onChange={(event) => onUpdateForm("restockQty", event.target.value)}
+                                    className="w-full rounded-[20px] bg-primary/10 border border-primary/30 px-4 py-3 text-sm text-on-surface outline-none focus:ring-2 focus:ring-primary/40 placeholder:text-on-surface-variant/50"
+                                    placeholder={t("form.restockPlaceholder")}
+                                />
+                            </label>
+                        </div>
+                    ) : (
+                        <label className="block">
+                            <span className="mb-2 block text-sm font-medium text-on-surface">
+                                {t("form.initialStock")}
+                            </span>
+                            <input
+                                type="number"
+                                min="0"
+                                step="0.001"
+                                value={form.stockQty}
+                                onChange={(event) => onUpdateForm("stockQty", event.target.value)}
+                                className="w-full rounded-[20px] bg-surface-container-highest px-4 py-3 text-sm text-on-surface outline-none placeholder:text-on-surface-variant/50"
+                                placeholder="0"
+                            />
+                        </label>
+                    )}
                 </div>
 
                 {/* Cost Price + Sell Price */}

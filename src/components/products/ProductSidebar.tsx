@@ -2,10 +2,13 @@
 
 import { useLocale, useTranslations } from "next-intl";
 import type { Product, ProductStatsResponse } from "@/types/product";
+import { useUrgentPredictions } from "@/hooks/useRestockIntelligence";
+import StockPredictionBanner from "./StockPredictionBanner";
 
 interface ProductSidebarProps {
     stats: ProductStatsResponse | null;
     reorderProducts: Product[];
+    businessId?: string;
 }
 
 function resolveLocale(locale?: string): string {
@@ -15,10 +18,13 @@ function resolveLocale(locale?: string): string {
 export default function ProductSidebar({
     stats,
     reorderProducts,
+    businessId,
 }: ProductSidebarProps) {
     const t = useTranslations("shop.products");
     const locale = useLocale();
     const loc = resolveLocale(locale);
+
+    const { predictions } = useUrgentPredictions(businessId ?? null);
 
     const qtyFormatter = new Intl.NumberFormat(loc, {
         maximumFractionDigits: 3,
@@ -67,6 +73,22 @@ export default function ProductSidebar({
                     </p>
                 </div>
             </div>
+
+            {/* AI Stock Predictions */}
+            {predictions.length > 0 && (
+                <div className="mt-5 space-y-3">
+                    <p className="text-sm font-semibold text-secondary">
+                        🔮 AI স্টক পূর্বাভাস
+                    </p>
+                    {predictions.slice(0, 3).map((prediction) => (
+                        <StockPredictionBanner
+                            key={prediction.productId}
+                            prediction={prediction}
+                            onDismiss={() => { }}
+                        />
+                    ))}
+                </div>
+            )}
         </section>
     );
 }

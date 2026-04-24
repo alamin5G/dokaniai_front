@@ -243,7 +243,14 @@ export default function ProductTable({
                                             </div>
                                         </td>
                                         <td className="px-6 py-5 font-bold text-on-surface">
-                                            {formatQty(product.stockQty)} {formatUnit(product.unit)}
+                                            <div className="flex items-center gap-1">
+                                                <span>
+                                                    {formatQty(product.stockQty)} {formatUnit(product.unit)}
+                                                </span>
+                                                {product.status === "LOW_STOCK" && (
+                                                    <span className="text-xs" title="AI পূর্বাভাস আছে">🔮</span>
+                                                )}
+                                            </div>
                                         </td>
                                         <td className="px-6 py-5 text-right font-semibold text-on-surface">
                                             ৳{formatMoney(product.costPrice)}

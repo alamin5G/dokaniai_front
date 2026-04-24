@@ -110,4 +110,14 @@ export const swrKeys = {
     // Inventory
     inventoryLogs: (businessId: string, params?: Record<string, unknown>) =>
         `/businesses/${businessId}/inventory/logs${paramsKey(params ?? {})}`,
+
+    // Restock Intelligence
+    restockInsight: (businessId: string, productId: string) =>
+        `/businesses/${businessId}/products/${productId}/restock-insight`,
+    restockInsights: (businessId: string) =>
+        `/businesses/${businessId}/restock-insights`,
+    stockPrediction: (businessId: string, productId: string) =>
+        `/businesses/${businessId}/products/${productId}/stock-prediction`,
+    urgentPredictions: (businessId: string) =>
+        `/businesses/${businessId}/stock-predictions`,
 } as const;

@@ -14,6 +14,7 @@ import {
     exportProductsCsv,
     importProductsCsv,
 } from "@/lib/productApi";
+import { adjustInventory } from "@/lib/inventoryApi";
 import { useProducts, useProductStats, useLowStockProducts, useReorderNeededProducts } from "@/hooks/useProducts";
 import { useCategoriesByBusinessType } from "@/hooks/useCategories";
 import { useProductMutations } from "@/hooks/useProductMutations";
@@ -34,6 +35,8 @@ import ProductForm, {
 import ProductSidebar from "./ProductSidebar";
 import VoiceCommandBar from "./VoiceCommandBar";
 import InventoryTab from "./InventoryTab";
+import RestockInsightCard from "./RestockInsightCard";
+import { useRestockInsight } from "@/hooks/useRestockIntelligence";
 
 function toCreatePayload(form: ProductFormState): ProductCreateRequest {
     return {
@@ -100,6 +103,10 @@ export default function ProductInventoryPage({
     const [isImporting, setIsImporting] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [notice, setNotice] = useState<string | null>(null);
+
+    // Restock insight state — tracks the last restocked product to show AI insight
+    const [lastRestockedProductId, setLastRestockedProductId] = useState<string | null>(null);
+    const { insight: restockInsight } = useRestockInsight(businessId, lastRestockedProductId);
 
     // Editor state
     const [editorMode, setEditorMode] = useState<EditorMode>("create");
@@ -176,6 +183,18 @@ export default function ProductInventoryPage({
         try {
             if (editorMode === "edit" && editingProduct) {
                 await submitUpdate(editingProduct.id, toUpdatePayload(form));
+                // Handle restock if quantity provided
+                const restockQty = Number(form.restockQty);
+                if (restockQty > 0) {
+                    await adjustInventory(businessId, {
+                        productId: editingProduct.id,
+                        quantity: restockQty,
+                        reason: "এডিট ফর্ম থেকে রিস্টক",
+                        action: "RESTOCK",
+                    });
+                    // Track restocked product for AI insight display
+                    setLastRestockedProductId(editingProduct.id);
+                }
                 setNotice(t("messages.updated"));
             } else {
                 await submitCreate(toCreatePayload(form));
@@ -394,6 +413,14 @@ export default function ProductInventoryPage({
                 </div>
             ) : null}
 
+            {/* Restock AI Insight Card — shown after a restock via edit form */}
+            {restockInsight && (
+                <RestockInsightCard
+                    insight={restockInsight}
+                    onDismiss={() => setLastRestockedProductId(null)}
+                />
+            )}
+
             {/* ─── Products Tab Content ──────────────────────── */}
             {activeTopTab === "products" && (
                 <div className="grid gap-6 xl:grid-cols-[minmax(0,1.8fr)_380px]">
@@ -452,7 +479,7 @@ export default function ProductInventoryPage({
                         />
 
                         {/* Inventory Status Sidebar */}
-                        <ProductSidebar stats={stats} reorderProducts={reorderProducts} />
+                        <ProductSidebar stats={stats} reorderProducts={reorderProducts} businessId={businessId} />
                     </aside>
                 </div>
             )}
