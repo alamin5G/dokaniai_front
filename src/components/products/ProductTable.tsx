@@ -6,6 +6,7 @@ import type { CategoryResponse } from "@/types/category";
 import type { Product, ProductStatus } from "@/types/product";
 import CategoryRequestSheet from "@/components/categories/CategoryRequestSheet";
 import CategoryRequestStatusSheet from "@/components/categories/CategoryRequestStatusSheet";
+import CategoryMarketInsightCard from "@/components/products/CategoryMarketInsightCard";
 import { getProductUnitLabel } from "@/lib/productUnits";
 
 interface ProductTableProps {
@@ -285,11 +286,38 @@ export default function ProductTable({
                             })
                         ) : (
                             <tr>
-                                <td
-                                    colSpan={7}
-                                    className="px-6 py-14 text-center text-sm text-on-surface-variant"
-                                >
-                                    {t("table.empty")}
+                                <td colSpan={7} className="px-6 py-8">
+                                    {selectedCategoryId ? (
+                                        <div className="mx-auto max-w-lg space-y-4 text-center">
+                                            <div className="flex flex-col items-center gap-2">
+                                                <span className="material-symbols-outlined text-4xl text-primary/40">category</span>
+                                                <p className="text-sm font-medium text-on-surface-variant">
+                                                    {t("table.emptyCategory", {
+                                                        category: getCategoryName(categoryMap.get(selectedCategoryId)!),
+                                                    })}
+                                                </p>
+                                            </div>
+                                            <CategoryMarketInsightCard
+                                                categoryId={selectedCategoryId}
+                                                categoryName={getCategoryName(categoryMap.get(selectedCategoryId)!)}
+                                            />
+                                            <button
+                                                type="button"
+                                                onClick={() => {
+                                                    const addBtn = document.querySelector<HTMLButtonElement>('[data-action="add-product"]');
+                                                    addBtn?.click();
+                                                }}
+                                                className="inline-flex items-center gap-2 rounded-full bg-primary px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-primary/90"
+                                            >
+                                                <span className="material-symbols-outlined text-base">add</span>
+                                                {t("actions.addNew")}
+                                            </button>
+                                        </div>
+                                    ) : (
+                                        <p className="text-sm text-on-surface-variant">
+                                            {t("table.empty")}
+                                        </p>
+                                    )}
                                 </td>
                             </tr>
                         )}
@@ -374,7 +402,7 @@ function CategoryFilterChipsInline({
                     className={`shrink-0 rounded-full px-4 py-2 text-sm font-semibold transition ${selectedCategoryId === null
                         ? "bg-primary text-white"
                         : "bg-surface text-on-surface hover:bg-surface-container-high"
-                    }`}
+                        }`}
                 >
                     {t("filter.allCategories")}
                 </button>
@@ -388,7 +416,7 @@ function CategoryFilterChipsInline({
                         className={`shrink-0 rounded-full px-4 py-2 text-sm font-semibold transition ${selectedCategoryId === cat.id
                             ? "bg-primary text-white"
                             : "bg-surface text-on-surface hover:bg-surface-container-high"
-                        }`}
+                            }`}
                     >
                         {getName(cat)}
                     </button>

@@ -1152,6 +1152,7 @@
         "action": "Action",
         "loading": "Loading products...",
         "empty": "No products found.",
+        "emptyCategory": "No products have been added to \"{category}\" yet.",
         "showing": "Showing {shown} of {total} products on this page.",
         "sku": "SKU {sku}",
         "skuBarcode": "SKU {sku} • Barcode {barcode}"
@@ -1226,6 +1227,12 @@
         "templateError": "Template download failed.",
         "importLocked": "CSV bulk import is locked on your current plan. Upgrade to Pro or above.",
         "confirmArchive": "Archive \"{name}\"?"
+      },
+      "marketInsight": {
+        "title": "Market Insight for {category}",
+        "loading": "Generating AI insight...",
+        "error": "Failed to load market insight.",
+        "noInsight": "No insight available for this category."
       },
       "voice": {
         "title": "Product Voice Command",

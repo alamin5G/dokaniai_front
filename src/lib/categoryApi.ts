@@ -240,3 +240,14 @@ export async function getBusinessesByCategory(
   const data = response.data.data;
   return { content: data.content, totalPages: data.totalPages ?? (data.last ? data.number + 1 : data.number + 2) };
 }
+
+export async function getCategoryMarketInsight(
+  categoryId: string,
+  businessType?: string,
+): Promise<string> {
+  const params = businessType ? `?businessType=${encodeURIComponent(businessType)}` : '';
+  const response = await apiClient.get<ApiSuccess<{ categoryId: string; insight: string }>>(
+    `/categories/${encodeURIComponent(categoryId)}/market-insight${params}`,
+  );
+  return response.data.data.insight ?? '';
+}
