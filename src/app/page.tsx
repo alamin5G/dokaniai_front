@@ -16,7 +16,6 @@ export default function HomePage() {
   return (
     <div className="min-h-screen bg-background text-on-background font-body selection:bg-primary-fixed overflow-x-hidden">
       <NavBar />
-
       <main>
         <HeroSection />
         <TrustIndicators />
