@@ -1244,6 +1244,8 @@
           "unitPlaceholder": "যেমন: কেজি, লিটার",
           "category": "ক্যাটাগরি",
           "categoryPlaceholder": "যেমন: মশলা",
+          "subCategory": "সাব-ক্যাটাগরি",
+          "subCategoryPlaceholder": "যেমন: চাল",
           "costPrice": "ক্রয়মূল্য (৳)",
           "sellPrice": "বিক্রয়মূল্য (৳)",
           "stockQty": "স্টক পরিমাণ",

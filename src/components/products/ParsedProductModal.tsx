@@ -60,6 +60,7 @@ export default function ParsedProductModal({
             stockQty: null,
             reorderPoint: null,
             categoryName: null,
+            subCategoryName: null,
             existingProductId: null,
             isNew: true,
             confidenceScore: parsedAction.confidenceScore ?? 0,
@@ -240,7 +241,7 @@ export default function ParsedProductModal({
                         </FieldRow>
                     </div>
 
-                    {/* Category + Reorder point row */}
+                    {/* Category + Sub-category row */}
                     <div className="grid grid-cols-2 gap-3">
                         <FieldRow label={t("category")}>
                             <input
@@ -253,6 +254,21 @@ export default function ParsedProductModal({
                                 className="w-full rounded-lg bg-surface-container-high px-3 py-2 text-sm text-on-surface outline-none focus:ring-2 focus:ring-primary/40 placeholder:text-on-surface-variant/50"
                             />
                         </FieldRow>
+                        <FieldRow label={t("subCategory")}>
+                            <input
+                                type="text"
+                                value={form.subCategoryName ?? ""}
+                                onChange={(e) =>
+                                    setField("subCategoryName", e.target.value || null)
+                                }
+                                placeholder={t("subCategoryPlaceholder")}
+                                className="w-full rounded-lg bg-surface-container-high px-3 py-2 text-sm text-on-surface outline-none focus:ring-2 focus:ring-primary/40 placeholder:text-on-surface-variant/50"
+                            />
+                        </FieldRow>
+                    </div>
+
+                    {/* Reorder point */}
+                    <div className="grid grid-cols-2 gap-3">
                         <FieldRow label={t("reorderPoint")}>
                             <input
                                 type="number"

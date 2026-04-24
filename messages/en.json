@@ -1244,6 +1244,8 @@
           "unitPlaceholder": "e.g. kg, litre",
           "category": "Category",
           "categoryPlaceholder": "e.g. Spices",
+          "subCategory": "Sub-category",
+          "subCategoryPlaceholder": "e.g. Rice",
           "costPrice": "Cost Price (৳)",
           "sellPrice": "Sell Price (৳)",
           "stockQty": "Stock Quantity",

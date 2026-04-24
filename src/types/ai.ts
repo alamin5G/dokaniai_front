@@ -182,6 +182,7 @@ export interface ParsedProduct {
     stockQty: number | null;
     reorderPoint: number | null;
     categoryName: string | null;
+    subCategoryName: string | null;
     existingProductId: string | null;
     isNew: boolean;
     confidenceScore: number | null;
