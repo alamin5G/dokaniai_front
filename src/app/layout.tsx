@@ -73,7 +73,7 @@ export const metadata: Metadata = {
     locale: "bn_BD",
     alternateLocale: "en_US",
     siteName: "DokaniAI",
-    title: "DokaniAI – বাংলাদেশের ছোট দোকানদারদের AI সহকারী",
+    title: "DokaniAI – দোকানদারদের AI সহকারী",
     description:
       "বিক্রয়, খরচ, বাকি খাতা, ইনভেন্টরি ও রিপোর্ট সহজে পরিচালনা করতে DokaniAI ব্যবহার করুন।",
     images: [{ url: "/icons/icon.svg", width: 512, height: 512, alt: "DokaniAI Logo" }],
