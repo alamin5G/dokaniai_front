@@ -42,11 +42,11 @@ export async function listInventoryLogs(
     businessId: string,
     params: ListInventoryLogsParams = {}
 ): Promise<PagedInventoryLogs> {
-    const { data } = await apiClient.get(
-        `/api/v1/businesses/${businessId}/inventory/logs`,
+    const response = await apiClient.get<ApiSuccess<PagedInventoryLogs>>(
+        `/businesses/${businessId}/inventory/logs`,
         { params }
     );
-    return unwrap<PagedInventoryLogs>(data);
+    return unwrap(response);
 }
 
 // ─── Manual Stock Adjustment ─────────────────────────────
@@ -55,11 +55,11 @@ export async function adjustInventory(
     businessId: string,
     request: InventoryAdjustmentRequest
 ): Promise<InventoryLog> {
-    const { data } = await apiClient.post(
-        `/api/v1/businesses/${businessId}/inventory/adjust`,
+    const response = await apiClient.post<ApiSuccess<InventoryLog>>(
+        `/businesses/${businessId}/inventory/adjust`,
         request
     );
-    return unwrap<InventoryLog>(data);
+    return unwrap(response);
 }
 
 // ─── Product Stock History ───────────────────────────────
@@ -69,11 +69,11 @@ export async function getProductStockHistory(
     productId: string,
     limit = 50
 ): Promise<StockHistoryEntry[]> {
-    const { data } = await apiClient.get(
-        `/api/v1/businesses/${businessId}/inventory/${productId}/history`,
+    const response = await apiClient.get<ApiSuccess<StockHistoryEntry[]>>(
+        `/businesses/${businessId}/inventory/${productId}/history`,
         { params: { limit } }
     );
-    return unwrap<StockHistoryEntry[]>(data);
+    return unwrap(response);
 }
 
 // ─── Inventory Summary ───────────────────────────────────
@@ -87,11 +87,11 @@ export async function getInventorySummary(
     if (startDate) params.startDate = startDate;
     if (endDate) params.endDate = endDate;
 
-    const { data } = await apiClient.get(
-        `/api/v1/businesses/${businessId}/inventory/summary`,
+    const response = await apiClient.get<ApiSuccess<InventorySummary[]>>(
+        `/businesses/${businessId}/inventory/summary`,
         { params }
     );
-    return unwrap<InventorySummary[]>(data);
+    return unwrap(response);
 }
 
 // ─── Stock Alerts ────────────────────────────────────────
@@ -99,8 +99,8 @@ export async function getInventorySummary(
 export async function getStockAlerts(
     businessId: string
 ): Promise<StockAlertReport> {
-    const { data } = await apiClient.get(
-        `/api/v1/businesses/${businessId}/inventory/alerts`
+    const response = await apiClient.get<ApiSuccess<StockAlertReport>>(
+        `/businesses/${businessId}/inventory/alerts`
     );
-    return unwrap<StockAlertReport>(data);
+    return unwrap(response);
 }

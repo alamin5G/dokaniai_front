@@ -1,7 +1,9 @@
 "use client";
 
 import { parseText } from "@/lib/aiApi";
+import { adjustInventory } from "@/lib/inventoryApi";
 import { createProduct, updateProduct } from "@/lib/productApi";
+import { invalidateProducts } from "@/lib/swrMutations";
 import { useBusinessStore } from "@/store/businessStore";
 import type { ParsedAction, ParsedProduct } from "@/types/ai";
 import ParsedProductModal from "@/components/products/ParsedProductModal";
@@ -243,6 +245,15 @@ export default function VoiceCommandBar() {
                         reorderPoint: edited.reorderPoint ?? undefined,
                         description: "AI ভয়েস কমান্ড দিয়ে আপডেট",
                     });
+
+                    if (edited.stockQty != null && edited.stockQty > 0) {
+                        await adjustInventory(activeBusinessId, {
+                            productId: edited.existingProductId,
+                            quantity: edited.stockQty,
+                            reason: "AI ভয়েস কমান্ড দিয়ে রিস্টক",
+                            action: "RESTOCK",
+                        });
+                    }
                     setSuccessMsg(
                         edited.name
                             ? t("modal.updateSuccess", { name: edited.name })
@@ -265,6 +276,8 @@ export default function VoiceCommandBar() {
                             : t("modal.addSuccessGeneric"),
                     );
                 }
+
+                await invalidateProducts(activeBusinessId);
 
                 setParsedResult(null);
                 setTextInput("");

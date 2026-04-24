@@ -6,6 +6,7 @@ import type { CategoryResponse } from "@/types/category";
 import type { Product, ProductStatus } from "@/types/product";
 import CategoryRequestSheet from "@/components/categories/CategoryRequestSheet";
 import CategoryRequestStatusSheet from "@/components/categories/CategoryRequestStatusSheet";
+import { getProductUnitLabel } from "@/lib/productUnits";
 
 interface ProductTableProps {
     products: Product[];
@@ -80,6 +81,10 @@ export default function ProductTable({
 
     function formatQty(value: number | null | undefined): string {
         return qtyFormatter.format(value ?? 0);
+    }
+
+    function formatUnit(unit: string): string {
+        return getProductUnitLabel(unit, locale);
     }
 
     function getCategoryName(category: CategoryResponse): string {
@@ -237,7 +242,7 @@ export default function ProductTable({
                                             </div>
                                         </td>
                                         <td className="px-6 py-5 font-bold text-on-surface">
-                                            {formatQty(product.stockQty)} {product.unit}
+                                            {formatQty(product.stockQty)} {formatUnit(product.unit)}
                                         </td>
                                         <td className="px-6 py-5 text-right font-semibold text-on-surface">
                                             ৳{formatMoney(product.costPrice)}

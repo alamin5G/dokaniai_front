@@ -17,6 +17,7 @@ import {
     listInventoryLogs,
 } from "@/lib/inventoryApi";
 import { listProducts } from "@/lib/productApi";
+import { invalidateProducts } from "@/lib/swrMutations";
 
 // ─── Helpers ─────────────────────────────────────────────
 
@@ -180,6 +181,7 @@ export default function InventoryTab({ businessId }: InventoryTabProps) {
             // Reload products to reflect new stock
             await loadProducts();
             await loadSummary();
+            await invalidateProducts(businessId);
         } catch {
             setAdjustError(t("messages.adjustError"));
         } finally {

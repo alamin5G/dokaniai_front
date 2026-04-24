@@ -403,6 +403,8 @@ export default function ProductInventoryPage({
 
                         {/* AI Insight Panel */}
                         <ProductInsightPanel
+                            businessId={businessId}
+                            products={products}
                             lowStockProducts={lowStockProducts}
                             onEdit={handleEdit}
                         />

@@ -4,6 +4,7 @@ import { useLocale, useTranslations } from "next-intl";
 import type { FormEvent } from "react";
 import type { CategoryResponse } from "@/types/category";
 import type { Product } from "@/types/product";
+import { getProductUnitOptions } from "@/lib/productUnits";
 
 export type EditorMode = "create" | "edit";
 
@@ -26,7 +27,7 @@ export const initialFormState: ProductFormState = {
     sku: "",
     barcode: "",
     description: "",
-    unit: "piece",
+    unit: "pcs",
     costPrice: "",
     sellPrice: "",
     stockQty: "",
@@ -94,6 +95,7 @@ export default function ProductForm({
     const subCategories = selectedParent
         ? categories.filter((c) => c.parentId === selectedParent)
         : [];
+    const unitOptions = getProductUnitOptions(form.unit);
 
     return (
         <section className="rounded-[28px] bg-surface-container p-6">
@@ -231,13 +233,18 @@ export default function ProductForm({
                         <span className="mb-2 block text-sm font-medium text-on-surface">
                             {t("form.unit")}
                         </span>
-                        <input
+                        <select
                             value={form.unit}
                             onChange={(event) => onUpdateForm("unit", event.target.value)}
                             required
                             className="w-full rounded-[20px] bg-surface-container-highest px-4 py-3 text-sm text-on-surface outline-none"
-                            placeholder={t("form.unitPlaceholder")}
-                        />
+                        >
+                            {unitOptions.map((unit) => (
+                                <option key={unit.value} value={unit.value}>
+                                    {isBn ? unit.labelBn : unit.labelEn}
+                                </option>
+                            ))}
+                        </select>
                     </label>
 
                     <label className="block">
