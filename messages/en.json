@@ -1165,8 +1165,6 @@
       "filter": {
         "all": "All Status",
         "allCategories": "All Categories",
-        "allTags": "All Tags",
-        "tagLabel": "Tag Filter",
         "search": "Search by name or SKU"
       },
       "pagination": {
@@ -1197,13 +1195,6 @@
         "categoryPlaceholder": "Select category",
         "subCategory": "Sub-Category",
         "subCategoryPlaceholder": "Select sub-category",
-        "categoryTagsTitle": "Category Attribute Hints",
-        "categoryTagsHelp": "Use saved and suggested tags as search facets, grouping hints, and future classification guidance.",
-        "categoryTagsLoading": "Loading tags",
-        "categoryTagsSourceAi": "AI Hints",
-        "categoryTagsSourceRule": "Rule Hints",
-        "savedTags": "Saved Tags",
-        "suggestedTags": "Suggested Tags",
         "submit": {
           "create": "Create Product",
           "edit": "Save Changes",
@@ -1904,12 +1895,6 @@
           "avgOrder": "Avg. Order",
           "segments": "Customer Segments",
           "customers": "customers"
-        },
-        "tagClusters": {
-          "title": "Category Tag Clusters",
-          "subtitle": "Use shared category attributes for grouping, search facets, and taxonomy cleanup signals.",
-          "count": "{count} categories",
-          "empty": "No tag clusters available yet for this business."
         },
         "upgrade": {
           "currentPlan": "Current plan: {plan}",
@@ -3621,15 +3606,7 @@
         "footerBusiness": "Business-scoped categories stay isolated to the selected business.",
         "descriptionOptional": "Description (Optional)",
         "descriptionPlaceholder": "Brief description of this category…",
-        "createError": "Failed to create category.",
-        "tagSuggestionsTitle": "Suggested Attributes for “{name}”",
-        "tagSuggestionsHelp": "Use these tags to classify search, filtering, and admin understanding of the category.",
-        "tagSuggestionSourceAi": "AI Generated",
-        "tagSuggestionSourceRule": "Rule Based",
-        "tagClustersTitle": "Tag Clusters",
-        "tagClustersDesc": "Live grouping of categories by shared attributes so overlapping branches are easier to review.",
-        "tagClusterCount": "{count} categories",
-        "tagClustersEmpty": "No tag clusters available for this taxonomy yet."
+        "createError": "Failed to create category."
       },
       "moderation": {
         "title": "Category Moderation",

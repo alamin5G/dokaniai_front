@@ -1,6 +1,5 @@
 "use client";
 
-import { useBusinessCategoryTags } from "@/hooks/useCategories";
 import { useLocale, useTranslations } from "next-intl";
 import type { FormEvent } from "react";
 import type { CategoryResponse } from "@/types/category";
@@ -81,11 +80,6 @@ export default function ProductForm({
     const t = useTranslations("shop.products");
     const locale = useLocale();
     const isBn = locale.toLowerCase().startsWith("bn");
-    const selectedTaxonomyId = form.subCategoryId || form.categoryId || null;
-    const { tags, isLoading: loadingTags } = useBusinessCategoryTags(
-        businessId,
-        selectedTaxonomyId,
-    );
 
     function getCategoryName(category: CategoryResponse): string {
         if (isBn) return category.nameBn;
@@ -230,66 +224,6 @@ export default function ProductForm({
                         </select>
                     </label>
                 </div>
-
-                {selectedTaxonomyId ? (
-                    <div className="rounded-[22px] border border-surface-container-high bg-surface-container-low px-4 py-4">
-                        <div className="flex items-start justify-between gap-4">
-                            <div>
-                                <p className="text-sm font-semibold text-primary">
-                                    {t("form.categoryTagsTitle")}
-                                </p>
-                                <p className="mt-1 text-xs leading-6 text-on-surface-variant">
-                                    {t("form.categoryTagsHelp")}
-                                </p>
-                            </div>
-                            <span className="rounded-full bg-white px-3 py-1 text-[11px] font-semibold text-on-surface-variant">
-                                {loadingTags
-                                    ? t("form.categoryTagsLoading")
-                                    : t(
-                                        tags.suggestionSource === "AI"
-                                            ? "form.categoryTagsSourceAi"
-                                            : "form.categoryTagsSourceRule",
-                                    )}
-                            </span>
-                        </div>
-
-                        {tags.currentTags.length > 0 ? (
-                            <div className="mt-4">
-                                <p className="mb-2 text-xs font-semibold uppercase tracking-[0.18em] text-on-surface-variant">
-                                    {t("form.savedTags")}
-                                </p>
-                                <div className="flex flex-wrap gap-2">
-                                    {tags.currentTags.map((tag) => (
-                                        <span
-                                            key={tag}
-                                            className="rounded-full bg-primary/10 px-3 py-1.5 text-xs font-semibold text-primary"
-                                        >
-                                            {tag}
-                                        </span>
-                                    ))}
-                                </div>
-                            </div>
-                        ) : null}
-
-                        {tags.suggestedTags.length > 0 ? (
-                            <div className="mt-4">
-                                <p className="mb-2 text-xs font-semibold uppercase tracking-[0.18em] text-on-surface-variant">
-                                    {t("form.suggestedTags")}
-                                </p>
-                                <div className="flex flex-wrap gap-2">
-                                    {tags.suggestedTags.map((tag) => (
-                                        <span
-                                            key={tag}
-                                            className="rounded-full bg-surface-container-highest px-3 py-1.5 text-xs font-semibold text-on-surface"
-                                        >
-                                            + {tag}
-                                        </span>
-                                    ))}
-                                </div>
-                            </div>
-                        ) : null}
-                    </div>
-                ) : null}
 
                 {/* Unit + Initial Stock */}
                 <div className="grid gap-4 sm:grid-cols-2">

@@ -3,10 +3,10 @@
 import { useState, useCallback, useEffect, useMemo } from "react";
 import { useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
-import { useAdminCategoryTagClusters, useCategoriesByBusinessType, useBusinessesByCategory, useCategoryTags } from "@/hooks/useCategories";
+import { useCategoriesByBusinessType, useBusinessesByCategory } from "@/hooks/useCategories";
 import type { CategoryResponse } from "@/types/category";
 import type { CategoryRequestResponse } from "@/types/categoryRequest";
-import { getPendingCategoryRequests, decideCategoryRequest, addCategoryTags, removeCategoryTag } from "@/lib/categoryApi";
+import { getPendingCategoryRequests, decideCategoryRequest } from "@/lib/categoryApi";
 import CategoryDetailView from "./CategoryDetailView";
 import CreateCategoryModal from "./CreateCategoryModal";
 
@@ -158,18 +158,12 @@ export default function CategoryManagementPage() {
   const [pendingRequests, setPendingRequests] = useState<CategoryRequestResponse[]>([]);
   const [loadingRequests, setLoadingRequests] = useState(true);
   const [businessesPage, setBusinessesPage] = useState(0);
-  const [newTagName, setNewTagName] = useState("");
 
   const { categories, isLoading, mutate } = useCategoriesByBusinessType(businessType);
-  const { clusters: tagClusters, isLoading: loadingTagClusters } = useAdminCategoryTagClusters(businessType);
 
   const { businesses, totalPages, isLoading: loadingBusinesses } = useBusinessesByCategory(
     selectedCategory?.id ?? null,
     businessesPage,
-  );
-
-  const { tags, isLoading: loadingTags, mutate: mutateTags } = useCategoryTags(
-    selectedCategory?.id ?? null,
   );
 
   useEffect(() => { setBusinessesPage(0); }, [selectedCategory?.id]);
@@ -276,51 +270,6 @@ export default function CategoryManagementPage() {
           </p>
         </div>
       </div>
-
-      <section className="bg-surface-container-lowest rounded-[24px] p-6 shadow-sm">
-        <div className="flex items-center justify-between gap-4">
-          <div>
-            <h3 className="font-headline font-bold text-xl text-on-surface">
-              {tx("tagClustersTitle")}
-            </h3>
-            <p className="mt-1 text-sm text-on-surface-variant">
-              {tx("tagClustersDesc")}
-            </p>
-          </div>
-          <span className="rounded-full bg-surface-container-high px-3 py-1 text-[11px] font-bold uppercase tracking-wider text-on-surface-variant">
-            {businessType.replace(/_/g, " ")}
-          </span>
-        </div>
-
-        <div className="mt-5 grid gap-3 md:grid-cols-2 xl:grid-cols-3">
-          {loadingTagClusters ? (
-            Array.from({ length: 6 }).map((_, index) => (
-              <div key={index} className="h-24 animate-pulse rounded-2xl bg-surface-container-low" />
-            ))
-          ) : tagClusters.length > 0 ? (
-            tagClusters.map((cluster) => (
-              <div key={cluster.tag} className="rounded-2xl bg-surface-container-low p-4">
-                <div className="flex items-start justify-between gap-3">
-                  <div>
-                    <p className="text-base font-bold text-on-surface">#{cluster.tag}</p>
-                    <p className="mt-1 text-xs text-on-surface-variant">
-                      {tx("tagClusterCount", { count: cluster.categoryCount })}
-                    </p>
-                  </div>
-                  <span className="rounded-full bg-surface-container-highest px-3 py-1 text-[11px] font-semibold text-on-surface-variant">
-                    {cluster.categoryCount}
-                  </span>
-                </div>
-                <p className="mt-3 text-xs leading-6 text-on-surface-variant">
-                  {cluster.sampleCategories.join(", ")}
-                </p>
-              </div>
-            ))
-          ) : (
-            <p className="text-sm text-on-surface-variant">{tx("tagClustersEmpty")}</p>
-          )}
-        </div>
-      </section>
 
       {pendingRequests.length > 0 && (
         <section className="bg-surface-container-lowest rounded-xl p-6 relative overflow-hidden">
@@ -515,86 +464,6 @@ export default function CategoryManagementPage() {
               </div>
 
               <CategoryDetailView category={selectedCategory} categories={categories} onClose={() => setSelectedCategory(null)} />
-
-              <div className="bg-surface-container-lowest rounded-xl p-6">
-                <div className="bg-surface-container-low p-5 rounded-lg relative">
-                  <div className="absolute inset-0 bg-surface-container-lowest/60 backdrop-blur-md rounded-lg pointer-events-none" />
-                  <div className="relative z-10 flex items-start gap-4">
-                    <div className="bg-gradient-to-br from-primary to-primary-container text-on-primary w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0">
-                      <span className="material-symbols-outlined text-[18px]">auto_awesome</span>
-                    </div>
-                    <div className="flex-1">
-                      <h4 className="font-headline font-semibold text-sm text-on-surface mb-2">
-                        {tx("tagSuggestionsTitle", { name: selectedCategory.nameBn })}
-                      </h4>
-                      <div className="flex items-center gap-2 mb-3">
-                        <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold ${
-                          tags.suggestionSource === "AI"
-                            ? "bg-primary-fixed text-on-primary-fixed"
-                            : "bg-surface-container-high text-on-surface-variant"
-                        }`}>
-                          {tags.suggestionSource === "AI" ? tx("tagSuggestionSourceAi") : tx("tagSuggestionSourceRule")}
-                        </span>
-                        <p className="text-xs text-on-surface-variant">
-                          {tx("tagSuggestionsHelp")}
-                        </p>
-                      </div>
-                      {tags.suggestionNote ? (
-                        <p className="mb-3 text-[11px] leading-5 text-on-surface-variant">
-                          {tags.suggestionNote}
-                        </p>
-                      ) : null}
-                      <div className="flex flex-wrap gap-2">
-                        {loadingTags ? (
-                          <div className="h-5 w-20 animate-pulse bg-surface-container-high rounded-full" />
-                        ) : (
-                          <>
-                            {tags.currentTags.map((tag) => (
-                              <span key={tag} className="bg-primary-fixed text-on-primary-fixed text-xs font-body font-medium px-3 py-1 rounded-full flex items-center gap-1">
-                                {tag}
-                                <button
-                                  onClick={async () => {
-                                    try { await removeCategoryTag(selectedCategory.id, tag); mutateTags(); } catch {}
-                                  }}
-                                  className="material-symbols-outlined text-[14px] cursor-pointer hover:opacity-70"
-                                >close</button>
-                              </span>
-                            ))}
-                            {tags.suggestedTags.slice(0, 3).map((tag) => (
-                              <button
-                                key={tag}
-                                onClick={async () => {
-                                  try { await addCategoryTags(selectedCategory.id, [tag]); mutateTags(); } catch {}
-                                }}
-                                className="bg-primary-fixed/40 text-on-primary-fixed text-xs font-body font-medium px-3 py-1 rounded-full flex items-center gap-1 hover:bg-primary-fixed transition-colors"
-                              >
-                                + {tag}
-                              </button>
-                            ))}
-                            <div className="inline-flex items-center gap-1">
-                              <input
-                                value={newTagName}
-                                onChange={(e) => setNewTagName(e.target.value)}
-                                onKeyDown={async (e) => {
-                                  if (e.key === "Enter" && newTagName.trim()) {
-                                    try {
-                                      await addCategoryTags(selectedCategory.id, [newTagName.trim()]);
-                                      setNewTagName("");
-                                      mutateTags();
-                                    } catch {}
-                                  }
-                                }}
-                                placeholder="Add tag"
-                                className="bg-surface-container-high text-on-surface text-xs font-body px-2 py-1 rounded-full w-24 border-none focus:ring-0 placeholder:text-on-surface-variant/50"
-                              />
-                            </div>
-                          </>
-                        )}
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
 
               <div className="bg-surface-container-lowest rounded-[24px] p-6">
                 <h3 className="font-headline font-semibold text-lg text-on-surface mb-4">

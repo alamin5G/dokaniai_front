@@ -1,5 +1,5 @@
 import apiClient from '@/lib/api';
-import type { CategoryResponse, CategoryBusinessResponse, CategoryTagClusterResponse, CategoryTagsResponse } from '@/types/category';
+import type { CategoryResponse, CategoryBusinessResponse } from '@/types/category';
 import type {
   CategoryRequestCreatePayload,
   CategoryRequestDecisionPayload,
@@ -227,51 +227,4 @@ export async function getBusinessesByCategory(
   );
   const data = response.data.data;
   return { content: data.content, totalPages: data.totalPages ?? (data.last ? data.number + 1 : data.number + 2) };
-}
-
-export async function getCategoryTags(categoryId: string): Promise<CategoryTagsResponse> {
-  const response = await apiClient.get<ApiSuccess<CategoryTagsResponse>>(
-    `/categories/${encodeURIComponent(categoryId)}/tags`,
-  );
-  return unwrap(response);
-}
-
-export async function getBusinessCategoryTags(
-  businessId: string,
-  categoryId: string,
-): Promise<CategoryTagsResponse> {
-  const response = await apiClient.get<ApiSuccess<CategoryTagsResponse>>(
-    `/categories/businesses/${encodeURIComponent(businessId)}/categories/${encodeURIComponent(categoryId)}/tags`,
-  );
-  return unwrap(response);
-}
-
-export async function getBusinessCategoryTagClusters(
-  businessId: string,
-): Promise<CategoryTagClusterResponse[]> {
-  const response = await apiClient.get<ApiSuccess<CategoryTagClusterResponse[]>>(
-    `/categories/businesses/${encodeURIComponent(businessId)}/tag-clusters`,
-  );
-  return unwrap(response);
-}
-
-export async function getAdminCategoryTagClusters(
-  businessType: string,
-): Promise<CategoryTagClusterResponse[]> {
-  const response = await apiClient.get<ApiSuccess<CategoryTagClusterResponse[]>>(
-    `/categories/tag-clusters?businessType=${encodeURIComponent(businessType)}`,
-  );
-  return unwrap(response);
-}
-
-export async function addCategoryTags(categoryId: string, tags: string[]): Promise<string[]> {
-  const response = await apiClient.post<ApiSuccess<string[]>>(
-    `/categories/${encodeURIComponent(categoryId)}/tags`,
-    tags,
-  );
-  return unwrap(response);
-}
-
-export async function removeCategoryTag(categoryId: string, tag: string): Promise<void> {
-  await apiClient.delete(`/categories/${encodeURIComponent(categoryId)}/tags/${encodeURIComponent(tag)}`);
 }

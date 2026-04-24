@@ -1165,8 +1165,6 @@
       "filter": {
         "all": "সব অবস্থা",
         "allCategories": "সব ক্যাটাগরি",
-        "allTags": "সব ট্যাগ",
-        "tagLabel": "ট্যাগ ফিল্টার",
         "search": "নাম বা SKU দিয়ে খুঁজুন"
       },
       "pagination": {
@@ -1197,13 +1195,6 @@
         "categoryPlaceholder": "ক্যাটাগরি নির্বাচন করুন",
         "subCategory": "সাব-ক্যাটাগরি",
         "subCategoryPlaceholder": "সাব-ক্যাটাগরি নির্বাচন করুন",
-        "categoryTagsTitle": "ক্যাটাগরি অ্যাট্রিবিউট হিন্ট",
-        "categoryTagsHelp": "Saved আর suggested tag গুলো search facet, grouping hint, আর future classification guidance হিসেবে কাজে লাগবে।",
-        "categoryTagsLoading": "ট্যাগ লোড হচ্ছে",
-        "categoryTagsSourceAi": "AI হিন্ট",
-        "categoryTagsSourceRule": "Rule হিন্ট",
-        "savedTags": "সেভ করা ট্যাগ",
-        "suggestedTags": "প্রস্তাবিত ট্যাগ",
         "submit": {
           "create": "পণ্য তৈরি করুন",
           "edit": "পরিবর্তন সংরক্ষণ",
@@ -1904,12 +1895,6 @@
           "avgOrder": "গড় অর্ডার",
           "segments": "কাস্টমার সেগমেন্ট",
           "customers": "কাস্টমার"
-        },
-        "tagClusters": {
-          "title": "ক্যাটাগরি ট্যাগ ক্লাস্টার",
-          "subtitle": "Shared category attribute দিয়ে grouping, search facet, আর taxonomy cleanup signal দেখুন।",
-          "count": "{count}টি ক্যাটাগরি",
-          "empty": "এই ব্যবসার জন্য এখনো কোনো tag cluster নেই।"
         },
         "upgrade": {
           "currentPlan": "বর্তমান প্ল্যান: {plan}",
@@ -3681,15 +3666,7 @@
         "footerBusiness": "Business-scoped category শুধু নির্বাচিত business-এর মধ্যেই সীমাবদ্ধ থাকবে।",
         "descriptionOptional": "বিবরণ (ঐচ্ছিক)",
         "descriptionPlaceholder": "এই ক্যাটেগরির সংক্ষিপ্ত বিবরণ…",
-        "createError": "ক্যাটেগরি তৈরি করা যায়নি।",
-        "tagSuggestionsTitle": "“{name}” এর জন্য প্রস্তাবিত অ্যাট্রিবিউট",
-        "tagSuggestionsHelp": "এই tag গুলো search, filtering, এবং admin classification-এ সাহায্য করবে।",
-        "tagSuggestionSourceAi": "AI Generated",
-        "tagSuggestionSourceRule": "Rule Based",
-        "tagClustersTitle": "ট্যাগ ক্লাস্টার",
-        "tagClustersDesc": "Shared attribute অনুযায়ী category grouping দেখুন, যাতে overlapping branch সহজে ধরা যায়।",
-        "tagClusterCount": "{count}টি ক্যাটাগরি",
-        "tagClustersEmpty": "এই taxonomy-র জন্য এখনো কোনো tag cluster নেই।"
+        "createError": "ক্যাটেগরি তৈরি করা যায়নি।"
       },
       "moderation": {
         "title": "ক্যাটেগরি মডারেশন",

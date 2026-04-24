@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useLocale, useTranslations } from "next-intl";
-import type { CategoryResponse, CategoryTagClusterResponse } from "@/types/category";
+import type { CategoryResponse } from "@/types/category";
 import type { Product, ProductStatus } from "@/types/product";
 import CategoryRequestSheet from "@/components/categories/CategoryRequestSheet";
 import CategoryRequestStatusSheet from "@/components/categories/CategoryRequestStatusSheet";
@@ -17,9 +17,6 @@ interface ProductTableProps {
     categories: CategoryResponse[];
     selectedCategoryId: string | null;
     onCategorySelect: (categoryId: string | null) => void;
-    categoryTagClusters: CategoryTagClusterResponse[];
-    selectedCategoryTag: string | null;
-    onCategoryTagSelect: (tag: string | null) => void;
     businessId: string;
     page: number;
     totalPages: number;
@@ -56,9 +53,6 @@ export default function ProductTable({
     categories,
     selectedCategoryId,
     onCategorySelect,
-    categoryTagClusters,
-    selectedCategoryTag,
-    onCategoryTagSelect,
     businessId,
     page,
     totalPages,
@@ -179,9 +173,6 @@ export default function ProductTable({
                     categories={categories}
                     selectedCategoryId={selectedCategoryId}
                     onSelect={onCategorySelect}
-                    categoryTagClusters={categoryTagClusters}
-                    selectedCategoryTag={selectedCategoryTag}
-                    onTagSelect={onCategoryTagSelect}
                     isBn={isBn}
                     t={t}
                     businessId={businessId}
@@ -346,9 +337,6 @@ function CategoryFilterChipsInline({
     categories,
     selectedCategoryId,
     onSelect,
-    categoryTagClusters,
-    selectedCategoryTag,
-    onTagSelect,
     isBn,
     t,
     businessId,
@@ -356,9 +344,6 @@ function CategoryFilterChipsInline({
     categories: CategoryResponse[];
     selectedCategoryId: string | null;
     onSelect: (categoryId: string | null) => void;
-    categoryTagClusters: CategoryTagClusterResponse[];
-    selectedCategoryTag: string | null;
-    onTagSelect: (tag: string | null) => void;
     isBn: boolean;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     t: any;
@@ -420,41 +405,6 @@ function CategoryFilterChipsInline({
                     {ct("requestCategory")}
                 </button>
             </div>
-            {categoryTagClusters.length > 0 ? (
-                <div className="mt-3 flex flex-wrap items-center gap-2">
-                    <span className="text-[11px] font-semibold uppercase tracking-[0.18em] text-on-surface-variant">
-                        {t("filter.tagLabel")}
-                    </span>
-                    <button
-                        type="button"
-                        onClick={() => onTagSelect(null)}
-                        className={`rounded-full px-3 py-1.5 text-xs font-semibold transition ${
-                            selectedCategoryTag === null
-                                ? "bg-secondary text-white"
-                                : "bg-surface text-on-surface hover:bg-surface-container-high"
-                        }`}
-                    >
-                        {t("filter.allTags")}
-                    </button>
-                    {categoryTagClusters.slice(0, 8).map((cluster) => (
-                        <button
-                            key={cluster.tag}
-                            type="button"
-                            onClick={() =>
-                                onTagSelect(selectedCategoryTag === cluster.tag ? null : cluster.tag)
-                            }
-                            className={`rounded-full px-3 py-1.5 text-xs font-semibold transition ${
-                                selectedCategoryTag === cluster.tag
-                                    ? "bg-secondary text-white"
-                                    : "bg-surface-container-low text-on-surface hover:bg-surface-container"
-                            }`}
-                            title={cluster.sampleCategories.join(", ")}
-                        >
-                            #{cluster.tag}
-                        </button>
-                    ))}
-                </div>
-            ) : null}
 
             {showRequestSheet && (
                 <CategoryRequestSheet
