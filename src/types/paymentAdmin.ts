@@ -57,7 +57,7 @@ export interface AdminDevice {
 export interface SmsReportItem {
     id: string;
     deviceId: string;
-    mfsType: string;
+    mfsType: MfsType;
     senderNumber: string;
     receiverNumber: string;
     amount: number;
@@ -86,7 +86,7 @@ export interface MfsNumberResponse {
     userId: string;
     userName: string;
     userPhone: string;
-    mfsType: string;
+    mfsType: MfsType;
     mfsNumber: string;
     simSlot: number | null;
     accountType?: string;
@@ -98,7 +98,7 @@ export interface MfsNumberResponse {
 }
 
 export interface MfsNumberRegistrationRequest {
-    mfsType: "BKASH" | "NAGAD" | "ROCKET";
+    mfsType: MfsType;
     mfsNumber: string;
     simSlot?: number;
 }
