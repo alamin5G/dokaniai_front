@@ -268,6 +268,8 @@ export default function VoiceCommandBar() {
                         sellPrice: edited.sellPrice ?? 0,
                         stockQty: edited.stockQty ?? 0,
                         reorderPoint: edited.reorderPoint ?? undefined,
+                        categoryName: edited.categoryName || undefined,
+                        subCategoryName: edited.subCategoryName || undefined,
                         description: "AI ভয়েস কমান্ড দিয়ে যোগ",
                     });
                     setSuccessMsg(

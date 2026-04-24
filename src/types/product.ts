@@ -42,6 +42,8 @@ export interface ProductCreateRequest {
   reorderPoint?: number;
   categoryId?: string | null;
   subCategoryId?: string | null;
+  categoryName?: string | null;
+  subCategoryName?: string | null;
   description?: string;
 }
 
