@@ -111,6 +111,18 @@ export async function startReviewCategoryRequest(requestId: string): Promise<voi
   await apiClient.post(`/category-requests/${encodeURIComponent(requestId)}/review`);
 }
 
+export async function searchCategoryRequests(
+  query: string,
+  page = 0,
+  size = 20,
+): Promise<{ content: CategoryRequestResponse[]; totalPages: number }> {
+  const response = await apiClient.get<ApiSuccess<Paged<CategoryRequestResponse>>>(
+    `/category-requests/search?query=${encodeURIComponent(query)}&page=${page}&size=${size}`,
+  );
+  const data = response.data.data;
+  return { content: data.content, totalPages: data.totalPages ?? (data.last ? data.number + 1 : data.number + 2) };
+}
+
 export async function createGlobalCategory(payload: {
   nameBn: string;
   nameEn?: string;

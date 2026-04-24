@@ -4,7 +4,7 @@ import { useState, useCallback, useEffect } from "react";
 import { useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
 import type { CategoryRequestResponse, CategoryRequestStatus } from "@/types/categoryRequest";
-import { getAllCategoryRequests, getCategoryRequestsByStatus, decideCategoryRequest } from "@/lib/categoryApi";
+import { getAllCategoryRequests, getCategoryRequestsByStatus, decideCategoryRequest, searchCategoryRequests } from "@/lib/categoryApi";
 import { useCategoryRequestStats } from "@/hooks/useCategories";
 
 const STATUS_TABS: { key: CategoryRequestStatus | "ALL"; labelKey: string }[] = [
@@ -12,7 +12,9 @@ const STATUS_TABS: { key: CategoryRequestStatus | "ALL"; labelKey: string }[] = 
   { key: "PENDING", labelKey: "pending" },
   { key: "UNDER_REVIEW", labelKey: "underReview" },
   { key: "APPROVED_GLOBAL", labelKey: "approvedGlobal" },
+  { key: "APPROVED_BUSINESS", labelKey: "approvedBusiness" },
   { key: "REJECTED", labelKey: "rejected" },
+  { key: "CANCELLED", labelKey: "cancelled" },
 ];
 
 const BUSINESS_TYPE_ICONS: Record<string, string> = {
@@ -45,6 +47,8 @@ const statusBadgeStyle = (status: CategoryRequestStatus) => {
       return "bg-primary-fixed text-on-primary-fixed";
     case "REJECTED":
       return "bg-tertiary-fixed text-on-tertiary-fixed";
+    case "CANCELLED":
+      return "bg-surface-container-highest text-on-surface-variant";
     default:
       return "bg-surface-container-high text-on-surface";
   }
@@ -58,6 +62,8 @@ export default function ModerationPage() {
   const [loading, setLoading] = useState(true);
   const [page, setPage] = useState(0);
   const [totalPages, setTotalPages] = useState(1);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [toastMessage, setToastMessage] = useState<{ type: "success" | "error"; text: string } | null>(null);
 
   const { stats, mutate: mutateStats } = useCategoryRequestStats();
 
@@ -81,16 +87,37 @@ export default function ModerationPage() {
     loadRequests();
   }, [loadRequests]);
 
+  // Auto-dismiss toast after 3s
+  useEffect(() => {
+    if (toastMessage) {
+      const timer = setTimeout(() => setToastMessage(null), 3000);
+      return () => clearTimeout(timer);
+    }
+  }, [toastMessage]);
+
   async function handleQuickApprove(requestId: string) {
     try {
       await decideCategoryRequest(requestId, { action: "APPROVE_GLOBAL" });
+      setToastMessage({ type: "success", text: t("quickApproveSuccess") });
       loadRequests();
       mutateStats();
-    } catch { }
+    } catch {
+      setToastMessage({ type: "error", text: t("quickApproveError") });
+    }
   }
 
   return (
     <div className="space-y-8">
+      {/* Toast notification */}
+      {toastMessage && (
+        <div className={`fixed top-6 right-6 z-50 rounded-xl px-5 py-3 text-sm font-medium shadow-lg flex items-center gap-2 transition-all ${toastMessage.type === "success" ? "bg-green-50 text-green-700" : "bg-rose-50 text-rose-700"}`}>
+          <span className="material-symbols-outlined text-[18px]">
+            {toastMessage.type === "success" ? "check_circle" : "error"}
+          </span>
+          {toastMessage.text}
+        </div>
+      )}
+
       {/* Page Header */}
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
         <div>
@@ -127,8 +154,8 @@ export default function ModerationPage() {
             key={tab.key}
             onClick={() => { setActiveTab(tab.key); setPage(0); }}
             className={`px-4 py-2 rounded-full font-label text-sm font-semibold whitespace-nowrap transition-colors ${activeTab === tab.key
-                ? "bg-primary text-on-primary"
-                : "bg-surface-container-high text-on-surface-variant hover:bg-surface-container-highest"
+              ? "bg-primary text-on-primary"
+              : "bg-surface-container-high text-on-surface-variant hover:bg-surface-container-highest"
               }`}
           >
             {t(`statusTabs.${tab.labelKey}`)}
@@ -151,6 +178,35 @@ export default function ModerationPage() {
             >
               {t("viewAll")} <span className="material-symbols-outlined text-xs">arrow_forward</span>
             </button>
+          </div>
+
+          {/* Search Bar */}
+          <div className="relative">
+            <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant text-[20px]">search</span>
+            <input
+              type="text"
+              value={searchQuery}
+              onChange={async (e) => {
+                const q = e.target.value;
+                setSearchQuery(q);
+                if (q.trim()) {
+                  setLoading(true);
+                  try {
+                    const result = await searchCategoryRequests(q, 0, 20);
+                    setRequests(result.content);
+                    setTotalPages(result.totalPages);
+                  } catch {
+                    setRequests([]);
+                  } finally {
+                    setLoading(false);
+                  }
+                } else {
+                  loadRequests();
+                }
+              }}
+              placeholder={t("searchPlaceholder")}
+              className="w-full bg-surface-container-lowest border border-outline-variant/20 rounded-xl pl-10 pr-4 py-2.5 text-sm text-on-surface placeholder:text-on-surface-variant/50 focus:border-primary focus:outline-none transition-colors"
+            />
           </div>
 
           <div className="flex flex-col gap-3">

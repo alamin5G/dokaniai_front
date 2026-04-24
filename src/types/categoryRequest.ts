@@ -36,6 +36,8 @@ export interface CategoryRequestResponse {
   nameBn: string;
   nameEn: string | null;
   description: string | null;
+  parentId: string | null;
+  parentCategoryName: string | null;
   justification: string | null;
   status: CategoryRequestStatus;
   requestedScope: 'GLOBAL' | 'BUSINESS' | null;

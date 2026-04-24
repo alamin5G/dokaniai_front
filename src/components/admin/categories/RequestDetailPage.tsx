@@ -44,6 +44,7 @@ export default function RequestDetailPage() {
   });
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [successMessage, setSuccessMessage] = useState<string | null>(null);
 
   const [categories, setCategories] = useState<CategoryResponse[]>([]);
   const loadCategories = useCallback(async (bt: string | null) => {
@@ -71,10 +72,16 @@ export default function RequestDetailPage() {
 
   const filteredCategories = useMemo(() => categories, [categories]);
 
+  const hasAiSemantic = useMemo(
+    () => (request?.similarCategories ?? []).some((s) => s.detectionMethod === "AI_SEMANTIC"),
+    [request?.similarCategories],
+  );
+
   async function handleSubmit() {
     if (!request) return;
     setSubmitting(true);
     setError(null);
+    setSuccessMessage(null);
     try {
       await decideCategoryRequest(request.id, {
         action: decision.action,
@@ -83,7 +90,10 @@ export default function RequestDetailPage() {
         rejectionReason: decision.action === "REJECT" ? decision.rejectionReason : undefined,
         suggestedCategoryId: decision.action === "MERGE" ? decision.suggestedCategoryId || undefined : undefined,
       });
-      router.push("/admin/categories/moderation");
+      setSuccessMessage(t("decisionSuccess"));
+      setTimeout(() => {
+        router.push("/admin/categories/moderation");
+      }, 1500);
     } catch {
       setError(t("decisionError"));
     } finally {
@@ -96,15 +106,15 @@ export default function RequestDetailPage() {
   }
 
   const scoreColor = (score: number) => {
-    if (score >= 0.85) return "bg-red-100 text-red-700";
-    if (score >= 0.7) return "bg-amber-100 text-amber-700";
+    if (score >= 0.90) return "bg-red-100 text-red-700";
+    if (score >= 0.80) return "bg-amber-100 text-amber-700";
     return "bg-blue-100 text-blue-700";
   };
 
   const methodLabel = (method: string) => {
-    if (method === "AI_SEMANTIC") return "AI";
-    if (method === "EXACT") return "EXACT";
-    return "TEXT";
+    if (method === "AI_SEMANTIC") return t("aiMatch");
+    if (method === "EXACT") return t("exactMatch");
+    return t("textMatch");
   };
 
   if (isLoading) {
@@ -206,9 +216,29 @@ export default function RequestDetailPage() {
                   </span>
                 </div>
               </div>
+              <div>
+                <p className="text-xs font-bold text-on-surface-variant uppercase tracking-wider mb-2">{t("parentCategory")}</p>
+                <div className="flex items-center gap-2">
+                  <span className="p-1.5 bg-surface-container-low rounded-lg text-primary">
+                    <span className="material-symbols-outlined text-[20px]">account_tree</span>
+                  </span>
+                  <span className="text-md font-medium text-on-surface">
+                    {request.parentCategoryName || t("noParent")}
+                  </span>
+                </div>
+              </div>
+
+              {request.description && (
+                <div className="md:col-span-2 mt-2 bg-surface-container-low rounded-lg p-6">
+                  <p className="text-xs font-bold text-on-surface-variant uppercase tracking-wider mb-3">{t("description")}</p>
+                  <p className="text-md text-on-surface leading-relaxed">
+                    {request.description}
+                  </p>
+                </div>
+              )}
 
               {request.justification && (
-                <div className="md:col-span-2 mt-4 bg-surface-container-low rounded-lg p-6">
+                <div className="md:col-span-2 mt-2 bg-surface-container-low rounded-lg p-6">
                   <p className="text-xs font-bold text-on-surface-variant uppercase tracking-wider mb-3">{t("justification")}</p>
                   <p className="text-md text-on-surface italic leading-relaxed border-l-4 border-outline-variant pl-4 py-1">
                     &ldquo;{request.justification}&rdquo;
@@ -224,7 +254,7 @@ export default function RequestDetailPage() {
             <div className="absolute -top-10 -right-10 w-32 h-32 bg-primary-fixed/30 rounded-full blur-3xl pointer-events-none" />
             <div className="flex items-center gap-2 mb-6 relative z-10">
               <span className="material-symbols-outlined text-primary-container">auto_awesome</span>
-              <h2 className="text-lg font-headline font-bold text-primary-container">{t("aiAnalysis")}</h2>
+              <h2 className="text-lg font-headline font-bold text-primary-container">{t("similarityAnalysis")}</h2>
             </div>
 
             {request.similarCategories && request.similarCategories.length > 0 ? (
@@ -237,12 +267,12 @@ export default function RequestDetailPage() {
                 {request.aiRecommendation && (
                   <div className="mb-4 relative z-10 flex items-center gap-2">
                     <span className={`px-3 py-1 rounded-full text-xs font-bold ${request.aiRecommendation === "MERGE"
-                        ? "bg-tertiary-fixed text-on-tertiary-fixed"
-                        : "bg-primary-fixed text-on-primary-fixed"
+                      ? "bg-tertiary-fixed text-on-tertiary-fixed"
+                      : "bg-primary-fixed text-on-primary-fixed"
                       }`}>
                       AI: {request.aiRecommendation}
                     </span>
-                    {request.aiSimilarityCheck && (
+                    {request.aiSimilarityCheck && hasAiSemantic && (
                       <span className="px-2 py-0.5 bg-primary-fixed/40 text-primary-container text-[10px] font-bold rounded-full">
                         CHECKED
                       </span>
@@ -288,10 +318,12 @@ export default function RequestDetailPage() {
                   </div>
                 </div>
 
-                {/* AI Reasoning */}
+                {/* AI Reasoning / Analysis Info */}
                 {request.aiReasoning && (
                   <div className="mt-4 relative z-10 bg-surface-container-low/50 rounded-lg p-3 border border-outline-variant/10">
-                    <p className="text-[10px] font-bold text-on-surface-variant uppercase tracking-wider mb-1">AI Reasoning</p>
+                    <p className="text-[10px] font-bold text-on-surface-variant uppercase tracking-wider mb-1">
+                      {hasAiSemantic ? "AI Reasoning" : t("analysisInfo")}
+                    </p>
                     <p className="text-xs text-on-surface-variant leading-relaxed">{request.aiReasoning}</p>
                   </div>
                 )}
@@ -306,10 +338,61 @@ export default function RequestDetailPage() {
         </div>
       </div>
 
+      {/* Timeline Section */}
+      <div className="bg-surface-container-lowest rounded-xl p-8 shadow-sm">
+        <h2 className="text-lg font-headline font-bold text-on-surface mb-6 border-b-2 border-surface-container-low pb-2 inline-block flex items-center gap-2">
+          <span className="material-symbols-outlined text-primary">schedule</span>
+          {t("timeline")}
+        </h2>
+        <div className="flex flex-col sm:flex-row gap-6 sm:gap-12">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-full bg-primary-fixed/30 flex items-center justify-center">
+              <span className="material-symbols-outlined text-primary text-[20px]">add_circle</span>
+            </div>
+            <div>
+              <p className="text-xs font-bold text-on-surface-variant uppercase tracking-wider">{t("timelineCreated")}</p>
+              <p className="text-sm text-on-surface font-medium">{new Date(request.createdAt).toLocaleString()}</p>
+            </div>
+          </div>
+          {request.reviewedAt && (
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-full bg-secondary-fixed/30 flex items-center justify-center">
+                <span className="material-symbols-outlined text-secondary text-[20px]">visibility</span>
+              </div>
+              <div>
+                <p className="text-xs font-bold text-on-surface-variant uppercase tracking-wider">{t("timelineReviewed")}</p>
+                <p className="text-sm text-on-surface font-medium">{new Date(request.reviewedAt).toLocaleString()}</p>
+                {request.reviewedByName && (
+                  <p className="text-xs text-on-surface-variant">by {request.reviewedByName}</p>
+                )}
+              </div>
+            </div>
+          )}
+          {request.status === "APPROVED_GLOBAL" || request.status === "APPROVED_BUSINESS" || request.status === "REJECTED" ? (
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-full bg-tertiary-fixed/30 flex items-center justify-center">
+                <span className="material-symbols-outlined text-tertiary text-[20px]">verified</span>
+              </div>
+              <div>
+                <p className="text-xs font-bold text-on-surface-variant uppercase tracking-wider">{t("timelineDecided")}</p>
+                <p className="text-sm text-on-surface font-medium">{new Date(request.updatedAt).toLocaleString()}</p>
+              </div>
+            </div>
+          ) : null}
+        </div>
+      </div>
+
       <div className="bg-surface-container-lowest rounded-xl p-8 shadow-sm">
         <h2 className="text-lg font-headline font-bold text-on-surface mb-6 border-b-2 border-surface-container-low pb-2 inline-block">
           {t("decision")}
         </h2>
+
+        {successMessage && (
+          <div className="rounded-xl bg-green-50 px-4 py-3 text-sm font-medium text-green-700 mb-4 flex items-center gap-2">
+            <span className="material-symbols-outlined text-[18px]">check_circle</span>
+            {successMessage}
+          </div>
+        )}
 
         {error && (
           <div className="rounded-xl bg-rose-50 px-4 py-3 text-sm font-medium text-rose-700 mb-4">{error}</div>
@@ -319,8 +402,8 @@ export default function RequestDetailPage() {
           <button
             onClick={() => handleActionChange("APPROVE_GLOBAL")}
             className={`p-6 rounded-xl text-left flex flex-col justify-between transition-all h-32 group ${decision.action === "APPROVE_GLOBAL"
-                ? "bg-gradient-to-br from-primary to-primary-container text-on-primary shadow-md -translate-y-1"
-                : "bg-surface-container-high text-on-surface hover:bg-surface-container-highest"
+              ? "bg-gradient-to-br from-primary to-primary-container text-on-primary shadow-md -translate-y-1"
+              : "bg-surface-container-high text-on-surface hover:bg-surface-container-highest"
               }`}
           >
             <span className={`material-symbols-outlined mb-2 group-hover:scale-110 transition-transform`}>public</span>
@@ -335,8 +418,8 @@ export default function RequestDetailPage() {
           <button
             onClick={() => handleActionChange("APPROVE_BUSINESS")}
             className={`p-6 rounded-xl text-left flex flex-col justify-between transition-all h-32 ${decision.action === "APPROVE_BUSINESS"
-                ? "bg-surface-container-high text-on-surface shadow-md -translate-y-1"
-                : "bg-surface-container-high text-on-surface hover:bg-surface-container-highest"
+              ? "bg-surface-container-high text-on-surface shadow-md -translate-y-1"
+              : "bg-surface-container-high text-on-surface hover:bg-surface-container-highest"
               }`}
           >
             <span className={`material-symbols-outlined mb-2 ${decision.action !== "APPROVE_BUSINESS" ? "text-primary" : ""}`}>storefront</span>
@@ -361,6 +444,16 @@ export default function RequestDetailPage() {
                 className="w-full bg-surface-container-lowest border-none rounded-lg text-sm py-2 px-3 text-on-surface focus:ring-0 cursor-pointer appearance-none"
               >
                 <option disabled value="">{t("selectTarget")}</option>
+                {request.similarCategories && request.similarCategories.length > 0 && (
+                  <>
+                    {request.similarCategories.map((sim) => (
+                      <option key={sim.categoryId} value={sim.categoryId}>
+                        {sim.nameBn} {sim.nameEn ? `(${sim.nameEn})` : ""} — {Math.round(sim.similarityScore * 100)}%
+                      </option>
+                    ))}
+                    <option disabled>──────────</option>
+                  </>
+                )}
                 {filteredCategories.slice(0, 20).map((cat) => (
                   <option key={cat.id} value={cat.id}>{cat.nameBn} {cat.nameEn ? `(${cat.nameEn})` : ""}</option>
                 ))}
