@@ -1119,6 +1119,7 @@
   },
   "shop": {
     "products": {
+      "dashboard": "Dashboard",
       "label": "Stock Management",
       "title": "Product Inventory",
       "subtitle": "Manage products, prices, stock alerts and quick entry for {businessName} from one place.",
@@ -1387,6 +1388,17 @@
       },
       "lowStock": "Low Stock: {qty} {unit} left",
       "stock": "Stock: {qty} {unit}",
+      "outOfStock": "Out of Stock",
+      "emptyProductMessages": [
+        "Every great business starts with its first product. Add products to see them here!",
+        "Your shelf is waiting to be filled. Start adding products to unlock your sales potential!",
+        "No products yet? No problem! Every bestseller started with a single addition.",
+        "Ready to make your first sale? Add products to get started!",
+        "Great things are coming! Add products to this category and start selling.",
+        "A smart shopkeeper always keeps stock updated. Add your first product here!",
+        "Your journey to smarter selling starts here. Add products to begin!",
+        "The best inventory is the one that's organized. Start by adding your products!"
+      ],
       "andMore": "and {count}+ more products...",
       "cart": {
         "title": "Sales Cart",
@@ -1509,6 +1521,7 @@
       }
     },
     "expenses": {
+      "dashboard": "Dashboard",
       "title": "Expense Tracker",
       "subtitle": "Track operating costs and keep your shop's expense ledger accurate.",
       "stats": {
@@ -1653,6 +1666,7 @@
       }
     },
     "dueLedger": {
+      "dashboard": "Dashboard",
       "title": "Due Ledger",
       "subtitle": "বাকী খাতা — Customer credit management",
       "stats": {
@@ -1772,6 +1786,7 @@
         "description": "Auto-credited via {method} (TrxID: {trxId})"
       },
       "reports": {
+        "dashboard": "Dashboard",
         "title": "Reports",
         "subtitle": "Business analytics and insights",
         "tabs": {
@@ -1955,6 +1970,7 @@
         }
       },
       "ai": {
+        "dashboard": "Dashboard",
         "title": "AI Assistant",
         "subtitle": "Your intelligent business companion",
         "tabs": {

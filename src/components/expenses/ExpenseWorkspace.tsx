@@ -260,16 +260,10 @@ export default function ExpenseWorkspace({
         <section className="space-y-8">
             {/* Header */}
             <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
-                <div>
-                    <p className="text-sm font-bold uppercase tracking-[0.28em] text-secondary">
-                        {t("stats.thisMonth")}
-                    </p>
-                    <h1 className="mt-2 text-4xl font-black tracking-tight text-primary">
-                        {t("title")}
-                    </h1>
-                    <p className="mt-3 max-w-2xl text-sm leading-7 text-on-surface-variant">
-                        {t("subtitle")}
-                    </p>
+                <div className="flex items-center gap-2 text-sm font-medium text-on-surface-variant">
+                    <span>{t("dashboard")}</span>
+                    <span className="text-on-surface-variant/50">/</span>
+                    <span className="font-semibold text-on-surface">{t("title")}</span>
                 </div>
                 <button
                     type="button"

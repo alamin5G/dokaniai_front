@@ -113,6 +113,9 @@ export default function SalesWorkspace({
 
     // Cart actions
     function handleAddProduct(product: Product) {
+        // Guard: block out-of-stock products from being added
+        if (product.stockQty <= 0 || product.status === 'OUT_OF_STOCK') return;
+
         setCartItems((prev) => {
             const existing = prev.find((ci) => ci.productId === product.id);
             if (existing) {

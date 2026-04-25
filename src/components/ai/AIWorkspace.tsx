@@ -71,9 +71,10 @@ export default function AIWorkspace({ businessId }: { businessId: string }) {
         <div className="space-y-6">
             {/* ── Header ── */}
             <header className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-                <div>
-                    <h1 className="text-2xl font-bold text-primary tracking-tight">{t("title")}</h1>
-                    <p className="text-sm text-on-surface-variant">{t("subtitle")}</p>
+                <div className="flex items-center gap-2 text-sm font-medium text-on-surface-variant">
+                    <span>{t("dashboard")}</span>
+                    <span className="text-on-surface-variant/50">/</span>
+                    <span className="font-semibold text-on-surface">{t("title")}</span>
                 </div>
                 {/* Usage badge */}
                 {usage && (
