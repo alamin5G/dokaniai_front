@@ -15,7 +15,7 @@ import {
     importProductsCsv,
 } from "@/lib/productApi";
 import { adjustInventory } from "@/lib/inventoryApi";
-import { useProducts, useProductStats, useLowStockProducts, useReorderNeededProducts } from "@/hooks/useProducts";
+import { useProducts, useProductStats, useLowStockProducts } from "@/hooks/useProducts";
 import { useCategoriesByBusinessType } from "@/hooks/useCategories";
 import { useProductMutations } from "@/hooks/useProductMutations";
 import { invalidateProducts } from "@/lib/swrMutations";
@@ -32,7 +32,6 @@ import ProductForm, {
     initialFormState,
     toFormState,
 } from "./ProductForm";
-import ProductSidebar from "./ProductSidebar";
 import VoiceCommandBar from "./VoiceCommandBar";
 import InventoryTab from "./InventoryTab";
 import RestockInsightCard from "./RestockInsightCard";
@@ -92,7 +91,6 @@ export default function ProductInventoryPage({
     });
     const { stats } = useProductStats(businessId);
     const { lowStockProducts } = useLowStockProducts(businessId);
-    const { reorderProducts } = useReorderNeededProducts(businessId);
     const { categories } = useCategoriesByBusinessType(activeBusiness?.type ?? null);
 
     // Mutations — SWR-backed with cache invalidation
@@ -457,8 +455,6 @@ export default function ProductInventoryPage({
                             onReset={resetEditor}
                         />
 
-                        {/* Inventory Status Sidebar */}
-                        <ProductSidebar stats={stats} reorderProducts={reorderProducts} businessId={businessId} />
                     </aside>
                 </div>
             )}

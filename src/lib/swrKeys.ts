@@ -86,6 +86,8 @@ export const swrKeys = {
 
     categoryBusinesses: (categoryId: string, page: number) =>
         `/categories/${categoryId}/businesses?page=${page}`,
+    categoryMarketInsight: (categoryId: string, businessType?: string) =>
+        `/categories/${categoryId}/market-insight${businessType ? `?businessType=${encodeURIComponent(businessType)}` : ''}`,
 
     // Business
     businessStats: (businessId: string) =>

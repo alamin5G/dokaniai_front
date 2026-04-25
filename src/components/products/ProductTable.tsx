@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useLocale, useTranslations } from "next-intl";
 import type { CategoryResponse } from "@/types/category";
 import type { Product, ProductStatus } from "@/types/product";
@@ -67,6 +67,21 @@ export default function ProductTable({
     const locale = useLocale();
     const loc = resolveLocale(locale);
     const isBn = locale.toLowerCase().startsWith("bn");
+
+    const [dropdownOpenId, setDropdownOpenId] = useState<string | null>(null);
+    const dropdownRef = useRef<HTMLDivElement>(null);
+
+    useEffect(() => {
+        function handleClickOutside(e: MouseEvent) {
+            if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
+                setDropdownOpenId(null);
+            }
+        }
+        if (dropdownOpenId) {
+            document.addEventListener("mousedown", handleClickOutside);
+        }
+        return () => document.removeEventListener("mousedown", handleClickOutside);
+    }, [dropdownOpenId]);
 
     const currencyFormatter = new Intl.NumberFormat(loc, {
         maximumFractionDigits: 0,
@@ -260,23 +275,36 @@ export default function ProductTable({
                                             </span>
                                         </td>
                                         <td className="px-6 py-5 text-right">
-                                            <div className="flex justify-end gap-2">
+                                            <div className="relative inline-block">
                                                 <button
                                                     type="button"
-                                                    onClick={() => onEdit(product)}
-                                                    className="rounded-full bg-surface-container px-3 py-2 text-xs font-semibold text-primary transition hover:bg-primary-fixed"
+                                                    onClick={() => setDropdownOpenId(dropdownOpenId === product.id ? null : product.id)}
+                                                    className="flex h-9 w-9 items-center justify-center rounded-full text-on-surface-variant transition hover:bg-surface-container"
                                                 >
-                                                    {t("actions.edit")}
+                                                    <span className="material-symbols-outlined text-xl">settings</span>
                                                 </button>
-                                                {product.status !== "ARCHIVED" ? (
-                                                    <button
-                                                        type="button"
-                                                        onClick={() => onArchive(product)}
-                                                        className="rounded-full bg-rose-50 px-3 py-2 text-xs font-semibold text-rose-700 transition hover:bg-rose-100"
-                                                    >
-                                                        {t("actions.archive")}
-                                                    </button>
-                                                ) : null}
+                                                {dropdownOpenId === product.id && (
+                                                    <div ref={dropdownRef} className="absolute right-0 top-full z-20 mt-1 min-w-[140px] rounded-xl bg-surface-container-lowest py-1 shadow-lg ring-1 ring-black/5">
+                                                        <button
+                                                            type="button"
+                                                            onClick={() => { setDropdownOpenId(null); onEdit(product); }}
+                                                            className="flex w-full items-center gap-2 px-4 py-2.5 text-sm text-on-surface transition hover:bg-primary/10"
+                                                        >
+                                                            <span className="material-symbols-outlined text-base">edit</span>
+                                                            {t("actions.edit")}
+                                                        </button>
+                                                        {product.status !== "ARCHIVED" && (
+                                                            <button
+                                                                type="button"
+                                                                onClick={() => { setDropdownOpenId(null); onArchive(product); }}
+                                                                className="flex w-full items-center gap-2 px-4 py-2.5 text-sm text-rose-700 transition hover:bg-rose-50"
+                                                            >
+                                                                <span className="material-symbols-outlined text-base">archive</span>
+                                                                {t("actions.archive")}
+                                                            </button>
+                                                        )}
+                                                    </div>
+                                                )}
                                             </div>
                                         </td>
                                     </tr>

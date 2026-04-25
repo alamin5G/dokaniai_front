@@ -5,6 +5,8 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import type { CategoryResponse } from "@/types/category";
 import type { Product } from "@/types/product";
 import type { CartItem } from "@/types/sale";
+import { useCategoryMarketInsight } from "@/hooks/useCategoryMarketInsight";
+import CategoryInsightContent from "@/components/shared/CategoryInsightContent";
 
 interface ProductSelectorProps {
     products: Product[];
@@ -65,6 +67,14 @@ export default function ProductSelector({
     function getCategoryName(cat: CategoryResponse): string {
         return isBn ? cat.nameBn : (cat.nameEn ?? cat.nameBn);
     }
+
+    // Selected category for AI market insight in empty state
+    const selectedCategory = selectedCategoryId
+        ? categories.find((c) => c.id === selectedCategoryId)
+        : null;
+    const { insight: categoryInsight, isLoading: insightLoading } = useCategoryMarketInsight(
+        selectedCategoryId,
+    );
 
     // Cart item quantities for display
     function getCartQty(productId: string): number {
@@ -240,9 +250,36 @@ export default function ProductSelector({
                             <span className="material-symbols-outlined text-5xl text-primary/40">
                                 storefront
                             </span>
-                            <p className="max-w-xs text-center text-sm leading-relaxed text-on-surface-variant">
-                                {emptyMessage}
-                            </p>
+
+                            {/* Show AI market insight if a category is selected and insight is available */}
+                            {selectedCategory && selectedCategoryId ? (
+                                <div className="w-full max-w-md">
+                                    {insightLoading ? (
+                                        <div className="flex items-center justify-center gap-2 text-sm text-on-surface-variant">
+                                            <span className="material-symbols-outlined animate-spin text-base">progress_activity</span>
+                                            {isBn ? "বাজার বিশ্লেষণ লোড হচ্ছে..." : "Loading market insight..."}
+                                        </div>
+                                    ) : categoryInsight ? (
+                                        <div className="rounded-2xl border border-primary/20 bg-gradient-to-br from-primary/5 to-primary/10 p-4">
+                                            <div className="mb-2 flex items-center gap-2">
+                                                <span className="material-symbols-outlined text-sm text-primary">auto_awesome</span>
+                                                <span className="text-xs font-bold text-primary">
+                                                    {isBn ? `${getCategoryName(selectedCategory)} — বাজার বিশ্লেষণ` : `${getCategoryName(selectedCategory)} — Market Insight`}
+                                                </span>
+                                            </div>
+                                            <CategoryInsightContent insight={categoryInsight} />
+                                        </div>
+                                    ) : (
+                                        <p className="max-w-xs text-center text-sm leading-relaxed text-on-surface-variant">
+                                            {emptyMessage}
+                                        </p>
+                                    )}
+                                </div>
+                            ) : (
+                                <p className="max-w-xs text-center text-sm leading-relaxed text-on-surface-variant">
+                                    {emptyMessage}
+                                </p>
+                            )}
                         </div>
                     ) : (
                         products.map((product) => {
