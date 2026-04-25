@@ -35,7 +35,7 @@ export default function SalesWorkspace({
     const [selectedCategoryId, setSelectedCategoryId] = useState<string | null>(null);
 
     // Products & Categories — SWR-backed (shared cache across components)
-    const { products, isLoading } = useProducts(businessId, {
+    const { products, isLoading, mutate: mutateProducts } = useProducts(businessId, {
         page: 0,
         size: 200,
         search: searchQuery.trim() || undefined,
@@ -67,6 +67,27 @@ export default function SalesWorkspace({
 
     // Sale mutations — SWR-backed with cache invalidation
     const { submitCreate, submitForceCreate } = useSaleMutations(businessId);
+
+    // §7.6.2: Listen for real-time stock alerts via SSE — revalidate products
+    useEffect(() => {
+        const handleLowStock = (e: Event) => {
+            const detail = (e as CustomEvent).detail;
+            setNotice(t("cart.lowStockAlert", { product: detail?.productName ?? "Unknown" }));
+            void mutateProducts();
+        };
+        const handleOutOfStock = (e: Event) => {
+            const detail = (e as CustomEvent).detail;
+            setError(t("cart.outOfStockAlert", { product: detail?.productName ?? "Unknown" }));
+            void mutateProducts();
+        };
+
+        window.addEventListener("sse:low-stock-alert", handleLowStock);
+        window.addEventListener("sse:out-of-stock-alert", handleOutOfStock);
+        return () => {
+            window.removeEventListener("sse:low-stock-alert", handleLowStock);
+            window.removeEventListener("sse:out-of-stock-alert", handleOutOfStock);
+        };
+    }, [mutateProducts, t]);
 
     // Load tax settings
     useEffect(() => {

@@ -137,40 +137,31 @@ export default function ProductTable({
 
     return (
         <section className="overflow-hidden rounded-[28px] bg-surface-container-lowest shadow-sm">
-            {/* Header */}
-            <div className="flex flex-col gap-4 bg-surface-container-low/50 px-6 py-5 lg:flex-row lg:items-center lg:justify-between">
-                <div>
-                    <h3 className="text-xl font-bold text-primary">{t("table.title")}</h3>
-                    <p className="mt-1 text-sm text-on-surface-variant">
-                        {t("table.subtitle")}
-                    </p>
-                </div>
+            {/* Search + Filters */}
+            <div className="flex flex-col gap-3 sm:flex-row">
+                <label className="flex min-w-[220px] items-center gap-3 rounded-full bg-surface px-4 py-3 text-sm text-on-surface-variant">
+                    <span className="material-symbols-outlined text-base">search</span>
+                    <input
+                        value={searchInput}
+                        onChange={(event) => onSearchInputChange(event.target.value)}
+                        className="w-full bg-transparent text-on-surface outline-none placeholder:text-on-surface-variant"
+                        placeholder={t("filter.search")}
+                    />
+                </label>
 
-                <div className="flex flex-col gap-3 sm:flex-row">
-                    <label className="flex min-w-[220px] items-center gap-3 rounded-full bg-surface px-4 py-3 text-sm text-on-surface-variant">
-                        <span className="material-symbols-outlined text-base">search</span>
-                        <input
-                            value={searchInput}
-                            onChange={(event) => onSearchInputChange(event.target.value)}
-                            className="w-full bg-transparent text-on-surface outline-none placeholder:text-on-surface-variant"
-                            placeholder={t("filter.search")}
-                        />
-                    </label>
-
-                    <select
-                        value={status}
-                        onChange={(event) =>
-                            onStatusChange(event.target.value as "" | ProductStatus)
-                        }
-                        className="rounded-full bg-surface px-4 py-3 text-sm font-medium text-on-surface outline-none"
-                    >
-                        <option value="">{t("filter.all")}</option>
-                        <option value="ACTIVE">{t("status.ACTIVE")}</option>
-                        <option value="LOW_STOCK">{t("status.LOW_STOCK")}</option>
-                        <option value="OUT_OF_STOCK">{t("status.OUT_OF_STOCK")}</option>
-                        <option value="ARCHIVED">{t("status.ARCHIVED")}</option>
-                    </select>
-                </div>
+                <select
+                    value={status}
+                    onChange={(event) =>
+                        onStatusChange(event.target.value as "" | ProductStatus)
+                    }
+                    className="rounded-full bg-surface px-4 py-3 text-sm font-medium text-on-surface outline-none"
+                >
+                    <option value="">{t("filter.all")}</option>
+                    <option value="ACTIVE">{t("status.ACTIVE")}</option>
+                    <option value="LOW_STOCK">{t("status.LOW_STOCK")}</option>
+                    <option value="OUT_OF_STOCK">{t("status.OUT_OF_STOCK")}</option>
+                    <option value="ARCHIVED">{t("status.ARCHIVED")}</option>
+                </select>
             </div>
 
             {/* Category Filter Chips */}
@@ -365,7 +356,7 @@ export default function ProductTable({
                     </button>
                 </div>
             </div>
-        </section>
+        </section >
     );
 }
 

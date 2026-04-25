@@ -76,6 +76,24 @@ export function useSSE() {
             source.addEventListener("NOTIFICATION_NEW", () => {
                 window.dispatchEvent(new CustomEvent("sse:notification-new"));
             });
+
+            source.addEventListener("LOW_STOCK_ALERT", (e) => {
+                try {
+                    const data = JSON.parse(e.data);
+                    window.dispatchEvent(new CustomEvent("sse:low-stock-alert", { detail: data }));
+                } catch {
+                    // ignore malformed data
+                }
+            });
+
+            source.addEventListener("OUT_OF_STOCK_ALERT", (e) => {
+                try {
+                    const data = JSON.parse(e.data);
+                    window.dispatchEvent(new CustomEvent("sse:out-of-stock-alert", { detail: data }));
+                } catch {
+                    // ignore malformed data
+                }
+            });
         };
 
         connect();

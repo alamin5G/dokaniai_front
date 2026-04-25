@@ -1424,6 +1424,8 @@
         "success": "Sale recorded successfully! Invoice: {invoice}",
         "error": "Failed to record sale.",
         "errorStock": "Insufficient stock for {product}.",
+        "lowStockAlert": "⚠️ Low stock: {product}",
+        "outOfStockAlert": "🚫 Out of stock: {product}",
         "quantity": {
           "tapToEdit": "Tap to edit quantity"
         }

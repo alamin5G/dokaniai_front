@@ -1424,6 +1424,8 @@
         "success": "বিক্রি সফলভাবে রেকর্ড হয়েছে! ইনভয়েস: {invoice}",
         "error": "বিক্রি রেকর্ড করা যায়নি।",
         "errorStock": "{product} এর পর্যাপ্ত স্টক নেই।",
+        "lowStockAlert": "⚠️ স্টক কম: {product}",
+        "outOfStockAlert": "🚫 স্টক শেষ: {product}",
         "quantity": {
           "tapToEdit": "পরিমাণ সম্পাদনা করতে ট্যাপ করুন"
         }

@@ -121,21 +121,9 @@ export default function ProductInsightPanel({
             </div>
 
             <div className="relative z-10 flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
-                <div className="flex items-start gap-4">
-                    <div className="rounded-full bg-primary/10 p-3 text-primary">
-                        <span
-                            className="material-symbols-outlined"
-                            style={{ fontVariationSettings: "'FILL' 1" }}
-                        >
-                            inventory_2
-                        </span>
-                    </div>
-                    <div>
-                        <h3 className="text-base font-bold text-primary">
-                            {t("insight.subtitle")}
-                        </h3>
-                    </div>
-                </div>
+                <h3 className="text-base font-bold text-primary">
+                    {t("insight.subtitle")}
+                </h3>
                 <div className="rounded-full bg-white px-4 py-2 text-sm font-semibold text-primary shadow-sm">
                     {t("insight.totalAlerts", { count: formatQty(totalAlerts) })}
                 </div>
