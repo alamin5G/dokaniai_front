@@ -103,6 +103,8 @@ export default function NotificationBell() {
     const [notifications, setNotifications] = useState<NotificationItem[]>([]);
     const [unreadCount, setUnreadCount] = useState(0);
     const [loading, setLoading] = useState(false);
+    const [loadError, setLoadError] = useState(false);
+    const [selectedNotification, setSelectedNotification] = useState<NotificationItem | null>(null);
     const panelRef = useRef<HTMLDivElement>(null);
     const bellRef = useRef<HTMLButtonElement>(null);
 
@@ -113,8 +115,8 @@ export default function NotificationBell() {
         try {
             const count = await getUnreadCount();
             setUnreadCount(count);
-        } catch {
-            // Silently fail — non-critical
+        } catch (err) {
+            console.error("[NotificationBell] Failed to fetch unread count:", err);
         }
     }, []);
 
@@ -136,6 +138,9 @@ export default function NotificationBell() {
     useEffect(() => {
         if (!isOpen) return;
 
+        // Sync unread count when panel opens
+        fetchUnreadCount();
+
         trackNotificationPanelOpen({
             unreadCount,
             notificationCount: notifications.length,
@@ -143,11 +148,13 @@ export default function NotificationBell() {
 
         async function loadNotifications() {
             setLoading(true);
+            setLoadError(false);
             try {
                 const page = await listNotifications(undefined, undefined, 0, 20);
                 setNotifications(page.content);
-            } catch {
-                // Silently fail
+            } catch (err) {
+                console.error("[NotificationBell] Failed to load notifications:", err);
+                setLoadError(true);
             } finally {
                 setLoading(false);
             }
@@ -188,7 +195,6 @@ export default function NotificationBell() {
     async function handleMarkAllRead() {
         try {
             await markAllAsRead();
-            setNotifications((prev) => prev.map((n) => ({ ...n, isRead: true })));
             setUnreadCount(0);
             trackActivityEvent({
                 businessId: activeBusinessId,
@@ -198,7 +204,17 @@ export default function NotificationBell() {
                     affectedCount: notifications.filter((item) => !item.isRead).length,
                 },
             });
-        } catch { /* non-critical */ }
+            // Reload list from API to ensure sync
+            try {
+                const page = await listNotifications(undefined, undefined, 0, 20);
+                setNotifications(page.content);
+            } catch {
+                // Fallback to optimistic update
+                setNotifications((prev) => prev.map((n) => ({ ...n, isRead: true })));
+            }
+        } catch (err) {
+            console.error("[NotificationBell] Failed to mark all as read:", err);
+        }
     }
 
     async function handleDelete(notification: NotificationItem) {
@@ -211,6 +227,14 @@ export default function NotificationBell() {
                 notification,
             });
         } catch { /* non-critical */ }
+    }
+
+    function handleOpenNotification(notification: NotificationItem) {
+        setSelectedNotification(notification);
+        // Auto mark as read
+        if (!notification.isRead) {
+            handleMarkRead(notification);
+        }
     }
 
     // ─── Time formatting ────────────────────────────────
@@ -275,6 +299,27 @@ export default function NotificationBell() {
                             <div className="flex justify-center py-8">
                                 <div className="h-6 w-6 animate-spin rounded-full border-3 border-surface-container-high border-t-primary" />
                             </div>
+                        ) : loadError ? (
+                            <div className="px-4 py-8 text-center space-y-3">
+                                <p className="text-sm text-on-surface-variant">{t("loadError")}</p>
+                                <button
+                                    type="button"
+                                    onClick={() => {
+                                        setLoadError(false);
+                                        setLoading(true);
+                                        listNotifications(undefined, undefined, 0, 20)
+                                            .then((page) => setNotifications(page.content))
+                                            .catch((err) => {
+                                                console.error("[NotificationBell] Retry failed:", err);
+                                                setLoadError(true);
+                                            })
+                                            .finally(() => setLoading(false));
+                                    }}
+                                    className="text-xs font-semibold text-primary hover:underline"
+                                >
+                                    {t("retry")}
+                                </button>
+                            </div>
                         ) : notifications.length === 0 ? (
                             <div className="px-4 py-8 text-center text-sm text-on-surface-variant">
                                 {t("empty")}
@@ -286,6 +331,7 @@ export default function NotificationBell() {
                                     notification={notif}
                                     onMarkRead={handleMarkRead}
                                     onDelete={handleDelete}
+                                    onOpen={handleOpenNotification}
                                     timeAgo={timeAgo}
                                     typeLabel={t(`type.${notif.type}`, { defaultValue: notif.type })}
                                 />
@@ -293,6 +339,15 @@ export default function NotificationBell() {
                         )}
                     </div>
                 </div>
+            )}
+            {/* Notification Detail Modal */}
+            {selectedNotification && (
+                <NotificationDetailModal
+                    notification={selectedNotification}
+                    typeLabel={t(`type.${selectedNotification.type}`, { defaultValue: selectedNotification.type })}
+                    timeAgo={timeAgo(selectedNotification.createdAt)}
+                    onClose={() => setSelectedNotification(null)}
+                />
             )}
         </div>
     );
@@ -304,12 +359,14 @@ function NotificationCard({
     notification,
     onMarkRead,
     onDelete,
+    onOpen,
     timeAgo,
     typeLabel,
 }: {
     notification: NotificationItem;
     onMarkRead: (notification: NotificationItem) => void;
     onDelete: (notification: NotificationItem) => void;
+    onOpen: (notification: NotificationItem) => void;
     timeAgo: (dateStr: string) => string;
     typeLabel: string;
 }) {
@@ -325,7 +382,8 @@ function NotificationCard({
 
     return (
         <div
-            className={`flex gap-3 px-4 py-3 border-b border-surface-container/50 transition-colors hover:bg-surface-container-low ${!notification.isRead ? "bg-primary-container/5" : ""
+            onClick={() => onOpen(notification)}
+            className={`cursor-pointer flex gap-3 px-4 py-3 border-b border-surface-container/50 transition-colors hover:bg-surface-container-low ${!notification.isRead ? "bg-primary-container/5" : ""
                 } ${borderClass}`}
         >
             {/* Type badge */}
@@ -394,6 +452,122 @@ function NotificationCard({
                 >
                     <IconTrash />
                 </button>
+            </div>
+        </div>
+    );
+}
+
+// ─── Notification Detail Modal ──────────────────────────────
+
+function NotificationDetailModal({
+    notification,
+    typeLabel,
+    timeAgo,
+    onClose,
+}: {
+    notification: NotificationItem;
+    typeLabel: string;
+    timeAgo: string;
+    onClose: () => void;
+}) {
+    const isAi = notification.aiGenerated === true;
+    const tone = notification.tone || "INFO";
+    const actionLabel = notification.aiContext?.actionLabel;
+    const modalRef = useRef<HTMLDivElement>(null);
+
+    // Close on backdrop click
+    useEffect(() => {
+        function handleBackdropClick(e: MouseEvent) {
+            if (modalRef.current && !modalRef.current.contains(e.target as Node)) {
+                onClose();
+            }
+        }
+        document.addEventListener("mousedown", handleBackdropClick);
+        return () => document.removeEventListener("mousedown", handleBackdropClick);
+    }, [onClose]);
+
+    // Close on Escape key
+    useEffect(() => {
+        function handleEscape(e: KeyboardEvent) {
+            if (e.key === "Escape") onClose();
+        }
+        document.addEventListener("keydown", handleEscape);
+        return () => document.removeEventListener("keydown", handleEscape);
+    }, [onClose]);
+
+    const borderClass = isAi
+        ? `border-l-4 ${toneBorders[tone] || "border-l-blue-400"}`
+        : "";
+
+    return (
+        <div className="fixed inset-0 z-[100] flex items-end sm:items-center justify-center bg-black/40 backdrop-blur-sm">
+            <div
+                ref={modalRef}
+                className={`w-full sm:w-[440px] max-h-[80vh] bg-surface-container-lowest rounded-t-3xl sm:rounded-2xl shadow-2xl overflow-hidden flex flex-col ${borderClass}`}
+            >
+                {/* Header */}
+                <div className="flex items-center justify-between px-5 py-4 border-b border-surface-container">
+                    <div className="flex items-center gap-2">
+                        <span className={`inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-[11px] font-bold ${typeColors[notification.type] || "bg-gray-100 text-gray-700"}`}>
+                            {isAi && <IconSparkle className="w-3 h-3" />}
+                            {typeLabel}
+                        </span>
+                        {isAi && (
+                            <span className="inline-flex items-center gap-0.5 text-[10px] text-violet-500 font-medium">
+                                <IconSparkle className="w-2.5 h-2.5" />
+                                AI
+                            </span>
+                        )}
+                    </div>
+                    <button
+                        type="button"
+                        onClick={onClose}
+                        className="rounded-full p-1.5 text-on-surface-variant hover:bg-surface-container-high transition-colors"
+                    >
+                        <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                    </button>
+                </div>
+
+                {/* Body */}
+                <div className="overflow-y-auto px-5 py-4 space-y-3">
+                    <h3 className="text-base font-bold text-on-surface leading-snug">
+                        {notification.title}
+                    </h3>
+                    <p className="text-sm text-on-surface-variant leading-relaxed whitespace-pre-wrap">
+                        {notification.message}
+                    </p>
+
+                    {/* AI action button */}
+                    {isAi && actionLabel && (
+                        <button
+                            type="button"
+                            onClick={onClose}
+                            className="inline-flex items-center gap-1.5 rounded-lg bg-primary/10 px-3 py-1.5 text-xs font-semibold text-primary hover:bg-primary/20 transition-colors"
+                        >
+                            {actionLabel}
+                        </button>
+                    )}
+                </div>
+
+                {/* Footer */}
+                <div className="px-5 py-3 border-t border-surface-container flex items-center justify-between">
+                    <p className="text-[11px] text-on-surface-variant/70">
+                        {timeAgo}
+                    </p>
+                    {isAi && notification.tone && (
+                        <span className={`text-[10px] font-medium px-2 py-0.5 rounded-full ${
+                            tone === "URGENT" ? "bg-red-100 text-red-700" :
+                            tone === "WARNING" ? "bg-amber-100 text-amber-700" :
+                            tone === "FRIENDLY" ? "bg-green-100 text-green-700" :
+                            tone === "ENCOURAGING" ? "bg-emerald-100 text-emerald-700" :
+                            "bg-blue-100 text-blue-700"
+                        }`}>
+                            {tone}
+                        </span>
+                    )}
+                </div>
             </div>
         </div>
     );

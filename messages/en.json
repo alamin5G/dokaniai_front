@@ -956,6 +956,8 @@
   "notifications": {
     "title": "Notifications",
     "empty": "No notifications yet.",
+    "loadError": "Failed to load notifications.",
+    "retry": "Retry",
     "markAllRead": "Mark all read",
     "markRead": "Mark as read",
     "delete": "Delete",

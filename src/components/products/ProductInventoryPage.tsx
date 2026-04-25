@@ -330,15 +330,25 @@ export default function ProductInventoryPage({
                 </div>
                 {activeTopTab === "products" && (
                     <div className="flex items-center gap-2 shrink-0">
-                        <button
-                            type="button"
-                            onClick={() => fileInputRef.current?.click()}
-                            disabled={!canBulkImport || isImporting}
-                            title={isImporting ? t("actions.importing") : t("actions.csvImport")}
-                            className="flex h-9 w-9 items-center justify-center rounded-full bg-surface-container text-on-surface transition hover:bg-surface-container-high disabled:cursor-not-allowed disabled:opacity-50"
-                        >
-                            <span className="material-symbols-outlined text-lg">upload</span>
-                        </button>
+                        {/* CSV Upload — tooltip shows plan-locked warning when disabled */}
+                        <div className="relative group">
+                            <button
+                                type="button"
+                                onClick={() => fileInputRef.current?.click()}
+                                disabled={!canBulkImport || isImporting}
+                                title={canBulkImport ? (isImporting ? t("actions.importing") : t("actions.csvImport")) : undefined}
+                                className="flex h-9 w-9 items-center justify-center rounded-full bg-surface-container text-on-surface transition hover:bg-surface-container-high disabled:cursor-not-allowed disabled:opacity-50"
+                            >
+                                <span className="material-symbols-outlined text-lg">upload</span>
+                            </button>
+                            {!canBulkImport && (
+                                <div className="pointer-events-none absolute bottom-full left-1/2 z-50 mb-2 -translate-x-1/2 whitespace-nowrap rounded-xl border border-amber-200 bg-amber-50 px-3 py-2 text-xs font-medium text-amber-800 opacity-0 shadow-lg transition-opacity group-hover:opacity-100">
+                                    {t("messages.importLocked")}
+                                    {/* Arrow */}
+                                    <div className="absolute -bottom-1.5 left-1/2 h-3 w-3 -translate-x-1/2 rotate-45 border-b border-r border-amber-200 bg-amber-50" />
+                                </div>
+                            )}
+                        </div>
                         <button
                             type="button"
                             onClick={handleTemplateDownload}
@@ -377,13 +387,6 @@ export default function ProductInventoryPage({
                 disabled={!canBulkImport}
                 onChange={handleImport}
             />
-
-            {/* Import locked notice */}
-            {!canBulkImport && activeTopTab === "products" ? (
-                <div className="rounded-[24px] border border-amber-200 bg-amber-50 px-5 py-4 text-sm text-amber-800">
-                    {t("messages.importLocked")}
-                </div>
-            ) : null}
 
             {/* Error / Notice banners */}
             {error ? (
