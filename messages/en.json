@@ -946,6 +946,7 @@
     "expenses": "Expenses",
     "dueLedger": "Due Ledger",
     "products": "Products",
+    "stockManagement": "Stock Management",
     "reports": "Reports",
     "aiAssistant": "AI Assistant",
     "subscription": "Subscription",
@@ -1422,7 +1423,10 @@
         "saving": "Processing...",
         "success": "Sale recorded successfully! Invoice: {invoice}",
         "error": "Failed to record sale.",
-        "errorStock": "Insufficient stock for {product}."
+        "errorStock": "Insufficient stock for {product}.",
+        "quantity": {
+          "tapToEdit": "Tap to edit quantity"
+        }
       },
       "payment": {
         "CASH": "Cash",

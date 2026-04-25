@@ -946,6 +946,7 @@
     "expenses": "খরচ",
     "dueLedger": "বাকি খাতা",
     "products": "পণ্য",
+    "stockManagement": "স্টক ম্যানেজমেন্ট",
     "reports": "রিপোর্ট",
     "aiAssistant": "AI সহকারী",
     "subscription": "সাবস্ক্রিপশন",
@@ -1422,7 +1423,10 @@
         "saving": "প্রক্রিয়াধীন...",
         "success": "বিক্রি সফলভাবে রেকর্ড হয়েছে! ইনভয়েস: {invoice}",
         "error": "বিক্রি রেকর্ড করা যায়নি।",
-        "errorStock": "{product} এর পর্যাপ্ত স্টক নেই।"
+        "errorStock": "{product} এর পর্যাপ্ত স্টক নেই।",
+        "quantity": {
+          "tapToEdit": "পরিমাণ সম্পাদনা করতে ট্যাপ করুন"
+        }
       },
       "payment": {
         "CASH": "নগদ",

@@ -109,3 +109,50 @@ export function getProductUnitLabel(unit: string, locale: string): string {
     }
     return locale.toLowerCase().startsWith("bn") ? option.labelBn : option.labelEn;
 }
+
+// ── Smart Quantity Input: Unit-aware step sizes ──────────────────────
+
+/** Step size for −/+ buttons, keyed by unit value. */
+export const UNIT_STEP_MAP: Record<string, number> = {
+    // Weight (metric) — step 0.25
+    kg: 0.25,
+    gram: 1,
+    // Weight (South Asian) — step 0.25
+    maund: 0.25,
+    seer: 0.25,
+    chitak: 0.25,
+    quintal: 0.25,
+    // Volume — step 0.25
+    liter: 0.25,
+    ml: 1,
+    // Precious metals — step 0.5
+    bhori: 0.5,
+    tola: 0.5,
+    ana: 0.5,
+    masha: 0.5,
+    ratti: 0.5,
+    carat: 0.5,
+    // Length — step 0.25
+    meter: 0.25,
+    feet: 0.25,
+    inch: 0.5,
+    yard: 0.25,
+    hath: 0.25,
+};
+
+/** Units that show quick-fraction chips (¼ ½ ¾ ১). */
+export const FRACTIONAL_UNITS = new Set([
+    "kg", "liter", "maund", "seer", "chitak", "quintal",
+    "bhori", "tola", "ana", "masha", "ratti", "carat",
+    "meter", "feet", "yard", "hath",
+]);
+
+/** Get step size for a given unit (default = 1). */
+export function getUnitStep(unit: string): number {
+    return UNIT_STEP_MAP[unit] ?? 1;
+}
+
+/** Check if a unit should show quick-fraction chips. */
+export function isFractionalUnit(unit: string): boolean {
+    return FRACTIONAL_UNITS.has(unit);
+}

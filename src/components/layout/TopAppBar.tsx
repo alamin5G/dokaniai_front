@@ -7,7 +7,7 @@ import { buildShopPath, replaceShopBusinessInPath } from "@/lib/shopRouting";
 import { useBusinessStore } from "@/store/businessStore";
 import { useTranslations } from "next-intl";
 import { usePathname, useRouter } from "next/navigation";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 
 // ---------------------------------------------------------------------------
 // Inline SVG Icons
@@ -49,6 +49,26 @@ export default function TopAppBar({ title, businessId }: TopAppBarProps) {
   const pathname = usePathname();
   const t = useTranslations("nav");
   const { activeBusiness, businesses, setActiveBusiness } = useBusinessStore();
+
+  // Map route segment → nav translation key for breadcrumb
+  const routePageMap: Record<string, string> = useMemo(() => ({
+    products: "stockManagement",
+    sales: "sales",
+    "due-ledger": "dueLedger",
+    expenses: "expenses",
+    reports: "reports",
+    ai: "aiAssistant",
+    settings: "settings",
+  }), []);
+
+  const pageName = useMemo(() => {
+    if (title) return title;
+    const segments = pathname.split("/").filter(Boolean);
+    // /shop/{businessId}/{page} → segments[2] is the page
+    const pageSegment = segments.length >= 3 ? segments[2] : null;
+    if (!pageSegment || !routePageMap[pageSegment]) return null;
+    return t(routePageMap[pageSegment]);
+  }, [pathname, title, t, routePageMap]);
 
   const [isSwitcherOpen, setIsSwitcherOpen] = useState(false);
   const desktopDropdownRef = useRef<HTMLDivElement>(null);
@@ -142,7 +162,9 @@ export default function TopAppBar({ title, businessId }: TopAppBarProps) {
         </div>
         <div className="hidden md:block">
           <p className="text-on-surface-variant font-medium text-sm">
-            {title ?? `${t("dashboard")} /`}
+            {pageName
+              ? <>{t("dashboard")} <span className="text-on-surface-variant/50">/</span> <span className="text-on-surface">{pageName}</span></>
+              : `${t("dashboard")} /`}
           </p>
         </div>
       </div>

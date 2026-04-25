@@ -251,13 +251,8 @@ export default function ReportWorkspace({
     // ════════════════════════════════════════════════════════
     return (
         <div className="space-y-6">
-            {/* ── Header ── */}
-            <header className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-                <div className="flex items-center gap-2 text-sm font-medium text-on-surface-variant">
-                    <span>{t("dashboard")}</span>
-                    <span className="text-on-surface-variant/50">/</span>
-                    <span className="font-semibold text-on-surface">{t("title")}</span>
-                </div>
+            {/* ── Header — export buttons only ── */}
+            <header className="flex justify-end">
                 <div className="flex items-center gap-2">
                     <button
                         onClick={() => handleExport("csv")}

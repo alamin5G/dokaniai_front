@@ -608,11 +608,6 @@ export default function DueLedgerWorkspace({
 
             {/* ── Header with NLP bar ── */}
             <header className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-                <div className="flex items-center gap-2 text-sm font-medium text-on-surface-variant">
-                    <span>{t("dashboard")}</span>
-                    <span className="text-on-surface-variant/50">/</span>
-                    <span className="font-semibold text-on-surface">{t("title")}</span>
-                </div>
                 <div className="flex items-center gap-3">
                     <button
                         onClick={openCustomerForm}

@@ -258,13 +258,8 @@ export default function ExpenseWorkspace({
 
     return (
         <section className="space-y-8">
-            {/* Header */}
-            <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
-                <div className="flex items-center gap-2 text-sm font-medium text-on-surface-variant">
-                    <span>{t("dashboard")}</span>
-                    <span className="text-on-surface-variant/50">/</span>
-                    <span className="font-semibold text-on-surface">{t("title")}</span>
-                </div>
+            {/* Header — action button only */}
+            <div className="flex justify-end">
                 <button
                     type="button"
                     onClick={resetEditor}

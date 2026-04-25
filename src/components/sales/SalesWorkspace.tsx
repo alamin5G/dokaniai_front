@@ -154,6 +154,20 @@ export default function SalesWorkspace({
         );
     }
 
+    function handleQuantitySet(productId: string, newQuantity: number) {
+        if (newQuantity <= 0) {
+            setCartItems((prev) => prev.filter((ci) => ci.productId !== productId));
+        } else {
+            setCartItems((prev) =>
+                prev.map((ci) =>
+                    ci.productId === productId
+                        ? { ...ci, quantity: newQuantity }
+                        : ci,
+                ),
+            );
+        }
+    }
+
     function handleClearAll() {
         setCartItems([]);
         setDiscountValue("");
@@ -288,6 +302,7 @@ export default function SalesWorkspace({
             <CartPanel
                 cartItems={cartItems}
                 onQuantityChange={handleQuantityChange}
+                onQuantitySet={handleQuantitySet}
                 onRemoveItem={(productId) => handleQuantityChange(productId, -Infinity)}
                 onClearAll={handleClearAll}
                 discountMethod={discountMethod}

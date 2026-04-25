@@ -317,43 +317,28 @@ export default function ProductInventoryPage({
 
     return (
         <section className="space-y-6">
-            {/* Page Header — simplified breadcrumb */}
-            <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-                <div className="flex items-center gap-2 text-sm font-medium text-on-surface-variant">
-                    <span>{t("dashboard")}</span>
-                    <span className="text-on-surface-variant/50">/</span>
-                    <span className="font-semibold text-on-surface">{t("label")}</span>
+            {/* Products tab icon-only action buttons */}
+            {activeTopTab === "products" && (
+                <div className="flex items-center justify-end gap-2">
+                    <button
+                        type="button"
+                        onClick={() => fileInputRef.current?.click()}
+                        disabled={!canBulkImport || isImporting}
+                        title={isImporting ? t("actions.importing") : t("actions.csvImport")}
+                        className="flex h-9 w-9 items-center justify-center rounded-full bg-surface-container text-on-surface transition hover:bg-surface-container-high disabled:cursor-not-allowed disabled:opacity-50"
+                    >
+                        <span className="material-symbols-outlined text-lg">upload</span>
+                    </button>
+                    <button
+                        type="button"
+                        onClick={handleTemplateDownload}
+                        title={t("actions.templateDownload")}
+                        className="flex h-9 w-9 items-center justify-center rounded-full bg-surface-container-lowest text-primary transition hover:bg-primary-fixed"
+                    >
+                        <span className="material-symbols-outlined text-lg">download</span>
+                    </button>
                 </div>
-
-                {/* Products tab icon-only action buttons */}
-                {activeTopTab === "products" && (
-                    <div className="flex items-center gap-2">
-                        {/* CSV Import — icon button */}
-                        <button
-                            type="button"
-                            onClick={() => fileInputRef.current?.click()}
-                            disabled={!canBulkImport || isImporting}
-                            title={isImporting ? t("actions.importing") : t("actions.csvImport")}
-                            className="flex h-9 w-9 items-center justify-center rounded-full bg-surface-container text-on-surface transition hover:bg-surface-container-high disabled:cursor-not-allowed disabled:opacity-50"
-                        >
-                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5">
-                                <path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5m-13.5-9L12 3m0 0 4.5 4.5M12 3v13.5" />
-                            </svg>
-                        </button>
-                        {/* Template Download — icon button */}
-                        <button
-                            type="button"
-                            onClick={handleTemplateDownload}
-                            title={t("actions.templateDownload")}
-                            className="flex h-9 w-9 items-center justify-center rounded-full bg-surface-container-lowest text-primary transition hover:bg-primary-fixed"
-                        >
-                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5">
-                                <path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5M16.5 12 12 16.5m0 0L7.5 12m4.5 4.5V3" />
-                            </svg>
-                        </button>
-                    </div>
-                )}
-            </div>
+            )}
 
             {/* AI Voice Command Bar — right below header */}
             <VoiceCommandBar />

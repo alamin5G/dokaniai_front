@@ -69,13 +69,8 @@ export default function AIWorkspace({ businessId }: { businessId: string }) {
 
     return (
         <div className="space-y-6">
-            {/* ── Header ── */}
-            <header className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-                <div className="flex items-center gap-2 text-sm font-medium text-on-surface-variant">
-                    <span>{t("dashboard")}</span>
-                    <span className="text-on-surface-variant/50">/</span>
-                    <span className="font-semibold text-on-surface">{t("title")}</span>
-                </div>
+            {/* ── Header — usage badge only ── */}
+            <header className="flex justify-end">
                 {/* Usage badge */}
                 {usage && (
                     <div className="flex items-center gap-3 rounded-2xl bg-surface-container px-4 py-2.5">

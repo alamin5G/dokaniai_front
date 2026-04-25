@@ -3,10 +3,12 @@
 import { useLocale, useTranslations } from "next-intl";
 import type { CartItem, DiscountMethod, PaymentMethod } from "@/types/sale";
 import DiscountInput from "./DiscountInput";
+import SmartQuantityInput from "./SmartQuantityInput";
 
 interface CartPanelProps {
     cartItems: CartItem[];
     onQuantityChange: (productId: string, delta: number) => void;
+    onQuantitySet: (productId: string, newQuantity: number) => void;
     onRemoveItem: (productId: string) => void;
     onClearAll: () => void;
     discountMethod: DiscountMethod;
@@ -32,6 +34,7 @@ function resolveLocale(locale?: string): string {
 export default function CartPanel({
     cartItems,
     onQuantityChange,
+    onQuantitySet,
     onRemoveItem,
     onClearAll,
     discountMethod,
@@ -107,29 +110,11 @@ export default function CartPanel({
                                         unit: item.unit,
                                     })}
                                 </span>
-                                <div className="flex items-center gap-3 rounded-lg bg-surface-container-low p-1">
-                                    <button
-                                        type="button"
-                                        onClick={() => onQuantityChange(item.productId, -1)}
-                                        className="flex h-6 w-6 items-center justify-center rounded bg-white text-primary shadow-sm"
-                                    >
-                                        <span className="material-symbols-outlined text-sm">
-                                            remove
-                                        </span>
-                                    </button>
-                                    <span className="w-4 text-center text-sm font-bold">
-                                        {item.quantity}
-                                    </span>
-                                    <button
-                                        type="button"
-                                        onClick={() => onQuantityChange(item.productId, 1)}
-                                        className="flex h-6 w-6 items-center justify-center rounded bg-white text-primary shadow-sm"
-                                    >
-                                        <span className="material-symbols-outlined text-sm">
-                                            add
-                                        </span>
-                                    </button>
-                                </div>
+                                <SmartQuantityInput
+                                    quantity={item.quantity}
+                                    unit={item.unit ?? "pcs"}
+                                    onChange={(newQty) => onQuantitySet(item.productId, newQty)}
+                                />
                             </div>
                         </div>
                     ))
