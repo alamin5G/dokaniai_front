@@ -65,11 +65,11 @@ export default function CartPanel({
     }
 
     return (
-        <aside className="flex w-96 flex-col border-l border-surface-container-low bg-[rgba(255,255,255,0.7)] p-6 shadow-2xl backdrop-blur-xl">
+        <aside className="flex w-[26rem] flex-col border-l border-surface-container-low bg-[rgba(255,255,255,0.7)] p-4 shadow-2xl backdrop-blur-xl">
             {/* Header */}
-            <div className="mb-6 flex items-center justify-between">
-                <h2 className="flex items-center gap-2 text-xl font-bold text-primary">
-                    <span className="material-symbols-outlined">shopping_cart</span>
+            <div className="mb-3 flex items-center justify-between">
+                <h2 className="flex items-center gap-1.5 text-lg font-bold text-primary">
+                    <span className="material-symbols-outlined text-xl">shopping_cart</span>
                     {t("cart.title")}
                 </h2>
                 {cartItems.length > 0 ? (
@@ -78,43 +78,54 @@ export default function CartPanel({
                         onClick={onClearAll}
                         className="text-on-surface-variant transition-colors hover:text-tertiary"
                     >
-                        <span className="material-symbols-outlined">delete_sweep</span>
+                        <span className="material-symbols-outlined text-xl">delete_sweep</span>
                     </button>
                 ) : null}
             </div>
 
             {/* Cart Items */}
-            <div className="mb-6 flex-1 space-y-3 overflow-y-auto pr-2">
+            <div className="mb-3 flex-1 space-y-1.5 overflow-y-auto pr-1">
                 {cartItems.length === 0 ? (
-                    <p className="py-8 text-center text-sm text-on-surface-variant">
+                    <p className="py-6 text-center text-sm text-on-surface-variant">
                         {t("cart.empty")}
                     </p>
                 ) : (
                     cartItems.map((item) => (
                         <div
                             key={item.productId}
-                            className="flex flex-col gap-2 rounded-xl bg-surface-container-lowest p-3 shadow-sm"
+                            className="flex items-center gap-2 rounded-lg bg-surface-container-lowest px-2.5 py-2 shadow-sm"
                         >
-                            <div className="flex items-start justify-between">
-                                <span className="font-semibold text-on-surface">
+                            {/* Name + unit price */}
+                            <div className="min-w-0 flex-1">
+                                <p className="truncate text-sm font-semibold text-on-surface">
                                     {item.productName}
-                                </span>
-                                <span className="font-bold">
-                                    ৳ {formatMoney(item.unitPrice * item.quantity)}
-                                </span>
-                            </div>
-                            <div className="flex items-center justify-between">
-                                <span className="text-xs text-on-surface-variant">
+                                </p>
+                                <p className="text-[11px] text-on-surface-variant">
                                     {t("cart.perUnit", {
                                         price: formatMoney(item.unitPrice),
                                         unit: item.unit,
                                     })}
+                                </p>
+                            </div>
+                            {/* Quantity control */}
+                            <SmartQuantityInput
+                                quantity={item.quantity}
+                                unit={item.unit ?? "pcs"}
+                                onChange={(newQty) => onQuantitySet(item.productId, newQty)}
+                            />
+                            {/* Line total + remove */}
+                            <div className="flex flex-col items-end gap-0.5">
+                                <span className="whitespace-nowrap text-sm font-bold">
+                                    ৳{formatMoney(item.unitPrice * item.quantity)}
                                 </span>
-                                <SmartQuantityInput
-                                    quantity={item.quantity}
-                                    unit={item.unit ?? "pcs"}
-                                    onChange={(newQty) => onQuantitySet(item.productId, newQty)}
-                                />
+                                <button
+                                    type="button"
+                                    onClick={() => onRemoveItem(item.productId)}
+                                    className="text-on-surface-variant/50 transition-colors hover:text-rose-500"
+                                    title={t("cart.removeItem")}
+                                >
+                                    <span className="material-symbols-outlined text-sm">close</span>
+                                </button>
                             </div>
                         </div>
                     ))
@@ -123,18 +134,18 @@ export default function CartPanel({
 
             {/* Error / Notice */}
             {error ? (
-                <div className="mb-4 rounded-xl bg-rose-50 px-4 py-3 text-sm font-medium text-rose-700">
+                <div className="mb-3 rounded-lg bg-rose-50 px-3 py-2 text-xs font-medium text-rose-700">
                     {error}
                 </div>
             ) : null}
             {notice ? (
-                <div className="mb-4 rounded-xl bg-emerald-50 px-4 py-3 text-sm font-medium text-emerald-700">
+                <div className="mb-3 rounded-lg bg-emerald-50 px-3 py-2 text-xs font-medium text-emerald-700">
                     {notice}
                 </div>
             ) : null}
 
             {/* Discount & Totals */}
-            <div className="space-y-4 border-t border-surface-container-low pt-6">
+            <div className="space-y-3 border-t border-surface-container-low pt-3">
                 {/* Discount Input */}
                 <DiscountInput
                     method={discountMethod}
@@ -144,13 +155,13 @@ export default function CartPanel({
                 />
 
                 {/* Summary */}
-                <div className="space-y-2 py-4">
-                    <div className="flex justify-between text-sm text-on-surface-variant">
+                <div className="space-y-1 py-2">
+                    <div className="flex justify-between text-xs text-on-surface-variant">
                         <span>{t("cart.subtotal")}</span>
                         <span className="font-medium">৳ {formatMoney(subtotal)}</span>
                     </div>
                     {discountAmount > 0 ? (
-                        <div className="flex justify-between text-sm text-on-surface-variant">
+                        <div className="flex justify-between text-xs text-on-surface-variant">
                             <span>{t("cart.discount.applied", { amount: formatMoney(discountAmount) })}</span>
                             <span className="font-medium text-tertiary">
                                 - ৳ {formatMoney(discountAmount)}
@@ -158,43 +169,43 @@ export default function CartPanel({
                         </div>
                     ) : null}
                     {taxAmount > 0 ? (
-                        <div className="flex justify-between text-sm text-on-surface-variant">
+                        <div className="flex justify-between text-xs text-on-surface-variant">
                             <span>{t("cart.vat", { percent: taxRate })}</span>
                             <span className="font-medium">
                                 + ৳ {formatMoney(taxAmount)}
                             </span>
                         </div>
                     ) : null}
-                    <div className="flex items-end justify-between pt-2">
-                        <span className="font-bold text-primary">{t("cart.total")}</span>
+                    <div className="flex items-end justify-between pt-1">
+                        <span className="text-sm font-bold text-primary">{t("cart.total")}</span>
                         <div className="text-right">
-                            <p className="text-3xl font-black leading-none text-primary">
+                            <p className="text-2xl font-black leading-none text-primary">
                                 ৳ {formatMoney(total)}
                             </p>
                         </div>
                     </div>
                 </div>
 
-                {/* Action Buttons */}
-                <div className="grid grid-cols-1 gap-3">
+                {/* Action Buttons — compact grid */}
+                <div className="grid grid-cols-2 gap-2">
                     <button
                         type="button"
                         onClick={onSubmitCash}
                         disabled={isSubmitting || cartItems.length === 0}
-                        className="flex w-full flex-col items-center justify-center rounded-2xl bg-primary py-5 text-white shadow-lg transition-all active:scale-[0.98] hover:bg-primary-container disabled:cursor-not-allowed disabled:opacity-60"
+                        className="flex w-full flex-col items-center justify-center rounded-xl bg-primary py-3 text-white shadow-md transition-all active:scale-[0.98] hover:bg-primary-container disabled:cursor-not-allowed disabled:opacity-60"
                     >
-                        <span className="text-lg font-bold">
+                        <span className="text-sm font-bold">
                             {isSubmitting ? t("cart.saving") : t("cart.cashSale")}
                         </span>
-                        <span className="text-xs opacity-80">{t("cart.cashSaleDesc")}</span>
+                        <span className="text-[10px] opacity-80">{t("cart.cashSaleDesc")}</span>
                     </button>
                     <button
                         type="button"
                         onClick={onSubmitCredit}
                         disabled={isSubmitting || cartItems.length === 0}
-                        className="flex w-full items-center justify-center gap-2 rounded-2xl bg-secondary py-4 font-bold text-white shadow-md transition-all active:scale-[0.98] hover:bg-secondary-container disabled:cursor-not-allowed disabled:opacity-60"
+                        className="flex w-full items-center justify-center gap-1.5 rounded-xl bg-secondary py-3 text-sm font-bold text-white shadow-md transition-all active:scale-[0.98] hover:bg-secondary-container disabled:cursor-not-allowed disabled:opacity-60"
                     >
-                        <span className="material-symbols-outlined">
+                        <span className="material-symbols-outlined text-base">
                             account_balance_wallet
                         </span>
                         {isSubmitting ? t("cart.saving") : t("cart.creditSale")}
