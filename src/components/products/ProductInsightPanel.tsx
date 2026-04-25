@@ -38,6 +38,7 @@ export default function ProductInsightPanel({
 
     const [alertReport, setAlertReport] = useState<StockAlertReport | null>(null);
     const [stockoutInsights, setStockoutInsights] = useState<AIInsight[]>([]);
+    const [showAllAlerts, setShowAllAlerts] = useState(false);
 
     useEffect(() => {
         let cancelled = false;
@@ -83,8 +84,10 @@ export default function ProductInsightPanel({
             alertReport.lowStockCount + alertReport.outOfStockCount + alertReport.reorderNeededCount,
         )
         : lowStockProducts.length;
-    const topAlerts = alertItems.slice(0, 3);
-    const topInsights = stockoutInsights.slice(0, 3);
+    const VISIBLE_LIMIT = 6;
+    const displayedAlerts = showAllAlerts ? alertItems : alertItems.slice(0, VISIBLE_LIMIT);
+    const displayedInsights = showAllAlerts ? stockoutInsights : stockoutInsights.slice(0, VISIBLE_LIMIT);
+    const hasMoreAlerts = alertItems.length > VISIBLE_LIMIT || stockoutInsights.length > VISIBLE_LIMIT;
     const productById = useMemo(() => {
         const map = new Map<string, Product>();
         for (const product of [...products, ...lowStockProducts]) {
@@ -142,8 +145,8 @@ export default function ProductInsightPanel({
             </div>
 
             <div className="relative z-10 mt-6 grid gap-3 md:grid-cols-3">
-                {topInsights.length > 0 ? (
-                    topInsights.map((insight) => {
+                {displayedInsights.length > 0 ? (
+                    displayedInsights.map((insight) => {
                         const product = insight.entityId ? productById.get(insight.entityId) : null;
                         return (
                             <button
@@ -160,8 +163,8 @@ export default function ProductInsightPanel({
                                         {insight.title}
                                     </p>
                                     <span className={`rounded-full px-2 py-0.5 text-[10px] font-bold ${insight.severity === "CRITICAL"
-                                            ? "bg-rose-100 text-rose-700"
-                                            : "bg-amber-100 text-amber-700"
+                                        ? "bg-rose-100 text-rose-700"
+                                        : "bg-amber-100 text-amber-700"
                                         }`}>
                                         {insight.severity}
                                     </span>
@@ -172,46 +175,63 @@ export default function ProductInsightPanel({
                             </button>
                         );
                     })
-                ) : topAlerts.length > 0 ? (
-                    topAlerts.map((item) => {
+                ) : displayedAlerts.length > 0 ? (
+                    displayedAlerts.map((item) => {
                         const product = productById.get(item.productId);
                         return (
-                        <button
-                            key={`${item.status}-${item.productId}`}
-                            type="button"
-                            disabled={!product}
-                            onClick={() => {
-                                if (product) onEdit(product);
-                            }}
-                            className="rounded-[22px] bg-white px-4 py-4 text-left transition hover:bg-primary-fixed disabled:cursor-default disabled:hover:bg-white"
-                        >
-                            <div className="flex items-start justify-between gap-3">
-                                <p className="text-sm font-semibold text-on-surface">
-                                    {item.productName}
-                                </p>
-                                <span className={`rounded-full px-2 py-0.5 text-[10px] font-bold ${item.status === "OUT_OF_STOCK"
+                            <button
+                                key={`${item.status}-${item.productId}`}
+                                type="button"
+                                disabled={!product}
+                                onClick={() => {
+                                    if (product) onEdit(product);
+                                }}
+                                className="rounded-[22px] bg-white px-4 py-4 text-left transition hover:bg-primary-fixed disabled:cursor-default disabled:hover:bg-white"
+                            >
+                                <div className="flex items-start justify-between gap-3">
+                                    <p className="text-sm font-semibold text-on-surface">
+                                        {item.productName}
+                                    </p>
+                                    <span className={`rounded-full px-2 py-0.5 text-[10px] font-bold ${item.status === "OUT_OF_STOCK"
                                         ? "bg-rose-100 text-rose-700"
                                         : "bg-amber-100 text-amber-700"
-                                    }`}>
-                                    {t(`status.${item.status === "OUT_OF_STOCK" ? "OUT_OF_STOCK" : "LOW_STOCK"}`)}
-                                </span>
-                            </div>
-                            <p className="mt-1 text-xs text-on-surface-variant">
-                                SKU {item.sku} • {t("table.stock")}{" "}
-                                {formatQty(item.currentStock)}
-                            </p>
-                            <p className="mt-3 text-xs font-semibold text-rose-600">
-                                {insightMessage(item)}
-                            </p>
-                        </button>
-                    );
+                                        }`}>
+                                        {t(`status.${item.status === "OUT_OF_STOCK" ? "OUT_OF_STOCK" : "LOW_STOCK"}`)}
+                                    </span>
+                                </div>
+                                <p className="mt-1 text-xs text-on-surface-variant">
+                                    SKU {item.sku} • {t("table.stock")}{" "}
+                                    {formatQty(item.currentStock)}
+                                </p>
+                                <p className="mt-3 text-xs font-semibold text-rose-600">
+                                    {insightMessage(item)}
+                                </p>
+                            </button>
+                        );
                     })
                 ) : (
                     <div className="rounded-[22px] bg-white px-4 py-4 text-sm text-on-surface-variant md:col-span-3">
                         {t("insight.noLowStock")}
                     </div>
                 )}
+
+                {/* Show more / Show less button */}
+                {hasMoreAlerts && (
+                    <div className="relative z-10 mt-4 flex justify-center">
+                        <button
+                            type="button"
+                            onClick={() => setShowAllAlerts(!showAllAlerts)}
+                            className="rounded-full bg-white px-5 py-2 text-xs font-semibold text-primary shadow-sm transition hover:bg-primary-fixed"
+                        >
+                            {showAllAlerts
+                                ? t("insight.showLess")
+                                : t("insight.showMore", { count: alertItems.length + stockoutInsights.length - VISIBLE_LIMIT })}
+                        </button>
+                    </div>
+                )}
             </div>
         </div>
     );
 }
+
+

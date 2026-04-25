@@ -1139,6 +1139,8 @@
         "subtitle": "Low stock and inventory pressure at a glance",
         "totalAlerts": "Total Alerts {count}",
         "noLowStock": "No low-stock items at the moment.",
+        "showMore": "+{count} more alerts",
+        "showLess": "Show less",
         "threshold": "Threshold {count}",
         "orderSchedule": "Schedule Order"
       },

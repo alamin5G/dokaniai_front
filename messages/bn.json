@@ -1139,6 +1139,8 @@
         "subtitle": "লো স্টক আর ইনভেন্টরি চাপ এক নজরে",
         "totalAlerts": "মোট অ্যালার্ট {count}",
         "noLowStock": "এই মুহূর্তে কোনো low-stock item নেই।",
+        "showMore": "+{count} টি অ্যালার্ট আরও",
+        "showLess": "কম দেখুন",
         "threshold": "থ্রেশহোল্ড {count}",
         "orderSchedule": "অর্ডার শিডিউল করুন"
       },

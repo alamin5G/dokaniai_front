@@ -82,7 +82,7 @@ export default function ProductStatsCards({ stats }: ProductStatsCardsProps) {
                 <div className="mt-4 flex items-start justify-between">
                     <div>
                         <h2 className="text-3xl font-black text-on-surface">
-                            {formatQty(stats?.lowStockCount)}
+                            {formatQty((stats?.lowStockCount ?? 0) + (stats?.outOfStockCount ?? 0))}
                         </h2>
                         <p className="mt-2 text-xs font-semibold text-rose-600">
                             {t("stats.stockOut", { count: formatQty(stats?.outOfStockCount) })}
