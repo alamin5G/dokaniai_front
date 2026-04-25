@@ -976,7 +976,9 @@
       "MARKETING": "মার্কেটিং",
       "DAILY_SUMMARY": "সারাংশ",
       "AI_TIP": "এআই টিপস",
-      "PATTERN_ALERT": "সতর্কতা"
+      "PATTERN_ALERT": "সতর্কতা",
+      "RESTOCK_INSIGHT": "রিস্টক এআই",
+      "STOCK_PREDICTION": "স্টক এআই"
     }
   },
   "userProfile": {

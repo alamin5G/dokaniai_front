@@ -77,6 +77,12 @@ export default function RequestDetailPage() {
     [request?.similarCategories],
   );
 
+  // True only when AI was actually called (not just text match with misleading label)
+  const aiActuallyUsed = useMemo(
+    () => request?.aiSimilarityCheck === true && hasAiSemantic,
+    [request?.aiSimilarityCheck, hasAiSemantic],
+  );
+
   async function handleSubmit() {
     if (!request) return;
     setSubmitting(true);
@@ -259,72 +265,81 @@ export default function RequestDetailPage() {
 
             {request.similarCategories && request.similarCategories.length > 0 ? (
               <>
-                <p className="text-sm text-on-surface-variant mb-4 relative z-10">
-                  {t("aiAnalysisDesc")}
+                <p className="text-[11px] text-on-surface-variant mb-3 relative z-10 leading-relaxed">
+                  {aiActuallyUsed
+                    ? t("aiAnalysisDesc")
+                    : "টেক্সট মিল পাওয়া গেছে (AI সিমান্টিক চেক প্রযোজ্য ছিল না)"}
                 </p>
 
-                {/* AI Recommendation Badge */}
+                {/* Recommendation Badge — show source honestly */}
                 {request.aiRecommendation && (
-                  <div className="mb-4 relative z-10 flex items-center gap-2">
-                    <span className={`px-3 py-1 rounded-full text-xs font-bold ${request.aiRecommendation === "MERGE"
-                      ? "bg-tertiary-fixed text-on-tertiary-fixed"
-                      : "bg-primary-fixed text-on-primary-fixed"
-                      }`}>
-                      AI: {request.aiRecommendation}
-                    </span>
-                    {request.aiSimilarityCheck && hasAiSemantic && (
-                      <span className="px-2 py-0.5 bg-primary-fixed/40 text-primary-container text-[10px] font-bold rounded-full">
-                        CHECKED
+                  <div className="mb-3 relative z-10 flex items-center gap-1.5">
+                    {aiActuallyUsed ? (
+                      <>
+                        <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold ${request.aiRecommendation === "MERGE"
+                          ? "bg-tertiary-fixed text-on-tertiary-fixed"
+                          : "bg-primary-fixed text-on-primary-fixed"
+                          }`}>
+                          ✨ AI: {request.aiRecommendation}
+                        </span>
+                        <span className="px-1.5 py-0.5 bg-green-100 text-green-700 text-[9px] font-bold rounded-full flex items-center gap-0.5">
+                          <span className="material-symbols-outlined text-[10px]">verified</span>
+                          AI VERIFIED
+                        </span>
+                      </>
+                    ) : (
+                      <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-outline-variant/20 text-on-surface-variant">
+                        TEXT: {request.aiRecommendation}
                       </span>
                     )}
                   </div>
                 )}
 
-                <div className="flex flex-col gap-3 relative z-10 flex-1">
+                <div className="flex flex-col gap-2 relative z-10 flex-1">
                   {request.similarCategories.map((sim) => (
                     <div
                       key={sim.categoryId}
-                      className="bg-surface-container-low rounded-lg p-4 flex justify-between items-center group hover:bg-surface-container transition-colors cursor-pointer"
+                      className="bg-surface-container-low rounded-lg p-3 flex justify-between items-center group hover:bg-surface-container transition-colors cursor-pointer"
                     >
                       <div className="flex-1 min-w-0">
-                        <div className="flex items-center gap-2 mb-1">
-                          <p className="font-semibold text-lg text-on-surface font-bengali">{sim.nameBn}</p>
-                          <span className={`px-1.5 py-0.5 rounded text-[9px] font-bold uppercase ${scoreColor(sim.similarityScore)}`}>
+                        <div className="flex items-center gap-1.5 mb-0.5">
+                          <p className="font-semibold text-sm text-on-surface font-bengali">{sim.nameBn}</p>
+                          <span className={`px-1.5 py-0.5 rounded text-[8px] font-bold uppercase ${scoreColor(sim.similarityScore)}`}>
                             {methodLabel(sim.detectionMethod)}
                           </span>
                         </div>
-                        <p className="text-xs text-on-surface-variant">
+                        <p className="text-[10px] text-on-surface-variant">
                           {sim.nameEn ?? ""} &bull; {Math.round(sim.similarityScore * 100)}% Match
                         </p>
                         {sim.reason && (
-                          <p className="text-xs text-on-surface-variant/70 mt-1 truncate">{sim.reason}</p>
+                          <p className="text-[10px] text-on-surface-variant/70 mt-0.5 truncate">{sim.reason}</p>
                         )}
                       </div>
                       <button
                         onClick={() => setDecision((d) => ({ ...d, action: "MERGE", suggestedCategoryId: sim.categoryId }))}
-                        className="text-primary opacity-0 group-hover:opacity-100 transition-opacity p-2 hover:bg-surface-container-highest rounded-full flex-shrink-0"
+                        className="text-primary opacity-0 group-hover:opacity-100 transition-opacity p-1.5 hover:bg-surface-container-highest rounded-full flex-shrink-0"
                       >
-                        <span className="material-symbols-outlined">call_merge</span>
+                        <span className="material-symbols-outlined text-[16px]">call_merge</span>
                       </button>
                     </div>
                   ))}
-                  <div className="mt-auto pt-3 text-center">
+                  <div className="mt-auto pt-2 text-center">
                     <button
                       onClick={() => router.push("/admin/categories")}
-                      className="text-xs font-bold text-primary hover:underline"
+                      className="text-[10px] font-bold text-primary hover:underline"
                     >
                       {t("viewAllBranches")}
                     </button>
                   </div>
                 </div>
 
-                {/* AI Reasoning / Analysis Info */}
+                {/* Reasoning / Analysis Info */}
                 {request.aiReasoning && (
-                  <div className="mt-4 relative z-10 bg-surface-container-low/50 rounded-lg p-3 border border-outline-variant/10">
-                    <p className="text-[10px] font-bold text-on-surface-variant uppercase tracking-wider mb-1">
-                      {hasAiSemantic ? "AI Reasoning" : t("analysisInfo")}
+                  <div className="mt-3 relative z-10 bg-surface-container-low/50 rounded-lg p-2.5 border border-outline-variant/10">
+                    <p className="text-[9px] font-bold text-on-surface-variant uppercase tracking-wider mb-0.5">
+                      {aiActuallyUsed ? "AI Reasoning" : t("analysisInfo")}
                     </p>
-                    <p className="text-xs text-on-surface-variant leading-relaxed">{request.aiReasoning}</p>
+                    <p className="text-[10px] text-on-surface-variant leading-relaxed">{request.aiReasoning}</p>
                   </div>
                 )}
               </>

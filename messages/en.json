@@ -976,7 +976,9 @@
       "MARKETING": "Marketing",
       "DAILY_SUMMARY": "Summary",
       "AI_TIP": "AI Tip",
-      "PATTERN_ALERT": "Alert"
+      "PATTERN_ALERT": "Alert",
+      "RESTOCK_INSIGHT": "Restock AI",
+      "STOCK_PREDICTION": "Stock AI"
     }
   },
   "userProfile": {
