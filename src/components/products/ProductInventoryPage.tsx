@@ -317,20 +317,12 @@ export default function ProductInventoryPage({
 
     return (
         <section className="space-y-6">
-            {/* Page Header */}
+            {/* Page Header — simplified breadcrumb */}
             <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-                <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
-                    <span className="text-xs font-bold uppercase tracking-[0.2em] text-secondary">
-                        {t("label")}
-                    </span>
-                    <h1 className="text-xl font-bold tracking-tight text-primary">
-                        {t("title")}
-                    </h1>
-                    <span className="text-xs text-on-surface-variant">
-                        {t("subtitle", {
-                            businessName: activeBusiness?.name ?? "Business",
-                        })}
-                    </span>
+                <div className="flex items-center gap-2 text-sm font-medium text-on-surface-variant">
+                    <span>{t("dashboard")}</span>
+                    <span className="text-on-surface-variant/50">/</span>
+                    <span className="font-semibold text-on-surface">{t("label")}</span>
                 </div>
 
                 {/* Products tab icon-only action buttons */}

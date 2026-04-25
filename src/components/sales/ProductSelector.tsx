@@ -1,7 +1,7 @@
 "use client";
 
 import { useLocale, useTranslations } from "next-intl";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import type { CategoryResponse } from "@/types/category";
 import type { Product } from "@/types/product";
 import type { CartItem } from "@/types/sale";
@@ -70,6 +70,15 @@ export default function ProductSelector({
     function getCartQty(productId: string): number {
         return cartItems.find((ci) => ci.productId === productId)?.quantity ?? 0;
     }
+
+    // Inspiring empty-state message (random but stable per render cycle)
+    const emptyMessage = useMemo(() => {
+        const messages = t.raw("emptyProductMessages") as string[];
+        if (!Array.isArray(messages) || messages.length === 0) {
+            return isBn ? "এই ক্যাটাগরিতে এখনো কোনো পণ্য নেই। শীঘ্রই যুক্ত হবে!" : "No products in this category yet. Coming soon!";
+        }
+        return messages[Math.floor(Math.random() * messages.length)];
+    }, [t, isBn]);
 
     // FR-SRC-07: Autocomplete suggestions — show after 2 characters typed
     const autocompleteItems = searchQuery.length >= 2 ? products.slice(0, 8) : [];
@@ -147,11 +156,10 @@ export default function ProductSelector({
                                             setShowAutocomplete(false);
                                             setAutocompleteIndex(-1);
                                         }}
-                                        className={`flex w-full items-center gap-3 px-4 py-3 text-left transition ${
-                                            idx === autocompleteIndex
-                                                ? "bg-primary/10 text-primary"
-                                                : "text-on-surface hover:bg-surface-container-low"
-                                        }`}
+                                        className={`flex w-full items-center gap-3 px-4 py-3 text-left transition ${idx === autocompleteIndex
+                                            ? "bg-primary/10 text-primary"
+                                            : "text-on-surface hover:bg-surface-container-low"
+                                            }`}
                                     >
                                         <span className="material-symbols-outlined text-base text-on-surface-variant">
                                             inventory_2
@@ -228,29 +236,40 @@ export default function ProductSelector({
                             Loading...
                         </div>
                     ) : products.length === 0 ? (
-                        <div className="py-14 text-center text-sm text-on-surface-variant">
-                            No products found.
+                        <div className="flex flex-col items-center gap-4 py-14">
+                            <span className="material-symbols-outlined text-5xl text-primary/40">
+                                storefront
+                            </span>
+                            <p className="max-w-xs text-center text-sm leading-relaxed text-on-surface-variant">
+                                {emptyMessage}
+                            </p>
                         </div>
                     ) : (
                         products.map((product) => {
+                            const isOutOfStock = product.status === "OUT_OF_STOCK" || product.stockQty <= 0;
                             const isLowStock =
-                                product.status === "LOW_STOCK" ||
-                                product.status === "OUT_OF_STOCK";
+                                product.status === "LOW_STOCK" || product.status === "OUT_OF_STOCK";
                             const cartQty = getCartQty(product.id);
 
                             return (
                                 <div
                                     key={product.id}
-                                    className={`group grid grid-cols-12 items-center rounded-xl bg-surface-container-lowest p-4 transition-all hover:bg-surface-container-low ${isLowStock
-                                        ? "border-l-4 border-tertiary"
-                                        : ""
+                                    className={`group grid grid-cols-12 items-center rounded-xl bg-surface-container-lowest p-4 transition-all hover:bg-surface-container-low ${isOutOfStock
+                                        ? "opacity-60"
+                                        : isLowStock
+                                            ? "border-l-4 border-tertiary"
+                                            : ""
                                         }`}
                                 >
                                     <div className="col-span-6">
-                                        <p className="font-semibold text-on-surface">
+                                        <p className={`text-base font-semibold ${isOutOfStock ? "text-on-surface-variant line-through" : "text-on-surface"}`}>
                                             {product.name}
                                         </p>
-                                        {isLowStock ? (
+                                        {isOutOfStock ? (
+                                            <span className="rounded-full bg-error-container px-2 py-0.5 text-xs font-bold text-error">
+                                                {t("outOfStock")}
+                                            </span>
+                                        ) : isLowStock ? (
                                             <span className="rounded-full bg-error-container px-2 py-0.5 text-xs font-bold text-tertiary">
                                                 {t("lowStock", {
                                                     qty: formatQty(product.stockQty),
@@ -276,9 +295,15 @@ export default function ProductSelector({
                                         <button
                                             type="button"
                                             onClick={() => onAddProduct(product)}
-                                            className="relative flex h-10 w-10 items-center justify-center rounded-xl bg-primary text-white shadow-sm transition-transform active:scale-90"
+                                            disabled={isOutOfStock}
+                                            className={`relative flex h-10 w-10 items-center justify-center rounded-xl shadow-sm transition-transform ${isOutOfStock
+                                                ? "cursor-not-allowed bg-surface-container-high text-on-surface-variant"
+                                                : "bg-primary text-white active:scale-90"
+                                                }`}
                                         >
-                                            <span className="material-symbols-outlined">add</span>
+                                            <span className="material-symbols-outlined">
+                                                {isOutOfStock ? "block" : "add"}
+                                            </span>
                                             {cartQty > 0 && (
                                                 <span className="absolute -right-1 -top-1 flex h-4 w-4 items-center justify-center rounded-full bg-secondary text-[10px] font-bold text-white">
                                                     {cartQty}

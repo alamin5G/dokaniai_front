@@ -116,7 +116,7 @@ export default function ProductInsightPanel({
                     className="material-symbols-outlined text-[120px] text-primary"
                     style={{ fontVariationSettings: "'FILL' 1" }}
                 >
-                    auto_awesome
+                    warning
                 </span>
             </div>
 
@@ -127,14 +127,11 @@ export default function ProductInsightPanel({
                             className="material-symbols-outlined"
                             style={{ fontVariationSettings: "'FILL' 1" }}
                         >
-                            lightbulb
+                            inventory_2
                         </span>
                     </div>
                     <div>
-                        <p className="text-sm font-semibold text-primary">
-                            {t("insight.title")}
-                        </p>
-                        <h3 className="mt-1 text-xl font-bold text-primary">
+                        <h3 className="text-base font-bold text-primary">
                             {t("insight.subtitle")}
                         </h3>
                     </div>
@@ -189,7 +186,7 @@ export default function ProductInsightPanel({
                                 className="rounded-[22px] bg-white px-4 py-4 text-left transition hover:bg-primary-fixed disabled:cursor-default disabled:hover:bg-white"
                             >
                                 <div className="flex items-start justify-between gap-3">
-                                    <p className="text-sm font-semibold text-on-surface">
+                                    <p className="text-base font-bold text-on-surface">
                                         {item.productName}
                                     </p>
                                     <span className={`rounded-full px-2 py-0.5 text-[10px] font-bold ${item.status === "OUT_OF_STOCK"
