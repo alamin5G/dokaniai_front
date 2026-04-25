@@ -317,31 +317,33 @@ export default function ProductInventoryPage({
 
     return (
         <section className="space-y-6">
-            {/* Products tab icon-only action buttons */}
-            {activeTopTab === "products" && (
-                <div className="flex items-center justify-end gap-2">
-                    <button
-                        type="button"
-                        onClick={() => fileInputRef.current?.click()}
-                        disabled={!canBulkImport || isImporting}
-                        title={isImporting ? t("actions.importing") : t("actions.csvImport")}
-                        className="flex h-9 w-9 items-center justify-center rounded-full bg-surface-container text-on-surface transition hover:bg-surface-container-high disabled:cursor-not-allowed disabled:opacity-50"
-                    >
-                        <span className="material-symbols-outlined text-lg">upload</span>
-                    </button>
-                    <button
-                        type="button"
-                        onClick={handleTemplateDownload}
-                        title={t("actions.templateDownload")}
-                        className="flex h-9 w-9 items-center justify-center rounded-full bg-surface-container-lowest text-primary transition hover:bg-primary-fixed"
-                    >
-                        <span className="material-symbols-outlined text-lg">download</span>
-                    </button>
+            {/* AI Voice Command Bar + action buttons in one row */}
+            <div className="flex items-center gap-2">
+                <div className="flex-1 min-w-0">
+                    <VoiceCommandBar />
                 </div>
-            )}
-
-            {/* AI Voice Command Bar — right below header */}
-            <VoiceCommandBar />
+                {activeTopTab === "products" && (
+                    <div className="flex items-center gap-2 shrink-0">
+                        <button
+                            type="button"
+                            onClick={() => fileInputRef.current?.click()}
+                            disabled={!canBulkImport || isImporting}
+                            title={isImporting ? t("actions.importing") : t("actions.csvImport")}
+                            className="flex h-9 w-9 items-center justify-center rounded-full bg-surface-container text-on-surface transition hover:bg-surface-container-high disabled:cursor-not-allowed disabled:opacity-50"
+                        >
+                            <span className="material-symbols-outlined text-lg">upload</span>
+                        </button>
+                        <button
+                            type="button"
+                            onClick={handleTemplateDownload}
+                            title={t("actions.templateDownload")}
+                            className="flex h-9 w-9 items-center justify-center rounded-full bg-surface-container-lowest text-primary transition hover:bg-primary-fixed"
+                        >
+                            <span className="material-symbols-outlined text-lg">download</span>
+                        </button>
+                    </div>
+                )}
+            </div>
 
             {/* ─── Top-level Tab Navigation ─────────────────── */}
             <div className="flex gap-2 border-b border-surface-container pb-0">
