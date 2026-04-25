@@ -197,7 +197,9 @@ export default function ProductTable({
                     <thead className="bg-surface-container-low text-sm font-bold text-on-surface-variant">
                         <tr>
                             <th className="px-6 py-4">{t("table.product")}</th>
+                            <th className="px-6 py-4">{t("table.skuBarcode")}</th>
                             <th className="px-6 py-4">{t("table.stock")}</th>
+                            <th className="px-6 py-4">{t("table.peDate")}</th>
                             <th className="px-6 py-4 text-right">{t("table.costPrice")}</th>
                             <th className="px-6 py-4 text-right">{t("table.sellPrice")}</th>
                             <th className="px-6 py-4 text-right">{t("table.margin")}</th>
@@ -209,7 +211,7 @@ export default function ProductTable({
                         {isLoading ? (
                             <tr>
                                 <td
-                                    colSpan={7}
+                                    colSpan={9}
                                     className="px-6 py-14 text-center text-sm text-on-surface-variant"
                                 >
                                     {t("table.loading")}
@@ -235,32 +237,19 @@ export default function ProductTable({
                                                     <p className="font-bold text-on-surface">
                                                         {highlightText(product.name, searchInput)}
                                                     </p>
-                                                    <p className="text-xs text-on-surface-variant">
-                                                        {breadcrumb
-                                                            ? breadcrumb
-                                                            : product.barcode
-                                                                ? t("table.skuBarcode", {
-                                                                    sku: product.sku,
-                                                                    barcode: product.barcode,
-                                                                })
-                                                                : t("table.sku", { sku: product.sku })}
-                                                    </p>
-                                                    {product.expiryDate && (
-                                                        <p className={`mt-0.5 text-xs ${new Date(product.expiryDate) < new Date()
-                                                                ? "font-semibold text-rose-600"
-                                                                : (new Date(product.expiryDate).getTime() - Date.now()) < 7 * 86400000
-                                                                    ? "font-medium text-amber-600"
-                                                                    : "text-on-surface-variant"
-                                                            }`}>
-                                                            {new Date(product.expiryDate) < new Date()
-                                                                ? `⚠ ${t("table.expired", { date: new Date(product.expiryDate).toLocaleDateString() })}`
-                                                                : (new Date(product.expiryDate).getTime() - Date.now()) < 7 * 86400000
-                                                                    ? `⏰ ${t("table.expiringSoon", { date: new Date(product.expiryDate).toLocaleDateString() })}`
-                                                                    : `📅 ${new Date(product.expiryDate).toLocaleDateString()}`}
+                                                    {breadcrumb && (
+                                                        <p className="text-xs text-on-surface-variant">
+                                                            {breadcrumb}
                                                         </p>
                                                     )}
                                                 </div>
                                             </div>
+                                        </td>
+                                        <td className="px-6 py-5">
+                                            <p className="text-sm font-medium text-on-surface">{product.sku}</p>
+                                            {product.barcode && (
+                                                <p className="text-xs text-on-surface-variant">{product.barcode}</p>
+                                            )}
                                         </td>
                                         <td className="px-6 py-5 font-bold text-on-surface">
                                             <div className="flex items-center gap-1">
@@ -271,6 +260,29 @@ export default function ProductTable({
                                                     <span className="text-xs" title="AI পূর্বাভাস আছে">🔮</span>
                                                 )}
                                             </div>
+                                        </td>
+                                        <td className="px-6 py-5">
+                                            <p className="text-xs text-on-surface-variant">
+                                                {product.purchaseDate
+                                                    ? `${t("table.purchaseLabel")} ${new Date(product.purchaseDate).toLocaleDateString(loc)}`
+                                                    : t("table.noDate")}
+                                            </p>
+                                            <p className={`text-xs ${product.expiryDate
+                                                ? (new Date(product.expiryDate) < new Date()
+                                                    ? "font-semibold text-rose-600"
+                                                    : (new Date(product.expiryDate).getTime() - Date.now()) < 7 * 86400000
+                                                        ? "font-medium text-amber-600"
+                                                        : "text-on-surface-variant")
+                                                : "text-on-surface-variant"
+                                                }`}>
+                                                {product.expiryDate
+                                                    ? (new Date(product.expiryDate) < new Date()
+                                                        ? `⚠ ${t("table.expired", { date: new Date(product.expiryDate).toLocaleDateString(loc) })}`
+                                                        : (new Date(product.expiryDate).getTime() - Date.now()) < 7 * 86400000
+                                                            ? `⏰ ${t("table.expiringSoon", { date: new Date(product.expiryDate).toLocaleDateString(loc) })}`
+                                                            : `${t("table.expiryLabel")} ${new Date(product.expiryDate).toLocaleDateString(loc)}`)
+                                                    : t("table.noDate")}
+                                            </p>
                                         </td>
                                         <td className="px-6 py-5 text-right font-semibold text-on-surface">
                                             ৳{formatMoney(product.costPrice)}
@@ -326,7 +338,7 @@ export default function ProductTable({
                             })
                         ) : (
                             <tr>
-                                <td colSpan={7} className="px-6 py-8">
+                                <td colSpan={9} className="px-6 py-8">
                                     {selectedCategoryId ? (
                                         <div className="mx-auto max-w-lg space-y-4 text-center">
                                             <div className="flex flex-col items-center gap-2">

@@ -1150,7 +1150,11 @@
         "title": "Product List",
         "subtitle": "Live catalog, stock position and selling margin for your business.",
         "product": "Product",
+        "skuBarcode": "SKU / Barcode",
         "stock": "Stock",
+        "peDate": "P/E Date",
+        "purchaseLabel": "Purchased",
+        "expiryLabel": "Expires",
         "costPrice": "Cost Price (৳)",
         "sellPrice": "Sell Price (৳)",
         "margin": "Margin",
@@ -1161,9 +1165,10 @@
         "emptyCategory": "No products have been added to \"{category}\" yet.",
         "showing": "Showing {shown} of {total} products on this page.",
         "sku": "SKU {sku}",
-        "skuBarcode": "SKU {sku} • Barcode {barcode}",
+        "skuBarcodeFull": "SKU {sku} • Barcode {barcode}",
         "expired": "Expired {date}",
-        "expiringSoon": "Expires {date}"
+        "expiringSoon": "Expires {date}",
+        "noDate": "—"
       },
       "status": {
         "ACTIVE": "Sufficient",

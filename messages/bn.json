@@ -1150,7 +1150,11 @@
         "title": "পণ্য তালিকা",
         "subtitle": "ব্যবসার live catalog, stock position আর selling margin এখান থেকে দেখুন।",
         "product": "পণ্য",
+        "skuBarcode": "SKU / বারকোড",
         "stock": "স্টক",
+        "peDate": "ক্রয়/মেয়াদ",
+        "purchaseLabel": "ক্রয়",
+        "expiryLabel": "মেয়াদ",
         "costPrice": "ক্রয় মূল্য (৳)",
         "sellPrice": "বিক্রয় মূল্য (৳)",
         "margin": "মার্জিন",
@@ -1161,9 +1165,10 @@
         "emptyCategory": "\"{category}\" ক্যাটাগরিতে এখনো কোনো পণ্য যোগ হয়নি।",
         "showing": "মোট {total} পণ্যের মধ্যে {shown}টি দেখানো হচ্ছে।",
         "sku": "SKU {sku}",
-        "skuBarcode": "SKU {sku} • Barcode {barcode}",
+        "skuBarcodeFull": "SKU {sku} • বারকোড {barcode}",
         "expired": "মেয়াদোত্তীর্ণ {date}",
-        "expiringSoon": "মেয়াদ শেই {date}"
+        "expiringSoon": "মেয়াদ শেই {date}",
+        "noDate": "—"
       },
       "status": {
         "ACTIVE": "পর্যাপ্ত",

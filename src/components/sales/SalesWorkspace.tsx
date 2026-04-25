@@ -1,10 +1,9 @@
 "use client";
 
 import { useBusinessStore } from "@/store/businessStore";
-import type { CategoryResponse } from "@/types/category";
+import { useCartStore } from "@/store/cartStore";
 import type { Product } from "@/types/product";
 import type {
-    CartItem,
     DiscountMethod,
     DiscountRequest,
     PaymentMethod,
@@ -35,8 +34,6 @@ export default function SalesWorkspace({
     const [selectedCategoryId, setSelectedCategoryId] = useState<string | null>(null);
 
     // Products & Categories — SWR-backed (shared cache across components)
-    // Don't filter by status — show ACTIVE, LOW_STOCK, OUT_OF_STOCK
-    // ProductSelector already greys out OUT_OF_STOCK items with disabled "add" button
     const { products, isLoading, mutate: mutateProducts } = useProducts(businessId, {
         page: 0,
         size: 200,
@@ -45,12 +42,12 @@ export default function SalesWorkspace({
     });
     const { categories } = useCategoriesByBusinessType(activeBusiness?.type ?? null);
 
-    // Cart
-    const [cartItems, setCartItems] = useState<CartItem[]>([]);
-
-    // Discount
-    const [discountMethod, setDiscountMethod] = useState<DiscountMethod>("FIXED");
-    const [discountValue, setDiscountValue] = useState("");
+    // Cart — persisted via Zustand + localStorage (survives page navigation & tab close)
+    const cartStore = useCartStore(businessId);
+    const cartItems = cartStore((s) => s.cartItems);
+    const discountMethod = cartStore((s) => s.discountMethod);
+    const discountValue = cartStore((s) => s.discountValue);
+    const { addOrUpdateItem, updateQuantity, setQuantity, removeItem, clearAll, setDiscountMethod, setDiscountValue } = cartStore.getState();
 
     // Tax settings
     const [taxEnabled, setTaxEnabled] = useState(false);
@@ -138,61 +135,28 @@ export default function SalesWorkspace({
         // Guard: block out-of-stock products from being added
         if (product.stockQty <= 0 || product.status === 'OUT_OF_STOCK') return;
 
-        setCartItems((prev) => {
-            const existing = prev.find((ci) => ci.productId === product.id);
-            if (existing) {
-                return prev.map((ci) =>
-                    ci.productId === product.id
-                        ? { ...ci, quantity: ci.quantity + 1 }
-                        : ci,
-                );
-            }
-            return [
-                ...prev,
-                {
-                    productId: product.id,
-                    productName: product.name,
-                    unit: product.unit,
-                    unitPrice: product.sellPrice,
-                    costPrice: product.costPrice,
-                    quantity: 1,
-                    stockQty: product.stockQty,
-                },
-            ];
+        addOrUpdateItem({
+            id: product.id,
+            name: product.name,
+            unit: product.unit,
+            sellPrice: product.sellPrice,
+            costPrice: product.costPrice,
+            stockQty: product.stockQty,
         });
         setNotice(null);
         setError(null);
     }
 
     function handleQuantityChange(productId: string, delta: number) {
-        setCartItems((prev) =>
-            prev
-                .map((ci) =>
-                    ci.productId === productId
-                        ? { ...ci, quantity: ci.quantity + delta }
-                        : ci,
-                )
-                .filter((ci) => ci.quantity > 0),
-        );
+        updateQuantity(productId, delta);
     }
 
     function handleQuantitySet(productId: string, newQuantity: number) {
-        if (newQuantity <= 0) {
-            setCartItems((prev) => prev.filter((ci) => ci.productId !== productId));
-        } else {
-            setCartItems((prev) =>
-                prev.map((ci) =>
-                    ci.productId === productId
-                        ? { ...ci, quantity: newQuantity }
-                        : ci,
-                ),
-            );
-        }
+        setQuantity(productId, newQuantity);
     }
 
     function handleClearAll() {
-        setCartItems([]);
-        setDiscountValue("");
+        clearAll();
         setError(null);
         setNotice(null);
     }
@@ -247,8 +211,7 @@ export default function SalesWorkspace({
             setNotice(
                 t("cart.success", { invoice: sale.invoiceNumber }),
             );
-            setCartItems([]);
-            setDiscountValue("");
+            clearAll();
         } catch (submitError: unknown) {
             // Check for 409 STOCK_CONFLICT from backend
             const axiosErr = submitError as { response?: { status?: number; data?: { error?: { code?: string; details?: StockConflictDetail } } } };
@@ -282,8 +245,7 @@ export default function SalesWorkspace({
         try {
             const sale = await submitForceCreate(pendingRequest);
             setNotice(t("cart.success", { invoice: sale.invoiceNumber }));
-            setCartItems([]);
-            setDiscountValue("");
+            clearAll();
         } catch (submitError) {
             setError(
                 submitError instanceof Error
@@ -325,7 +287,7 @@ export default function SalesWorkspace({
                 cartItems={cartItems}
                 onQuantityChange={handleQuantityChange}
                 onQuantitySet={handleQuantitySet}
-                onRemoveItem={(productId) => handleQuantityChange(productId, -Infinity)}
+                onRemoveItem={removeItem}
                 onClearAll={handleClearAll}
                 discountMethod={discountMethod}
                 onDiscountMethodChange={setDiscountMethod}
