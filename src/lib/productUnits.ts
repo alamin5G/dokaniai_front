@@ -112,27 +112,48 @@ export function getProductUnitLabel(unit: string, locale: string): string {
 
 // ── Smart Quantity Input: Unit-aware step sizes ──────────────────────
 
-/** Step size for −/+ buttons, keyed by unit value. */
+/** Minimum precision for direct input (allows 0.1, 0.175, etc.). */
 export const UNIT_STEP_MAP: Record<string, number> = {
-    // Weight (metric) — step 0.25
-    kg: 0.25,
+    // Weight (metric) — precision 0.01 (allows 0.1, 0.175, 1.2 kg etc.)
+    kg: 0.01,
     gram: 1,
-    // Weight (South Asian) — step 0.25
+    // Weight (South Asian) — precision 0.01
+    maund: 0.01,
+    seer: 0.01,
+    chitak: 0.01,
+    quintal: 0.01,
+    // Volume — precision 0.01
+    liter: 0.01,
+    ml: 1,
+    // Precious metals — precision 0.01
+    bhori: 0.01,
+    tola: 0.01,
+    ana: 0.01,
+    masha: 0.01,
+    ratti: 0.01,
+    carat: 0.01,
+    // Length — precision 0.01
+    meter: 0.01,
+    feet: 0.01,
+    inch: 0.01,
+    yard: 0.01,
+    hath: 0.01,
+};
+
+/** Step size for −/+ buttons (larger, convenience increments). */
+export const UNIT_BUTTON_STEP: Record<string, number> = {
+    kg: 0.25,
     maund: 0.25,
     seer: 0.25,
     chitak: 0.25,
     quintal: 0.25,
-    // Volume — step 0.25
     liter: 0.25,
-    ml: 1,
-    // Precious metals — step 0.5
     bhori: 0.5,
     tola: 0.5,
     ana: 0.5,
     masha: 0.5,
     ratti: 0.5,
     carat: 0.5,
-    // Length — step 0.25
     meter: 0.25,
     feet: 0.25,
     inch: 0.5,
@@ -147,9 +168,14 @@ export const FRACTIONAL_UNITS = new Set([
     "meter", "feet", "yard", "hath",
 ]);
 
-/** Get step size for a given unit (default = 1). */
+/** Get minimum precision for a given unit (default = 1). */
 export function getUnitStep(unit: string): number {
     return UNIT_STEP_MAP[unit] ?? 1;
+}
+
+/** Get −/+ button step for a given unit (default = 1). */
+export function getUnitButtonStep(unit: string): number {
+    return UNIT_BUTTON_STEP[unit] ?? 1;
 }
 
 /** Check if a unit should show quick-fraction chips. */

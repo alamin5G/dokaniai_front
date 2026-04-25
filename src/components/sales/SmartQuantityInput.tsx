@@ -2,7 +2,7 @@
 
 import { useCallback, useRef, useState } from "react";
 import { useTranslations } from "next-intl";
-import { getUnitStep, isFractionalUnit } from "@/lib/productUnits";
+import { getUnitStep, getUnitButtonStep, isFractionalUnit } from "@/lib/productUnits";
 
 interface SmartQuantityInputProps {
     quantity: number;
@@ -23,26 +23,28 @@ export default function SmartQuantityInput({
     onChange,
 }: SmartQuantityInputProps) {
     const t = useTranslations("shop.sales");
-    const step = getUnitStep(unit);
+    const precision = getUnitStep(unit);       // 0.01 for kg — minimum input precision
+    const buttonStep = getUnitButtonStep(unit); // 0.25 for kg — ± button step
     const fractional = isFractionalUnit(unit);
     const [editing, setEditing] = useState(false);
     const inputRef = useRef<HTMLInputElement>(null);
 
-    const clamp = useCallback(
+    /** Clamp to minimum precision, ensure > 0 */
+    const sanitize = useCallback(
         (v: number) => {
-            const rounded = Math.round(v / step) * step;
-            return Math.max(step, parseFloat(rounded.toFixed(4)));
+            const rounded = Math.round(v / precision) * precision;
+            return Math.max(precision, parseFloat(rounded.toFixed(4)));
         },
-        [step],
+        [precision],
     );
 
     const handleDec = () => {
-        const next = clamp(quantity - step);
-        if (next >= step) onChange(next);
+        const next = sanitize(quantity - buttonStep);
+        if (next >= precision) onChange(next);
     };
 
     const handleInc = () => {
-        onChange(clamp(quantity + step));
+        onChange(sanitize(quantity + buttonStep));
     };
 
     const handleChip = (val: number) => {
@@ -54,7 +56,7 @@ export default function SmartQuantityInput({
         if (inputRef.current) {
             const parsed = parseFloat(inputRef.current.value);
             if (!isNaN(parsed) && parsed > 0) {
-                onChange(clamp(parsed));
+                onChange(sanitize(parsed));
             }
         }
     };
@@ -67,7 +69,7 @@ export default function SmartQuantityInput({
 
     const displayValue = fractional
         ? quantity % 1 !== 0
-            ? quantity.toFixed(2).replace(/0+$/, "").replace(/\.$/, "")
+            ? quantity.toFixed(3).replace(/0+$/, "").replace(/\.$/, "")
             : String(quantity)
         : String(Math.round(quantity));
 
@@ -87,8 +89,8 @@ export default function SmartQuantityInput({
                     <input
                         ref={inputRef}
                         type="number"
-                        step={step}
-                        min={step}
+                        step={precision}
+                        min={precision}
                         defaultValue={quantity}
                         autoFocus
                         onBlur={handleBlur}
