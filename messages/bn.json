@@ -1161,7 +1161,9 @@
         "emptyCategory": "\"{category}\" ক্যাটাগরিতে এখনো কোনো পণ্য যোগ হয়নি।",
         "showing": "মোট {total} পণ্যের মধ্যে {shown}টি দেখানো হচ্ছে।",
         "sku": "SKU {sku}",
-        "skuBarcode": "SKU {sku} • Barcode {barcode}"
+        "skuBarcode": "SKU {sku} • Barcode {barcode}",
+        "expired": "মেয়াদোত্তীর্ণ {date}",
+        "expiringSoon": "মেয়াদ শেই {date}"
       },
       "status": {
         "ACTIVE": "পর্যাপ্ত",
@@ -1201,6 +1203,8 @@
         "costPrice": "ক্রয় মূল্য",
         "sellPrice": "বিক্রয় মূল্য",
         "reorderPoint": "রিঅর্ডার পয়েন্ট",
+        "purchaseDate": "ক্রয় তারিখ",
+        "expiryDate": "মেয়াদোত্তীর্ণ তারিখ",
         "category": "ক্যাটাগরি",
         "categoryPlaceholder": "ক্যাটাগরি নির্বাচন করুন",
         "subCategory": "সাব-ক্যাটাগরি",

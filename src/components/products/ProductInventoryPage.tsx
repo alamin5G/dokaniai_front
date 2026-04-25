@@ -48,6 +48,8 @@ function toCreatePayload(form: ProductFormState): ProductCreateRequest {
         sellPrice: Number(form.sellPrice),
         stockQty: form.stockQty.trim() ? Number(form.stockQty) : undefined,
         reorderPoint: form.reorderPoint.trim() ? Number(form.reorderPoint) : undefined,
+        purchaseDate: form.purchaseDate || null,
+        expiryDate: form.expiryDate || null,
         categoryId: form.categoryId || undefined,
         subCategoryId: form.subCategoryId || undefined,
     };
@@ -61,6 +63,8 @@ function toUpdatePayload(form: ProductFormState): ProductUpdateRequest {
         costPrice: form.costPrice.trim() ? Number(form.costPrice) : undefined,
         sellPrice: form.sellPrice.trim() ? Number(form.sellPrice) : undefined,
         reorderPoint: form.reorderPoint.trim() ? Number(form.reorderPoint) : undefined,
+        purchaseDate: form.purchaseDate || null,
+        expiryDate: form.expiryDate || null,
         categoryId: form.categoryId || undefined,
         subCategoryId: form.subCategoryId || undefined,
     };

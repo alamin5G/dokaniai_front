@@ -245,6 +245,20 @@ export default function ProductTable({
                                                                 })
                                                                 : t("table.sku", { sku: product.sku })}
                                                     </p>
+                                                    {product.expiryDate && (
+                                                        <p className={`mt-0.5 text-xs ${new Date(product.expiryDate) < new Date()
+                                                                ? "font-semibold text-rose-600"
+                                                                : (new Date(product.expiryDate).getTime() - Date.now()) < 7 * 86400000
+                                                                    ? "font-medium text-amber-600"
+                                                                    : "text-on-surface-variant"
+                                                            }`}>
+                                                            {new Date(product.expiryDate) < new Date()
+                                                                ? `⚠ ${t("table.expired", { date: new Date(product.expiryDate).toLocaleDateString() })}`
+                                                                : (new Date(product.expiryDate).getTime() - Date.now()) < 7 * 86400000
+                                                                    ? `⏰ ${t("table.expiringSoon", { date: new Date(product.expiryDate).toLocaleDateString() })}`
+                                                                    : `📅 ${new Date(product.expiryDate).toLocaleDateString()}`}
+                                                        </p>
+                                                    )}
                                                 </div>
                                             </div>
                                         </td>
@@ -482,3 +496,4 @@ function CategoryFilterChipsInline({
         </>
     );
 }
+

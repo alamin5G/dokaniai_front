@@ -14,6 +14,8 @@ export interface Product {
   sellPrice: number;
   stockQty: number;
   reorderPoint: number | null;
+  purchaseDate: string | null;
+  expiryDate: string | null;
   status: ProductStatus;
   createdBy: string | null;
   createdAt: string;
@@ -40,6 +42,8 @@ export interface ProductCreateRequest {
   sellPrice: number;
   stockQty?: number;
   reorderPoint?: number;
+  purchaseDate?: string | null;
+  expiryDate?: string | null;
   categoryId?: string | null;
   subCategoryId?: string | null;
   categoryName?: string | null;
@@ -53,6 +57,8 @@ export interface ProductUpdateRequest {
   costPrice?: number;
   sellPrice?: number;
   reorderPoint?: number;
+  purchaseDate?: string | null;
+  expiryDate?: string | null;
   categoryId?: string | null;
   subCategoryId?: string | null;
   description?: string;

@@ -18,6 +18,8 @@ export interface ProductFormState {
     sellPrice: string;
     stockQty: string;
     reorderPoint: string;
+    purchaseDate: string;
+    expiryDate: string;
     categoryId: string;
     subCategoryId: string;
     restockQty: string;
@@ -33,6 +35,8 @@ export const initialFormState: ProductFormState = {
     sellPrice: "",
     stockQty: "",
     reorderPoint: "",
+    purchaseDate: "",
+    expiryDate: "",
     categoryId: "",
     subCategoryId: "",
     restockQty: "",
@@ -49,6 +53,8 @@ export function toFormState(product: Product): ProductFormState {
         sellPrice: product.sellPrice.toString(),
         stockQty: product.stockQty.toString(),
         reorderPoint: product.reorderPoint?.toString() ?? "",
+        purchaseDate: product.purchaseDate ?? "",
+        expiryDate: product.expiryDate ?? "",
         categoryId: product.categoryId ?? "",
         subCategoryId: product.subCategoryId ?? "",
         restockQty: "",
@@ -327,6 +333,33 @@ export default function ProductForm({
                             required
                             className="w-full rounded-[20px] bg-surface-container-highest px-4 py-3 text-sm text-on-surface outline-none"
                             placeholder="95"
+                        />
+                    </label>
+                </div>
+
+                {/* Purchase Date + Expiry Date */}
+                <div className="grid gap-4 sm:grid-cols-2">
+                    <label className="block">
+                        <span className="mb-2 block text-sm font-medium text-on-surface">
+                            {t("form.purchaseDate")}
+                        </span>
+                        <input
+                            type="date"
+                            value={form.purchaseDate}
+                            onChange={(event) => onUpdateForm("purchaseDate", event.target.value)}
+                            className="w-full rounded-[20px] bg-surface-container-highest px-4 py-3 text-sm text-on-surface outline-none"
+                        />
+                    </label>
+
+                    <label className="block">
+                        <span className="mb-2 block text-sm font-medium text-on-surface">
+                            {t("form.expiryDate")}
+                        </span>
+                        <input
+                            type="date"
+                            value={form.expiryDate}
+                            onChange={(event) => onUpdateForm("expiryDate", event.target.value)}
+                            className="w-full rounded-[20px] bg-surface-container-highest px-4 py-3 text-sm text-on-surface outline-none"
                         />
                     </label>
                 </div>

@@ -35,11 +35,12 @@ export default function SalesWorkspace({
     const [selectedCategoryId, setSelectedCategoryId] = useState<string | null>(null);
 
     // Products & Categories — SWR-backed (shared cache across components)
+    // Don't filter by status — show ACTIVE, LOW_STOCK, OUT_OF_STOCK
+    // ProductSelector already greys out OUT_OF_STOCK items with disabled "add" button
     const { products, isLoading, mutate: mutateProducts } = useProducts(businessId, {
         page: 0,
         size: 200,
         search: searchQuery.trim() || undefined,
-        status: "ACTIVE",
         category: selectedCategoryId || undefined,
     });
     const { categories } = useCategoriesByBusinessType(activeBusiness?.type ?? null);
