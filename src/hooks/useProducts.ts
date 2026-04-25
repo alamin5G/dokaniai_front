@@ -15,6 +15,7 @@ import {
     getReorderNeededProducts,
 } from "@/lib/productApi";
 import { swrKeys } from "@/lib/swrKeys";
+import { SWR_CACHE } from "@/config/cacheConfig";
 
 // ─── Fetchers ─────────────────────────────────────────────
 
@@ -53,7 +54,7 @@ export function useProducts(
     const { data, error, isLoading, isValidating, mutate } = useSWR(
         key,
         fetchProductList,
-        { keepPreviousData: true },
+        { keepPreviousData: true, dedupingInterval: SWR_CACHE.productList },
     );
 
     return {
@@ -70,7 +71,9 @@ export function useProducts(
 /** Product stats (total, active, low stock counts) */
 export function useProductStats(businessId: string | null | undefined) {
     const key = businessId ? swrKeys.productStats(businessId) : null;
-    const { data, error, isLoading, mutate } = useSWR(key, fetchProductStats);
+    const { data, error, isLoading, mutate } = useSWR(key, fetchProductStats, {
+        dedupingInterval: SWR_CACHE.productStats,
+    });
 
     return {
         stats: data ?? null,
@@ -83,7 +86,9 @@ export function useProductStats(businessId: string | null | undefined) {
 /** Low-stock products */
 export function useLowStockProducts(businessId: string | null | undefined) {
     const key = businessId ? swrKeys.lowStockProducts(businessId) : null;
-    const { data, error, isLoading, mutate } = useSWR(key, fetchLowStock);
+    const { data, error, isLoading, mutate } = useSWR(key, fetchLowStock, {
+        dedupingInterval: SWR_CACHE.lowStockProducts,
+    });
 
     return {
         lowStockProducts: data ?? [],

@@ -18,6 +18,7 @@ import { adjustInventory } from "@/lib/inventoryApi";
 import { useProducts, useProductStats, useLowStockProducts } from "@/hooks/useProducts";
 import { useCategoriesByBusinessType } from "@/hooks/useCategories";
 import { useProductMutations } from "@/hooks/useProductMutations";
+import { useSSEStockAlerts } from "@/hooks/useSSEStockAlerts";
 import { invalidateProducts } from "@/lib/swrMutations";
 import { getAvailablePlans, getCurrentSubscription } from "@/lib/subscriptionApi";
 import { useTranslations } from "next-intl";
@@ -96,6 +97,9 @@ export default function ProductInventoryPage({
     const { stats } = useProductStats(businessId);
     const { lowStockProducts } = useLowStockProducts(businessId);
     const { categories } = useCategoriesByBusinessType(activeBusiness?.type ?? null);
+
+    // SSE-driven optimistic cache updates for stock alerts (no extra DB hit)
+    useSSEStockAlerts(businessId);
 
     // Mutations — SWR-backed with cache invalidation
     const { submitCreate, submitUpdate, submitArchive } = useProductMutations(businessId);

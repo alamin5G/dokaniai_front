@@ -2,6 +2,7 @@
 
 import { SWRConfig } from "swr";
 import type { ReactNode } from "react";
+import { SWR_CACHE } from "@/config/cacheConfig";
 
 /**
  * Global fetcher for SWR — delegates to existing API functions.
@@ -27,8 +28,8 @@ export default function SWRProvider({ children }: SWRProviderProps) {
                 revalidateOnReconnect: true,
                 shouldRetryOnError: true,
                 errorRetryCount: 2,
-                errorRetryInterval: 3000,
-                dedupingInterval: 2000,
+                errorRetryInterval: SWR_CACHE.globalErrorRetry,
+                dedupingInterval: SWR_CACHE.globalDedup,
             }}
         >
             {children}

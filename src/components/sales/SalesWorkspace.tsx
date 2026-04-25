@@ -12,6 +12,7 @@ import type {
 import { useProducts } from "@/hooks/useProducts";
 import { useCategoriesByBusinessType } from "@/hooks/useCategories";
 import { useSaleMutations } from "@/hooks/useSaleMutations";
+import { useSSEStockAlerts } from "@/hooks/useSSEStockAlerts";
 import { getBusinessSettings } from "@/lib/businessApi";
 import { useTranslations } from "next-intl";
 import { useEffect, useMemo, useState } from "react";
@@ -66,17 +67,18 @@ export default function SalesWorkspace({
     // Sale mutations — SWR-backed with cache invalidation
     const { submitCreate, submitForceCreate } = useSaleMutations(businessId);
 
-    // §7.6.2: Listen for real-time stock alerts via SSE — revalidate products
+    // §7.6.2: SSE-driven optimistic cache updates (no full DB re-fetch)
+    useSSEStockAlerts(businessId);
+
+    // Show UI toast on stock alerts (cache is already updated optimistically by the hook)
     useEffect(() => {
         const handleLowStock = (e: Event) => {
             const detail = (e as CustomEvent).detail;
             setNotice(t("cart.lowStockAlert", { product: detail?.productName ?? "Unknown" }));
-            void mutateProducts();
         };
         const handleOutOfStock = (e: Event) => {
             const detail = (e as CustomEvent).detail;
             setError(t("cart.outOfStockAlert", { product: detail?.productName ?? "Unknown" }));
-            void mutateProducts();
         };
 
         window.addEventListener("sse:low-stock-alert", handleLowStock);
@@ -85,7 +87,7 @@ export default function SalesWorkspace({
             window.removeEventListener("sse:low-stock-alert", handleLowStock);
             window.removeEventListener("sse:out-of-stock-alert", handleOutOfStock);
         };
-    }, [mutateProducts, t]);
+    }, [t]);
 
     // Load tax settings
     useEffect(() => {
