@@ -153,10 +153,10 @@ export default function DashboardLayout({ children, title, businessId }: Dashboa
             }
           }
         } catch {
-         clearTimeout(timeoutId);
-         setIsReady(true);
-         return;
-       }
+          clearTimeout(timeoutId);
+          setIsReady(true);
+          return;
+        }
       }
 
       // 2. Read latest state from store (bypasses stale React closure).
@@ -369,7 +369,7 @@ export default function DashboardLayout({ children, title, businessId }: Dashboa
       <SideNavBar businessId={activeBusinessId ?? businessId} />
 
       {/* Main content area */}
-      <main className="md:ml-64 min-h-screen pb-28 md:pb-8">
+      <main className="lg:ml-64 min-h-screen overflow-x-hidden pb-44 sm:pb-36 lg:pb-8">
         <TopAppBar title={title} businessId={activeBusinessId ?? businessId} />
 
         <div className="px-4 py-6 md:px-6 lg:px-8">

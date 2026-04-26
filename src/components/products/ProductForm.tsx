@@ -148,7 +148,7 @@ export default function ProductForm({
                 </label>
 
                 {/* SKU + Barcode */}
-                <div className="grid gap-4 sm:grid-cols-2">
+                <div className="grid gap-4 lg:grid-cols-2">
                     <label className="block">
                         <span className="mb-2 block text-sm font-medium text-on-surface">
                             {t("form.sku")}
@@ -191,7 +191,7 @@ export default function ProductForm({
                 </label>
 
                 {/* Category + Sub-Category */}
-                <div className="grid gap-4 sm:grid-cols-2">
+                <div className="grid gap-4 lg:grid-cols-2">
                     <label className="block">
                         <span className="mb-2 block text-sm font-medium text-on-surface">
                             {t("form.category")}
@@ -237,7 +237,7 @@ export default function ProductForm({
                 </div>
 
                 {/* Unit + Initial Stock */}
-                <div className="grid gap-4 sm:grid-cols-2">
+                <div className="grid gap-4 lg:grid-cols-2">
                     <label className="block">
                         <span className="mb-2 block text-sm font-medium text-on-surface">
                             {t("form.unit")}
@@ -303,7 +303,7 @@ export default function ProductForm({
                 </div>
 
                 {/* Cost Price + Sell Price */}
-                <div className="grid gap-4 sm:grid-cols-2">
+                <div className="grid gap-4 lg:grid-cols-2">
                     <label className="block">
                         <span className="mb-2 block text-sm font-medium text-on-surface">
                             {t("form.costPrice")}
@@ -338,7 +338,7 @@ export default function ProductForm({
                 </div>
 
                 {/* Purchase Date + Expiry Date */}
-                <div className="grid gap-4 sm:grid-cols-2">
+                <div className="grid gap-4 lg:grid-cols-2">
                     <label className="block">
                         <span className="mb-2 block text-sm font-medium text-on-surface">
                             {t("form.purchaseDate")}

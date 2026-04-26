@@ -107,10 +107,10 @@ export default function TopAppBar({ title, businessId }: TopAppBarProps) {
   };
 
   return (
-    <header className="sticky top-0 z-40 flex justify-between items-center w-full px-6 py-3 bg-surface-container-low/80 backdrop-blur-md">
+    <header className="sticky top-0 z-40 flex justify-between items-center w-full px-3 py-3 sm:px-4 lg:px-6 bg-surface-container-low/80 backdrop-blur-md">
       {/* Left: mobile logo / desktop breadcrumb */}
       <div className="flex items-center gap-3">
-        <div className="md:hidden">
+        <div className="lg:hidden">
           {businessId ? (
             <div className="flex items-center gap-2">
               <button
@@ -160,7 +160,7 @@ export default function TopAppBar({ title, businessId }: TopAppBarProps) {
             <h1 className="text-xl font-bold text-primary">DokaniAI</h1>
           )}
         </div>
-        <div className="hidden md:block">
+        <div className="hidden lg:block">
           <p className="text-on-surface-variant font-medium text-sm">
             {pageName
               ? <>{t("dashboard")} <span className="text-on-surface-variant/50">/</span> <span className="text-on-surface">{pageName}</span></>
@@ -175,7 +175,7 @@ export default function TopAppBar({ title, businessId }: TopAppBarProps) {
           <button
             type="button"
             onClick={() => router.push("/businesses")}
-            className="hidden md:inline-flex rounded-full px-3 py-1.5 text-xs font-semibold text-secondary hover:bg-surface-container-high transition-colors"
+            className="hidden lg:inline-flex rounded-full px-3 py-1.5 text-xs font-semibold text-secondary hover:bg-surface-container-high transition-colors"
           >
             All Businesses
           </button>
@@ -214,7 +214,7 @@ export default function TopAppBar({ title, businessId }: TopAppBarProps) {
           </div>
         )}
 
-        <div className="hidden md:block">
+        <div className="hidden lg:block">
           <LanguageSwitcher className="!px-2 !py-2" />
         </div>
 

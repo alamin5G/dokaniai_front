@@ -69,11 +69,15 @@ export default function ProductTable({
     const isBn = locale.toLowerCase().startsWith("bn");
 
     const [dropdownOpenId, setDropdownOpenId] = useState<string | null>(null);
-    const dropdownRef = useRef<HTMLDivElement>(null);
+    const mobileDropdownRef = useRef<HTMLDivElement>(null);
+    const desktopDropdownRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
         function handleClickOutside(e: MouseEvent) {
-            if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
+            const target = e.target as Node;
+            const insideMobile = mobileDropdownRef.current?.contains(target) ?? false;
+            const insideDesktop = desktopDropdownRef.current?.contains(target) ?? false;
+            if (!insideMobile && !insideDesktop) {
                 setDropdownOpenId(null);
             }
         }
@@ -153,7 +157,7 @@ export default function ProductTable({
     return (
         <section className="overflow-hidden rounded-[28px] bg-surface-container-lowest shadow-sm">
             {/* Search + Filters */}
-            <div className="flex flex-col gap-3 p-4 sm:flex-row sm:p-6">
+            <div className="flex flex-col gap-3 p-4 lg:flex-row sm:p-6">
                 <label className="flex w-full items-center gap-3 rounded-full bg-surface px-4 py-3 text-sm text-on-surface-variant">
                     <span className="material-symbols-outlined text-base">search</span>
                     <input
@@ -169,7 +173,7 @@ export default function ProductTable({
                     onChange={(event) =>
                         onStatusChange(event.target.value as "" | ProductStatus)
                     }
-                    className="w-full rounded-full bg-surface px-4 py-3 text-sm font-medium text-on-surface outline-none sm:w-auto"
+                    className="w-full rounded-full bg-surface px-4 py-3 text-sm font-medium text-on-surface outline-none lg:w-auto"
                 >
                     <option value="">{t("filter.all")}</option>
                     <option value="ACTIVE">{t("status.ACTIVE")}</option>
@@ -192,7 +196,7 @@ export default function ProductTable({
             </div>
 
             {/* Mobile Card View */}
-            <div className="space-y-3 p-4 sm:hidden">
+            <div className="space-y-3 p-4 lg:hidden">
                 {isLoading ? (
                     <p className="py-10 text-center text-sm text-on-surface-variant">{t("table.loading")}</p>
                 ) : products.length > 0 ? (
@@ -224,16 +228,35 @@ export default function ProductTable({
                                         <span className="font-bold text-primary">৳{formatMoney(product.sellPrice)}</span>
                                         <span className="ml-2 text-xs text-on-surface-variant">৳{formatMoney(margin)} {t("table.margin")}</span>
                                     </div>
-                                    <div className="flex items-center gap-1">
-                                        <button type="button" onClick={() => onEdit(product)}
-                                            className="flex h-9 w-9 items-center justify-center rounded-full text-primary transition hover:bg-primary/10">
-                                            <span className="material-symbols-outlined text-lg">edit</span>
+                                    <div className="relative inline-block">
+                                        <button
+                                            type="button"
+                                            onClick={() => setDropdownOpenId(dropdownOpenId === product.id ? null : product.id)}
+                                            className="flex h-9 w-9 items-center justify-center rounded-full text-on-surface-variant transition hover:bg-surface-container"
+                                        >
+                                            <span className="material-symbols-outlined text-xl">settings</span>
                                         </button>
-                                        {product.status !== "ARCHIVED" && (
-                                            <button type="button" onClick={() => onArchive(product)}
-                                                className="flex h-9 w-9 items-center justify-center rounded-full text-rose-600 transition hover:bg-rose-50">
-                                                <span className="material-symbols-outlined text-lg">archive</span>
-                                            </button>
+                                        {dropdownOpenId === product.id && (
+                                            <div ref={mobileDropdownRef} className="absolute right-0 top-full z-20 mt-1 min-w-[140px] rounded-xl bg-surface-container-lowest py-1 shadow-lg ring-1 ring-black/5">
+                                                <button
+                                                    type="button"
+                                                    onClick={() => { setDropdownOpenId(null); onEdit(product); }}
+                                                    className="flex w-full items-center gap-2 px-4 py-2.5 text-sm text-on-surface transition hover:bg-primary/10"
+                                                >
+                                                    <span className="material-symbols-outlined text-base">edit</span>
+                                                    {t("actions.edit")}
+                                                </button>
+                                                {product.status !== "ARCHIVED" && (
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => { setDropdownOpenId(null); onArchive(product); }}
+                                                        className="flex w-full items-center gap-2 px-4 py-2.5 text-sm text-rose-700 transition hover:bg-rose-50"
+                                                    >
+                                                        <span className="material-symbols-outlined text-base">archive</span>
+                                                        {t("actions.archive")}
+                                                    </button>
+                                                )}
+                                            </div>
                                         )}
                                     </div>
                                 </div>
@@ -246,7 +269,7 @@ export default function ProductTable({
             </div>
 
             {/* Desktop Table — hidden on mobile */}
-            <div className="hidden overflow-x-auto sm:block">
+            <div className="hidden overflow-x-auto lg:block">
                 <table className="min-w-full text-left">
                     <thead className="bg-surface-container-low text-sm font-bold text-on-surface-variant">
                         <tr>
@@ -364,7 +387,7 @@ export default function ProductTable({
                                                     <span className="material-symbols-outlined text-xl">settings</span>
                                                 </button>
                                                 {dropdownOpenId === product.id && (
-                                                    <div ref={dropdownRef} className="absolute right-0 top-full z-20 mt-1 min-w-[140px] rounded-xl bg-surface-container-lowest py-1 shadow-lg ring-1 ring-black/5">
+                                                    <div ref={desktopDropdownRef} className="absolute right-0 top-full z-20 mt-1 min-w-[140px] rounded-xl bg-surface-container-lowest py-1 shadow-lg ring-1 ring-black/5">
                                                         <button
                                                             type="button"
                                                             onClick={() => { setDropdownOpenId(null); onEdit(product); }}
@@ -432,7 +455,7 @@ export default function ProductTable({
             </div>
 
             {/* Pagination */}
-            <div className="flex flex-col gap-4 border-t border-surface-container bg-surface-container-lowest px-4 py-4 sm:flex-row sm:items-center sm:justify-between sm:px-6">
+            <div className="flex flex-col gap-4 border-t border-surface-container bg-surface-container-lowest px-4 py-4 lg:flex-row lg:items-center lg:justify-between sm:px-6">
                 <p className="text-sm text-on-surface-variant">
                     {t("table.showing", {
                         shown: formatQty(products.length),

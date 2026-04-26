@@ -1,10 +1,9 @@
 "use client";
 
-import { buildShopPath, replaceShopBusinessInPath } from "@/lib/shopRouting";
-import { useBusinessStore } from "@/store/businessStore";
+import { buildShopPath } from "@/lib/shopRouting";
 import { useTranslations } from "next-intl";
 import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname } from "next/navigation";
 
 // ---------------------------------------------------------------------------
 // Inline SVG Icons (24×24, filled variant for active state)
@@ -112,27 +111,9 @@ interface BottomNavBarProps {
 }
 
 export default function BottomNavBar({ businessId }: BottomNavBarProps) {
-  const router = useRouter();
   const t = useTranslations("nav");
   const pathname = usePathname();
-  const { activeBusiness, businesses, setActiveBusiness } = useBusinessStore();
   const rootPath = businessId ? buildShopPath(businessId) : "/businesses";
-
-  const activeBusinesses = businesses.filter((business) => business.status === "ACTIVE");
-  const canSwitchBusiness = Boolean(businessId) && activeBusinesses.length > 1;
-  const activeBusinessName = activeBusiness?.name ?? activeBusinesses.find((business) => business.id === businessId)?.name;
-
-  const handleSwitchBusiness = (nextBusinessId: string) => {
-    const nextBusiness = activeBusinesses.find((business) => business.id === nextBusinessId);
-    if (!nextBusiness) return;
-
-    setActiveBusiness(nextBusiness);
-    const nextPath = pathname.startsWith("/shop/")
-      ? replaceShopBusinessInPath(pathname, nextBusinessId)
-      : buildShopPath(nextBusinessId);
-
-    router.push(nextPath);
-  };
 
   const isActive = (href: string) => {
     if (href === rootPath) return pathname === href;
@@ -140,90 +121,9 @@ export default function BottomNavBar({ businessId }: BottomNavBarProps) {
   };
 
   return (
-    <div className="md:hidden fixed bottom-4 left-1/2 -translate-x-1/2 z-50 min-w-[300px] max-w-[92vw] space-y-2">
-      {canSwitchBusiness ? (
-        <div className="rounded-full bg-surface-container-lowest px-3 py-2 shadow-sm backdrop-blur-md">
-          <div className="flex items-center gap-2 text-xs text-on-surface-variant">
-            <button
-              type="button"
-              onClick={() => router.push("/businesses")}
-              className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-surface-container-low text-on-surface"
-              aria-label={t("dashboard")}
-            >
-              <span className="material-symbols-outlined text-base">menu</span>
-            </button>
-
-            <label className="sr-only" htmlFor="mobile-business-switcher">{t("dashboard")}</label>
-            <div className="flex-1 min-w-0 inline-flex items-center gap-1 rounded-full bg-surface-container-low px-2 py-1">
-              <span className="material-symbols-outlined text-base">storefront</span>
-              <select
-                id="mobile-business-switcher"
-                value={activeBusiness?.id ?? businessId}
-                onChange={(event) => handleSwitchBusiness(event.target.value)}
-                className="w-full bg-transparent font-semibold text-on-surface outline-none"
-              >
-                {activeBusinesses.map((business) => (
-                  <option key={business.id} value={business.id}>
-                    {business.name}
-                  </option>
-                ))}
-              </select>
-            </div>
-
-            <button
-              type="button"
-              className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-surface-container-low text-on-surface"
-              aria-label="Notifications"
-            >
-              <span className="material-symbols-outlined text-base">notifications</span>
-            </button>
-
-            <button
-              type="button"
-              onClick={() => router.push("/account/profile")}
-              className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-surface-container-low text-on-surface"
-              aria-label="Profile"
-            >
-              <span className="material-symbols-outlined text-base">person</span>
-            </button>
-          </div>
-        </div>
-      ) : activeBusinessName ? (
-        <div className="rounded-full bg-surface-container-lowest px-3 py-2 shadow-sm backdrop-blur-md">
-          <div className="flex items-center gap-2 text-xs text-on-surface-variant">
-            <button
-              type="button"
-              onClick={() => router.push("/businesses")}
-              className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-surface-container-low text-on-surface"
-              aria-label={t("dashboard")}
-            >
-              <span className="material-symbols-outlined text-base">menu</span>
-            </button>
-            <div className="flex-1 min-w-0 inline-flex items-center gap-1 rounded-full bg-surface-container-low px-3 py-1">
-              <span className="material-symbols-outlined text-base">storefront</span>
-              <span className="truncate font-semibold text-on-surface">{activeBusinessName}</span>
-            </div>
-            <button
-              type="button"
-              className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-surface-container-low text-on-surface"
-              aria-label="Notifications"
-            >
-              <span className="material-symbols-outlined text-base">notifications</span>
-            </button>
-            <button
-              type="button"
-              onClick={() => router.push("/account/profile")}
-              className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-surface-container-low text-on-surface"
-              aria-label="Profile"
-            >
-              <span className="material-symbols-outlined text-base">person</span>
-            </button>
-          </div>
-        </div>
-      ) : null}
-
+    <div className="lg:hidden fixed bottom-4 left-1/2 -translate-x-1/2 z-50 w-[92vw] max-w-[420px] space-y-2">
       <nav
-        className="flex items-center bg-surface-container-lowest rounded-full p-1.5 backdrop-blur-md"
+        className="flex items-center overflow-x-auto bg-surface-container-lowest rounded-full p-1.5 backdrop-blur-md"
         style={{ paddingBottom: "max(0.375rem, env(safe-area-inset-bottom))" }}
       >
         <div className="flex w-full items-center justify-between">
@@ -236,14 +136,14 @@ export default function BottomNavBar({ businessId }: BottomNavBarProps) {
               <Link
                 key={item.key}
                 href={href}
-                className={`flex items-center gap-2 px-5 py-3 rounded-full transition-all active:scale-95 ${active
-                    ? "bg-primary/10 text-primary"
-                    : "text-on-surface-variant hover:bg-surface-container-low"
+                className={`flex items-center gap-1.5 px-2 py-2.5 min-[390px]:px-3 rounded-full transition-all active:scale-95 ${active
+                  ? "bg-primary/10 text-primary"
+                  : "text-on-surface-variant hover:bg-surface-container-low"
                   }`}
               >
                 <Icon filled={active} className="w-6 h-6" />
                 {active && (
-                  <span className="text-xs font-semibold whitespace-nowrap">
+                  <span className="hidden min-[430px]:inline text-xs font-semibold whitespace-nowrap">
                     {t(item.key)}
                   </span>
                 )}

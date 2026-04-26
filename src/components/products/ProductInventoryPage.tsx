@@ -125,6 +125,16 @@ export default function ProductInventoryPage({
     // Permissions
     const [canBulkImport, setCanBulkImport] = useState(true);
     const fileInputRef = useRef<HTMLInputElement | null>(null);
+    const formContainerRef = useRef<HTMLDivElement | null>(null);
+
+    function scrollToForm() {
+        const formNode = formContainerRef.current;
+        if (!formNode) return;
+
+        const topBarOffset = 88;
+        const targetTop = window.scrollY + formNode.getBoundingClientRect().top - topBarOffset;
+        window.scrollTo({ top: Math.max(0, targetTop), behavior: "smooth" });
+    }
 
     // Debounced search — updates the `search` state that drives the SWR key
     useEffect(() => {
@@ -171,6 +181,12 @@ export default function ProductInventoryPage({
         setEditingProduct(product);
         setForm(toFormState(product));
         setNotice(null);
+
+        // In responsive layouts the form can be above the product list.
+        // Bring it into view immediately after switching to edit mode.
+        window.requestAnimationFrame(() => {
+            scrollToForm();
+        });
     }
 
     function updateForm<K extends keyof ProductFormState>(
@@ -322,14 +338,14 @@ export default function ProductInventoryPage({
     ];
 
     return (
-        <section className="space-y-6">
+        <section className="space-y-6 overflow-x-hidden">
             {/* AI Voice Command Bar + action buttons — wraps on mobile */}
-            <div className="flex flex-wrap items-center gap-2">
+            <div className="flex flex-wrap items-center gap-2 max-w-full">
                 <div className="flex-1 min-w-0">
                     <VoiceCommandBar />
                 </div>
                 {activeTopTab === "products" && (
-                    <div className="flex items-center gap-2 shrink-0">
+                    <div className="flex items-center gap-2 shrink-0 max-w-full">
                         {/* CSV Upload — tooltip shows plan-locked warning when disabled */}
                         <div className="relative group">
                             <button
@@ -362,13 +378,13 @@ export default function ProductInventoryPage({
             </div>
 
             {/* ─── Top-level Tab Navigation ─────────────────── */}
-            <div className="flex gap-2 border-b border-surface-container pb-0 overflow-x-auto scrollbar-none">
+            <div className="flex gap-2 border-b border-surface-container pb-0 overflow-x-auto scrollbar-none max-w-full">
                 {topTabs.map((tab) => (
                     <button
                         key={tab.key}
                         type="button"
                         onClick={() => setActiveTopTab(tab.key)}
-                        className={`rounded-t-xl px-4 py-3 text-sm font-semibold transition whitespace-nowrap sm:px-6 ${activeTopTab === tab.key
+                        className={`rounded-t-xl px-4 py-3 text-sm font-semibold transition whitespace-nowrap sm:px-5 lg:px-6 ${activeTopTab === tab.key
                             ? "bg-surface-container-lowest text-primary shadow-sm"
                             : "text-on-surface-variant hover:text-on-surface"
                             }`}
@@ -411,9 +427,9 @@ export default function ProductInventoryPage({
 
             {/* ─── Products Tab Content ──────────────────────── */}
             {activeTopTab === "products" && (
-                <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_340px]">
+                <div className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_340px]">
                     {/* Main content — below form on mobile, left column on desktop */}
-                    <div className="space-y-6 order-2 lg:order-1">
+                    <div className="space-y-6 order-2 xl:order-1 min-w-0">
                         {/* Stats Cards */}
                         <ProductStatsCards stats={stats} />
 
@@ -453,7 +469,7 @@ export default function ProductInventoryPage({
                     </div>
 
                     {/* Sidebar — above table on mobile, right column on desktop */}
-                    <aside className="space-y-6 order-1 lg:order-2">
+                    <aside ref={formContainerRef} className="space-y-6 order-1 xl:order-2 min-w-0">
                         {/* Product Form */}
                         <ProductForm
                             businessId={businessId}

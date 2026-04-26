@@ -301,7 +301,7 @@ export default function InventoryTab({ businessId }: InventoryTabProps) {
             )}
 
             {/* ─── Summary Cards ─────────────────────────── */}
-            <section className="grid grid-cols-2 gap-4 lg:grid-cols-4">
+            <section className="grid grid-cols-1 gap-4 min-[390px]:grid-cols-2 xl:grid-cols-4">
                 <SummaryCard
                     title={t("summary.totalSales")}
                     value={summaryByAction("SALE")?.totalQuantity ?? 0}
@@ -337,15 +337,15 @@ export default function InventoryTab({ businessId }: InventoryTabProps) {
             </section>
 
             {/* ─── Sub-tab Navigation ────────────────────── */}
-            <div className="flex gap-2 border-b border-surface-container pb-0">
+            <div className="flex gap-2 border-b border-surface-container pb-0 overflow-x-auto scrollbar-none">
                 {subTabs.map((tab) => (
                     <button
                         key={tab.key}
                         type="button"
                         onClick={() => setActiveSubTab(tab.key)}
-                        className={`rounded-t-xl px-5 py-3 text-sm font-semibold transition ${activeSubTab === tab.key
-                                ? "bg-surface-container-lowest text-primary shadow-sm"
-                                : "text-on-surface-variant hover:text-on-surface"
+                        className={`rounded-t-xl px-4 py-3 text-sm font-semibold transition whitespace-nowrap sm:px-5 ${activeSubTab === tab.key
+                            ? "bg-surface-container-lowest text-primary shadow-sm"
+                            : "text-on-surface-variant hover:text-on-surface"
                             }`}
                     >
                         {tab.label}
@@ -385,56 +385,58 @@ export default function InventoryTab({ businessId }: InventoryTabProps) {
                                 {t("alerts.noAlerts")}
                             </div>
                         ) : (
-                            <table className="min-w-full text-left">
-                                <thead className="bg-surface-container-low text-sm font-bold text-on-surface-variant">
-                                    <tr>
-                                        <th className="px-6 py-4">{t("logs.product")}</th>
-                                        <th className="px-6 py-4">SKU</th>
-                                        <th className="px-6 py-4 text-right">
-                                            {t("alerts.currentStock")}
-                                        </th>
-                                        <th className="px-6 py-4 text-right">
-                                            {t("alerts.reorderPoint")}
-                                        </th>
-                                        <th className="px-6 py-4 text-center">
-                                            {t("alerts.status")}
-                                        </th>
-                                    </tr>
-                                </thead>
-                                <tbody className="divide-y divide-surface-container">
-                                    {alertReport.items.map((item) => {
-                                        const badge = alertStatusBadge(item.status);
-                                        return (
-                                            <tr
-                                                key={item.productId}
-                                                className="hover:bg-surface-container-low transition-colors"
-                                            >
-                                                <td className="px-6 py-4 text-sm font-medium text-on-surface">
-                                                    {item.productName}
-                                                </td>
-                                                <td className="px-6 py-4 text-sm text-on-surface-variant">
-                                                    {item.sku || "—"}
-                                                </td>
-                                                <td className="px-6 py-4 text-right text-sm font-semibold text-on-surface">
-                                                    {formatNum(item.currentStock)}
-                                                </td>
-                                                <td className="px-6 py-4 text-right text-sm text-on-surface-variant">
-                                                    {item.reorderPoint != null
-                                                        ? formatNum(item.reorderPoint)
-                                                        : "—"}
-                                                </td>
-                                                <td className="px-6 py-4 text-center">
-                                                    <span
-                                                        className={`inline-block rounded-full px-3 py-1 text-xs font-semibold ${badge.className}`}
-                                                    >
-                                                        {badge.label}
-                                                    </span>
-                                                </td>
-                                            </tr>
-                                        );
-                                    })}
-                                </tbody>
-                            </table>
+                            <div className="overflow-x-auto">
+                                <table className="min-w-[720px] text-left">
+                                    <thead className="bg-surface-container-low text-sm font-bold text-on-surface-variant">
+                                        <tr>
+                                            <th className="px-6 py-4">{t("logs.product")}</th>
+                                            <th className="px-6 py-4">SKU</th>
+                                            <th className="px-6 py-4 text-right">
+                                                {t("alerts.currentStock")}
+                                            </th>
+                                            <th className="px-6 py-4 text-right">
+                                                {t("alerts.reorderPoint")}
+                                            </th>
+                                            <th className="px-6 py-4 text-center">
+                                                {t("alerts.status")}
+                                            </th>
+                                        </tr>
+                                    </thead>
+                                    <tbody className="divide-y divide-surface-container">
+                                        {alertReport.items.map((item) => {
+                                            const badge = alertStatusBadge(item.status);
+                                            return (
+                                                <tr
+                                                    key={item.productId}
+                                                    className="hover:bg-surface-container-low transition-colors"
+                                                >
+                                                    <td className="px-6 py-4 text-sm font-medium text-on-surface">
+                                                        {item.productName}
+                                                    </td>
+                                                    <td className="px-6 py-4 text-sm text-on-surface-variant">
+                                                        {item.sku || "—"}
+                                                    </td>
+                                                    <td className="px-6 py-4 text-right text-sm font-semibold text-on-surface">
+                                                        {formatNum(item.currentStock)}
+                                                    </td>
+                                                    <td className="px-6 py-4 text-right text-sm text-on-surface-variant">
+                                                        {item.reorderPoint != null
+                                                            ? formatNum(item.reorderPoint)
+                                                            : "—"}
+                                                    </td>
+                                                    <td className="px-6 py-4 text-center">
+                                                        <span
+                                                            className={`inline-block rounded-full px-3 py-1 text-xs font-semibold ${badge.className}`}
+                                                        >
+                                                            {badge.label}
+                                                        </span>
+                                                    </td>
+                                                </tr>
+                                            );
+                                        })}
+                                    </tbody>
+                                </table>
+                            </div>
                         )}
                     </div>
                 </section>
@@ -535,7 +537,7 @@ export default function InventoryTab({ businessId }: InventoryTabProps) {
 
                                 {/* Pagination */}
                                 {logs.totalPages > 1 && (
-                                    <div className="flex items-center justify-between border-t border-surface-container px-6 py-4">
+                                    <div className="flex flex-col gap-3 border-t border-surface-container px-4 py-4 sm:px-6 lg:flex-row lg:items-center lg:justify-between">
                                         <p className="text-sm text-on-surface-variant">
                                             {t("logs.showing")} {logs.number * logs.size + 1}–
                                             {Math.min(
@@ -639,7 +641,7 @@ export default function InventoryTab({ businessId }: InventoryTabProps) {
                                 <span className="mb-1.5 block text-sm font-medium text-on-surface-variant">
                                     {t("adjust.action")}
                                 </span>
-                                <div className="flex gap-3">
+                                <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
                                     {(
                                         [
                                             ["RESTOCK", t("adjust.restock")],
@@ -651,8 +653,8 @@ export default function InventoryTab({ businessId }: InventoryTabProps) {
                                             type="button"
                                             onClick={() => setAdjustAction(value)}
                                             className={`flex-1 rounded-xl border-2 px-4 py-3 text-sm font-semibold transition ${adjustAction === value
-                                                    ? "border-primary bg-primary/5 text-primary"
-                                                    : "border-surface-container bg-white text-on-surface-variant hover:border-primary/30"
+                                                ? "border-primary bg-primary/5 text-primary"
+                                                : "border-surface-container bg-white text-on-surface-variant hover:border-primary/30"
                                                 }`}
                                         >
                                             {label}
@@ -694,7 +696,7 @@ export default function InventoryTab({ businessId }: InventoryTabProps) {
                             </label>
 
                             {/* Submit */}
-                            <div className="flex gap-3 pt-2">
+                            <div className="flex flex-col gap-3 pt-2 sm:flex-row">
                                 <button
                                     type="submit"
                                     disabled={adjustSubmitting || !adjustProductId}

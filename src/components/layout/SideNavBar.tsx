@@ -123,7 +123,7 @@ export default function SideNavBar({ businessId }: SideNavBarProps) {
   };
 
   return (
-    <aside className="hidden md:flex flex-col h-screen w-64 fixed left-0 top-0 z-50 bg-surface-container-lowest py-6 px-4">
+    <aside className="hidden lg:flex flex-col h-screen w-64 fixed left-0 top-0 z-50 bg-surface-container-lowest py-6 px-4">
       {/* ---- Logo / Brand ---- */}
       <div className="mb-8 px-4">
         <h1 className="text-xl font-bold text-primary">DokaniAI</h1>
