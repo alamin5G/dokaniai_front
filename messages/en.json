@@ -1463,6 +1463,20 @@
         "placeholder": "Talk to AI or type a command...",
         "comingSoon": "Voice & NLP sale flow coming soon"
       },
+      "customer": {
+        "selectTitle": "Select Customer",
+        "searchPlaceholder": "Search by name or phone...",
+        "loading": "Loading...",
+        "noCustomers": "No customers found. Create a new one.",
+        "createNew": "Create New Customer",
+        "namePlaceholder": "Customer Name",
+        "phonePlaceholder": "Phone Number (optional)",
+        "createBtn": "Create",
+        "creating": "Creating...",
+        "createError": "Failed to create customer.",
+        "back": "Back",
+        "due": "Due"
+      },
       "taxLabel": "VAT/Tax",
       "taxRate": "Tax Rate",
       "taxAmount": "Tax Amount",

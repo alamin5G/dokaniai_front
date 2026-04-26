@@ -17,6 +17,12 @@ import { getBusinessSettings } from "@/lib/businessApi";
 import { useTranslations } from "next-intl";
 import { useEffect, useMemo, useState } from "react";
 import type { StockConflictDetail } from "@/components/sales/StockConflictModal";
+import type { SaleCreatedResponse } from "@/types/sale";
+import CashSaleSuccessModal from "@/components/sales/CashSaleSuccessModal";
+import CustomerPickerDialog from "@/components/sales/CustomerPickerDialog";
+import CreditSaleSuccessModal from "@/components/sales/CreditSaleSuccessModal";
+import type { CustomerResponse } from "@/types/due";
+import type { CartSuggestion } from "@/lib/cartIntelligenceApi";
 
 import ProductSelector from "./ProductSelector";
 import CartPanel from "./CartPanel";
@@ -63,6 +69,16 @@ export default function SalesWorkspace({
     const [conflictOpen, setConflictOpen] = useState(false);
     const [conflictDetail, setConflictDetail] = useState<StockConflictDetail | null>(null);
     const [pendingRequest, setPendingRequest] = useState<SaleCreateRequest | null>(null);
+
+    // Cash sale success modal
+    const [cashSaleResult, setCashSaleResult] = useState<SaleCreatedResponse | null>(null);
+
+    // Credit sale: customer picker
+    const [customerPickerOpen, setCustomerPickerOpen] = useState(false);
+    const [selectedCustomer, setSelectedCustomer] = useState<CustomerResponse | null>(null);
+
+    // Credit sale success modal
+    const [creditSaleResult, setCreditSaleResult] = useState<SaleCreatedResponse | null>(null);
 
     // Sale mutations — SWR-backed with cache invalidation
     const { submitCreate, submitForceCreate } = useSaleMutations(businessId);
@@ -135,7 +151,7 @@ export default function SalesWorkspace({
     // Cart actions
     function handleAddProduct(product: Product) {
         // Guard: block out-of-stock products from being added
-        if (product.stockQty <= 0 || product.status === 'OUT_OF_STOCK') return;
+        if (product.stockQty <= 0 || product.status === "OUT_OF_STOCK") return;
 
         addOrUpdateItem({
             id: product.id,
@@ -144,6 +160,20 @@ export default function SalesWorkspace({
             sellPrice: product.sellPrice,
             costPrice: product.costPrice,
             stockQty: product.stockQty,
+        });
+        setNotice(null);
+        setError(null);
+    }
+
+    /** Handle AI cart suggestion click — add suggested product to cart */
+    function handleAddSuggestion(suggestion: CartSuggestion) {
+        addOrUpdateItem({
+            id: suggestion.productId,
+            name: suggestion.productName,
+            unit: suggestion.unit ?? "pcs",
+            sellPrice: suggestion.unitPrice,
+            costPrice: 0,
+            stockQty: suggestion.stockQuantity,
         });
         setNotice(null);
         setError(null);
@@ -187,6 +217,7 @@ export default function SalesWorkspace({
             discounts,
             paymentMethod,
             recordedVia: "MANUAL",
+            customerId: paymentMethod === "CREDIT" ? selectedCustomer?.id ?? null : null,
         };
     }
 
@@ -210,9 +241,11 @@ export default function SalesWorkspace({
         try {
             const request = buildSaleRequest(paymentMethod);
             const sale = await submitCreate(request);
-            setNotice(
-                t("cart.success", { invoice: sale.invoiceNumber }),
-            );
+            if (paymentMethod === "CASH") {
+                setCashSaleResult(sale);
+            } else {
+                setCreditSaleResult(sale);
+            }
             clearAll();
         } catch (submitError: unknown) {
             // Check for 409 STOCK_CONFLICT from backend
@@ -250,7 +283,11 @@ export default function SalesWorkspace({
 
         try {
             const sale = await submitForceCreate(pendingRequest);
-            setNotice(t("cart.success", { invoice: sale.invoiceNumber }));
+            if (pendingRequest.paymentMethod === "CASH") {
+                setCashSaleResult(sale);
+            } else {
+                setNotice(t("cart.success", { invoice: sale.invoiceNumber }));
+            }
             clearAll();
         } catch (submitError: unknown) {
             const forceErr = submitError as { response?: { data?: { error?: { message?: string } } } };
@@ -310,9 +347,11 @@ export default function SalesWorkspace({
                 total={total}
                 isSubmitting={isSubmitting}
                 onSubmitCash={() => handleSubmit("CASH")}
-                onSubmitCredit={() => handleSubmit("CREDIT")}
+                onSubmitCredit={() => setCustomerPickerOpen(true)}
                 error={error}
                 notice={notice}
+                businessId={businessId}
+                onAddSuggestion={handleAddSuggestion}
             />
 
             {/* Stock Conflict Modal */}
@@ -323,6 +362,38 @@ export default function SalesWorkspace({
                 onConfirm={handleConflictConfirm}
                 onDiscard={handleConflictDiscard}
             />
+
+            {/* Cash Sale Success Modal */}
+            {cashSaleResult && (
+                <CashSaleSuccessModal
+                    result={cashSaleResult}
+                    onClose={() => setCashSaleResult(null)}
+                />
+            )}
+
+            {/* Credit Sale: Customer Picker */}
+            <CustomerPickerDialog
+                businessId={businessId}
+                open={customerPickerOpen}
+                onClose={() => setCustomerPickerOpen(false)}
+                onSelect={(customer) => {
+                    setSelectedCustomer(customer);
+                    setCustomerPickerOpen(false);
+                    handleSubmit("CREDIT");
+                }}
+            />
+
+            {/* Credit Sale Success Modal */}
+            {creditSaleResult && (
+                <CreditSaleSuccessModal
+                    result={creditSaleResult}
+                    customerName={selectedCustomer?.name ?? ""}
+                    onClose={() => {
+                        setCreditSaleResult(null);
+                        setSelectedCustomer(null);
+                    }}
+                />
+            )}
         </div>
     );
 }

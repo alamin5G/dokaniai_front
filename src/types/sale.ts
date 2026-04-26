@@ -138,6 +138,32 @@ export interface TopProductResponse {
 }
 
 // ---------------------------------------------------------------------------
+// Enhanced sale creation response — includes today's summary context
+// SRS Ref: FR-SALE-01, FR-RPT-01
+// ---------------------------------------------------------------------------
+
+export interface SaleCreatedResponse {
+    id: string;
+    invoiceNumber: string;
+    subtotal: number;
+    totalDiscount: number;
+    taxAmount: number;
+    totalAmount: number;
+    profit: number;
+    paymentMethod: string;
+    paymentStatus: string;
+    itemCount: number;
+    todaySummary: TodaySalesSummary | null;
+}
+
+export interface TodaySalesSummary {
+    salesCount: number;
+    totalRevenue: number;
+    totalProfit: number;
+    totalDiscount: number;
+}
+
+// ---------------------------------------------------------------------------
 // Cart item (frontend-only, used in POS UI)
 // ---------------------------------------------------------------------------
 

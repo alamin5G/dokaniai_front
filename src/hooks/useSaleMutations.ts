@@ -4,7 +4,7 @@
 
 import { useCallback } from "react";
 import { useSWRConfig } from "swr";
-import type { Sale, SaleCreateRequest } from "@/types/sale";
+import type { SaleCreatedResponse, SaleCreateRequest } from "@/types/sale";
 import { createSale, forceCreateSale, cancelSale } from "@/lib/saleApi";
 import { invalidateAfterSale } from "@/lib/swrMutations";
 
@@ -20,7 +20,7 @@ export function useSaleMutations(businessId: string) {
     const { mutate } = useSWRConfig();
 
     const submitCreate = useCallback(
-        async (data: SaleCreateRequest): Promise<Sale> => {
+        async (data: SaleCreateRequest): Promise<SaleCreatedResponse> => {
             const sale = await createSale(businessId, data);
             await invalidateAfterSale(businessId);
             return sale;
@@ -29,7 +29,7 @@ export function useSaleMutations(businessId: string) {
     );
 
     const submitForceCreate = useCallback(
-        async (data: SaleCreateRequest): Promise<Sale> => {
+        async (data: SaleCreateRequest): Promise<SaleCreatedResponse> => {
             const sale = await forceCreateSale(businessId, data);
             await invalidateAfterSale(businessId);
             return sale;

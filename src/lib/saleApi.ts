@@ -3,6 +3,7 @@ import type {
     DailySalesSummary,
     Sale,
     SaleCreateRequest,
+    SaleCreatedResponse,
     SaleListResponse,
     SalesStatsResponse,
     TopProductResponse,
@@ -50,8 +51,8 @@ export async function listSales(
 export async function createSale(
     businessId: string,
     data: SaleCreateRequest,
-): Promise<Sale> {
-    const response = await apiClient.post<ApiSuccess<Sale>>(
+): Promise<SaleCreatedResponse> {
+    const response = await apiClient.post<ApiSuccess<SaleCreatedResponse>>(
         `/businesses/${businessId}/sales`,
         data,
     );
@@ -65,8 +66,8 @@ export async function createSale(
 export async function forceCreateSale(
     businessId: string,
     data: SaleCreateRequest,
-): Promise<Sale> {
-    const response = await apiClient.post<ApiSuccess<Sale>>(
+): Promise<SaleCreatedResponse> {
+    const response = await apiClient.post<ApiSuccess<SaleCreatedResponse>>(
         `/businesses/${businessId}/sales/force`,
         data,
     );

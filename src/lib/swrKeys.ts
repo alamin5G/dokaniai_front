@@ -122,4 +122,12 @@ export const swrKeys = {
         `/businesses/${businessId}/products/${productId}/stock-prediction`,
     urgentPredictions: (businessId: string) =>
         `/businesses/${businessId}/stock-predictions`,
+
+    // AI Insights (DB-persisted)
+    aiProductsWithPredictions: (businessId: string) =>
+        `/ai-insights/predictions/products/${businessId}`,
+    aiProductPrediction: (businessId: string, productId: string) =>
+        `/ai-insights/predictions/${businessId}/${productId}`,
+    aiBusinessStockPredictions: (businessId: string) =>
+        `/ai-insights/predictions/business/${businessId}`,
 } as const;

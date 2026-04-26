@@ -4,6 +4,8 @@ import { useLocale, useTranslations } from "next-intl";
 import type { CartItem, DiscountMethod, PaymentMethod } from "@/types/sale";
 import DiscountInput from "./DiscountInput";
 import SmartQuantityInput from "./SmartQuantityInput";
+import CartSuggestionChips from "./CartSuggestionChips";
+import type { CartSuggestion } from "@/lib/cartIntelligenceApi";
 
 interface CartPanelProps {
     cartItems: CartItem[];
@@ -25,6 +27,9 @@ interface CartPanelProps {
     onSubmitCredit: () => void;
     error: string | null;
     notice: string | null;
+    /** AI Cart Intelligence props */
+    businessId: string;
+    onAddSuggestion: (suggestion: CartSuggestion) => void;
 }
 
 function resolveLocale(locale?: string): string {
@@ -51,6 +56,8 @@ export default function CartPanel({
     onSubmitCredit,
     error,
     notice,
+    businessId,
+    onAddSuggestion,
 }: CartPanelProps) {
     const t = useTranslations("shop.sales");
     const locale = useLocale();
@@ -131,6 +138,16 @@ export default function CartPanel({
                     ))
                 )}
             </div>
+
+            {/* AI Cart Suggestions — shown when cart has items */}
+            {cartItems.length > 0 && (
+                <CartSuggestionChips
+                    businessId={businessId}
+                    cartProductIds={cartItems.map((i) => i.productId)}
+                    sessionId={null}
+                    onAddSuggestion={onAddSuggestion}
+                />
+            )}
 
             {/* Error / Notice */}
             {error ? (

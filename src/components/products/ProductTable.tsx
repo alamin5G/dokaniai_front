@@ -1,13 +1,15 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useLocale, useTranslations } from "next-intl";
 import type { CategoryResponse } from "@/types/category";
 import type { Product, ProductStatus } from "@/types/product";
 import CategoryRequestSheet from "@/components/categories/CategoryRequestSheet";
 import CategoryRequestStatusSheet from "@/components/categories/CategoryRequestStatusSheet";
 import CategoryMarketInsightCard from "@/components/products/CategoryMarketInsightCard";
+import PredictionPopover from "@/components/products/PredictionPopover";
 import { getProductUnitLabel } from "@/lib/productUnits";
+import { useProductPredictions } from "@/hooks/useProductPredictions";
 
 interface ProductTableProps {
     products: Product[];
@@ -69,8 +71,16 @@ export default function ProductTable({
     const isBn = locale.toLowerCase().startsWith("bn");
 
     const [dropdownOpenId, setDropdownOpenId] = useState<string | null>(null);
+    const [predictionPopoverProduct, setPredictionPopoverProduct] = useState<Product | null>(null);
     const mobileDropdownRef = useRef<HTMLDivElement>(null);
     const desktopDropdownRef = useRef<HTMLDivElement>(null);
+
+    // Fetch product IDs that have active AI predictions
+    const { productIds: productsWithPredictions } = useProductPredictions(businessId);
+
+    const closePredictionPopover = useCallback(() => {
+        setPredictionPopoverProduct(null);
+    }, []);
 
     useEffect(() => {
         function handleClickOutside(e: MouseEvent) {
@@ -215,7 +225,13 @@ export default function ProductTable({
                                             </p>
                                             <p className="text-xs text-on-surface-variant">
                                                 {formatQty(product.stockQty)} {formatUnit(product.unit)}
-                                                {product.status === "LOW_STOCK" && <span className="ml-1" title="AI পূর্বাভাস">🔮</span>}
+                                                {productsWithPredictions.has(product.id) && (
+                                                    <span
+                                                        className="ml-1 cursor-pointer hover:scale-110 transition-transform"
+                                                        title="AI পূর্বাভাস দেখুন"
+                                                        onClick={(e) => { e.stopPropagation(); setPredictionPopoverProduct(product); }}
+                                                    >🔮</span>
+                                                )}
                                             </p>
                                         </div>
                                     </div>
@@ -260,6 +276,14 @@ export default function ProductTable({
                                         )}
                                     </div>
                                 </div>
+                                {predictionPopoverProduct?.id === product.id && (
+                                    <PredictionPopover
+                                        businessId={businessId}
+                                        productId={product.id}
+                                        productName={product.name}
+                                        onClose={closePredictionPopover}
+                                    />
+                                )}
                             </div>
                         );
                     })
@@ -329,12 +353,24 @@ export default function ProductTable({
                                             )}
                                         </td>
                                         <td className="px-4 py-5 font-bold text-on-surface lg:px-6">
-                                            <div className="flex items-center gap-1">
+                                            <div className="flex items-center gap-1 relative">
                                                 <span>
                                                     {formatQty(product.stockQty)} {formatUnit(product.unit)}
                                                 </span>
-                                                {product.status === "LOW_STOCK" && (
-                                                    <span className="text-xs" title="AI পূর্বাভাস আছে">🔮</span>
+                                                {productsWithPredictions.has(product.id) && (
+                                                    <span
+                                                        className="cursor-pointer hover:scale-110 transition-transform"
+                                                        title="AI পূর্বাভাস দেখুন"
+                                                        onClick={(e) => { e.stopPropagation(); setPredictionPopoverProduct(product); }}
+                                                    >🔮</span>
+                                                )}
+                                                {predictionPopoverProduct?.id === product.id && (
+                                                    <PredictionPopover
+                                                        businessId={businessId}
+                                                        productId={product.id}
+                                                        productName={product.name}
+                                                        onClose={closePredictionPopover}
+                                                    />
                                                 )}
                                             </div>
                                         </td>
