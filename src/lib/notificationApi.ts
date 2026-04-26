@@ -42,6 +42,7 @@ export async function listNotifications(
     if (type) params.set('type', type);
     params.set('page', String(page));
     params.set('size', String(size));
+    params.set('sort', 'createdAt,desc');
 
     const response = await apiClient.get<ApiSuccess<Paged<NotificationItem>>>(
         `/notifications?${params.toString()}`
