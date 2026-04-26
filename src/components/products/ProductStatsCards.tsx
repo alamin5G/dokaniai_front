@@ -33,7 +33,7 @@ export default function ProductStatsCards({ stats }: ProductStatsCardsProps) {
     }
 
     return (
-        <div className="grid gap-4 md:grid-cols-3">
+        <div className="grid grid-cols-2 gap-3 sm:gap-4 sm:grid-cols-3">
             {/* Total Products */}
             <article className="rounded-[24px] bg-surface-container-lowest p-6 shadow-sm transition-colors group hover:bg-primary-fixed">
                 <p className="text-sm font-medium text-on-surface-variant">

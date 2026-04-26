@@ -323,8 +323,8 @@ export default function ProductInventoryPage({
 
     return (
         <section className="space-y-6">
-            {/* AI Voice Command Bar + action buttons in one row */}
-            <div className="flex items-center gap-2">
+            {/* AI Voice Command Bar + action buttons — wraps on mobile */}
+            <div className="flex flex-wrap items-center gap-2">
                 <div className="flex-1 min-w-0">
                     <VoiceCommandBar />
                 </div>
@@ -362,13 +362,13 @@ export default function ProductInventoryPage({
             </div>
 
             {/* ─── Top-level Tab Navigation ─────────────────── */}
-            <div className="flex gap-2 border-b border-surface-container pb-0">
+            <div className="flex gap-2 border-b border-surface-container pb-0 overflow-x-auto scrollbar-none">
                 {topTabs.map((tab) => (
                     <button
                         key={tab.key}
                         type="button"
                         onClick={() => setActiveTopTab(tab.key)}
-                        className={`rounded-t-xl px-6 py-3 text-sm font-semibold transition ${activeTopTab === tab.key
+                        className={`rounded-t-xl px-4 py-3 text-sm font-semibold transition whitespace-nowrap sm:px-6 ${activeTopTab === tab.key
                             ? "bg-surface-container-lowest text-primary shadow-sm"
                             : "text-on-surface-variant hover:text-on-surface"
                             }`}
@@ -411,8 +411,9 @@ export default function ProductInventoryPage({
 
             {/* ─── Products Tab Content ──────────────────────── */}
             {activeTopTab === "products" && (
-                <div className="grid gap-6 xl:grid-cols-[minmax(0,1.8fr)_380px]">
-                    <div className="space-y-6">
+                <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_340px]">
+                    {/* Main content — below form on mobile, left column on desktop */}
+                    <div className="space-y-6 order-2 lg:order-1">
                         {/* Stats Cards */}
                         <ProductStatsCards stats={stats} />
 
@@ -451,8 +452,8 @@ export default function ProductInventoryPage({
                         />
                     </div>
 
-                    {/* Sidebar */}
-                    <aside className="space-y-6">
+                    {/* Sidebar — above table on mobile, right column on desktop */}
+                    <aside className="space-y-6 order-1 lg:order-2">
                         {/* Product Form */}
                         <ProductForm
                             businessId={businessId}

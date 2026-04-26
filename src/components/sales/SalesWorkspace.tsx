@@ -216,7 +216,7 @@ export default function SalesWorkspace({
             clearAll();
         } catch (submitError: unknown) {
             // Check for 409 STOCK_CONFLICT from backend
-            const axiosErr = submitError as { response?: { status?: number; data?: { error?: { code?: string; details?: StockConflictDetail } } } };
+            const axiosErr = submitError as { response?: { status?: number; data?: { error?: { code?: string; message?: string; details?: StockConflictDetail } } } };
             if (
                 axiosErr.response?.status === 409 &&
                 axiosErr.response?.data?.error?.code === "STOCK_CONFLICT" &&
@@ -226,10 +226,14 @@ export default function SalesWorkspace({
                 setPendingRequest(buildSaleRequest(paymentMethod));
                 setConflictOpen(true);
             } else {
+                // Prefer server-provided error message over raw Axios string
+                const serverMessage = axiosErr.response?.data?.error?.message;
                 setError(
-                    submitError instanceof Error
-                        ? submitError.message
-                        : t("cart.error"),
+                    serverMessage
+                        ? serverMessage
+                        : submitError instanceof Error
+                            ? submitError.message
+                            : t("cart.error"),
                 );
             }
         } finally {
@@ -248,11 +252,15 @@ export default function SalesWorkspace({
             const sale = await submitForceCreate(pendingRequest);
             setNotice(t("cart.success", { invoice: sale.invoiceNumber }));
             clearAll();
-        } catch (submitError) {
+        } catch (submitError: unknown) {
+            const forceErr = submitError as { response?: { data?: { error?: { message?: string } } } };
+            const serverMsg = forceErr.response?.data?.error?.message;
             setError(
-                submitError instanceof Error
-                    ? submitError.message
-                    : t("cart.error"),
+                serverMsg
+                    ? serverMsg
+                    : submitError instanceof Error
+                        ? submitError.message
+                        : t("cart.error"),
             );
         } finally {
             setIsSubmitting(false);

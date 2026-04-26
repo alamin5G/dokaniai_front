@@ -1415,6 +1415,7 @@
       "cart": {
         "title": "Sales Cart",
         "empty": "Cart is empty. Add products from the left.",
+        "removeItem": "✕ Remove",
         "clearAll": "Clear All",
         "perUnit": "৳{price} / {unit}",
         "subtotal": "Subtotal",

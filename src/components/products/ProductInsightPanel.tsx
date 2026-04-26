@@ -129,7 +129,7 @@ export default function ProductInsightPanel({
                 </div>
             </div>
 
-            <div className="relative z-10 mt-6 grid gap-3 md:grid-cols-3">
+            <div className="relative z-10 mt-6 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
                 {displayedInsights.length > 0 ? (
                     displayedInsights.map((insight) => {
                         const product = insight.entityId ? productById.get(insight.entityId) : null;
@@ -195,7 +195,7 @@ export default function ProductInsightPanel({
                         );
                     })
                 ) : (
-                    <div className="rounded-[22px] bg-white px-4 py-4 text-sm text-on-surface-variant md:col-span-3">
+                    <div className="rounded-[22px] bg-white px-4 py-4 text-sm text-on-surface-variant sm:col-span-2 lg:col-span-3">
                         {t("insight.noLowStock")}
                     </div>
                 )}

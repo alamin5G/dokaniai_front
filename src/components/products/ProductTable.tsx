@@ -153,8 +153,8 @@ export default function ProductTable({
     return (
         <section className="overflow-hidden rounded-[28px] bg-surface-container-lowest shadow-sm">
             {/* Search + Filters */}
-            <div className="flex flex-col gap-3 sm:flex-row">
-                <label className="flex min-w-[220px] items-center gap-3 rounded-full bg-surface px-4 py-3 text-sm text-on-surface-variant">
+            <div className="flex flex-col gap-3 p-4 sm:flex-row sm:p-6">
+                <label className="flex w-full items-center gap-3 rounded-full bg-surface px-4 py-3 text-sm text-on-surface-variant">
                     <span className="material-symbols-outlined text-base">search</span>
                     <input
                         value={searchInput}
@@ -169,7 +169,7 @@ export default function ProductTable({
                     onChange={(event) =>
                         onStatusChange(event.target.value as "" | ProductStatus)
                     }
-                    className="rounded-full bg-surface px-4 py-3 text-sm font-medium text-on-surface outline-none"
+                    className="w-full rounded-full bg-surface px-4 py-3 text-sm font-medium text-on-surface outline-none sm:w-auto"
                 >
                     <option value="">{t("filter.all")}</option>
                     <option value="ACTIVE">{t("status.ACTIVE")}</option>
@@ -180,7 +180,7 @@ export default function ProductTable({
             </div>
 
             {/* Category Filter Chips */}
-            <div className="px-6 pb-2">
+            <div className="px-4 pb-2 sm:px-6">
                 <CategoryFilterChipsInline
                     categories={categories}
                     selectedCategoryId={selectedCategoryId}
@@ -191,20 +191,74 @@ export default function ProductTable({
                 />
             </div>
 
-            {/* Table */}
-            <div className="overflow-x-auto">
+            {/* Mobile Card View */}
+            <div className="space-y-3 p-4 sm:hidden">
+                {isLoading ? (
+                    <p className="py-10 text-center text-sm text-on-surface-variant">{t("table.loading")}</p>
+                ) : products.length > 0 ? (
+                    products.map((product) => {
+                        const margin = product.sellPrice - product.costPrice;
+                        return (
+                            <div key={product.id} className="rounded-2xl bg-surface-container-lowest p-4 shadow-sm">
+                                <div className="flex items-start justify-between gap-3">
+                                    <div className="flex items-center gap-3 min-w-0">
+                                        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-surface-container text-primary">
+                                            <span className="material-symbols-outlined">inventory</span>
+                                        </div>
+                                        <div className="min-w-0">
+                                            <p className="truncate font-bold text-on-surface">
+                                                {highlightText(product.name, searchInput)}
+                                            </p>
+                                            <p className="text-xs text-on-surface-variant">
+                                                {formatQty(product.stockQty)} {formatUnit(product.unit)}
+                                                {product.status === "LOW_STOCK" && <span className="ml-1" title="AI পূর্বাভাস">🔮</span>}
+                                            </p>
+                                        </div>
+                                    </div>
+                                    <span className={`shrink-0 rounded-full px-2.5 py-1 text-[10px] font-bold ${mapStatusClasses(product.status)}`}>
+                                        {t(`status.${product.status}`)}
+                                    </span>
+                                </div>
+                                <div className="mt-3 flex items-center justify-between border-t border-surface-container pt-3">
+                                    <div className="text-sm">
+                                        <span className="font-bold text-primary">৳{formatMoney(product.sellPrice)}</span>
+                                        <span className="ml-2 text-xs text-on-surface-variant">৳{formatMoney(margin)} {t("table.margin")}</span>
+                                    </div>
+                                    <div className="flex items-center gap-1">
+                                        <button type="button" onClick={() => onEdit(product)}
+                                            className="flex h-9 w-9 items-center justify-center rounded-full text-primary transition hover:bg-primary/10">
+                                            <span className="material-symbols-outlined text-lg">edit</span>
+                                        </button>
+                                        {product.status !== "ARCHIVED" && (
+                                            <button type="button" onClick={() => onArchive(product)}
+                                                className="flex h-9 w-9 items-center justify-center rounded-full text-rose-600 transition hover:bg-rose-50">
+                                                <span className="material-symbols-outlined text-lg">archive</span>
+                                            </button>
+                                        )}
+                                    </div>
+                                </div>
+                            </div>
+                        );
+                    })
+                ) : (
+                    <p className="py-6 text-center text-sm text-on-surface-variant">{t("table.empty")}</p>
+                )}
+            </div>
+
+            {/* Desktop Table — hidden on mobile */}
+            <div className="hidden overflow-x-auto sm:block">
                 <table className="min-w-full text-left">
                     <thead className="bg-surface-container-low text-sm font-bold text-on-surface-variant">
                         <tr>
-                            <th className="px-6 py-4">{t("table.product")}</th>
-                            <th className="px-6 py-4">{t("table.skuBarcode")}</th>
-                            <th className="px-6 py-4">{t("table.stock")}</th>
-                            <th className="px-6 py-4">{t("table.peDate")}</th>
-                            <th className="px-6 py-4 text-right">{t("table.costPrice")}</th>
-                            <th className="px-6 py-4 text-right">{t("table.sellPrice")}</th>
-                            <th className="px-6 py-4 text-right">{t("table.margin")}</th>
-                            <th className="px-6 py-4">{t("table.status")}</th>
-                            <th className="px-6 py-4 text-right">{t("table.action")}</th>
+                            <th className="px-4 py-4 lg:px-6">{t("table.product")}</th>
+                            <th className="hidden px-4 py-4 md:table-cell lg:px-6">{t("table.skuBarcode")}</th>
+                            <th className="px-4 py-4 lg:px-6">{t("table.stock")}</th>
+                            <th className="hidden px-4 py-4 lg:table-cell lg:px-6">{t("table.peDate")}</th>
+                            <th className="hidden px-4 py-4 text-right md:table-cell lg:px-6">{t("table.costPrice")}</th>
+                            <th className="px-4 py-4 text-right lg:px-6">{t("table.sellPrice")}</th>
+                            <th className="hidden px-4 py-4 text-right lg:table-cell lg:px-6">{t("table.margin")}</th>
+                            <th className="px-4 py-4 lg:px-6">{t("table.status")}</th>
+                            <th className="px-4 py-4 text-right lg:px-6">{t("table.action")}</th>
                         </tr>
                     </thead>
                     <tbody className="divide-y divide-surface-container">
@@ -226,7 +280,7 @@ export default function ProductTable({
                                         key={product.id}
                                         className="transition-colors hover:bg-surface-container-lowest"
                                     >
-                                        <td className="px-6 py-5">
+                                        <td className="px-4 py-5 lg:px-6">
                                             <div className="flex items-center gap-3">
                                                 <div className="flex h-10 w-10 items-center justify-center rounded bg-surface-container text-primary">
                                                     <span className="material-symbols-outlined">
@@ -245,13 +299,13 @@ export default function ProductTable({
                                                 </div>
                                             </div>
                                         </td>
-                                        <td className="px-6 py-5">
+                                        <td className="hidden px-4 py-5 md:table-cell lg:px-6">
                                             <p className="text-sm font-medium text-on-surface">{product.sku}</p>
                                             {product.barcode && (
                                                 <p className="text-xs text-on-surface-variant">{product.barcode}</p>
                                             )}
                                         </td>
-                                        <td className="px-6 py-5 font-bold text-on-surface">
+                                        <td className="px-4 py-5 font-bold text-on-surface lg:px-6">
                                             <div className="flex items-center gap-1">
                                                 <span>
                                                     {formatQty(product.stockQty)} {formatUnit(product.unit)}
@@ -261,7 +315,7 @@ export default function ProductTable({
                                                 )}
                                             </div>
                                         </td>
-                                        <td className="px-6 py-5">
+                                        <td className="hidden px-4 py-5 lg:table-cell lg:px-6">
                                             <p className="text-xs text-on-surface-variant">
                                                 {product.purchaseDate
                                                     ? `${t("table.purchaseLabel")} ${new Date(product.purchaseDate).toLocaleDateString(loc)}`
@@ -284,23 +338,23 @@ export default function ProductTable({
                                                     : t("table.noDate")}
                                             </p>
                                         </td>
-                                        <td className="px-6 py-5 text-right font-semibold text-on-surface">
+                                        <td className="hidden px-4 py-5 text-right font-semibold text-on-surface md:table-cell lg:px-6">
                                             ৳{formatMoney(product.costPrice)}
                                         </td>
-                                        <td className="px-6 py-5 text-right font-bold text-primary">
+                                        <td className="px-4 py-5 text-right font-bold text-primary lg:px-6">
                                             ৳{formatMoney(product.sellPrice)}
                                         </td>
-                                        <td className="px-6 py-5 text-right font-semibold text-on-surface">
+                                        <td className="hidden px-4 py-5 text-right font-semibold text-on-surface lg:table-cell lg:px-6">
                                             ৳{formatMoney(margin)}
                                         </td>
-                                        <td className="px-6 py-5">
+                                        <td className="px-4 py-5 lg:px-6">
                                             <span
                                                 className={`rounded-full px-3 py-1 text-xs font-bold ${mapStatusClasses(product.status)}`}
                                             >
                                                 {t(`status.${product.status}`)}
                                             </span>
                                         </td>
-                                        <td className="px-6 py-5 text-right">
+                                        <td className="px-4 py-5 text-right lg:px-6">
                                             <div className="relative inline-block">
                                                 <button
                                                     type="button"
@@ -378,7 +432,7 @@ export default function ProductTable({
             </div>
 
             {/* Pagination */}
-            <div className="flex flex-col gap-4 border-t border-surface-container bg-surface-container-lowest px-6 py-5 sm:flex-row sm:items-center sm:justify-between">
+            <div className="flex flex-col gap-4 border-t border-surface-container bg-surface-container-lowest px-4 py-4 sm:flex-row sm:items-center sm:justify-between sm:px-6">
                 <p className="text-sm text-on-surface-variant">
                     {t("table.showing", {
                         shown: formatQty(products.length),

@@ -2,6 +2,7 @@
 
 import { useTranslations } from "next-intl";
 import { useCallback, useEffect, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import type { NotificationItem, NotificationType } from "@/types/notification";
 import {
     listNotifications,
@@ -499,8 +500,8 @@ function NotificationDetailModal({
         ? `border-l-4 ${toneBorders[tone] || "border-l-blue-400"}`
         : "";
 
-    return (
-        <div className="fixed inset-0 z-[100] flex items-end sm:items-center justify-center bg-black/40 backdrop-blur-sm">
+    return createPortal(
+        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/40 backdrop-blur-sm">
             <div
                 ref={modalRef}
                 className={`w-full sm:w-[440px] max-h-[80vh] bg-surface-container-lowest rounded-t-3xl sm:rounded-2xl shadow-2xl overflow-hidden flex flex-col ${borderClass}`}
@@ -557,18 +558,19 @@ function NotificationDetailModal({
                         {timeAgo}
                     </p>
                     {isAi && notification.tone && (
-                        <span className={`text-[10px] font-medium px-2 py-0.5 rounded-full ${
-                            tone === "URGENT" ? "bg-red-100 text-red-700" :
-                            tone === "WARNING" ? "bg-amber-100 text-amber-700" :
-                            tone === "FRIENDLY" ? "bg-green-100 text-green-700" :
-                            tone === "ENCOURAGING" ? "bg-emerald-100 text-emerald-700" :
-                            "bg-blue-100 text-blue-700"
-                        }`}>
+                        <span className={`text-[10px] font-medium px-2 py-0.5 rounded-full ${tone === "URGENT" ? "bg-red-100 text-red-700" :
+                                tone === "WARNING" ? "bg-amber-100 text-amber-700" :
+                                    tone === "FRIENDLY" ? "bg-green-100 text-green-700" :
+                                        tone === "ENCOURAGING" ? "bg-emerald-100 text-emerald-700" :
+                                            "bg-blue-100 text-blue-700"
+                            }`}>
                             {tone}
                         </span>
                     )}
                 </div>
             </div>
-        </div>
+        </div>,
+        document.body
     );
 }
+
