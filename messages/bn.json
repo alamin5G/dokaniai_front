@@ -1622,6 +1622,46 @@
         "amount": "পরিমাণ",
         "count": "সংখ্যা",
         "percent": "%"
+      },
+      "formNewFields": {
+        "vendorName": "সাপ্লাইয়ার/ভেন্ডর",
+        "vendorNamePlaceholder": "যেমন: Karim Wholesale",
+        "expenseType": "খরচের ধরন",
+        "expenseTypeFixed": "নির্দিষ্ট (ভাড়া, বেতন)",
+        "expenseTypeVariable": "পরিবর্তনশীল (মালামাল, বিদ্যুৎ)",
+        "isRecurring": "বারবার হয়?"
+      },
+      "insight": {
+        "title": "খরচ বুদ্ধিমত্তা",
+        "subtitle": "AI আপনার খরচ বিশ্লেষণ করুক",
+        "analyzeButton": "বিশ্লেষণ করুন",
+        "analyzing": "বিশ্লেষণ হচ্ছে...",
+        "noData": "বিশ্লেষণের জন্য পর্যাপ্ত খরচ ডেটা নেই।",
+        "rateLimitReached": "এই মাসে বিশ্লেষণের সীমা পৌঁছেছে।",
+        "remainingCalls": "আর {count}টি বিশ্লেষণ বাকি",
+        "cachedLabel": "ক্যাশড ফলাফল",
+        "aiPowered": "AI বিশ্লেষণ",
+        "freeRuleAlert": "তাৎক্ষণিক সতর্কতা",
+        "categoryHealth": {
+          "title": "ক্যাটাগরি স্বাস্থ্য",
+          "good": "স্বাস্থ্যকর",
+          "warning": "সতর্কতা",
+          "danger": "বিপজ্জনক"
+        },
+        "alerts": {
+          "anomaly": "খরচ বেড়েছে!",
+          "cashFlowRisk": "ক্যাশ ফ্লো সতর্কতা!",
+          "recurringReminder": "পেমেন্ট মনে করিয়ে দিচ্ছি!",
+          "spikeDetected": "খরচ বৃদ্ধি শনাক্ত!"
+        },
+        "alertsTitle": "সতর্কতা",
+        "aiTitle": "AI বিশ্লেষণ",
+        "healthScore": "স্বাস্থ্য স্কোর",
+        "recommendations": "সুপারিশসমূহ",
+        "savings": "সম্ভাব্য সাশ্রয়",
+        "dismiss": "বন্ধ করুন",
+        "loading": "বিশ্লেষণ হচ্ছে...",
+        "analyze": "বিশ্লেষণ করুন"
       }
     },
     "discounts": {

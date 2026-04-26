@@ -4,6 +4,7 @@ import { useLocale, useTranslations } from "next-intl";
 import type { FormEvent } from "react";
 import type {
     Expense,
+    ExpenseAlert,
     ExpenseCategoryResponse,
     ExpenseCreateRequest,
     ExpenseUpdateRequest,
@@ -12,11 +13,13 @@ import type {
 import {
     createExpense,
     deleteExpense,
+    getExpenseAlerts,
     getExpenseCategories,
     getMonthlySummary,
     listExpenses,
     updateExpense,
 } from "@/lib/expenseApi";
+import ExpenseInsightCard from "@/components/expenses/ExpenseInsightCard";
 import { useCallback, useEffect, useMemo, useState } from "react";
 
 // ---------------------------------------------------------------------------
@@ -34,6 +37,7 @@ interface FormState {
     description: string;
     expenseDate: string;
     paymentMethod: string;
+    vendorName: string;
 }
 
 const initialFormState: FormState = {
@@ -43,6 +47,7 @@ const initialFormState: FormState = {
     description: "",
     expenseDate: new Date().toISOString().slice(0, 10),
     paymentMethod: "CASH",
+    vendorName: "",
 };
 
 function toFormState(expense: Expense): FormState {
@@ -53,6 +58,7 @@ function toFormState(expense: Expense): FormState {
         description: expense.description ?? "",
         expenseDate: expense.expenseDate?.slice(0, 10) ?? "",
         paymentMethod: expense.paymentMethod ?? "CASH",
+        vendorName: expense.vendorName ?? "",
     };
 }
 
@@ -96,6 +102,9 @@ export default function ExpenseWorkspace({
     const [totalPages, setTotalPages] = useState(1);
     const [totalElements, setTotalElements] = useState(0);
 
+    // Alerts (expense intelligence)
+    const [alerts, setAlerts] = useState<ExpenseAlert[]>([]);
+
     // Editor
     const [editorMode, setEditorMode] = useState<"create" | "edit">("create");
     const [editingExpense, setEditingExpense] = useState<Expense | null>(null);
@@ -123,6 +132,19 @@ export default function ExpenseWorkspace({
                 const s = await getMonthlySummary(businessId, now.getFullYear(), now.getMonth() + 1);
                 if (!cancelled) setSummary(s);
             } catch { /* optional */ }
+        };
+        void load();
+        return () => { cancelled = true; };
+    }, [businessId]);
+
+    // Load alerts
+    useEffect(() => {
+        let cancelled = false;
+        const load = async () => {
+            try {
+                const result = await getExpenseAlerts(businessId);
+                if (!cancelled) setAlerts(result);
+            } catch { /* optional — alerts are non-critical */ }
         };
         void load();
         return () => { cancelled = true; };
@@ -206,6 +228,7 @@ export default function ExpenseWorkspace({
                     description: form.description || undefined,
                     expenseDate: form.expenseDate || undefined,
                     paymentMethod: form.paymentMethod || undefined,
+                    vendorName: form.vendorName || undefined,
                     recordedVia: "MANUAL",
                 };
                 await createExpense(businessId, payload);
@@ -516,6 +539,18 @@ export default function ExpenseWorkspace({
                                 />
                             </label>
 
+                            {/* Vendor Name */}
+                            <label className="block">
+                                <span className="mb-2 block text-sm font-medium text-on-surface">{t("form.vendorName")}</span>
+                                <input
+                                    type="text"
+                                    value={form.vendorName}
+                                    onChange={(e) => updateForm("vendorName", e.target.value)}
+                                    className="w-full rounded-[20px] bg-surface-container-highest px-4 py-3 text-sm text-on-surface outline-none"
+                                    placeholder={t("form.vendorNamePlaceholder")}
+                                />
+                            </label>
+
                             {/* Date + Payment Method */}
                             <div className="grid gap-4 sm:grid-cols-2">
                                 <label className="block">
@@ -556,6 +591,8 @@ export default function ExpenseWorkspace({
                             </button>
                         </form>
                     </section>
+                    {/* Expense Intelligence */}
+                    <ExpenseInsightCard businessId={businessId} alerts={alerts} />
                 </aside>
             </div>
         </section>

@@ -1,10 +1,12 @@
 import apiClient from "@/lib/api";
 import type {
     Expense,
+    ExpenseAlert,
     ExpenseCategoryRequest,
     ExpenseCategoryResponse,
     ExpenseCategorySummary,
     ExpenseCreateRequest,
+    ExpenseInsightDTO,
     ExpenseListResponse,
     ExpenseUpdateRequest,
     MonthlyExpenseSummary,
@@ -133,6 +135,46 @@ export async function getCategoryBreakdown(
     const response = await apiClient.get<ApiSuccess<ExpenseCategorySummary[]>>(
         `/businesses/${businessId}/expenses/breakdown`,
         { params: { startDate: startDate || undefined, endDate: endDate || undefined } },
+    );
+    return unwrap(response);
+}
+
+// ---------------------------------------------------------------------------
+// Expense Intelligence — Insights & Alerts
+// ---------------------------------------------------------------------------
+
+export async function getExpenseInsight(
+    businessId: string,
+    category?: string,
+    vendorName?: string,
+): Promise<ExpenseInsightDTO> {
+    const path = category
+        ? `/businesses/${businessId}/expenses/insights/category?name=${encodeURIComponent(category)}`
+        : vendorName
+            ? `/businesses/${businessId}/expenses/insights/vendor?name=${encodeURIComponent(vendorName)}`
+            : `/businesses/${businessId}/expenses/insights/overall`;
+    const response = await apiClient.get<ApiSuccess<ExpenseInsightDTO>>(path);
+    return unwrap(response);
+}
+
+/**
+ * Get insight button status — available calls, cooldown, next available date.
+ * Does NOT trigger any AI call.
+ */
+export async function getInsightStatus(
+    businessId: string,
+): Promise<ExpenseInsightDTO> {
+    const response = await apiClient.get<ApiSuccess<ExpenseInsightDTO>>(
+        `/businesses/${businessId}/expenses/insights/status`,
+    );
+    return unwrap(response);
+}
+
+export async function getExpenseAlerts(
+    businessId: string,
+): Promise<ExpenseAlert[]> {
+    const response = await apiClient.get<ApiSuccess<ExpenseAlert[]>>(
+        `/businesses/${businessId}/expenses/alerts`,
     );
     return unwrap(response);
 }

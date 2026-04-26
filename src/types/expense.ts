@@ -17,6 +17,9 @@ export interface ExpenseCreateRequest {
     paymentMethod?: string;
     receiptUrl?: string;
     recordedVia?: "MANUAL" | "TEXT_NLP" | "VOICE";
+    vendorName?: string;
+    expenseType?: "FIXED" | "VARIABLE";
+    isRecurring?: boolean;
 }
 
 export interface ExpenseUpdateRequest {
@@ -27,6 +30,9 @@ export interface ExpenseUpdateRequest {
     expenseDate?: string;
     paymentMethod?: string;
     receiptUrl?: string;
+    vendorName?: string;
+    expenseType?: "FIXED" | "VARIABLE";
+    isRecurring?: boolean;
 }
 
 export interface ExpenseCategoryRequest {
@@ -49,6 +55,9 @@ export interface Expense {
     paymentMethod: string | null;
     paymentStatus: string;
     receiptUrl: string | null;
+    vendorName: string | null;
+    expenseType: "FIXED" | "VARIABLE" | null;
+    isRecurring: boolean;
     recordedVia: string;
     createdBy: string;
     createdAt: string;
@@ -103,4 +112,36 @@ export interface MonthlyExpenseSummary {
     totalExpenses: number;
     expenseCount: number;
     categories: ExpenseCategorySummary[];
+}
+
+// ---------------------------------------------------------------------------
+// Expense Intelligence — mirrors backend DTOs
+// ---------------------------------------------------------------------------
+
+export interface ExpenseAlert {
+    alertType: "ANOMALY" | "CASH_FLOW_RISK" | "RECURRING_REMINDER" | "CATEGORY_SPIKE";
+    severity: "LOW" | "MEDIUM" | "HIGH" | "CRITICAL";
+    title: string;
+    message: string;
+    category: string | null;
+    currentAmount: number | null;
+    previousAmount: number | null;
+    percentageChange: number | null;
+    recommendation: string | null;
+}
+
+export interface ExpenseInsightDTO {
+    type: "CATEGORY" | "VENDOR" | "OVERALL" | "STATUS";
+    target: string;
+    summary: string;
+    healthScore: number | null;
+    findings: string[];
+    recommendations: Record<string, unknown>[];
+    prediction: string;
+    estimatedAnnualSavings: string | null;
+    rawData: Record<string, unknown> | null;
+    cached: boolean;
+    callsRemaining: number;
+    nextAvailableDate: string | null;
+    cooldownRemaining: string | null;
 }

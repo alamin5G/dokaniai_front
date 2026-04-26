@@ -1622,6 +1622,46 @@
         "amount": "Amount",
         "count": "Count",
         "percent": "%"
+      },
+      "formNewFields": {
+        "vendorName": "Supplier/Vendor",
+        "vendorNamePlaceholder": "e.g. Karim Wholesale",
+        "expenseType": "Expense Type",
+        "expenseTypeFixed": "Fixed (Rent, Salary)",
+        "expenseTypeVariable": "Variable (Supplies, Utilities)",
+        "isRecurring": "Recurring?"
+      },
+      "insight": {
+        "title": "Expense Intelligence",
+        "subtitle": "Let AI analyze your expenses",
+        "analyzeButton": "Analyze",
+        "analyzing": "Analyzing...",
+        "noData": "Not enough expense data for analysis.",
+        "rateLimitReached": "Monthly analysis limit reached.",
+        "remainingCalls": "{count} analyses remaining",
+        "cachedLabel": "Cached result",
+        "aiPowered": "AI Analysis",
+        "freeRuleAlert": "Instant Alerts",
+        "categoryHealth": {
+          "title": "Category Health",
+          "good": "Healthy",
+          "warning": "Warning",
+          "danger": "Dangerous"
+        },
+        "alerts": {
+          "anomaly": "Expense spike!",
+          "cashFlowRisk": "Cash flow risk!",
+          "recurringReminder": "Payment reminder!",
+          "spikeDetected": "Expense spike detected!"
+        },
+        "alertsTitle": "Alerts",
+        "aiTitle": "AI Analysis",
+        "healthScore": "Health Score",
+        "recommendations": "Recommendations",
+        "savings": "Potential Savings",
+        "dismiss": "Dismiss",
+        "loading": "Analyzing...",
+        "analyze": "Analyze"
       }
     },
     "discounts": {
