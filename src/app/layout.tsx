@@ -29,7 +29,7 @@ const inter = Inter({
 
 export const metadata: Metadata = {
   title: {
-    default: "DokaniAI – বাংলাদেশের ছোট দোকানদারদের AI সহকারী",
+    default: "DokaniAI – বাংলাদেশের দোকানদারদের AI সহকারী",
     template: "%s | DokaniAI",
   },
   description:

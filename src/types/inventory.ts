@@ -21,6 +21,8 @@ export type InventoryAction = "SALE" | "RETURN" | "RESTOCK" | "ADJUSTMENT" | "IN
 export interface InventoryLog {
     id: string;
     productId: string;
+    /** Resolved product name from batch lookup in controller. Null if product was deleted. */
+    productName: string | null;
     businessId: string;
     changeType: InventoryAction;
     quantityChange: number;

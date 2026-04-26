@@ -375,7 +375,7 @@ export default function InventoryTab({ businessId }: InventoryTabProps) {
                     )}
 
                     {/* Alerts table */}
-                    <div className="overflow-hidden rounded-2xl bg-surface-container-lowest shadow-sm">
+                    <div className="rounded-2xl bg-surface-container-lowest shadow-sm">
                         {alertsLoading ? (
                             <div className="flex items-center justify-center py-16">
                                 <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent" />
@@ -385,58 +385,108 @@ export default function InventoryTab({ businessId }: InventoryTabProps) {
                                 {t("alerts.noAlerts")}
                             </div>
                         ) : (
-                            <div className="overflow-x-auto">
-                                <table className="min-w-[720px] text-left">
-                                    <thead className="bg-surface-container-low text-sm font-bold text-on-surface-variant">
-                                        <tr>
-                                            <th className="px-6 py-4">{t("logs.product")}</th>
-                                            <th className="px-6 py-4">SKU</th>
-                                            <th className="px-6 py-4 text-right">
-                                                {t("alerts.currentStock")}
-                                            </th>
-                                            <th className="px-6 py-4 text-right">
-                                                {t("alerts.reorderPoint")}
-                                            </th>
-                                            <th className="px-6 py-4 text-center">
-                                                {t("alerts.status")}
-                                            </th>
-                                        </tr>
-                                    </thead>
-                                    <tbody className="divide-y divide-surface-container">
-                                        {alertReport.items.map((item) => {
-                                            const badge = alertStatusBadge(item.status);
-                                            return (
-                                                <tr
-                                                    key={item.productId}
-                                                    className="hover:bg-surface-container-low transition-colors"
-                                                >
-                                                    <td className="px-6 py-4 text-sm font-medium text-on-surface">
+                            <>
+                                {/* Desktop table view (md+) */}
+                                <div className="hidden md:block overflow-x-auto">
+                                    <table className="w-full text-left">
+                                        <thead className="bg-surface-container-low text-sm font-bold text-on-surface-variant">
+                                            <tr>
+                                                <th className="px-6 py-4">{t("logs.product")}</th>
+                                                <th className="px-6 py-4">SKU</th>
+                                                <th className="px-6 py-4 text-right">
+                                                    {t("alerts.currentStock")}
+                                                </th>
+                                                <th className="px-6 py-4 text-right">
+                                                    {t("alerts.reorderPoint")}
+                                                </th>
+                                                <th className="px-6 py-4 text-center">
+                                                    {t("alerts.status")}
+                                                </th>
+                                            </tr>
+                                        </thead>
+                                        <tbody className="divide-y divide-surface-container">
+                                            {alertReport.items.map((item) => {
+                                                const badge = alertStatusBadge(item.status);
+                                                return (
+                                                    <tr
+                                                        key={item.productId}
+                                                        className="hover:bg-surface-container-low transition-colors"
+                                                    >
+                                                        <td className="px-6 py-4 text-sm font-medium text-on-surface">
+                                                            {item.productName}
+                                                        </td>
+                                                        <td className="px-6 py-4 text-sm text-on-surface-variant">
+                                                            {item.sku || "—"}
+                                                        </td>
+                                                        <td className="px-6 py-4 text-right text-sm font-semibold text-on-surface">
+                                                            {formatNum(item.currentStock)}
+                                                        </td>
+                                                        <td className="px-6 py-4 text-right text-sm text-on-surface-variant">
+                                                            {item.reorderPoint != null
+                                                                ? formatNum(item.reorderPoint)
+                                                                : "—"}
+                                                        </td>
+                                                        <td className="px-6 py-4 text-center">
+                                                            <span
+                                                                className={`inline-block rounded-full px-3 py-1 text-xs font-semibold ${badge.className}`}
+                                                            >
+                                                                {badge.label}
+                                                            </span>
+                                                        </td>
+                                                    </tr>
+                                                );
+                                            })}
+                                        </tbody>
+                                    </table>
+                                </div>
+
+                                {/* Mobile card view (< md) */}
+                                <div className="md:hidden divide-y divide-surface-container">
+                                    {alertReport.items.map((item) => {
+                                        const badge = alertStatusBadge(item.status);
+                                        return (
+                                            <div key={item.productId} className="px-4 py-4 space-y-3">
+                                                <div className="flex items-center justify-between">
+                                                    <span className="text-sm font-semibold text-on-surface">
                                                         {item.productName}
-                                                    </td>
-                                                    <td className="px-6 py-4 text-sm text-on-surface-variant">
-                                                        {item.sku || "—"}
-                                                    </td>
-                                                    <td className="px-6 py-4 text-right text-sm font-semibold text-on-surface">
-                                                        {formatNum(item.currentStock)}
-                                                    </td>
-                                                    <td className="px-6 py-4 text-right text-sm text-on-surface-variant">
-                                                        {item.reorderPoint != null
-                                                            ? formatNum(item.reorderPoint)
-                                                            : "—"}
-                                                    </td>
-                                                    <td className="px-6 py-4 text-center">
-                                                        <span
-                                                            className={`inline-block rounded-full px-3 py-1 text-xs font-semibold ${badge.className}`}
-                                                        >
-                                                            {badge.label}
-                                                        </span>
-                                                    </td>
-                                                </tr>
-                                            );
-                                        })}
-                                    </tbody>
-                                </table>
-                            </div>
+                                                    </span>
+                                                    <span
+                                                        className={`inline-block rounded-full px-3 py-1 text-xs font-semibold ${badge.className}`}
+                                                    >
+                                                        {badge.label}
+                                                    </span>
+                                                </div>
+                                                <div className="grid grid-cols-3 gap-2 text-center">
+                                                    <div>
+                                                        <p className="text-xs text-on-surface-variant">SKU</p>
+                                                        <p className="text-sm font-medium text-on-surface truncate">
+                                                            {item.sku || "—"}
+                                                        </p>
+                                                    </div>
+                                                    <div>
+                                                        <p className="text-xs text-on-surface-variant">
+                                                            {t("alerts.currentStock")}
+                                                        </p>
+                                                        <p className="text-sm font-bold text-on-surface">
+                                                            {formatNum(item.currentStock)}
+                                                        </p>
+                                                    </div>
+                                                    <div>
+                                                        <p className="text-xs text-on-surface-variant">
+                                                            {t("alerts.reorderPoint")}
+                                                        </p>
+                                                        <p className="text-sm font-medium text-on-surface">
+                                                            {item.reorderPoint != null
+                                                                ? formatNum(item.reorderPoint)
+                                                                : "—"}
+                                                        </p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        );
+                                    })}
+                                </div>
+                            </>
                         )}
                     </div>
                 </section>
@@ -464,7 +514,7 @@ export default function InventoryTab({ businessId }: InventoryTabProps) {
                     </div>
 
                     {/* Logs table */}
-                    <div className="overflow-hidden rounded-2xl bg-surface-container-lowest shadow-sm">
+                    <div className="rounded-2xl bg-surface-container-lowest shadow-sm">
                         {logsLoading ? (
                             <div className="flex items-center justify-center py-16">
                                 <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent" />
@@ -475,8 +525,9 @@ export default function InventoryTab({ businessId }: InventoryTabProps) {
                             </div>
                         ) : (
                             <>
-                                <div className="overflow-x-auto">
-                                    <table className="min-w-full text-left">
+                                {/* Desktop table view (md+) */}
+                                <div className="hidden md:block overflow-x-auto">
+                                    <table className="w-full text-left">
                                         <thead className="bg-surface-container-low text-sm font-bold text-on-surface-variant">
                                             <tr>
                                                 <th className="px-6 py-4">{t("logs.date")}</th>
@@ -505,7 +556,7 @@ export default function InventoryTab({ businessId }: InventoryTabProps) {
                                                             {formatDate(log.createdAt)}
                                                         </td>
                                                         <td className="px-6 py-4 text-sm font-medium text-on-surface">
-                                                            {log.productId.substring(0, 8)}…
+                                                            {log.productName || log.productId.substring(0, 8) + "…"}
                                                         </td>
                                                         <td className="px-6 py-4 text-center">
                                                             <span
@@ -533,6 +584,63 @@ export default function InventoryTab({ businessId }: InventoryTabProps) {
                                             })}
                                         </tbody>
                                     </table>
+                                </div>
+
+                                {/* Mobile card view (< md) */}
+                                <div className="md:hidden divide-y divide-surface-container">
+                                    {logs.content.map((log: InventoryLog) => {
+                                        const badge = actionBadge(log.changeType);
+                                        return (
+                                            <div key={log.id} className="px-4 py-4 space-y-2">
+                                                <div className="flex items-center justify-between">
+                                                    <span className="text-sm font-semibold text-on-surface">
+                                                        {log.productName || log.productId.substring(0, 8) + "…"}
+                                                    </span>
+                                                    <span className="text-xs text-on-surface-variant">
+                                                        {formatDate(log.createdAt)}
+                                                    </span>
+                                                </div>
+                                                <div className="flex items-center gap-2">
+                                                    <span
+                                                        className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-semibold ${badge.className}`}
+                                                    >
+                                                        {badge.label}
+                                                        <span className="font-mono">
+                                                            {log.quantityChange > 0
+                                                                ? `+${log.quantityChange}`
+                                                                : log.quantityChange}
+                                                        </span>
+                                                    </span>
+                                                </div>
+                                                <div className="grid grid-cols-3 gap-2 text-center">
+                                                    <div>
+                                                        <p className="text-xs text-on-surface-variant">
+                                                            {t("logs.before")}
+                                                        </p>
+                                                        <p className="text-sm font-medium text-on-surface">
+                                                            {formatNum(log.quantityBefore)}
+                                                        </p>
+                                                    </div>
+                                                    <div>
+                                                        <p className="text-xs text-on-surface-variant">
+                                                            {t("logs.after")}
+                                                        </p>
+                                                        <p className="text-sm font-bold text-on-surface">
+                                                            {formatNum(log.quantityAfter)}
+                                                        </p>
+                                                    </div>
+                                                    <div>
+                                                        <p className="text-xs text-on-surface-variant">
+                                                            {t("logs.reason")}
+                                                        </p>
+                                                        <p className="text-sm font-medium text-on-surface truncate">
+                                                            {log.reason || "—"}
+                                                        </p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        );
+                                    })}
                                 </div>
 
                                 {/* Pagination */}
