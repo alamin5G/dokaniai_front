@@ -1323,7 +1323,8 @@
         "tabs": {
           "alerts": "Stock Alerts",
           "logs": "Inventory Log",
-          "adjust": "Adjust Stock"
+          "adjust": "Adjust Stock",
+          "insight": "AI Insight"
         },
         "alerts": {
           "title": "Stock Alerts",
@@ -1804,20 +1805,6 @@
         "description": "Auto-credited via {method} (TrxID: {trxId})"
       },
       "reports": {
-        "dashboard": "Dashboard",
-        "title": "Reports",
-        "subtitle": "Business analytics and insights",
-        "tabs": {
-          "dashboard": "Dashboard",
-          "sales": "Sales",
-          "profit": "Profit",
-          "expenses": "Expenses",
-          "due": "Due",
-          "stock": "Stock",
-          "discounts": "Discounts",
-          "returns": "Returns",
-          "advanced": "Advanced Analytics"
-        },
         "dashboard": {
           "todaySales": "Today's Sales",
           "todayProfit": "Today's Profit",
@@ -1830,6 +1817,19 @@
           "topSelling": "Top Selling Today",
           "recentActivity": "Recent Activity",
           "noData": "No data available yet."
+        },
+        "title": "Reports",
+        "subtitle": "Business analytics and insights",
+        "tabs": {
+          "dashboard": "Dashboard",
+          "sales": "Sales",
+          "profit": "Profit",
+          "expenses": "Expenses",
+          "due": "Due",
+          "stock": "Stock",
+          "discounts": "Discounts",
+          "returns": "Returns",
+          "advanced": "Advanced Analytics"
         },
         "sales": {
           "title": "Sales Report",
@@ -3832,5 +3832,16 @@
     "emailUpdated": "Email updated.",
     "sendCode": "Send code",
     "verifyEmailChange": "Verify email change"
+  },
+  "weeklyInsight": {
+    "title": "Weekly AI Insight",
+    "refresh": "Refresh",
+    "loadError": "Failed to load insight",
+    "salesAnalysis": "Sales Analysis",
+    "profitAnalysis": "Profit Analysis",
+    "stockRecommendations": "Stock Recommendations",
+    "improvementTips": "Improvement Tips",
+    "productSuggestions": "Product Suggestions",
+    "nextInsight": "Next Insight"
   }
 }

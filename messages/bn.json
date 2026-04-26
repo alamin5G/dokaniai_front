@@ -1323,7 +1323,8 @@
         "tabs": {
           "alerts": "স্টক অ্যালার্ট",
           "logs": "ইনভেন্টরি লগ",
-          "adjust": "স্টক সমন্বয়"
+          "adjust": "স্টক সমন্বয়",
+          "insight": "AI বিশ্লেষণ"
         },
         "alerts": {
           "title": "স্টক অ্যালার্ট",
@@ -1804,20 +1805,6 @@
         "description": "{method} এর মাধ্যমে অটো-ক্রেডিট (TrxID: {trxId})"
       },
       "reports": {
-        "dashboard": "ড্যাশবোর্ড",
-        "title": "রিপোর্ট",
-        "subtitle": "ব্যবসার বিশ্লেষণ ও অন্তর্দৃষ্টি",
-        "tabs": {
-          "dashboard": "ড্যাশবোর্ড",
-          "sales": "বিক্রয়",
-          "profit": "লাভ",
-          "expenses": "খরচ",
-          "due": "বাকী",
-          "stock": "স্টক",
-          "discounts": "ডিসকাউন্ট",
-          "returns": "রিটার্ন",
-          "advanced": "উন্নত বিশ্লেষণ"
-        },
         "dashboard": {
           "todaySales": "আজকের বিক্রি",
           "todayProfit": "আজকের লাভ",
@@ -1830,6 +1817,19 @@
           "topSelling": "আজকের সেরা বিক্রি",
           "recentActivity": "সাম্প্রতিক কার্যকলাপ",
           "noData": "এখনও কোনো তথ্য নেই।"
+        },
+        "title": "রিপোর্ট",
+        "subtitle": "ব্যবসার বিশ্লেষণ ও অন্তর্দৃষ্টি",
+        "tabs": {
+          "dashboard": "ড্যাশবোর্ড",
+          "sales": "বিক্রয়",
+          "profit": "লাভ",
+          "expenses": "খরচ",
+          "due": "বাকী",
+          "stock": "স্টক",
+          "discounts": "ডিসকাউন্ট",
+          "returns": "রিটার্ন",
+          "advanced": "উন্নত বিশ্লেষণ"
         },
         "sales": {
           "title": "বিক্রয় রিপোর্ট",
@@ -3892,5 +3892,16 @@
     "emailUpdated": "ইমেইল আপডেট হয়েছে।",
     "sendCode": "কোড পাঠান",
     "verifyEmailChange": "ইমেইল নিশ্চিত করুন"
+  },
+  "weeklyInsight": {
+    "title": "সাপ্তাহিক AI বিশ্লেষণ",
+    "refresh": "রিফ্রেশ",
+    "loadError": "বিশ্লেষণ লোড করতে সমস্যা হয়েছে",
+    "salesAnalysis": "বিক্রি বিশ্লেষণ",
+    "profitAnalysis": "লাভ বিশ্লেষণ",
+    "stockRecommendations": "মজুদ সুপারিশ",
+    "improvementTips": "উন্নতির টিপস",
+    "productSuggestions": "নতুন পণ্যের পরামর্শ",
+    "nextInsight": "পরবর্তী বিশ্লেষণ"
   }
 }

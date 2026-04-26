@@ -18,6 +18,16 @@ import {
 } from "@/lib/inventoryApi";
 import { listProducts } from "@/lib/productApi";
 import { invalidateProducts } from "@/lib/swrMutations";
+import dynamic from "next/dynamic";
+
+// Lazy-load WeeklyInsightCard — only loaded when insight tab is active
+const WeeklyInsightCard = dynamic(() => import("./WeeklyInsightCard"), {
+    loading: () => (
+        <div className="flex items-center justify-center py-16">
+            <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent" />
+        </div>
+    ),
+});
 
 // ─── Helpers ─────────────────────────────────────────────
 
@@ -25,7 +35,7 @@ function resolveLocale(locale?: string): string {
     return locale?.toLowerCase().startsWith("bn") ? "bn-BD" : "en-US";
 }
 
-type SubTab = "alerts" | "logs" | "adjust";
+type SubTab = "alerts" | "logs" | "adjust" | "insight";
 
 interface ProductOption {
     id: string;
@@ -285,10 +295,11 @@ export default function InventoryTab({ businessId }: InventoryTabProps) {
     const selectedProduct = products.find((p) => p.id === adjustProductId);
 
     // ─── Render ─────────────────────────────────────────
-    const subTabs: { key: SubTab; label: string }[] = [
+    const subTabs: { key: SubTab; label: string; icon?: string }[] = [
         { key: "alerts", label: t("tabs.alerts") },
         { key: "logs", label: t("tabs.logs") },
         { key: "adjust", label: t("tabs.adjust") },
+        { key: "insight", label: t("tabs.insight"), icon: "🤖" },
     ];
 
     return (
@@ -348,6 +359,7 @@ export default function InventoryTab({ businessId }: InventoryTabProps) {
                             : "text-on-surface-variant hover:text-on-surface"
                             }`}
                     >
+                        {tab.icon && <span className="mr-1">{tab.icon}</span>}
                         {tab.label}
                     </button>
                 ))}
@@ -677,6 +689,13 @@ export default function InventoryTab({ businessId }: InventoryTabProps) {
                             </>
                         )}
                     </div>
+                </section>
+            )}
+
+            {/* ─── Weekly AI Insight Tab ──────────────────── */}
+            {activeSubTab === "insight" && (
+                <section>
+                    <WeeklyInsightCard businessId={businessId} />
                 </section>
             )}
 
