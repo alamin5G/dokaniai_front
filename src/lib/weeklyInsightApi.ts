@@ -1,17 +1,24 @@
 /**
  * Weekly Business Insight API
  * REST client for weekly AI business analysis endpoints
+ * Uses apiClient (axios) with proper auth interceptor
  */
+import apiClient from "@/lib/api";
 import type { WeeklyBusinessInsight } from "@/types/weeklyInsight";
 
-const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080";
+// ─── Internal helpers ────────────────────────────────────
 
-/** Helper: get auth token */
-function getAuthHeaders(): HeadersInit {
-    if (typeof window === "undefined") return {};
-    const token = localStorage.getItem("token");
-    return token ? { Authorization: `Bearer ${token}` } : {};
+interface ApiSuccess<T> {
+    success: boolean;
+    data: T;
+    message?: string;
 }
+
+function unwrap<T>(response: { data: ApiSuccess<T> }): T {
+    return response.data.data;
+}
+
+// ─── Get Weekly Insight ──────────────────────────────────
 
 /**
  * Get current weekly insight for a business
@@ -20,20 +27,13 @@ function getAuthHeaders(): HeadersInit {
 export async function getWeeklyInsight(
     businessId: string
 ): Promise<WeeklyBusinessInsight> {
-    const res = await fetch(
-        `${API_BASE}/api/v1/businesses/${businessId}/inventory/weekly-insight`,
-        {
-            method: "GET",
-            headers: {
-                "Content-Type": "application/json",
-                ...getAuthHeaders(),
-            },
-        }
+    const response = await apiClient.get<ApiSuccess<WeeklyBusinessInsight>>(
+        `/businesses/${businessId}/inventory/weekly-insight`
     );
-    if (!res.ok) throw new Error("Failed to fetch weekly insight");
-    const json = await res.json();
-    return json.data;
+    return unwrap(response);
 }
+
+// ─── Refresh Weekly Insight ──────────────────────────────
 
 /**
  * Force-refresh weekly insight
@@ -42,17 +42,8 @@ export async function getWeeklyInsight(
 export async function refreshWeeklyInsight(
     businessId: string
 ): Promise<WeeklyBusinessInsight> {
-    const res = await fetch(
-        `${API_BASE}/api/v1/businesses/${businessId}/inventory/weekly-insight/refresh`,
-        {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-                ...getAuthHeaders(),
-            },
-        }
+    const response = await apiClient.post<ApiSuccess<WeeklyBusinessInsight>>(
+        `/businesses/${businessId}/inventory/weekly-insight/refresh`
     );
-    if (!res.ok) throw new Error("Failed to refresh weekly insight");
-    const json = await res.json();
-    return json.data;
+    return unwrap(response);
 }
