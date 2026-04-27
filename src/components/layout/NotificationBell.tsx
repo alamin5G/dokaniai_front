@@ -109,7 +109,7 @@ export default function NotificationBell() {
     const panelRef = useRef<HTMLDivElement>(null);
     const bellRef = useRef<HTMLButtonElement>(null);
 
-    // ─── Load unread count (poll every 60s) ──────────────
+    // ─── Load unread count (SSE-driven, no polling) ─────
     const fetchUnreadCount = useCallback(async () => {
         // Skip if not authenticated to avoid 401 console noise
         if (!useAuthStore.getState().accessToken) return;
@@ -122,15 +122,16 @@ export default function NotificationBell() {
     }, []);
 
     useEffect(() => {
+        // Initial fetch on mount
         fetchUnreadCount();
-        const interval = setInterval(fetchUnreadCount, 60_000);
 
-        // Listen for real-time SSE notification events
+        // SSE drives all subsequent updates — no polling needed.
+        // Backend pushes NOTIFICATION_NEW event via SSE whenever
+        // a notification is created, which triggers this listener.
         const handleSSENotification = () => fetchUnreadCount();
         window.addEventListener("sse:notification-new", handleSSENotification);
 
         return () => {
-            clearInterval(interval);
             window.removeEventListener("sse:notification-new", handleSSENotification);
         };
     }, [fetchUnreadCount]);
@@ -559,10 +560,10 @@ function NotificationDetailModal({
                     </p>
                     {isAi && notification.tone && (
                         <span className={`text-[10px] font-medium px-2 py-0.5 rounded-full ${tone === "URGENT" ? "bg-red-100 text-red-700" :
-                                tone === "WARNING" ? "bg-amber-100 text-amber-700" :
-                                    tone === "FRIENDLY" ? "bg-green-100 text-green-700" :
-                                        tone === "ENCOURAGING" ? "bg-emerald-100 text-emerald-700" :
-                                            "bg-blue-100 text-blue-700"
+                            tone === "WARNING" ? "bg-amber-100 text-amber-700" :
+                                tone === "FRIENDLY" ? "bg-green-100 text-green-700" :
+                                    tone === "ENCOURAGING" ? "bg-emerald-100 text-emerald-700" :
+                                        "bg-blue-100 text-blue-700"
                             }`}>
                             {tone}
                         </span>
