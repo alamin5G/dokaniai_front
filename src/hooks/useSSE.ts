@@ -29,13 +29,15 @@ export function useSSE() {
             return;
         }
 
-        const connect = () => {
+        const connect = (token?: string) => {
             // Close existing connection
             if (sourceRef.current) {
                 sourceRef.current.close();
             }
 
-            const url = `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:8082/api/v1"}/sse/subscribe?token=${encodeURIComponent(accessToken)}`;
+            // Use provided token (reconnect) or current token from effect
+            const activeToken = token || accessToken;
+            const url = `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:8082/api/v1"}/sse/subscribe?token=${encodeURIComponent(activeToken)}`;
             const source = new EventSource(url);
             sourceRef.current = source;
 
@@ -45,10 +47,17 @@ export function useSSE() {
 
             source.onerror = () => {
                 // Auto-reconnect is handled by EventSource, but if it fails permanently,
-                // close and retry after delay
+                // close and retry after delay with a fresh token
                 source.close();
                 sourceRef.current = null;
-                reconnectTimerRef.current = setTimeout(connect, 10_000); // retry in 10s
+                reconnectTimerRef.current = setTimeout(() => {
+                    // Read fresh token from store on reconnect (token may have been refreshed)
+                    const freshToken = useAuthStore.getState().accessToken;
+                    const freshStatus = useAuthStore.getState().status;
+                    if (freshStatus === "AUTHENTICATED" && freshToken) {
+                        connect(freshToken);
+                    }
+                }, 3_000); // retry in 3s with fresh token check
             };
 
             // ─── Event Handlers ──────────────────────────────────────────
