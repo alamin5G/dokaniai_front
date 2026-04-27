@@ -1551,7 +1551,9 @@
           "next": "পরে",
           "noResults": "কোনো রিটার্ন পাওয়া যায়নি।"
         }
-      }
+      },
+      "loadingSuggestions": "সাজেশন লোড হচ্ছে...",
+      "frequentlyBought": "💡 একসাথে প্রায়ই কেনা হয়"
     },
     "expenses": {
       "dashboard": "ড্যাশবোর্ড",

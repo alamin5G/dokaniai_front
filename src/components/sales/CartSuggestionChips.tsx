@@ -26,7 +26,7 @@ export default function CartSuggestionChips({
     sessionId,
     onAddSuggestion,
 }: CartSuggestionChipsProps) {
-    const t = useTranslations("Sales");
+    const t = useTranslations("shop.sales");
     const { suggestions, loading } = useCartSuggestions(businessId, cartProductIds);
 
     const handleAdd = async (suggestion: CartSuggestion) => {

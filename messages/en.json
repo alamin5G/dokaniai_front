@@ -1551,7 +1551,9 @@
           "next": "Next",
           "noResults": "No returns found."
         }
-      }
+      },
+      "loadingSuggestions": "Loading suggestions...",
+      "frequentlyBought": "💡 Frequently bought together"
     },
     "expenses": {
       "dashboard": "Dashboard",
