@@ -1563,7 +1563,7 @@
         "thisMonth": "এই মাস",
         "totalExpenses": "মোট খরচ",
         "expenseCount": "{count}টি লেনদেন",
-        "topCategory": "সর্বোচ্চ: {category}"
+        "topCategory": "সর্বোচ্চ ক্যাটাগরি"
       },
       "table": {
         "title": "খরচের রেকর্ড",

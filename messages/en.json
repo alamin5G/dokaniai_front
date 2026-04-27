@@ -1563,7 +1563,7 @@
         "thisMonth": "This Month",
         "totalExpenses": "Total Expenses",
         "expenseCount": "{count} transactions",
-        "topCategory": "Top: {category}"
+        "topCategory": "Top Category"
       },
       "table": {
         "title": "Expense Records",
