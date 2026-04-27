@@ -17,6 +17,7 @@ export interface ExpenseCreateRequest {
     paymentMethod?: string;
     receiptUrl?: string;
     recordedVia?: "MANUAL" | "TEXT_NLP" | "VOICE";
+    vendorId?: string;
     vendorName?: string;
     expenseType?: "FIXED" | "VARIABLE";
     isRecurring?: boolean;
@@ -30,6 +31,7 @@ export interface ExpenseUpdateRequest {
     expenseDate?: string;
     paymentMethod?: string;
     receiptUrl?: string;
+    vendorId?: string | null;
     vendorName?: string;
     expenseType?: "FIXED" | "VARIABLE";
     isRecurring?: boolean;
@@ -55,6 +57,7 @@ export interface Expense {
     paymentMethod: string | null;
     paymentStatus: string;
     receiptUrl: string | null;
+    vendorId: string | null;
     vendorName: string | null;
     expenseType: "FIXED" | "VARIABLE" | null;
     isRecurring: boolean;
@@ -92,6 +95,28 @@ export interface ExpenseCategoryResponse {
     isActive: boolean;
     createdBy: string | null;
     createdAt: string;
+}
+
+export interface VendorRequest {
+    name: string;
+    phone?: string;
+    address?: string;
+    notes?: string;
+    isActive?: boolean;
+}
+
+export interface VendorResponse {
+    id: string;
+    businessId: string;
+    name: string;
+    phone: string | null;
+    address: string | null;
+    notes: string | null;
+    isActive: boolean;
+    createdBy: string;
+    createdAt: string;
+    updatedAt: string;
+    deletedAt: string | null;
 }
 
 // ---------------------------------------------------------------------------

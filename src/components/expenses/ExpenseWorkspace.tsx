@@ -9,10 +9,13 @@ import type {
     ExpenseCreateRequest,
     ExpenseUpdateRequest,
     MonthlyExpenseSummary,
+    VendorResponse,
 } from "@/types/expense";
 import {
     createExpense,
+    createVendor,
     deleteExpense,
+    getActiveVendors,
     getExpenseAlerts,
     getExpenseCategories,
     getMonthlySummary,
@@ -37,6 +40,7 @@ interface FormState {
     description: string;
     expenseDate: string;
     paymentMethod: string;
+    vendorId: string;
     vendorName: string;
 }
 
@@ -47,6 +51,7 @@ const initialFormState: FormState = {
     description: "",
     expenseDate: new Date().toISOString().slice(0, 10),
     paymentMethod: "CASH",
+    vendorId: "",
     vendorName: "",
 };
 
@@ -58,6 +63,7 @@ function toFormState(expense: Expense): FormState {
         description: expense.description ?? "",
         expenseDate: expense.expenseDate?.slice(0, 10) ?? "",
         paymentMethod: expense.paymentMethod ?? "CASH",
+        vendorId: expense.vendorId ?? "",
         vendorName: expense.vendorName ?? "",
     };
 }
@@ -89,6 +95,7 @@ export default function ExpenseWorkspace({
     // Data
     const [expenses, setExpenses] = useState<Expense[]>([]);
     const [categories, setCategories] = useState<ExpenseCategoryResponse[]>([]);
+    const [vendors, setVendors] = useState<VendorResponse[]>([]);
     const [summary, setSummary] = useState<MonthlyExpenseSummary | null>(null);
 
     // UI
@@ -109,6 +116,7 @@ export default function ExpenseWorkspace({
     const [editorMode, setEditorMode] = useState<"create" | "edit">("create");
     const [editingExpense, setEditingExpense] = useState<Expense | null>(null);
     const [form, setForm] = useState<FormState>(initialFormState);
+    const [newVendorName, setNewVendorName] = useState("");
 
     // Load categories
     useEffect(() => {
@@ -122,6 +130,17 @@ export default function ExpenseWorkspace({
         void load();
         return () => { cancelled = true; };
     }, [businessId]);
+
+    const loadVendors = useCallback(async () => {
+        try {
+            const result = await getActiveVendors(businessId);
+            setVendors(result);
+        } catch { /* optional */ }
+    }, [businessId]);
+
+    useEffect(() => {
+        void loadVendors();
+    }, [loadVendors]);
 
     // Load summary
     useEffect(() => {
@@ -189,6 +208,7 @@ export default function ExpenseWorkspace({
         setEditorMode("create");
         setEditingExpense(null);
         setForm(initialFormState);
+        setNewVendorName("");
     }
 
     function handleEdit(expense: Expense) {
@@ -200,6 +220,21 @@ export default function ExpenseWorkspace({
 
     function updateForm<K extends keyof FormState>(key: K, value: FormState[K]) {
         setForm((current) => ({ ...current, [key]: value }));
+    }
+
+    async function handleCreateVendor() {
+        const name = newVendorName.trim();
+        if (!name) return;
+
+        setError(null);
+        try {
+            const vendor = await createVendor(businessId, { name });
+            setVendors((current) => [...current, vendor].sort((a, b) => a.name.localeCompare(b.name)));
+            setForm((current) => ({ ...current, vendorId: vendor.id, vendorName: vendor.name }));
+            setNewVendorName("");
+        } catch (createError) {
+            setError(createError instanceof Error ? createError.message : t("messages.saveError"));
+        }
     }
 
     async function handleSubmit(event: FormEvent<HTMLFormElement>) {
@@ -217,6 +252,8 @@ export default function ExpenseWorkspace({
                     description: form.description || undefined,
                     expenseDate: form.expenseDate || undefined,
                     paymentMethod: form.paymentMethod || undefined,
+                    vendorId: form.vendorId || null,
+                    vendorName: form.vendorId ? undefined : form.vendorName,
                 };
                 await updateExpense(businessId, editingExpense.id, payload);
                 setNotice(t("messages.updated"));
@@ -228,7 +265,8 @@ export default function ExpenseWorkspace({
                     description: form.description || undefined,
                     expenseDate: form.expenseDate || undefined,
                     paymentMethod: form.paymentMethod || undefined,
-                    vendorName: form.vendorName || undefined,
+                    vendorId: form.vendorId || undefined,
+                    vendorName: form.vendorId ? undefined : form.vendorName || undefined,
                     recordedVia: "MANUAL",
                 };
                 await createExpense(businessId, payload);
@@ -270,7 +308,8 @@ export default function ExpenseWorkspace({
             (e) =>
                 e.description?.toLowerCase().includes(q) ||
                 e.category.toLowerCase().includes(q) ||
-                e.customCategoryName?.toLowerCase().includes(q),
+                e.customCategoryName?.toLowerCase().includes(q) ||
+                e.vendorName?.toLowerCase().includes(q),
         );
     }, [expenses, searchInput]);
 
@@ -372,6 +411,7 @@ export default function ExpenseWorkspace({
                                     <tr>
                                         <th className="px-6 py-4">{t("table.description")}</th>
                                         <th className="px-6 py-4">{t("table.category")}</th>
+                                        <th className="px-6 py-4">{t("table.vendor")}</th>
                                         <th className="px-6 py-4 text-right">{t("table.amount")}</th>
                                         <th className="px-6 py-4">{t("table.date")}</th>
                                         <th className="px-6 py-4 text-right">{t("table.action")}</th>
@@ -380,7 +420,7 @@ export default function ExpenseWorkspace({
                                 <tbody className="divide-y divide-surface-container">
                                     {isLoading ? (
                                         <tr>
-                                            <td colSpan={5} className="px-6 py-14 text-center text-sm text-on-surface-variant">
+                                            <td colSpan={6} className="px-6 py-14 text-center text-sm text-on-surface-variant">
                                                 {t("table.loading")}
                                             </td>
                                         </tr>
@@ -398,6 +438,9 @@ export default function ExpenseWorkspace({
                                                             ? expense.customCategoryName
                                                             : getCategoryName(expense.category)}
                                                     </span>
+                                                </td>
+                                                <td className="px-6 py-5 text-sm text-on-surface-variant">
+                                                    {expense.vendorName || "—"}
                                                 </td>
                                                 <td className="px-6 py-5 text-right font-bold text-on-surface">
                                                     ৳{formatMoney(expense.amount)}
@@ -427,7 +470,7 @@ export default function ExpenseWorkspace({
                                         ))
                                     ) : (
                                         <tr>
-                                            <td colSpan={5} className="px-6 py-14 text-center text-sm text-on-surface-variant">
+                                            <td colSpan={6} className="px-6 py-14 text-center text-sm text-on-surface-variant">
                                                 {t("table.empty")}
                                             </td>
                                         </tr>
@@ -539,17 +582,46 @@ export default function ExpenseWorkspace({
                                 />
                             </label>
 
-                            {/* Vendor Name */}
-                            <label className="block">
-                                <span className="mb-2 block text-sm font-medium text-on-surface">{t("form.vendorName")}</span>
-                                <input
-                                    type="text"
-                                    value={form.vendorName}
-                                    onChange={(e) => updateForm("vendorName", e.target.value)}
-                                    className="w-full rounded-[20px] bg-surface-container-highest px-4 py-3 text-sm text-on-surface outline-none"
-                                    placeholder={t("form.vendorNamePlaceholder")}
-                                />
-                            </label>
+                            {/* Vendor */}
+                            <div className="space-y-3">
+                                <label className="block">
+                                    <span className="mb-2 block text-sm font-medium text-on-surface">{t("form.vendorName")}</span>
+                                    <select
+                                        value={form.vendorId}
+                                        onChange={(e) => {
+                                            const vendor = vendors.find((item) => item.id === e.target.value);
+                                            setForm((current) => ({
+                                                ...current,
+                                                vendorId: e.target.value,
+                                                vendorName: vendor?.name ?? "",
+                                            }));
+                                        }}
+                                        className="w-full rounded-[20px] bg-surface-container-highest px-4 py-3 text-sm text-on-surface outline-none"
+                                    >
+                                        <option value="">{t("form.vendorOptional")}</option>
+                                        {vendors.map((vendor) => (
+                                            <option key={vendor.id} value={vendor.id}>{vendor.name}</option>
+                                        ))}
+                                    </select>
+                                </label>
+                                <div className="flex gap-2">
+                                    <input
+                                        type="text"
+                                        value={newVendorName}
+                                        onChange={(e) => setNewVendorName(e.target.value)}
+                                        className="min-w-0 flex-1 rounded-[20px] bg-surface-container-highest px-4 py-3 text-sm text-on-surface outline-none"
+                                        placeholder={t("form.vendorNamePlaceholder")}
+                                    />
+                                    <button
+                                        type="button"
+                                        onClick={handleCreateVendor}
+                                        disabled={!newVendorName.trim()}
+                                        className="rounded-full bg-surface-container-high px-4 py-2 text-xs font-semibold text-primary transition hover:bg-primary-fixed disabled:cursor-not-allowed disabled:opacity-50"
+                                    >
+                                        {t("form.addVendor")}
+                                    </button>
+                                </div>
+                            </div>
 
                             {/* Date + Payment Method */}
                             <div className="grid gap-4 sm:grid-cols-2">

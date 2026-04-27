@@ -10,6 +10,8 @@ import type {
     ExpenseListResponse,
     ExpenseUpdateRequest,
     MonthlyExpenseSummary,
+    VendorRequest,
+    VendorResponse,
 } from "@/types/expense";
 
 interface ApiSuccess<T> {
@@ -20,6 +22,30 @@ interface ApiSuccess<T> {
 
 function unwrap<T>(response: { data: ApiSuccess<T> }): T {
     return response.data.data;
+}
+
+// ---------------------------------------------------------------------------
+// Vendors / Suppliers
+// ---------------------------------------------------------------------------
+
+export async function getActiveVendors(
+    businessId: string,
+): Promise<VendorResponse[]> {
+    const response = await apiClient.get<ApiSuccess<VendorResponse[]>>(
+        `/businesses/${businessId}/vendors/active`,
+    );
+    return unwrap(response);
+}
+
+export async function createVendor(
+    businessId: string,
+    data: VendorRequest,
+): Promise<VendorResponse> {
+    const response = await apiClient.post<ApiSuccess<VendorResponse>>(
+        `/businesses/${businessId}/vendors`,
+        data,
+    );
+    return unwrap(response);
 }
 
 // ---------------------------------------------------------------------------
