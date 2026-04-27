@@ -1595,7 +1595,13 @@
           "edit": "Save Changes",
           "saving": "Saving..."
         },
-        "newForm": "New Form"
+        "newForm": "New Form",
+        "vendorName": "Supplier/Vendor",
+        "vendorNamePlaceholder": "e.g. Karim Wholesale",
+        "expenseType": "Expense Type",
+        "expenseTypeFixed": "Fixed (Rent, Salary)",
+        "expenseTypeVariable": "Variable (Supplies, Utilities)",
+        "isRecurring": "Recurring?"
       },
       "categories": {
         "RENT": "Rent",
@@ -1638,14 +1644,6 @@
         "amount": "Amount",
         "count": "Count",
         "percent": "%"
-      },
-      "formNewFields": {
-        "vendorName": "Supplier/Vendor",
-        "vendorNamePlaceholder": "e.g. Karim Wholesale",
-        "expenseType": "Expense Type",
-        "expenseTypeFixed": "Fixed (Rent, Salary)",
-        "expenseTypeVariable": "Variable (Supplies, Utilities)",
-        "isRecurring": "Recurring?"
       },
       "insight": {
         "title": "Expense Intelligence",

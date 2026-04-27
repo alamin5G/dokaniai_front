@@ -10,6 +10,21 @@ import {
 } from "@/lib/categoryApi";
 import { swrKeys } from "@/lib/swrKeys";
 
+function normalizeBusinessType(value: string | null | undefined): string | null {
+  if (!value || !value.trim()) {
+    return null;
+  }
+
+  const normalized = value.trim()
+    .replace(/([a-z])([A-Z])/g, "$1_$2")
+    .replace(/[^A-Za-z0-9]+/g, "_")
+    .replace(/_+/g, "_")
+    .replace(/^_|_$/g, "")
+    .toUpperCase();
+
+  return normalized || "OTHER";
+}
+
 async function fetchCategoriesByType(key: string): Promise<CategoryResponse[]> {
   const businessType = key.split("/").pop();
   if (!businessType) throw new Error("Invalid category key");
@@ -27,7 +42,8 @@ async function fetchCategoryRequestStats(): Promise<CategoryRequestStats> {
 }
 
 export function useCategoriesByBusinessType(businessType: string | null | undefined) {
-  const key = businessType ? swrKeys.categoriesByBusinessType(businessType) : null;
+  const normalizedBusinessType = normalizeBusinessType(businessType);
+  const key = normalizedBusinessType ? swrKeys.categoriesByBusinessType(normalizedBusinessType) : null;
   const { data, error, isLoading, mutate } = useSWR(key, fetchCategoriesByType);
 
   return {

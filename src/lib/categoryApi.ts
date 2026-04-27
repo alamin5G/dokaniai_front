@@ -24,6 +24,17 @@ interface Paged<T> {
   totalPages?: number;
 }
 
+function normalizeBusinessType(value: string): string {
+  const normalized = value.trim()
+    .replace(/([a-z])([A-Z])/g, '$1_$2')
+    .replace(/[^A-Za-z0-9]+/g, '_')
+    .replace(/_+/g, '_')
+    .replace(/^_|_$/g, '')
+    .toUpperCase();
+
+  return normalized || 'OTHER';
+}
+
 export interface SearchCategoryPage {
   content: CategoryResponse[];
   number: number;
@@ -35,8 +46,13 @@ function unwrap<T>(response: { data: ApiSuccess<T> }): T {
 }
 
 export async function getCategoriesByBusinessType(businessType: string): Promise<CategoryResponse[]> {
+  if (!businessType || !businessType.trim()) {
+    return [];
+  }
+
+  const normalizedBusinessType = normalizeBusinessType(businessType);
   const response = await apiClient.get<ApiSuccess<CategoryResponse[]>>(
-    `/categories/by-business-type/${encodeURIComponent(businessType)}`,
+    `/categories/by-business-type/${encodeURIComponent(normalizedBusinessType)}`,
   );
   return unwrap(response);
 }

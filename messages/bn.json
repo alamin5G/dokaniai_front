@@ -1595,7 +1595,13 @@
           "edit": "পরিবর্তন সংরক্ষণ",
           "saving": "সংরক্ষণ হচ্ছে..."
         },
-        "newForm": "নতুন ফর্ম"
+        "newForm": "নতুন ফর্ম",
+        "vendorName": "সাপ্লাইয়ার/ভেন্ডর",
+        "vendorNamePlaceholder": "যেমন: Karim Wholesale",
+        "expenseType": "খরচের ধরন",
+        "expenseTypeFixed": "নির্দিষ্ট (ভাড়া, বেতন)",
+        "expenseTypeVariable": "পরিবর্তনশীল (মালামাল, বিদ্যুৎ)",
+        "isRecurring": "বারবার হয়?"
       },
       "categories": {
         "RENT": "ভাড়া",
@@ -1638,14 +1644,6 @@
         "amount": "পরিমাণ",
         "count": "সংখ্যা",
         "percent": "%"
-      },
-      "formNewFields": {
-        "vendorName": "সাপ্লাইয়ার/ভেন্ডর",
-        "vendorNamePlaceholder": "যেমন: Karim Wholesale",
-        "expenseType": "খরচের ধরন",
-        "expenseTypeFixed": "নির্দিষ্ট (ভাড়া, বেতন)",
-        "expenseTypeVariable": "পরিবর্তনশীল (মালামাল, বিদ্যুৎ)",
-        "isRecurring": "বারবার হয়?"
       },
       "insight": {
         "title": "খরচ বুদ্ধিমত্তা",
