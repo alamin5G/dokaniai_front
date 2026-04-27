@@ -118,6 +118,10 @@ export default function ExpenseWorkspace({
     const [form, setForm] = useState<FormState>(initialFormState);
     const [newVendorName, setNewVendorName] = useState("");
 
+    // Category search (for dropdown filtering)
+    const [categorySearch, setCategorySearch] = useState("");
+    const [categoryDropdownOpen, setCategoryDropdownOpen] = useState(false);
+
     // Load categories
     useEffect(() => {
         let cancelled = false;
@@ -203,12 +207,70 @@ export default function ExpenseWorkspace({
         }
     }
 
+    // Category grouping for better UX with 60+ categories
+    const CATEGORY_GROUPS: Record<string, string[]> = {
+        "Inventory & Materials": ["SUPPLIES", "RAW_MATERIALS", "PURCHASE_RETURN", "PACKAGING", "LOADING_UNLOADING"],
+        "Rent & Facilities": ["RENT", "REPAIR_RENOVATION", "SECURITY", "CLEANING", "PEST_CONTROL", "STORAGE_WAREHOUSE", "DECORATION"],
+        "Utilities": ["UTILITIES", "ELECTRICITY", "WATER", "GAS_FUEL", "INTERNET", "TELECOMMUNICATION"],
+        "Salary & Staff": ["SALARIES", "STAFF_WELFARE", "STAFF_MEAL", "UNIFORM_WORKWEAR", "TRAINING_EDUCATION"],
+        "Transport & Logistics": ["TRANSPORT", "DELIVERY_LOGISTICS", "VEHICLE_MAINTENANCE", "COURIER_POSTAL", "IMPORT_EXPORT"],
+        "Marketing": ["MARKETING", "ADVERTISING", "EVENTS_PROMOTION", "PHOTOGRAPHY_MEDIA", "WEBSITE_ONLINE"],
+        "Financial & Legal": ["LOAN_PAYMENT", "TAX_GOV", "INSURANCE", "LEGAL", "BANK_CHARGES", "ACCOUNTING_AUDIT", "COMMISSION_BROKERAGE", "DEPRECIATION", "EMI_INSTALLMENT"],
+        "Equipment & Assets": ["MAINTENANCE", "TOOLS_EQUIPMENT", "FURNITURE_FIXTURES", "MACHINERY"],
+        "Operations": ["OFFICE_SUPPLIES", "PRINTING_STATIONERY", "QUALITY_CONTROL", "CUSTOMER_SERVICE", "WASTE_DISPOSAL", "DAMAGES_LOSS", "REFUND_RETURN", "MISC_OPERATIONAL"],
+        "Licenses & Compliance": ["LICENSE_PERMIT", "TRADE_LICENSE", "HEALTH_SAFETY"],
+        "Subscriptions & Tech": ["SUBSCRIPTION_MEMBERSHIP", "CONSULTANCY", "TECHNOLOGY_SOFTWARE"],
+        "Social & Community": ["CHARITY_DONATION", "FOOD_HOSPITALITY"],
+        "Other": ["MISCELLANEOUS", "CUSTOM"],
+    };
+
+    // Filter categories by search term
+    const filteredGroupedCategories = useMemo(() => {
+        const q = categorySearch.toLowerCase().trim();
+        const result: [string, ExpenseCategoryResponse[]][] = [];
+        for (const [groupName, catNames] of Object.entries(CATEGORY_GROUPS)) {
+            const matched = categories.filter(
+                (c) => catNames.includes(c.name) && (
+                    !q ||
+                    c.displayName.toLowerCase().includes(q) ||
+                    c.name.toLowerCase().includes(q) ||
+                    getCategoryName(c.name).toLowerCase().includes(q)
+                )
+            );
+            if (matched.length > 0) result.push([groupName, matched]);
+        }
+        return result;
+    }, [categories, categorySearch, getCategoryName]);
+
+    // Close dropdown on outside click
+    useEffect(() => {
+        if (!categoryDropdownOpen) return;
+        const handler = (e: MouseEvent) => {
+            const target = e.target as HTMLElement;
+            if (!target.closest("[data-cat-dropdown]")) {
+                setCategoryDropdownOpen(false);
+            }
+        };
+        document.addEventListener("mousedown", handler);
+        return () => document.removeEventListener("mousedown", handler);
+    }, [categoryDropdownOpen]);
+
+    // Payment method options with icons and colors
+    const paymentMethods = [
+        { value: "CASH", label: "Cash", icon: "payments", color: "text-green-700 bg-green-50 border-green-200" },
+        { value: "BKASH", label: "bKash", icon: "smartphone", color: "text-pink-700 bg-pink-50 border-pink-200" },
+        { value: "NAGAD", label: "Nagad", icon: "phone_iphone", color: "text-orange-700 bg-orange-50 border-orange-200" },
+        { value: "BANK", label: "Bank", icon: "account_balance", color: "text-blue-700 bg-blue-50 border-blue-200" },
+    ];
+
     // Form helpers
     function resetEditor() {
         setEditorMode("create");
         setEditingExpense(null);
         setForm(initialFormState);
         setNewVendorName("");
+        setCategorySearch("");
+        setCategoryDropdownOpen(false);
     }
 
     function handleEdit(expense: Expense) {
@@ -526,21 +588,65 @@ export default function ExpenseWorkspace({
                         </div>
 
                         <form className="mt-6 space-y-4" onSubmit={handleSubmit}>
-                            {/* Category */}
-                            <label className="block">
+                            {/* Category — Searchable grouped dropdown */}
+                            <div className="block" data-cat-dropdown>
                                 <span className="mb-2 block text-sm font-medium text-on-surface">{t("form.category")}</span>
-                                <select
-                                    value={form.category}
-                                    onChange={(e) => updateForm("category", e.target.value)}
-                                    required
-                                    className="w-full rounded-[20px] bg-surface-container-highest px-4 py-3 text-sm text-on-surface outline-none"
-                                >
-                                    <option value="">{t("form.categoryPlaceholder")}</option>
-                                    {categories.map((cat) => (
-                                        <option key={cat.id} value={cat.name}>{cat.displayName}</option>
-                                    ))}
-                                </select>
-                            </label>
+                                <input
+                                    type="text"
+                                    readOnly
+                                    value={form.category ? getCategoryName(form.category) : ""}
+                                    onClick={() => setCategoryDropdownOpen((o) => !o)}
+                                    className="w-full cursor-pointer rounded-[20px] bg-surface-container-highest px-4 py-3 text-sm text-on-surface outline-none placeholder:text-on-surface-variant"
+                                    placeholder={t("form.categoryPlaceholder")}
+                                />
+                                <input type="hidden" value={form.category} />
+                                {categoryDropdownOpen && (
+                                    <div className="absolute z-50 mt-1 max-h-[320px] w-full overflow-hidden rounded-[20px] bg-surface-container-lowest shadow-lg ring-1 ring-outline-variant" style={{ width: "calc(100% - 48px)" }}>
+                                        <div className="sticky top-0 z-10 border-b border-surface-container bg-surface-container-lowest px-3 py-2">
+                                            <div className="flex items-center gap-2 rounded-full bg-surface-container-highest px-3 py-2">
+                                                <span className="material-symbols-outlined text-base text-on-surface-variant">search</span>
+                                                <input
+                                                    autoFocus
+                                                    value={categorySearch}
+                                                    onChange={(e) => setCategorySearch(e.target.value)}
+                                                    className="w-full bg-transparent text-sm text-on-surface outline-none placeholder:text-on-surface-variant"
+                                                    placeholder={t("filter.search")}
+                                                />
+                                            </div>
+                                        </div>
+                                        <div className="max-h-[260px] overflow-y-auto overscroll-contain px-2 py-2">
+                                            {filteredGroupedCategories.length === 0 ? (
+                                                <p className="px-3 py-4 text-center text-sm text-on-surface-variant">No categories found</p>
+                                            ) : (
+                                                filteredGroupedCategories.map(([groupName, groupCats]) => (
+                                                    <div key={groupName}>
+                                                        <p className="px-3 pt-2 pb-1 text-xs font-bold uppercase tracking-wider text-on-surface-variant/60">{groupName}</p>
+                                                        {groupCats.map((cat) => (
+                                                            <button
+                                                                key={cat.id}
+                                                                type="button"
+                                                                onClick={() => {
+                                                                    updateForm("category", cat.name);
+                                                                    setCategoryDropdownOpen(false);
+                                                                    setCategorySearch("");
+                                                                }}
+                                                                className={`flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-left text-sm transition hover:bg-surface-container-high ${form.category === cat.name ? "bg-primary-fixed text-primary font-semibold" : "text-on-surface"}`}
+                                                            >
+                                                                {cat.icon ? (
+                                                                    <span className="material-symbols-outlined text-base" style={{ color: cat.color || undefined }}>{cat.icon}</span>
+                                                                ) : (
+                                                                    <span className="material-symbols-outlined text-base text-on-surface-variant">label</span>
+                                                                )}
+                                                                <span>{cat.displayName}</span>
+                                                            </button>
+                                                        ))}
+                                                    </div>
+                                                ))
+                                            )}
+                                        </div>
+                                    </div>
+                                )}
+                            </div>
 
                             {/* Custom category name */}
                             {form.category === "CUSTOM" ? (
@@ -604,49 +710,67 @@ export default function ExpenseWorkspace({
                                         ))}
                                     </select>
                                 </label>
-                                <div className="flex gap-2">
-                                    <input
-                                        type="text"
-                                        value={newVendorName}
-                                        onChange={(e) => setNewVendorName(e.target.value)}
-                                        className="min-w-0 flex-1 rounded-[20px] bg-surface-container-highest px-4 py-3 text-sm text-on-surface outline-none"
-                                        placeholder={t("form.vendorNamePlaceholder")}
-                                    />
+                                {/* Show "Add new vendor" input only when no vendor is selected */}
+                                {!form.vendorId && (
+                                    <div className="flex gap-2">
+                                        <input
+                                            type="text"
+                                            value={newVendorName}
+                                            onChange={(e) => setNewVendorName(e.target.value)}
+                                            className="min-w-0 flex-1 rounded-[20px] bg-surface-container-highest px-4 py-3 text-sm text-on-surface outline-none"
+                                            placeholder={t("form.vendorNamePlaceholder")}
+                                        />
+                                        <button
+                                            type="button"
+                                            onClick={handleCreateVendor}
+                                            disabled={!newVendorName.trim()}
+                                            className="rounded-full bg-surface-container-high px-4 py-2 text-xs font-semibold text-primary transition hover:bg-primary-fixed disabled:cursor-not-allowed disabled:opacity-50"
+                                        >
+                                            {t("form.addVendor")}
+                                        </button>
+                                    </div>
+                                )}
+                                {form.vendorId && (
                                     <button
                                         type="button"
-                                        onClick={handleCreateVendor}
-                                        disabled={!newVendorName.trim()}
-                                        className="rounded-full bg-surface-container-high px-4 py-2 text-xs font-semibold text-primary transition hover:bg-primary-fixed disabled:cursor-not-allowed disabled:opacity-50"
+                                        onClick={() => updateForm("vendorId", "")}
+                                        className="text-xs font-semibold text-primary underline decoration-dotted underline-offset-4 hover:text-primary/80"
                                     >
-                                        {t("form.addVendor")}
+                                        {t("form.vendorOptional")}
                                     </button>
-                                </div>
+                                )}
                             </div>
 
-                            {/* Date + Payment Method */}
-                            <div className="grid gap-4 sm:grid-cols-2">
-                                <label className="block">
-                                    <span className="mb-2 block text-sm font-medium text-on-surface">{t("form.date")}</span>
-                                    <input
-                                        type="date"
-                                        value={form.expenseDate}
-                                        onChange={(e) => updateForm("expenseDate", e.target.value)}
-                                        className="w-full rounded-[20px] bg-surface-container-highest px-4 py-3 text-sm text-on-surface outline-none"
-                                    />
-                                </label>
-                                <label className="block">
-                                    <span className="mb-2 block text-sm font-medium text-on-surface">{t("form.paymentMethod")}</span>
-                                    <select
-                                        value={form.paymentMethod}
-                                        onChange={(e) => updateForm("paymentMethod", e.target.value)}
-                                        className="w-full rounded-[20px] bg-surface-container-highest px-4 py-3 text-sm text-on-surface outline-none"
-                                    >
-                                        <option value="CASH">Cash</option>
-                                        <option value="BKASH">bKash</option>
-                                        <option value="NAGAD">Nagad</option>
-                                        <option value="BANK">Bank</option>
-                                    </select>
-                                </label>
+                            {/* Date */}
+                            <label className="block">
+                                <span className="mb-2 block text-sm font-medium text-on-surface">{t("form.date")}</span>
+                                <input
+                                    type="date"
+                                    value={form.expenseDate}
+                                    onChange={(e) => updateForm("expenseDate", e.target.value)}
+                                    className="w-full rounded-[20px] bg-surface-container-highest px-4 py-3 text-sm text-on-surface outline-none"
+                                />
+                            </label>
+
+                            {/* Payment Method — Visual chip selector */}
+                            <div className="block">
+                                <span className="mb-2 block text-sm font-medium text-on-surface">{t("form.paymentMethod")}</span>
+                                <div className="grid grid-cols-4 gap-2">
+                                    {paymentMethods.map((pm) => (
+                                        <button
+                                            key={pm.value}
+                                            type="button"
+                                            onClick={() => updateForm("paymentMethod", pm.value)}
+                                            className={`flex flex-col items-center gap-1 rounded-[16px] border px-2 py-3 text-center text-xs font-semibold transition ${form.paymentMethod === pm.value
+                                                    ? pm.color + " ring-2 ring-primary/30"
+                                                    : "border-outline-variant bg-surface-container-highest text-on-surface-variant hover:bg-surface-container-high"
+                                                }`}
+                                        >
+                                            <span className="material-symbols-outlined text-lg">{pm.icon}</span>
+                                            <span>{pm.label}</span>
+                                        </button>
+                                    ))}
+                                </div>
                             </div>
 
                             {/* Submit */}

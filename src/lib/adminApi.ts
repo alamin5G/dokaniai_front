@@ -265,3 +265,61 @@ export async function getTopReferrers(limit = 10): Promise<string[]> {
     const { data } = await apiClient.get(`/admin/referrals/top-referrers?limit=${limit}`);
     return data.data;
 }
+
+// ─── Expense Category Management ────────────────────────────────────────────
+
+export interface AdminExpenseCategory {
+    id: string;
+    name: string;
+    nameBn: string | null;
+    displayName: string;
+    scope: string;
+    businessId: string | null;
+    icon: string | null;
+    color: string | null;
+    sortOrder: number;
+    isActive: boolean;
+    createdBy: string | null;
+    createdAt: string;
+}
+
+export async function listAdminExpenseCategories(params?: {
+    scope?: string;
+    active?: boolean;
+    search?: string;
+}): Promise<AdminExpenseCategory[]> {
+    const query = new URLSearchParams();
+    if (params?.scope) query.set("scope", params.scope);
+    if (params?.active !== undefined) query.set("active", String(params.active));
+    if (params?.search) query.set("search", params.search);
+    const { data } = await apiClient.get(`/admin/expense-categories?${query.toString()}`);
+    return data.data;
+}
+
+export async function createAdminExpenseCategory(payload: {
+    name: string;
+    nameBn?: string;
+    icon?: string;
+    color?: string;
+    sortOrder?: number;
+}): Promise<AdminExpenseCategory> {
+    const { data } = await apiClient.post("/admin/expense-categories", payload);
+    return data.data;
+}
+
+export async function updateAdminExpenseCategory(
+    id: string,
+    payload: { name?: string; nameBn?: string; icon?: string; color?: string; sortOrder?: number },
+): Promise<AdminExpenseCategory> {
+    const { data } = await apiClient.put(`/admin/expense-categories/${id}`, payload);
+    return data.data;
+}
+
+export async function toggleAdminExpenseCategory(id: string): Promise<AdminExpenseCategory> {
+    const { data } = await apiClient.patch(`/admin/expense-categories/${id}/toggle`);
+    return data.data;
+}
+
+export async function deleteAdminExpenseCategory(id: string): Promise<void> {
+    await apiClient.delete(`/admin/expense-categories/${id}`);
+}

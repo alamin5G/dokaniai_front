@@ -13,6 +13,7 @@ import type {
 } from "@/types/admin";
 import type { SupportTicket } from "@/types/support";
 import CouponsTab from "./CouponsTab";
+import ExpenseCategoriesTab from "./ExpenseCategoriesTab";
 import PaymentsTab from "./PaymentsTab";
 import ReferralConfigTab from "./ReferralConfigTab";
 import ReferralEventsTab from "./ReferralEventsTab";
@@ -102,7 +103,7 @@ function IconPayment({ className = "w-5 h-5" }: { className?: string }) {
 
 // ─── Tab type ────────────────────────────────────────────────────────────────
 
-type TabKey = "dashboard" | "users" | "coupons" | "categories" | "payments" | "referral" | "referralEvents" | "tickets" | "audit";
+type TabKey = "dashboard" | "users" | "coupons" | "categories" | "expenseCategories" | "payments" | "referral" | "referralEvents" | "tickets" | "audit";
 
 // ─── Status Badge ───────────────────────────────────────────────────────────
 
@@ -185,6 +186,7 @@ export default function AdminWorkspace() {
         { key: "users", label: t("tabs.users"), icon: <IconUsers /> },
         { key: "coupons", label: t("tabs.coupons"), icon: <IconTag /> },
         { key: "categories", label: t("tabs.categories"), icon: <IconFolder /> },
+        { key: "expenseCategories", label: "Expense Categories", icon: <IconFolder /> },
         { key: "payments", label: t("tabs.payments"), icon: <IconPayment /> },
         { key: "referral", label: t("tabs.referral"), icon: <IconTag /> },
         { key: "referralEvents", label: t("tabs.referralEvents"), icon: <IconClipboard /> },
@@ -226,6 +228,7 @@ export default function AdminWorkspace() {
             {activeTab === "dashboard" && <DashboardTab />}
             {activeTab === "users" && <UsersTab />}
             {activeTab === "coupons" && <CouponsTab />}
+            {activeTab === "expenseCategories" && <ExpenseCategoriesTab />}
             {activeTab === "payments" && <PaymentsTab />}
             {activeTab === "referral" && <ReferralConfigTab />}
             {activeTab === "referralEvents" && <ReferralEventsTab />}
