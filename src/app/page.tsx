@@ -1,5 +1,6 @@
 "use client";
 
+import { CookieConsentBanner } from "@/components/home/CookieConsentBanner";
 import { DemoSection } from "@/components/home/DemoSection";
 import { FAQSection } from "@/components/home/FAQSection";
 import { FeaturesSection } from "@/components/home/FeaturesSection";
@@ -29,6 +30,7 @@ export default function HomePage() {
       </main>
 
       <Footer />
+      <CookieConsentBanner />
     </div>
   );
 }

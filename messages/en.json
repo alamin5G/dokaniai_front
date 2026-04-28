@@ -324,7 +324,9 @@
       "connect": "Connect",
       "email": "support@dokaniai.com",
       "phone": "+880 1822-679672",
-      "madeInBD": "Made with ❤️ in Bangladesh"
+      "madeInBD": "Made with ❤️ in Bangladesh",
+      "paymentPolicy": "Payment & Refund",
+      "cookies": "Cookie Policy"
     },
     "growthStory": {
       "title": "Journey of Prosperity",
@@ -416,6 +418,11 @@
       "title": "Start Today — 65 Days Completely Free",
       "description": "No card needed, no hassle. Get started in just 1 minute.",
       "button": "🚀 Start Now"
+    },
+    "cookies": {
+      "message": "We use cookies to improve your experience and analyze site traffic. By continuing, you agree to our use of cookies.",
+      "learnMore": "Learn more",
+      "accept": "Accept"
     }
   },
   "about": {
@@ -2466,7 +2473,7 @@
     },
     "legal": {
       "title": "Legal Documents",
-      "lastUpdated": "Last Updated: January 2025",
+      "lastUpdated": "Last Updated: May 2026",
       "backToRegister": "Back to Registration",
       "footer": {
         "copyright": "All rights reserved."
@@ -2483,39 +2490,38 @@
       "tabs": {
         "terms": "Terms of Service",
         "privacy": "Privacy Policy",
-        "cookies": "Cookie Policy"
+        "cookies": "Cookie Policy",
+        "payment": "Payment & Refund"
       },
       "terms": {
         "intro": {
-          "title": "1. Introduction & Service Overview",
+          "title": "1. Introduction",
           "service": {
-            "title": "1.1 About the Service",
-            "desc": "DokaniAI (referred to as \"we\", \"our\", or \"company\") is an AI-powered digital business management platform. Through our service, small and medium business owners in Bangladesh can manage their shop accounting, stock management, credit tracking, and other business operations."
+            "desc": "DokaniAI is an AI-powered digital accounting system designed for small businesses in Bangladesh. By using our service, you agree to these terms."
           },
           "acceptance": {
-            "title": "1.2 Acceptance of Terms",
-            "desc": "These terms constitute a legal agreement between you and us for using our service. When you use our service or create an account, you express your consent to these terms. If you do not agree with these terms, please do not use our service."
+            "title": "1.1 Acceptance",
+            "desc": "By creating an account, accessing, or using DokaniAI, you agree to be bound by these Terms of Service, our Privacy Policy, and Payment Policy. If you do not agree, please do not use our services."
           }
         },
         "account": {
           "title": "2. Account Management",
           "create": {
             "title": "2.1 Account Creation",
-            "p1": "You must provide accurate, complete, and up-to-date information when creating your account.",
-            "p2": "You are responsible for keeping your account login credentials (password, OTP, etc.) confidential.",
-            "p3": "You are responsible for all activities conducted through your account."
+            "p1": "Register with a valid phone number from Bangladesh",
+            "p2": "Verify your identity through OTP verification",
+            "p3": "Complete onboarding to set up your first business"
           },
           "deactivate": {
             "title": "2.2 Account Deactivation",
-            "desc": "We may temporarily or permanently deactivate your account in the following cases:",
-            "p1": "Violation of these terms",
-            "p2": "Fraudulent or illegal activities",
-            "p3": "Attempts to harm other users",
-            "p4": "Prolonged inactivity (more than 1 year)"
+            "p1": "We may deactivate accounts that violate these terms.",
+            "p2": "You will be notified before deactivation with reason.",
+            "p3": "You can appeal within 7 days of deactivation.",
+            "p4": "Deactivated accounts retain data for 30 days before deletion."
           },
           "delete": {
             "title": "2.3 Account Deletion",
-            "desc": "You can request to delete your account at any time. Once deleted, all your data will be permanently removed."
+            "desc": "⚠️ Account deletion is permanent. All business data, sales history, customer records, and transaction data will be permanently deleted and cannot be recovered."
           }
         },
         "subscription": {
@@ -2523,156 +2529,159 @@
           "plans": {
             "title": "3.1 Plans & Pricing",
             "p1": "We offer various subscription plans (Free Trial, Basic, Pro, Plus, Enterprise).",
-            "p2": "Each plan's specific features, limits, and pricing are published on our website.",
-            "p3": "We may change plan pricing or features at any time."
+            "p2": "Each plan has specific features, limits, and pricing published on our website.",
+            "p3": "We reserve the right to change plan pricing or features with 30 days notice."
           },
           "payment": {
             "title": "3.2 Payment",
-            "p1": "Payments are accepted in Bangladeshi Taka (BDT).",
-            "p2": "We accept bKash, Nagad, card payments, and bank transfers.",
-            "p3": "Subscription will not be activated if payment is unsuccessful."
+            "p1": "Payments are accepted in Bangladeshi Taka (BDT) through Mobile Financial Services (bKash, Nagad, Rocket).",
+            "p2": "Payment is verified via Transaction ID (TrxID). Subscription activates within 1-5 minutes of verification.",
+            "p3": "If payment is not successful, the subscription will not be activated."
           },
           "refund": {
             "title": "3.3 Refund Policy",
-            "p1": "Free trial period has no payment, so refund is not applicable.",
-            "p2": "Paid plans allow refund requests within the first 7 days due to dissatisfaction.",
-            "p3": "Full refund is not applicable after using the paid service during an active subscription."
+            "p1": "Free Trial period has no payment, so no refund is applicable.",
+            "p2": "For paid plans, refund requests can be made within the first 7 days if dissatisfied.",
+            "p3": "Full refund is not applicable after using the provided services during an active subscription."
           },
           "cancel": {
             "title": "3.4 Subscription Cancellation",
             "p1": "You can cancel your subscription at any time.",
-            "p2": "Service will continue until the end of the current billing period after cancellation.",
-            "p3": "After subscription cancellation, you will be automatically transferred to the free plan."
+            "p2": "After cancellation, the service will continue until the end of the current billing period."
           }
         },
         "ai": {
-          "title": "4. Artificial Intelligence (AI) Services",
+          "title": "4. AI-Powered Features",
           "accuracy": {
-            "title": "4.1 AI Accuracy & Limitations",
-            "p1": "DokaniAI's AI features strive to provide the best results, but there is no guarantee of 100% accuracy.",
-            "p2": "AI-generated sales records, stock updates, credit calculations, or other information may be incorrect.",
-            "p3": "Verifying the accuracy of AI-generated information is entirely the user's responsibility.",
-            "p4": "DokaniAI will not be liable for any financial or business losses caused by AI errors or inconsistencies."
+            "title": "4.1 AI Accuracy",
+            "p1": "AI-generated insights are suggestions only — not financial advice.",
+            "p2": "We do not guarantee 100% accuracy of AI predictions or recommendations.",
+            "p3": "Users should verify AI suggestions before making business decisions.",
+            "p4": "AI accuracy improves over time with more data input."
           },
           "voice": {
-            "title": "4.2 Voice Input & Processing",
-            "p1": "When using voice commands, your voice is recorded and processed.",
-            "p2": "This audio data is sent to a third-party service (BanglaSpeech2Text) for text conversion by AI models.",
-            "p3": "Voice data is stored for a maximum of 30 days, after which it is automatically deleted."
+            "title": "4.2 Voice Commands",
+            "p1": "Voice input is processed for command interpretation only.",
+            "p2": "Voice data is not stored permanently after processing.",
+            "p3": "Bangla speech recognition accuracy depends on accent and environment."
           },
           "limits": {
             "title": "4.3 AI Usage Limits",
-            "p1": "Each subscription plan has a specific limit on the number of AI queries.",
-            "p2": "If the daily limit is exceeded, AI features will be temporarily unavailable.",
-            "p3": "We may change usage rules to prevent excessive or abusive use."
+            "p1": "Each plan has a daily AI command limit that resets at midnight.",
+            "p2": "Exceeding limits requires upgrading to a higher plan.",
+            "p3": "Unused AI commands do not carry over to the next day."
           },
           "providers": {
             "title": "4.4 Third-Party AI Providers",
-            "p1": "GLM-4 (Zhipu AI) - Primary AI model (China)",
-            "p2": "Google Gemini - Alternative AI model (USA/Singapore)",
-            "p3": "BanglaSpeech2Text - Bengali speech to text (Bangladesh)",
-            "note": "These providers' own terms of service and privacy policies may apply."
+            "p1": "DokaniAI uses third-party AI services for intelligent features.",
+            "p2": "Your business data is processed by these providers under strict confidentiality.",
+            "p3": "We do not sell or share your data with third parties for marketing purposes.",
+            "note": "AI providers are contractually bound to data protection agreements."
           },
           "changes": {
             "title": "4.5 AI Feature Changes",
-            "p1": "AI features may be changed, improved, suspended, or canceled at any time.",
-            "p2": "There is no obligation to provide advance notice for adding new AI features or removing old ones.",
-            "p3": "No refund or compensation will be provided for AI feature changes."
+            "p1": "AI features may be updated, modified, or discontinued with notice.",
+            "p2": "We strive to improve AI capabilities continuously.",
+            "p3": "Critical AI feature changes will be communicated 30 days in advance."
           },
           "training": {
-            "title": "4.6 AI Training & Data Usage",
-            "p1": "Your personal business data is not directly used in AI model training.",
-            "p2": "Only anonymized and aggregated data may be used for product development.",
-            "p3": "You can request to have your data excluded from the anonymized dataset."
+            "title": "4.6 AI Training Data",
+            "p1": "Your anonymized data may be used to improve AI models.",
+            "p2": "You can opt out of AI training data usage in Settings.",
+            "p3": "Opting out does not affect core functionality of the service."
           }
         },
         "responsibilities": {
-          "title": "5. User Responsibilities & Duties",
+          "title": "5. User Responsibilities",
           "usage": {
             "title": "5.1 Acceptable Use",
-            "p1": "Use the service only for legitimate business purposes",
-            "p2": "Do not attempt to access other users' data or accounts",
-            "p3": "Do not reverse engineer any part of the system",
-            "p4": "Do not spread viruses, malware, or harmful code",
-            "p5": "Do not use the service for illegal or fraudulent activities"
+            "p1": "Use the service only for lawful business purposes.",
+            "p2": "Provide accurate business and personal information.",
+            "p3": "Do not attempt to reverse engineer or exploit the system.",
+            "p4": "Do not share your account credentials with others.",
+            "p5": "Report any security vulnerabilities to support@dokaniai.com."
           },
           "ownership": {
-            "title": "5.2 Business Data Ownership",
-            "p1": "Your business data (sales, stock, credit, customer information) is entirely your property.",
-            "p2": "DokaniAI stores this data solely for the purpose of providing the service.",
-            "p3": "You can export or delete your data at any time."
+            "title": "5.2 Data Ownership",
+            "p1": "You retain ownership of all business data you input.",
+            "p2": "DokaniAI acts as a data processor on your behalf.",
+            "p3": "You can export your data at any time through the app."
           }
         },
         "ip": {
           "title": "6. Intellectual Property",
           "dokaniai": {
-            "title": "6.1 DokaniAI's Rights",
-            "p1": "The DokaniAI platform, its design, logo, code, and all creative materials are the exclusive property of DokaniAI.",
-            "p2": "Protected by copyright, trademark, and other intellectual property laws."
+            "title": "6.1 DokaniAI IP",
+            "p1": "The DokaniAI platform, including software, design, and branding, is our intellectual property.",
+            "p2": "You may not copy, modify, or distribute any part of the platform without permission."
           },
           "user": {
-            "title": "6.2 User Rights",
-            "p1": "Your business data and content are your property.",
-            "p2": "You grant us a limited, non-exclusive, revocable license for using our service."
+            "title": "6.2 User Content",
+            "p1": "You grant DokaniAI a limited license to process your data for providing the service.",
+            "p2": "This license terminates when you delete your account and all associated data."
           }
         },
         "liability": {
           "title": "8. Limitation of Liability",
           "asis": {
-            "title": "8.1 Service Provided \"As Is\"",
-            "p1": "DokaniAI service is provided on an \"as is\" and \"as available\" basis.",
-            "p2": "No express or implied warranties of any kind are provided."
+            "title": "8.1 As-Is Service",
+            "p1": "The service is provided \"as is\" without warranties of any kind.",
+            "p2": "We do not guarantee uninterrupted or error-free service."
           },
           "limit": {
-            "title": "8.2 Damage Liability Limit",
-            "p1": "Business losses or lost profits",
-            "p2": "Data loss or corruption",
-            "p3": "Financial losses caused by AI errors",
-            "p4": "Third-party activities",
-            "p5": "Service unavailability"
+            "title": "8.2 Liability Limitations",
+            "p1": "DokaniAI is not liable for any indirect, incidental, or consequential damages.",
+            "p2": "Our total liability shall not exceed the amount paid by you in the last 6 months.",
+            "p3": "We are not responsible for losses due to third-party service failures.",
+            "p4": "We are not liable for business decisions made based on AI suggestions.",
+            "p5": "Force majeure events exempt us from liability during the event period."
           },
           "max": {
             "title": "8.3 Maximum Liability",
-            "p1": "In any case, DokaniAI's maximum liability shall be equal to your last 12 months' paid subscription fees.",
-            "p2": "No financial compensation is applicable for free plan users."
+            "p1": "Maximum liability is capped at 2x your last subscription payment amount.",
+            "p2": "This cap does not apply to cases of gross negligence or willful misconduct."
           }
         },
         "serviceChanges": {
           "title": "7. Service Changes & Suspension",
-          "changeTitle": "7.1 Service Changes",
-          "changeP1": "We may change the features, interface, or functionality of the service at any time.",
-          "changeP2": "We will try to notify you in advance for major changes.",
-          "suspendTitle": "7.2 Service Suspension or Termination",
-          "suspendP1": "The service may be temporarily suspended for maintenance, security issues, or other reasons.",
-          "suspendP2": "Users will be notified for long-term suspensions.",
-          "suspendP3": "No compensation will be provided for service suspension unless legally required."
+          "changeTitle": "7.1 Service Modifications",
+          "changeP1": "We may modify, suspend, or discontinue any part of the service with reasonable notice.",
+          "changeP2": "We will make commercially reasonable efforts to notify you of material changes.",
+          "suspendTitle": "7.2 Account Suspension",
+          "suspendP1": "Accounts may be suspended for Terms of Service violations.",
+          "suspendP2": "Suspended account holders will be notified with reason and appeal process.",
+          "suspendP3": "Data from suspended accounts is retained for 30 days before deletion."
         },
         "indemnification": {
           "title": "9. Indemnification",
-          "desc": "You agree to indemnify and hold harmless DokaniAI, its officers, directors, employees, and agents from:",
-          "p1": "Any claims or lawsuits arising from your use of the service",
-          "p2": "Any disputes arising from your content or data",
-          "p3": "Any damages resulting from your violation of these terms"
+          "desc": "You agree to indemnify DokaniAI against claims arising from:",
+          "p1": "Your violation of these Terms of Service.",
+          "p2": "Your violation of applicable laws or regulations.",
+          "p3": "Infringement of third-party rights through your use of the service."
         },
         "dispute": {
           "title": "10. Dispute Resolution",
-          "p1": "These terms shall be governed by the laws of Bangladesh. Any dispute shall be resolved in the courts of Dhaka, Bangladesh.",
-          "p2": "A 30-day mutual discussion opportunity must be given before filing any dispute.",
-          "p3": "If not resolved through mutual discussion, arbitration may be conducted under the Bangladesh Arbitration Act."
+          "p1": "Contact us at support@dokaniai.com with your concern.",
+          "p2": "Our team will review and propose resolution within 3-5 business days.",
+          "p3": "Unresolved disputes will be handled through arbitration in Dhaka, Bangladesh."
         },
         "general": {
           "title": "11. General Provisions",
-          "p1": "These terms and the privacy policy constitute the complete agreement between you and us.",
-          "p2": "We may amend these terms at any time. Users will be notified via email for major amendments.",
-          "p3": "If any part of these terms is found to be illegal or inapplicable, the remaining parts shall remain in effect.",
-          "p4": "Our silence or inaction in the event of any term violation shall not be deemed a waiver of that right."
+          "p1": "These terms are governed by the laws of Bangladesh.",
+          "p2": "If any provision is found unenforceable, the rest remain in effect.",
+          "p3": "Our failure to enforce a right does not constitute a waiver.",
+          "p4": "These terms constitute the entire agreement between you and DokaniAI."
         },
         "contact": {
-          "title": "12. Contact",
-          "email": "Email: support@dokaniai.com",
-          "phone": "Phone: +880 1822-679672",
-          "address": "Address: Dhaka, Bangladesh"
-        }
+          "title": "12. Contact Information",
+          "email": "Email Support",
+          "phone": "Phone / Hotline",
+          "address": "Address"
+        },
+        "part1Badge": "Part 1: General",
+        "part2Badge": "Part 2: Subscription & AI",
+        "part3Badge": "Part 3: Rights & Responsibilities",
+        "part4Badge": "Part 4: Legal"
       },
       "privacy": {
         "intro": {
@@ -2851,34 +2860,487 @@
         }
       },
       "cookies": {
-        "what": {
-          "title": "1. What are Cookies?",
-          "desc": "Cookies are small text files that are stored on your device when you use our website or app."
+        "title": "Cookie Policy",
+        "lastUpdated": "Last updated: April 2026",
+        "whatCookies": "What Are Cookies?",
+        "whatCookiesDesc": "Cookies are small text files that are stored on your device when you visit our website. They help us provide you with a better experience by remembering your preferences and understanding how you use our service.",
+        "howWeUse": "How We Use Cookies",
+        "howWeUseDesc": "We use cookies to improve your experience on DokaniAI. They help us keep you logged in, remember your language preference, and analyze how our service is being used so we can make it better.",
+        "typesOfCookies": "Types of Cookies We Use",
+        "type_essential": "Essential Cookies",
+        "type_essentialDesc": "These cookies are necessary for the website to function properly. They enable basic functions like page navigation, secure authentication, and session management. The website cannot function properly without these cookies.",
+        "type_analytics": "Analytics Cookies",
+        "type_analyticsDesc": "These cookies help us understand how visitors interact with our website by collecting and reporting information anonymously. This helps us improve our service and user experience.",
+        "type_functional": "Functional Cookies",
+        "type_functionalDesc": "These cookies enable the website to provide enhanced functionality and personalization. They may be set by us or by third-party providers whose services we have added to our pages.",
+        "manageCookies": "Managing Your Cookie Preferences",
+        "manageCookiesDesc": "You can control and manage cookies in your browser settings. You can block or delete cookies, but this may affect your experience on our website. Some features may not work properly without cookies.",
+        "contact": "Contact Us",
+        "contactDesc": "If you have any questions about our use of cookies, please contact us at",
+        "backToHome": "Back to Home"
+      },
+      "payment": {
+        "title": "Payment & Refund Policy",
+        "lastUpdated": "Last Updated: May 2026",
+        "part1Badge": "Payment Terms",
+        "part2Badge": "Refund Policy",
+        "part3Badge": "Free Trial, Coupons & Referral",
+        "part4Badge": "Part 4: Important Information",
+        "general": {
+          "title": "1. General Payment Terms",
+          "system": {
+            "title": "1.1 Payment System",
+            "desc": "DokaniAI uses Mobile Financial Services (MFS) based payment system. All transactions are processed through bKash, Nagad, and Rocket. We do not collect or store your MFS account credentials."
+          },
+          "plans": {
+            "title": "1.2 Subscription Plans",
+            "note1": "Free Trial plans are available once per device and phone number.",
+            "note2": "All paid plans are billed monthly unless stated otherwise.",
+            "note3": "AI command limits reset daily at 12:00 AM (Bangladesh Time).",
+            "note4": "Enterprise plan requires custom contract — contact support@dokaniai.com."
+          }
         },
-        "why": {
-          "title": "2. Why We Use Cookies",
-          "p1": "Remembering you (login session)",
-          "p2": "Saving your preferences (language, theme)",
-          "p3": "Ensuring service functionality",
-          "p4": "Analyzing usage patterns"
+        "table": {
+          "plan": "Plan",
+          "price": "Price",
+          "period": "Period",
+          "businesses": "Businesses",
+          "products": "Products",
+          "aiPerDay": "AI/Day"
         },
-        "types": {
-          "title": "3. Types of Cookies",
-          "type": "Type",
-          "desc": "Description",
-          "required": "Requirement",
-          "essential": "Essential",
-          "essentialDesc": "Login, security",
-          "yes": "Required",
-          "functional": "Functional",
-          "functionalDesc": "Preferences, settings",
-          "optional": "Optional",
-          "analytics": "Analytics",
-          "analyticsDesc": "Usage statistics"
+        "plans": {
+          "ft1": "Free Trial 1",
+          "ft2": "Free Trial 2",
+          "ft1Period": "7 Days",
+          "ft2Period": "7 Days",
+          "basic": "Basic",
+          "pro": "Pro",
+          "plus": "Plus",
+          "enterprise": "Enterprise",
+          "monthly": "Monthly",
+          "yearly": "Custom",
+          "unlimited": "Unlimited",
+          "custom": "Custom"
         },
-        "control": {
-          "title": "4. Cookie Control",
-          "desc": "You can accept or reject cookies through your browser settings. However, disabling essential cookies may cause the service to not work properly."
+        "methods": {
+          "title": "2. Payment Methods",
+          "accepted": {
+            "title": "2.1 Accepted Payment Methods"
+          },
+          "bkash": "bKash",
+          "nagad": "Nagad",
+          "rocket": "Rocket",
+          "mfsType": "Mobile Financial Service",
+          "important": {
+            "title": "⚠️ Important Notice",
+            "desc": "DokaniAI never asks for your MFS PIN or password. Payments are verified through transaction IDs (TrxID) only."
+          },
+          "process": {
+            "title": "2.2 Payment Process"
+          },
+          "step1": {
+            "title": "Select Plan",
+            "desc": "Choose your desired subscription plan from the pricing page."
+          },
+          "step2": {
+            "title": "Enter Phone Number",
+            "desc": "Enter your MFS account phone number for payment reference."
+          },
+          "step3": {
+            "title": "Send Payment",
+            "desc": "Send the exact amount to the DokaniAI merchant number shown on screen."
+          },
+          "step4": {
+            "title": "Enter TrxID",
+            "desc": "Enter the transaction ID from your MFS payment confirmation."
+          },
+          "step5": {
+            "title": "Verification",
+            "desc": "Our system verifies your payment within 1-5 minutes. Subscription activates automatically."
+          },
+          "verification": {
+            "title": "2.3 Payment Verification Rules"
+          },
+          "wrongTrx": {
+            "title": "2.4 Wrong TrxID Policy",
+            "p1": "If you enter a wrong TrxID, you can re-submit within 24 hours.",
+            "p2": "Intentional wrong TrxID submission may result in account suspension.",
+            "p3": "DokaniAI is not responsible for payments sent to wrong numbers.",
+            "p4": "Always verify the merchant number before sending payment."
+          }
+        },
+        "billing": {
+          "title": "3. Subscription & Billing",
+          "cycle": {
+            "title": "3.1 Billing Cycle",
+            "cycle": "Cycle",
+            "renewal": "Renewal"
+          },
+          "basicCycle": "Monthly",
+          "basicRenewal": "30 days from activation",
+          "proCycle": "Monthly",
+          "proRenewal": "30 days from activation",
+          "plusCycle": "Monthly",
+          "plusRenewal": "30 days from activation",
+          "enterpriseCycle": "Custom",
+          "enterpriseRenewal": "As per contract",
+          "noAutoRenewal": "ℹ️ DokaniAI does NOT auto-renew subscriptions. You must manually renew before expiry.",
+          "upgrade": {
+            "title": "3.2 Plan Upgrade",
+            "p1": "Upgrades take effect immediately upon payment verification.",
+            "p2": "You only pay the difference between current and new plan (pro-rata).",
+            "p3": "Unused AI commands from old plan do NOT carry over.",
+            "p4": "New plan limits apply immediately after upgrade.",
+            "p5": "Upgrade request can be made from Settings → Subscription page."
+          },
+          "downgrade": {
+            "title": "3.3 Plan Downgrade",
+            "p1": "Downgrade takes effect at the end of current billing period.",
+            "p2": "No refund for remaining days in current plan.",
+            "p3": "Data exceeding new plan limits will be read-only (not deleted)."
+          },
+          "accurateInfo": {
+            "title": "3.4 Accurate Information",
+            "p1": "You must provide accurate phone number and business information.",
+            "p2": "Incorrect information may delay payment verification.",
+            "p3": "DokaniAI reserves the right to verify provided information."
+          }
+        },
+        "failure": {
+          "title": "4. Payment Failure & Account Lifecycle",
+          "causes": {
+            "title": "4.1 Common Failure Causes",
+            "p1": "Insufficient balance in MFS account.",
+            "p2": "Wrong merchant number entered.",
+            "p3": "MFS service temporarily unavailable.",
+            "p4": "Transaction ID already used for a previous payment.",
+            "p5": "Payment amount does not match subscription fee."
+          },
+          "lifecycle": {
+            "title": "4.2 Account Lifecycle"
+          },
+          "grace": {
+            "period": "Grace Period",
+            "time": "3 Days",
+            "desc": "Full access continues. Notification sent to renew subscription."
+          },
+          "limited": {
+            "period": "Limited Access",
+            "time": "7 Days",
+            "desc": "AI commands disabled. Data visible but read-only. Sales entry still available."
+          },
+          "archived": {
+            "period": "Archived",
+            "time": "30 Days",
+            "desc": "All data archived. Dashboard shows renewal prompt only."
+          },
+          "deleted": {
+            "period": "Data Deletion",
+            "time": "After 30 Days",
+            "desc": "All business data permanently deleted. Account reset to Free Trial."
+          },
+          "repay": {
+            "title": "4.3 Repayment",
+            "p1": "You can repay anytime during grace or limited period.",
+            "p2": "After archival, contact support to restore data before deletion.",
+            "p3": "Deleted data cannot be recovered under any circumstances."
+          }
+        },
+        "invoice": {
+          "title": "5. Invoice & Receipts",
+          "provision": {
+            "title": "5.1 Invoice Provision",
+            "p1": "Digital invoices are generated automatically for every payment.",
+            "p2": "Invoices are available in Settings → Billing History.",
+            "p3": "You can download invoices as PDF."
+          },
+          "content": {
+            "title": "5.2 Invoice Content",
+            "p1": "Business name and address",
+            "p2": "Subscription plan name and period",
+            "p3": "Payment amount and MFS provider",
+            "p4": "Transaction ID and payment date",
+            "p5": "DokaniAI merchant information",
+            "p6": "Tax information (if applicable)"
+          },
+          "tax": {
+            "title": "5.3 Tax Information",
+            "p1": "All prices include applicable VAT.",
+            "p2": "DokaniAI is registered under Bangladesh tax laws.",
+            "p3": "Tax invoices available upon request for business accounting."
+          }
+        },
+        "refund": {
+          "eligibility": {
+            "title": "6. Refund Eligibility",
+            "eligible": {
+              "title": "6.1 Eligible Refund Scenarios"
+            }
+          },
+          "situation": "Situation",
+          "refundAmount": "Refund Amount",
+          "condition": "Condition",
+          "serviceFail": "Service Failure",
+          "serviceFailAmount": "100%",
+          "serviceFailCondition": "Service unavailable for 48+ consecutive hours",
+          "techIssue": "Technical Issue",
+          "techIssueAmount": "100%",
+          "techIssueCondition": "Proven technical bug preventing core feature use",
+          "wrongAmount": "Overpayment",
+          "wrongAmountAmount": "Excess amount",
+          "wrongAmountCondition": "Paid more than plan price",
+          "doublePay": "Double Payment",
+          "doublePayAmount": "Full duplicate",
+          "doublePayCondition": "Same TrxID used twice within 24h",
+          "platformClose": "Platform Closure",
+          "platformCloseAmount": "Pro-rata",
+          "platformCloseCondition": "If DokaniAI permanently shuts down",
+          "notEligible": {
+            "title": "6.2 Non-Refundable Cases"
+          },
+          "case": "Case",
+          "reason": "Reason",
+          "ne": {
+            "freeTrial": "Free Trial Usage",
+            "freeTrialReason": "No payment was made during free trial",
+            "after7Days": "After 7 Days",
+            "after7DaysReason": "Service was used for 7+ days",
+            "accountDeactivated": "Account Deactivated",
+            "accountDeactivatedReason": "Violation of terms of service",
+            "promoCoupon": "Promotional/Coupon",
+            "promoCouponReason": "Discounted or promotional payments are non-refundable",
+            "enterpriseCustom": "Enterprise Custom",
+            "enterpriseCustomReason": "Governed by individual enterprise contract"
+          },
+          "process": {
+            "title": "7. Refund Process"
+          },
+          "howTo": {
+            "title": "7.1 How to Request Refund",
+            "desc": "To request a refund, contact us through any of these channels:",
+            "email": "Email: support@dokaniai.com with subject \"Refund Request\"",
+            "hotline": "Hotline: +880 1822-679672 (10 AM - 8 PM BST)",
+            "app": "In-App: Settings → Billing → Request Refund",
+            "required": "Required information for refund request:",
+            "r1": "Registered phone number",
+            "r2": "Transaction ID (TrxID)",
+            "r3": "Payment date and amount",
+            "r4": "Reason for refund",
+            "r5": "MFS account number for refund transfer"
+          },
+          "processing": {
+            "title": "7.2 Refund Processing Timeline",
+            "desc": "Our refund process follows these stages:"
+          },
+          "step": "Step",
+          "timeline": "Timeline",
+          "proc": {
+            "receive": "Request Received",
+            "receiveTime": "Immediate",
+            "verify": "Verification & Review",
+            "verifyTime": "1-2 Business Days",
+            "transfer": "Refund Transfer",
+            "transferTime": "3-5 Business Days",
+            "total": "Total Estimated Time",
+            "totalTime": "4-7 Business Days"
+          },
+          "status": {
+            "title": "7.3 Refund Status Tracking",
+            "p1": "You will receive SMS notification at each stage.",
+            "p2": "Refund status available in Settings → Billing → Refund History.",
+            "p3": "For disputes, contact support with your refund ticket number."
+          }
+        },
+        "prorata": {
+          "title": "8. Pro-Rata Calculation",
+          "calc": {
+            "title": "8.1 Refund Formula"
+          },
+          "formula": "Refund = (Plan Price ÷ 30) × Days Remaining",
+          "example": "Example: Pro plan (৳399) used for 10 days → Refund = (399 ÷ 30) × 20 = ৳266",
+          "deductible": {
+            "title": "8.2 Deductible Items",
+            "p1": "Free trial usage value (if applicable)",
+            "p2": "Payment gateway processing fee (৳5-10)"
+          }
+        },
+        "fraud": {
+          "title": "9. Fraud Prevention",
+          "auto": {
+            "title": "9.1 Automated Fraud Detection"
+          },
+          "rule": "Rule",
+          "action": "Action",
+          "wrongTrx": "Fake TrxID",
+          "wrongTrxAction": "Payment rejected + account flagged",
+          "adminReject": "Admin Rejection",
+          "adminRejectAction": "Manual review — refund processed",
+          "detected": "Multiple Failed Attempts",
+          "detectedAction": "Temporary account lock (2 hours)",
+          "idempotency": {
+            "title": "9.2 Payment Idempotency",
+            "p1": "Each TrxID can only be used once for payment verification.",
+            "p2": "Duplicate submissions are automatically rejected.",
+            "p3": "If accidentally charged twice, contact support immediately."
+          }
+        },
+        "special": {
+          "title": "10. Special Circumstances",
+          "platformClose": {
+            "title": "10.1 Platform Closure",
+            "p1": "Users will receive 30 days notice before any platform closure.",
+            "p2": "Pro-rata refunds will be processed for all active subscriptions.",
+            "p3": "Data export will be available for 60 days after closure."
+          },
+          "forceMajeure": {
+            "title": "10.2 Force Majeure",
+            "p1": "DokaniAI is not liable for service disruption due to natural disasters.",
+            "p2": "Government regulations affecting MFS services.",
+            "p3": "Internet infrastructure failures beyond our control."
+          },
+          "deactivation": {
+            "title": "10.3 Account Deactivation",
+            "p1": "Accounts deactivated for ToS violation are not eligible for refund.",
+            "p2": "Users will be notified with reason before deactivation.",
+            "p3": "Appeal process available within 7 days of deactivation."
+          }
+        },
+        "freeTrial": {
+          "title": "11. Free Trial",
+          "twoPhase": {
+            "title": "11.1 Two-Phase Free Trial"
+          },
+          "phase": "Phase",
+          "duration": "Duration",
+          "ft1": "Phase 1",
+          "ft1Dur": "7 Days",
+          "ft2": "Phase 2",
+          "ft2Dur": "7 Days",
+          "rules": {
+            "title": "11.2 Free Trial Rules",
+            "p1": "Free trial is available once per device and phone number.",
+            "p2": "Phase 2 activates automatically after Phase 1 expires.",
+            "p3": "You can upgrade to a paid plan anytime during the free trial.",
+            "p4": "Free trial data carries over when upgrading.",
+            "p5": "AI commands are limited to 5 per day during free trial.",
+            "p6": "No payment information required for free trial activation.",
+            "p7": "Free trial users have access to core features only."
+          }
+        },
+        "coupons": {
+          "title": "12. Coupons & Promotions",
+          "conditions": {
+            "title": "12.1 Coupon Conditions",
+            "p1": "Coupons have an expiration date and cannot be used after.",
+            "p2": "One coupon per subscription payment.",
+            "p3": "Coupons cannot be combined with other offers.",
+            "p4": "DokaniAI reserves the right to revoke coupons at any time."
+          },
+          "cancellation": {
+            "title": "12.2 Coupon Cancellation",
+            "p1": "DokaniAI may cancel promotional offers with 7 days notice.",
+            "p2": "Already applied coupons will remain valid until expiry.",
+            "p3": "No compensation for cancelled promotions."
+          }
+        },
+        "referral": {
+          "title": "13. Referral Program",
+          "credits": {
+            "title": "13.1 Referral Credits",
+            "p1": "Both referrer and referee receive bonus credits.",
+            "p2": "Credits are applied to the next subscription payment.",
+            "p3": "Referral bonus amount may vary based on promotions."
+          },
+          "abuse": {
+            "title": "13.2 Referral Abuse",
+            "p1": "Self-referrals are not allowed.",
+            "p2": "Referral credits from fraudulent accounts will be reversed.",
+            "p3": "Excessive abuse may result in account suspension."
+          }
+        },
+        "warning": {
+          "title": "⚠️ Payment Safety Notice",
+          "safe": {
+            "title": "Keep Your Payments Safe",
+            "p1": "Only pay through the DokaniAI app or official website.",
+            "p2": "Never share your MFS PIN with anyone.",
+            "p3": "Always verify the merchant number before sending payment.",
+            "p4": "Save your TrxID as proof of payment."
+          },
+          "official": {
+            "title": "Official Channels Only",
+            "p1": "DokaniAI will never ask for payment through personal numbers.",
+            "p2": "All official merchant numbers are shown in the app.",
+            "p3": "Report suspicious payment requests to support@dokaniai.com.",
+            "p4": "Follow our social media for payment-related announcements."
+          }
+        },
+        "contact": {
+          "title": "14. Contact & Support",
+          "subject": "Subject",
+          "detail": "Detail",
+          "general": "General Inquiry",
+          "refund": "Refund Request",
+          "fraud": "Fraud Report",
+          "promo": "Promotion Query",
+          "hotline": "Hotline"
+        },
+        "responsibilities": {
+          "title": "15. User Payment Responsibilities",
+          "p1": "Ensure sufficient balance before initiating payment.",
+          "p2": "Double-check the payment amount and merchant number.",
+          "p3": "Keep your TrxID safe for future reference.",
+          "p4": "Report unauthorized transactions immediately.",
+          "p5": "Do not share your account with others to avoid payment conflicts.",
+          "p6": "Renew subscription before expiry to avoid service interruption."
+        },
+        "dispute": {
+          "title": "16. Dispute Resolution Process",
+          "step1": {
+            "title": "Contact Support",
+            "desc": "Email support@dokaniai.com with your concern and evidence."
+          },
+          "step2": {
+            "title": "Investigation",
+            "desc": "Our team reviews your case within 1-2 business days."
+          },
+          "step3": {
+            "title": "Resolution Proposal",
+            "desc": "We propose a fair resolution based on evidence."
+          },
+          "step4": {
+            "title": "Acceptance",
+            "desc": "Both parties agree on the resolution."
+          },
+          "step5": {
+            "title": "Implementation",
+            "desc": "Resolution is implemented within 3-5 business days."
+          }
+        },
+        "legal": {
+          "title": "17. Legal Framework",
+          "governed": "This payment policy is governed by the laws of Bangladesh.",
+          "applicableLaws": "Applicable Laws:",
+          "dispute": "Dispute Resolution:",
+          "disputeDhaka": "All disputes shall be resolved in Dhaka, Bangladesh.",
+          "disputeArbitration": "Arbitration will be conducted as per Bangladesh Arbitration Act, 2001."
+        },
+        "verification": {
+          "condition": "Condition",
+          "requirement": "Requirement",
+          "trxMatch": "TrxID Match",
+          "trxMatchVal": "Transaction ID must exist in MFS records",
+          "amountTolerance": "Amount Tolerance",
+          "amountToleranceVal": "Payment amount must match exactly (±৳0)",
+          "timeWindow": "Time Window",
+          "timeWindowVal": "TrxID must be within 30 minutes of submission",
+          "mfsMatch": "MFS Provider",
+          "mfsMatchVal": "MFS provider must match selected payment method"
+        }
+      },
+      "home": {
+        "footer": {
+          "cookies": "Cookie Policy"
         }
       }
     },

@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { useState } from "react";
 import { useTranslations } from "next-intl";
 
@@ -26,6 +27,15 @@ export function FAQSection() {
             {t("title")}
           </div>
           <h2 className="text-3xl sm:text-4xl md:text-5xl font-black text-primary font-headline leading-tight">{t("title")}</h2>
+          <div className="mt-6 rounded-2xl overflow-hidden shadow-lg">
+            <Image
+              src="/icons/image/why-we.jpg"
+              alt="Why DokaniAI"
+              width={600}
+              height={400}
+              className="w-full h-auto object-cover"
+            />
+          </div>
         </div>
 
         <div className="space-y-3 sm:space-y-4">

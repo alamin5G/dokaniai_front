@@ -54,6 +54,8 @@ export function Footer() {
             <ul className="space-y-2">
               <li><Link className={navLinkClass} href="/legal/terms">{t("home.footer.terms")}</Link></li>
               <li><Link className={navLinkClass} href="/legal/privacy">{t("home.footer.privacy")}</Link></li>
+              <li><Link className={navLinkClass} href="/legal/payment">{t("home.footer.paymentPolicy")}</Link></li>
+              <li><Link className={navLinkClass} href="/legal/cookies">{t("home.footer.cookies")}</Link></li>
             </ul>
           </div>
 
