@@ -1,6 +1,9 @@
 "use client";
 
 import { useTranslations } from "next-intl";
+import { useRouter } from "next/navigation";
+import { useBusinessStore } from "@/store/businessStore";
+import { buildShopPath } from "@/lib/shopRouting";
 
 // ---------------------------------------------------------------------------
 // Inline SVG Icons
@@ -129,6 +132,8 @@ const placeholderTransactions: Transaction[] = [
 
 export default function RecentTransactions() {
     const t = useTranslations("dashboard.transactions");
+    const router = useRouter();
+    const { activeBusinessId } = useBusinessStore();
 
     // Map badge keys to translations
     const badgeLabel = (badge: string) => {
@@ -149,7 +154,12 @@ export default function RecentTransactions() {
             {/* Header */}
             <div className="flex items-center justify-between mb-6">
                 <h4 className="text-xl font-bold">{t("title")}</h4>
-                <button className="text-primary font-bold text-sm">{t("viewAll")}</button>
+                <button
+                    className="text-primary font-bold text-sm hover:underline"
+                    onClick={() => activeBusinessId && router.push(buildShopPath(activeBusinessId, "/sales"))}
+                >
+                    {t("viewAll")}
+                </button>
             </div>
 
             {/* Transaction List */}

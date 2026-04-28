@@ -117,6 +117,7 @@ interface Redemption {
     id: string;
     couponCode: string;
     redeemedAt: string;
+    userId: string;
 }
 
 export default function CouponsTab() {
@@ -143,6 +144,7 @@ export default function CouponsTab() {
     const [error, setError] = useState<string | null>(null);
 
     const [recentRedemptions, setRecentRedemptions] = useState<Redemption[]>([]);
+    const [totalDiscount, setTotalDiscount] = useState(0);
 
     const loadCoupons = useCallback(async () => {
         setLoading(true);
@@ -158,18 +160,26 @@ export default function CouponsTab() {
             setCoupons(data);
 
             const allRedemptions: Redemption[] = [];
+            let aggregatedDiscount = 0;
             for (const c of data.content) {
                 if (c.usedCount > 0) {
                     try {
                         const stats = await getCouponStats(c.id);
-                        for (const rid of stats.recentRedemptions.slice(0, 3)) {
-                            allRedemptions.push({ id: rid, couponCode: c.code, redeemedAt: new Date().toISOString() });
+                        aggregatedDiscount += stats.totalDiscountGiven ?? 0;
+                        for (const r of stats.recentRedemptions.slice(0, 3)) {
+                            allRedemptions.push({
+                                id: r.id,
+                                couponCode: r.couponCode ?? c.code,
+                                redeemedAt: r.redeemedAt,
+                                userId: r.userId,
+                            });
                         }
                     } catch { /* skip */ }
                 }
             }
-            allRedemptions.sort(() => Math.random() - 0.5);
+            allRedemptions.sort((a, b) => new Date(b.redeemedAt).getTime() - new Date(a.redeemedAt).getTime());
             setRecentRedemptions(allRedemptions.slice(0, 10));
+            setTotalDiscount(aggregatedDiscount);
         } catch {
             setError(t("messages.loadError"));
         } finally {
@@ -543,7 +553,7 @@ export default function CouponsTab() {
                             </div>
                             <div>
                                 <p className="text-on-surface-variant text-xs font-medium">{t("stats.totalDiscount")}</p>
-                                <p className="text-2xl font-bold text-on-surface">—</p>
+                                <p className="text-2xl font-bold text-on-surface">{totalDiscount > 0 ? `৳${totalDiscount.toLocaleString()}` : "—"}</p>
                             </div>
                         </div>
                     </div>
@@ -699,8 +709,8 @@ export default function CouponsTab() {
                                                     type="button"
                                                     onClick={() => togglePlan(plan.id)}
                                                     className={`px-3 py-1.5 rounded-full text-xs font-semibold border transition-colors ${selected
-                                                            ? "bg-primary text-on-primary border-primary"
-                                                            : "bg-surface-container-low text-on-surface-variant border-outline-variant/30 hover:border-primary/50"
+                                                        ? "bg-primary text-on-primary border-primary"
+                                                        : "bg-surface-container-low text-on-surface-variant border-outline-variant/30 hover:border-primary/50"
                                                         }`}
                                                 >
                                                     {plan.name}

@@ -56,6 +56,7 @@ interface KpiCardProps {
     trend?: { value: number; isPositive: boolean };
     accentColor?: string; // Tailwind text color class for the value
     className?: string;
+    onClick?: () => void;
 }
 
 // ---------------------------------------------------------------------------
@@ -87,12 +88,17 @@ export default function KpiCard({
     trend,
     accentColor = "text-primary",
     className = "",
+    onClick,
 }: KpiCardProps) {
     const t = useTranslations("dashboard.kpi");
 
     return (
         <div
-            className={`bg-surface-container-lowest rounded-2xl p-6 ${className}`}
+            role={onClick ? "button" : undefined}
+            tabIndex={onClick ? 0 : undefined}
+            onClick={onClick}
+            onKeyDown={onClick ? (e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); onClick(); } } : undefined}
+            className={`bg-surface-container-lowest rounded-2xl p-6 ${onClick ? "cursor-pointer hover:bg-surface-container-high active:scale-[0.98] transition-all" : ""} ${className}`}
         >
             {/* Icon + Title */}
             <div className="flex items-center gap-3 mb-4">
@@ -111,8 +117,8 @@ export default function KpiCard({
                     {trend ? (
                         <div
                             className={`inline-flex items-center gap-1 text-xs font-bold px-2 py-1 rounded-full ${trend.isPositive
-                                    ? "text-primary bg-primary-fixed/40"
-                                    : "text-tertiary bg-tertiary-fixed/40"
+                                ? "text-primary bg-primary-fixed/40"
+                                : "text-tertiary bg-tertiary-fixed/40"
                                 }`}
                         >
                             {trend.isPositive ? (

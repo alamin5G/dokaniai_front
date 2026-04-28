@@ -1,6 +1,9 @@
 "use client";
 
 import { useTranslations } from "next-intl";
+import { useRouter } from "next/navigation";
+import { useBusinessStore } from "@/store/businessStore";
+import { buildShopPath } from "@/lib/shopRouting";
 
 // ---------------------------------------------------------------------------
 // Inline SVG Icons
@@ -69,6 +72,13 @@ const placeholderAlerts: StockAlert[] = [
 
 export default function StockAlerts() {
     const t = useTranslations("dashboard.lowStock");
+    const router = useRouter();
+    const { activeBusinessId } = useBusinessStore();
+
+    const handleNavigate = (section: string) => {
+        if (!activeBusinessId) return;
+        router.push(buildShopPath(activeBusinessId, section));
+    };
 
     return (
         <section className="bg-surface-container-lowest rounded-2xl p-6">
@@ -91,7 +101,10 @@ export default function StockAlerts() {
                                 {alert.remaining}
                             </p>
                         </div>
-                        <button className="p-2 bg-tertiary text-on-tertiary rounded-lg min-w-[40px] min-h-[40px] flex items-center justify-center">
+                        <button
+                            className="p-2 bg-tertiary text-on-tertiary rounded-lg min-w-[40px] min-h-[40px] flex items-center justify-center"
+                            onClick={() => handleNavigate("/products")}
+                        >
                             <IconPlus className="w-5 h-5" />
                         </button>
                     </div>
@@ -99,7 +112,10 @@ export default function StockAlerts() {
             </div>
 
             {/* View Inventory Link */}
-            <button className="w-full mt-6 py-3 text-tertiary rounded-xl font-bold text-sm bg-surface-container-low text-center">
+            <button
+                className="w-full mt-6 py-3 text-tertiary rounded-xl font-bold text-sm bg-surface-container-low text-center hover:bg-surface-container-high transition-colors"
+                onClick={() => handleNavigate("/products")}
+            >
                 {t("viewInventory")}
             </button>
         </section>

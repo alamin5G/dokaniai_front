@@ -1,6 +1,9 @@
 "use client";
 
 import { useTranslations } from "next-intl";
+import { useRouter } from "next/navigation";
+import { useBusinessStore } from "@/store/businessStore";
+import { buildShopPath } from "@/lib/shopRouting";
 
 // ---------------------------------------------------------------------------
 // Inline SVG Icons
@@ -69,6 +72,13 @@ function IconSparkle({ className = "w-5 h-5" }: { className?: string }) {
 
 export default function AiCommandBar() {
     const t = useTranslations("dashboard.ai");
+    const router = useRouter();
+    const { activeBusinessId } = useBusinessStore();
+
+    const handleOpenAI = () => {
+        if (!activeBusinessId) return;
+        router.push(buildShopPath(activeBusinessId, "/ai"));
+    };
 
     return (
         <section className="relative group">
@@ -76,7 +86,10 @@ export default function AiCommandBar() {
             <div className="absolute -inset-1 bg-gradient-to-r from-primary to-secondary rounded-2xl blur opacity-15 group-hover:opacity-25 transition duration-1000 group-hover:duration-200" />
 
             {/* Command bar */}
-            <div className="relative flex items-center bg-surface-container-lowest rounded-2xl p-2">
+            <div
+                className="relative flex items-center bg-surface-container-lowest rounded-2xl p-2 cursor-pointer hover:bg-surface-container-high transition-colors"
+                onClick={handleOpenAI}
+            >
                 {/* Search / Sparkle icon */}
                 <div className="flex-1 flex items-center px-4">
                     <span className="text-primary-container mr-3">
@@ -93,6 +106,7 @@ export default function AiCommandBar() {
                 <button
                     className="bg-gradient-to-br from-primary to-primary-container text-on-primary p-4 rounded-xl flex items-center justify-center hover:brightness-110 active:scale-95 transition-all min-w-[48px] min-h-[48px]"
                     title={t("micTooltip")}
+                    onClick={(e) => { e.stopPropagation(); handleOpenAI(); }}
                 >
                     <IconMic className="w-6 h-6" />
                 </button>

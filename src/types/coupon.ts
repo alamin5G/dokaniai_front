@@ -78,6 +78,15 @@ export interface CouponUpdateRequest {
     validUntil?: string;
 }
 
+// ─── Redemption Summary ──────────────────────────────────
+
+export interface RedemptionSummary {
+    id: string;
+    couponCode: string;
+    redeemedAt: string;
+    userId: string;
+}
+
 // ─── Coupon Stats ────────────────────────────────────────
 
 export interface CouponStats {
@@ -87,7 +96,7 @@ export interface CouponStats {
     usedCount: number;
     remainingUses: number;
     totalDiscountGiven: number;
-    recentRedemptions: string[];
+    recentRedemptions: RedemptionSummary[];
 }
 
 // ─── Coupon Validation ───────────────────────────────────

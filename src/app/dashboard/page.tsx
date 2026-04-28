@@ -1,9 +1,11 @@
 "use client";
 
 import { formatCurrencyBDT, formatLocalizedNumber } from "@/lib/localeNumber";
+import { buildShopPath } from "@/lib/shopRouting";
 import { useBusinessStore } from "@/store/businessStore";
 import { useBusinessStats, useOnboarding } from "@/hooks/useDashboard";
 import { useLocale, useTranslations } from "next-intl";
+import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect } from "react";
 
@@ -208,33 +210,41 @@ export default function DashboardPage() {
                     </>
                 ) : (
                     <>
-                        <KpiCard
-                            title={t("kpi.todaySales")}
-                            value={fmtCurrency(stats.totalRevenue)}
-                            icon={<IconTrendingUp className="w-5 h-5" />}
-                            accentColor="text-primary"
-                            subtitle={`${stats.totalSales} টি বিক্রয়`}
-                        />
-                        <KpiCard
-                            title={t("kpi.totalDue")}
-                            value={fmtCurrency(stats.totalDue)}
-                            icon={<IconHistory className="w-5 h-5" />}
-                            accentColor="text-tertiary"
-                            subtitle={`${stats.activeCustomers} জন ক্রেতা`}
-                        />
-                        <KpiCard
-                            title={t("kpi.todayExpense")}
-                            value={fmtCurrency(undefined)}
-                            icon={<IconWallet className="w-5 h-5" />}
-                            accentColor="text-on-surface"
-                        />
-                        <KpiCard
-                            title={t("kpi.totalProducts")}
-                            value={formatLocalizedNumber(stats.totalProducts ?? 0, locale)}
-                            icon={<IconBox className="w-5 h-5" />}
-                            accentColor="text-secondary"
-                            subtitle={t("kpi.count", { count: stats.totalProducts ?? 0 })}
-                        />
+                        <Link href={buildShopPath(activeBusinessId, "/sales")} className="block hover:scale-[1.02] transition-transform">
+                            <KpiCard
+                                title={t("kpi.todaySales")}
+                                value={fmtCurrency(stats.totalRevenue)}
+                                icon={<IconTrendingUp className="w-5 h-5" />}
+                                accentColor="text-primary"
+                                subtitle={`${stats.totalSales} টি বিক্রয়`}
+                            />
+                        </Link>
+                        <Link href={buildShopPath(activeBusinessId, "/due-ledger")} className="block hover:scale-[1.02] transition-transform">
+                            <KpiCard
+                                title={t("kpi.totalDue")}
+                                value={fmtCurrency(stats.totalDue)}
+                                icon={<IconHistory className="w-5 h-5" />}
+                                accentColor="text-tertiary"
+                                subtitle={`${stats.activeCustomers} জন ক্রেতা`}
+                            />
+                        </Link>
+                        <Link href={buildShopPath(activeBusinessId, "/expenses")} className="block hover:scale-[1.02] transition-transform">
+                            <KpiCard
+                                title={t("kpi.todayExpense")}
+                                value={fmtCurrency(undefined)}
+                                icon={<IconWallet className="w-5 h-5" />}
+                                accentColor="text-on-surface"
+                            />
+                        </Link>
+                        <Link href={buildShopPath(activeBusinessId, "/products")} className="block hover:scale-[1.02] transition-transform">
+                            <KpiCard
+                                title={t("kpi.totalProducts")}
+                                value={formatLocalizedNumber(stats.totalProducts ?? 0, locale)}
+                                icon={<IconBox className="w-5 h-5" />}
+                                accentColor="text-secondary"
+                                subtitle={t("kpi.count", { count: stats.totalProducts ?? 0 })}
+                            />
+                        </Link>
                     </>
                 )}
             </section>
