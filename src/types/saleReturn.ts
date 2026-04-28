@@ -51,6 +51,7 @@ export interface ReturnCreateRequest {
     returnType: ReturnType;
     reason?: string;
     notes?: string;
+    items?: ReturnItemRequest[];
 }
 
 export interface ReturnItemRequest {
@@ -75,6 +76,33 @@ export interface ReturnStatsResponse {
     partialReturns: number;
     defectiveReturns: number;
     totalStockRestored: number;
+    topReturnedProducts?: TopReturnedProduct[];
+    topReturningCustomers?: TopReturningCustomer[];
+    abuseAlerts?: ReturnAbuseAlert[];
+}
+
+export interface TopReturnedProduct {
+    productId: string;
+    productName: string;
+    returnCount: number;
+    quantity: number;
+    refundAmount: number;
+}
+
+export interface TopReturningCustomer {
+    customerId: string;
+    customerName: string;
+    returnCount: number;
+    refundAmount: number;
+}
+
+export interface ReturnAbuseAlert {
+    type: "CUSTOMER_REPEAT_RETURNS" | "PRODUCT_REPEAT_RETURNS" | string;
+    referenceId: string;
+    label: string;
+    returnCount: number;
+    refundAmount: number;
+    severity: "LOW" | "MEDIUM" | "HIGH" | string;
 }
 
 // ---------------------------------------------------------------------------
