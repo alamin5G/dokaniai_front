@@ -24,6 +24,14 @@ export interface AdminUserBusiness {
     updatedAt?: string;
 }
 
+export interface SubscriptionSummary {
+    planName: string;
+    displayName: string;
+    status: string;
+    periodEnd: string | null;
+    billingCycle: string;
+}
+
 export interface AdminUser {
     id: string;
     name: string | null;
@@ -44,6 +52,7 @@ export interface AdminUser {
     createdAt: string;
     updatedAt: string;
     businesses: AdminUserBusiness[];
+    subscription: SubscriptionSummary | null;
 }
 
 // ─── Paginated Users ────────────────────────────────────────────────────────

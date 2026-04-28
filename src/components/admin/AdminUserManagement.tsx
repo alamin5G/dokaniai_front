@@ -4,7 +4,7 @@ import { useTranslations } from "next-intl";
 import { useCallback, useEffect, useState } from "react";
 import { useAuthStore } from "@/store/authStore";
 import * as adminApi from "@/lib/adminApi";
-import type { AdminUser, AdminUserBusiness, UserRole, UserStatus } from "@/types/admin";
+import type { AdminUser, AdminUserBusiness, SubscriptionSummary, UserRole, UserStatus } from "@/types/admin";
 import type { AdminBusiness } from "@/lib/adminApi";
 
 const AVATAR_COLORS = [
@@ -26,12 +26,36 @@ function initial(name: string | null, phone: string): string {
     return phone.charAt(0);
 }
 
-function PlanBadge({ business }: { business: AdminUserBusiness }) {
+function PlanBadge({ subscription }: { subscription: SubscriptionSummary | null }) {
+    if (!subscription) {
+        return (
+            <span className="inline-flex items-center gap-1 px-2 py-1 rounded-md bg-surface-container-high text-on-surface-variant text-[10px] font-bold">
+                <span className="material-symbols-outlined text-[12px]">do_not_disturb</span>
+                No Plan
+            </span>
+        );
+    }
+
+    const statusColor = subscription.status === "ACTIVE"
+        ? "bg-primary-fixed/30 text-on-primary-fixed"
+        : subscription.status === "GRACE"
+            ? "bg-tertiary-fixed/30 text-on-tertiary-fixed"
+            : "bg-error-container/30 text-on-error-container";
+
+    const planLabel = subscription.displayName || subscription.planName;
+
     return (
-        <span className="inline-flex items-center gap-1 px-2 py-1 rounded-md bg-primary-fixed/30 text-on-primary-fixed text-[10px] font-bold">
-            <span className="material-symbols-outlined text-[12px]">storefront</span>
-            Active
-        </span>
+        <div className="flex flex-col gap-0.5">
+            <span className={`inline-flex items-center gap-1 px-2 py-1 rounded-md ${statusColor} text-[10px] font-bold w-fit`}>
+                <span className="material-symbols-outlined text-[12px]">workspace_premium</span>
+                {planLabel}
+            </span>
+            {subscription.periodEnd && (
+                <span className="text-[10px] text-on-surface-variant pl-1">
+                    Exp: {new Date(subscription.periodEnd).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}
+                </span>
+            )}
+        </div>
     );
 }
 
@@ -68,6 +92,12 @@ function StatusBadge({ status }: { status: string }) {
 }
 
 function BusinessRow({ business, t }: { business: AdminUserBusiness; t: (key: string) => string }) {
+    const bizStatus = business.status === "ACTIVE"
+        ? "bg-primary-fixed/30 text-on-primary-fixed"
+        : business.status === "SUSPENDED"
+            ? "bg-error-container/30 text-on-error-container"
+            : "bg-surface-container-high text-on-surface-variant";
+
     return (
         <div className="grid grid-cols-12 gap-4 items-center px-6 py-3 bg-surface-container-lowest rounded-xl hover:bg-surface-container-high transition-colors">
             <div className="col-span-4 flex items-center gap-3">
@@ -80,7 +110,10 @@ function BusinessRow({ business, t }: { business: AdminUserBusiness; t: (key: st
                 {business.type || "—"}
             </div>
             <div className="col-span-2">
-                <PlanBadge business={business} />
+                <span className={`inline-flex items-center gap-1 px-2 py-1 rounded-md ${bizStatus} text-[10px] font-bold`}>
+                    <span className="material-symbols-outlined text-[12px]">storefront</span>
+                    {business.status || "—"}
+                </span>
             </div>
             <div className="col-span-3 flex justify-end gap-3">
                 <span className="text-xs font-bold text-primary hover:text-primary-container transition-colors cursor-pointer">
@@ -295,8 +328,9 @@ export default function AdminUserManagement() {
                 <div className="grid grid-cols-12 gap-4 px-8 py-4 text-xs font-bold text-on-surface-variant/70 uppercase tracking-wider">
                     <div className="col-span-3">{t("colOwner")}</div>
                     <div className="col-span-2">{t("colContact")}</div>
-                    <div className="col-span-3">{t("colBusinesses")}</div>
-                    <div className="col-span-2">{t("colStatus")}</div>
+                    <div className="col-span-2">{t("colBusinesses")}</div>
+                    <div className="col-span-2">{t("colSubscription")}</div>
+                    <div className="col-span-1">{t("colStatus")}</div>
                     <div className="col-span-2 text-right">{t("colActions")}</div>
                 </div>
 
@@ -328,7 +362,7 @@ export default function AdminUserManagement() {
                                         <p className="text-sm font-medium text-on-surface">{user.phone}</p>
                                         {user.email && <p className="text-xs text-on-surface-variant truncate">{user.email}</p>}
                                     </div>
-                                    <div className="col-span-3">
+                                    <div className="col-span-2">
                                         {businesses.length > 0 ? (
                                             <>
                                                 <p className="text-sm font-semibold text-on-surface">{businesses[0].name}</p>
@@ -343,6 +377,9 @@ export default function AdminUserManagement() {
                                         )}
                                     </div>
                                     <div className="col-span-2">
+                                        <PlanBadge subscription={user.subscription} />
+                                    </div>
+                                    <div className="col-span-1">
                                         <StatusBadge status={user.status} />
                                     </div>
                                     <div className="col-span-2 flex justify-end gap-2">
@@ -374,6 +411,40 @@ export default function AdminUserManagement() {
 
                                 {isExpanded && (
                                     <div className="pl-20 pr-8 pb-4 pt-2">
+                                        {/* User meta info: trial status + last login */}
+                                        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-4">
+                                            <div className="bg-surface-container-low rounded-xl p-3">
+                                                <p className="text-[10px] font-bold text-on-surface-variant uppercase tracking-wider mb-1">{t("trial1Label")}</p>
+                                                <p className="text-xs text-on-surface">
+                                                    {user.trial1Used
+                                                        ? <span className="inline-flex items-center gap-1"><span className="material-symbols-outlined text-primary text-[14px]">check_circle</span> {t("used")}</span>
+                                                        : <span className="inline-flex items-center gap-1"><span className="material-symbols-outlined text-on-surface-variant text-[14px]">radio_button_unchecked</span> {t("notUsed")}</span>}
+                                                </p>
+                                                {user.trial1ExpiredAt && <p className="text-[10px] text-on-surface-variant mt-0.5">Exp: {new Date(user.trial1ExpiredAt).toLocaleDateString()}</p>}
+                                            </div>
+                                            <div className="bg-surface-container-low rounded-xl p-3">
+                                                <p className="text-[10px] font-bold text-on-surface-variant uppercase tracking-wider mb-1">{t("trial2Label")}</p>
+                                                <p className="text-xs text-on-surface">
+                                                    {user.trial2Used
+                                                        ? <span className="inline-flex items-center gap-1"><span className="material-symbols-outlined text-primary text-[14px]">check_circle</span> {t("used")}</span>
+                                                        : <span className="inline-flex items-center gap-1"><span className="material-symbols-outlined text-on-surface-variant text-[14px]">radio_button_unchecked</span> {t("notUsed")}</span>}
+                                                </p>
+                                                {user.trial2ExpiredAt && <p className="text-[10px] text-on-surface-variant mt-0.5">Exp: {new Date(user.trial2ExpiredAt).toLocaleDateString()}</p>}
+                                            </div>
+                                            <div className="bg-surface-container-low rounded-xl p-3">
+                                                <p className="text-[10px] font-bold text-on-surface-variant uppercase tracking-wider mb-1">{t("lastLoginLabel")}</p>
+                                                <p className="text-xs text-on-surface">
+                                                    {user.lastLoginAt
+                                                        ? new Date(user.lastLoginAt).toLocaleDateString("en-US", { month: "short", day: "numeric", hour: "2-digit", minute: "2-digit" })
+                                                        : "—"}
+                                                </p>
+                                            </div>
+                                            <div className="bg-surface-container-low rounded-xl p-3">
+                                                <p className="text-[10px] font-bold text-on-surface-variant uppercase tracking-wider mb-1">{t("roleLabel")}</p>
+                                                <p className="text-xs text-on-surface font-medium">{user.role}</p>
+                                            </div>
+                                        </div>
+
                                         {isLoadingBiz ? (
                                             <div className="flex justify-center py-8">
                                                 <div className="h-8 w-8 animate-spin rounded-full border-4 border-surface-container-high border-t-primary" />
