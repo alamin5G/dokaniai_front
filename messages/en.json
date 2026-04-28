@@ -4089,5 +4089,31 @@
     "improvementTips": "Improvement Tips",
     "productSuggestions": "Product Suggestions",
     "nextInsight": "Next Insight"
+  },
+  "adminNotifications": {
+    "title": "Notifications",
+    "markAllRead": "Mark all read",
+    "markRead": "Mark as read",
+    "dismiss": "Dismiss",
+    "noNotifications": "No notifications",
+    "justNow": "Just now",
+    "minutesAgo": "{count}m ago",
+    "hoursAgo": "{count}h ago",
+    "daysAgo": "{count}d ago",
+    "CATEGORY_REQUEST": "Category Request",
+    "PAYMENT_RECEIVED": "Payment Received",
+    "PAYMENT_FAILED": "Payment Failed",
+    "PAYMENT_REFUNDED": "Payment Refunded",
+    "SUBSCRIPTION_CREATED": "New Subscription",
+    "SUBSCRIPTION_CANCELLED": "Subscription Cancelled",
+    "SUBSCRIPTION_EXPIRED": "Subscription Expired",
+    "SUBSCRIPTION_RENEWED": "Subscription Renewed",
+    "COUPON_CREATED": "New Coupon",
+    "COUPON_REDEEMED": "Coupon Redeemed",
+    "COUPON_EXPIRED": "Coupon Expired",
+    "TICKET_CREATED": "New Support Ticket",
+    "TICKET_ASSIGNED": "Ticket Assigned",
+    "TICKET_OVERDUE": "Ticket Overdue",
+    "SUSPICIOUS_ACTIVITY": "Suspicious Activity"
   }
 }

@@ -7,6 +7,8 @@ import apiClient from "@/lib/api";
 import type {
     AdminUser,
     AdminListTicketsParams,
+    AdminNotificationFilters,
+    PagedAdminNotifications,
     AuditLogParams,
     AuditLogSummary,
     AssignTicketRequest,
@@ -372,4 +374,36 @@ export async function togglePlanFeature(
         enabled,
     });
     return data.data;
+}
+
+// ─── Admin Notifications ────────────────────────────────────────────────────
+
+export async function getAdminNotifications(
+    params?: AdminNotificationFilters
+): Promise<PagedAdminNotifications> {
+    const query = new URLSearchParams();
+    if (params?.type) query.set("type", params.type);
+    if (params?.severity) query.set("severity", params.severity);
+    if (params?.page !== undefined) query.set("page", String(params.page));
+    if (params?.size !== undefined) query.set("size", String(params.size));
+    const qs = query.toString();
+    const { data } = await apiClient.get(`/admin/notifications${qs ? `?${qs}` : ""}`);
+    return data.data;
+}
+
+export async function getAdminNotificationCount(): Promise<number> {
+    const { data } = await apiClient.get("/admin/notifications/count");
+    return data.data;
+}
+
+export async function markAdminNotificationRead(id: number): Promise<void> {
+    await apiClient.put(`/admin/notifications/${id}/read`);
+}
+
+export async function markAllAdminNotificationsRead(): Promise<void> {
+    await apiClient.put("/admin/notifications/read-all");
+}
+
+export async function dismissAdminNotification(id: number): Promise<void> {
+    await apiClient.delete(`/admin/notifications/${id}`);
 }

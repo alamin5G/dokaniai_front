@@ -2,7 +2,8 @@
 
 import { useAuthStore } from "@/store/authStore";
 import { useRouter, usePathname } from "next/navigation";
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState } from "react";
+import AdminNotificationBell from "@/components/admin/AdminNotificationBell";
 
 function Spinner() {
     return (
@@ -91,10 +92,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                     </div>
                     <div className="hidden md:flex items-center gap-4 text-on-surface" />
                     <div className="flex flex-1 justify-end gap-4 md:gap-6 items-center">
-                        <button className="size-10 rounded-full bg-surface-container-low flex items-center justify-center text-on-surface-variant hover:bg-surface-container-high transition-colors relative">
-                            <span className="material-symbols-outlined">notifications</span>
-                            <span className="absolute top-2 right-2 size-2 bg-error rounded-full" />
-                        </button>
+                        <AdminNotificationBell />
                         <div className="size-10 rounded-full bg-primary-container/20 flex items-center justify-center text-primary font-bold text-sm">
                             {(userRole === "SUPER_ADMIN" ? "SA" : "A")}
                         </div>

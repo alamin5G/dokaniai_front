@@ -4149,5 +4149,31 @@
     "improvementTips": "উন্নতির টিপস",
     "productSuggestions": "নতুন পণ্যের পরামর্শ",
     "nextInsight": "পরবর্তী বিশ্লেষণ"
+  },
+  "adminNotifications": {
+    "title": "বিজ্ঞপ্তি",
+    "markAllRead": "সব পড়া হয়েছে",
+    "markRead": "পড়া হয়েছে",
+    "dismiss": "বাতিল",
+    "noNotifications": "কোনো বিজ্ঞপ্তি নেই",
+    "justNow": "এইমাত্র",
+    "minutesAgo": "{count} মিনিট আগে",
+    "hoursAgo": "{count} ঘণ্টা আগে",
+    "daysAgo": "{count} দিন আগে",
+    "CATEGORY_REQUEST": "ক্যাটাগরি অনুরোধ",
+    "PAYMENT_RECEIVED": "পেমেন্ট পাওয়া গেছে",
+    "PAYMENT_FAILED": "পেমেন্ট ব্যর্থ",
+    "PAYMENT_REFUNDED": "রিফান্ড",
+    "SUBSCRIPTION_CREATED": "নতুন সাবস্ক্রিপশন",
+    "SUBSCRIPTION_CANCELLED": "সাবস্ক্রিপশন বাতিল",
+    "SUBSCRIPTION_EXPIRED": "সাবস্ক্রিপশন মেয়াদোত্তীর্ণ",
+    "SUBSCRIPTION_RENEWED": "সাবস্ক্রিপশন নবায়ন",
+    "COUPON_CREATED": "নতুন কুপন",
+    "COUPON_REDEEMED": "কুপন ব্যবহৃত",
+    "COUPON_EXPIRED": "কুপন মেয়াদোত্তীর্ণ",
+    "TICKET_CREATED": "নতুন সাপোর্ট টিকেট",
+    "TICKET_ASSIGNED": "টিকেট বরাদ্দ",
+    "TICKET_OVERDUE": "টিকেট মেয়াদোত্তীর্ণ",
+    "SUSPICIOUS_ACTIVITY": "সন্দেহজনক কার্যকলাপ"
   }
 }

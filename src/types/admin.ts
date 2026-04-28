@@ -265,3 +265,53 @@ export interface ReferralEventsParams {
     page?: number;
     size?: number;
 }
+
+// ─── Admin Notifications ────────────────────────────────────────────────────
+
+export type AdminNotificationType =
+    | "CATEGORY_REQUEST"
+    | "PAYMENT_RECEIVED"
+    | "PAYMENT_FAILED"
+    | "PAYMENT_REFUNDED"
+    | "SUBSCRIPTION_CREATED"
+    | "SUBSCRIPTION_CANCELLED"
+    | "SUBSCRIPTION_EXPIRED"
+    | "SUBSCRIPTION_RENEWED"
+    | "COUPON_CREATED"
+    | "COUPON_REDEEMED"
+    | "COUPON_EXPIRED"
+    | "TICKET_CREATED"
+    | "TICKET_ASSIGNED"
+    | "TICKET_OVERDUE"
+    | "SUSPICIOUS_ACTIVITY";
+
+export type AdminNotificationSeverity = "INFO" | "WARNING" | "ERROR" | "CRITICAL";
+
+export interface AdminNotification {
+    id: number;
+    type: AdminNotificationType;
+    severity: AdminNotificationSeverity;
+    title: string;
+    message: string;
+    data: Record<string, unknown> | null;
+    sourceType: string | null;
+    sourceId: string | null;
+    read: boolean;
+    dismissed: boolean;
+    createdAt: string;
+}
+
+export interface PagedAdminNotifications {
+    content: AdminNotification[];
+    totalElements: number;
+    totalPages: number;
+    number: number;
+    size: number;
+}
+
+export interface AdminNotificationFilters {
+    type?: AdminNotificationType;
+    severity?: AdminNotificationSeverity;
+    page?: number;
+    size?: number;
+}

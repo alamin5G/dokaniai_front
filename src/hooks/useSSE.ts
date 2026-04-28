@@ -103,6 +103,26 @@ export function useSSE() {
                     // ignore malformed data
                 }
             });
+
+            // ─── Admin Notification Events ──────────────────────────────
+
+            source.addEventListener("ADMIN_NOTIFICATION_NEW", (e) => {
+                try {
+                    const data = JSON.parse(e.data);
+                    window.dispatchEvent(new CustomEvent("sse:admin-notification-new", { detail: data }));
+                } catch {
+                    // ignore malformed data
+                }
+            });
+
+            source.addEventListener("ADMIN_NOTIFICATION_COUNT_UPDATE", (e) => {
+                try {
+                    const data = JSON.parse(e.data);
+                    window.dispatchEvent(new CustomEvent("sse:admin-notification-count", { detail: data }));
+                } catch {
+                    // ignore malformed data
+                }
+            });
         };
 
         connect();
