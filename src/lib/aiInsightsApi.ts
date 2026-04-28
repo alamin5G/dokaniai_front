@@ -62,3 +62,116 @@ export async function getBusinessStockPredictions(
     );
     return unwrap(response);
 }
+
+// ─── Advanced AI Insight Endpoints ────────────────────────
+
+/** Generate or get cached weekly business summary */
+export async function generateWeeklySummary(
+    businessId: string,
+): Promise<AIInsight> {
+    const response = await apiClient.post<ApiSuccess<AIInsight>>(
+        `/businesses/${businessId}/ai/insights/weekly`,
+    );
+    return unwrap(response);
+}
+
+/** Generate stock predictions for all products */
+export async function generateStockPredictions(
+    businessId: string,
+): Promise<void> {
+    await apiClient.post(
+        `/businesses/${businessId}/ai/insights/stock-prediction`,
+    );
+}
+
+/** Generate expense intelligence analysis */
+export async function generateExpenseIntelligence(
+    businessId: string,
+): Promise<AIInsight> {
+    const response = await apiClient.post<ApiSuccess<AIInsight>>(
+        `/businesses/${businessId}/ai/insights/expense-intelligence`,
+    );
+    return unwrap(response);
+}
+
+/** Generate due collection intelligence */
+export async function generateDueIntelligence(
+    businessId: string,
+): Promise<AIInsight> {
+    const response = await apiClient.post<ApiSuccess<AIInsight>>(
+        `/businesses/${businessId}/ai/insights/due-intelligence`,
+    );
+    return unwrap(response);
+}
+
+/** Generate daily business summary */
+export async function generateDailySummary(
+    businessId: string,
+): Promise<AIInsight> {
+    const response = await apiClient.post<ApiSuccess<AIInsight>>(
+        `/businesses/${businessId}/ai/insights/daily-summary`,
+    );
+    return unwrap(response);
+}
+
+/** Generate customer analytics (PRO) */
+export async function generateCustomerAnalytics(
+    businessId: string,
+): Promise<AIInsight> {
+    const response = await apiClient.post<ApiSuccess<AIInsight>>(
+        `/businesses/${businessId}/ai/insights/customer-analytics`,
+    );
+    return unwrap(response);
+}
+
+/** Generate sales forecast (PLUS) */
+export async function generateSalesForecast(
+    businessId: string,
+): Promise<AIInsight> {
+    const response = await apiClient.post<ApiSuccess<AIInsight>>(
+        `/businesses/${businessId}/ai/insights/sales-forecast`,
+    );
+    return unwrap(response);
+}
+
+/** Generate profit optimization recommendations (PLUS) */
+export async function generateProfitOptimization(
+    businessId: string,
+): Promise<AIInsight> {
+    const response = await apiClient.post<ApiSuccess<AIInsight>>(
+        `/businesses/${businessId}/ai/insights/profit-optimization`,
+    );
+    return unwrap(response);
+}
+
+/** Generate seasonal trend analysis (PLUS) */
+export async function generateSeasonalTrends(
+    businessId: string,
+): Promise<AIInsight> {
+    const response = await apiClient.post<ApiSuccess<AIInsight>>(
+        `/businesses/${businessId}/ai/insights/seasonal-trends`,
+    );
+    return unwrap(response);
+}
+
+/** Generate morning briefing with action items */
+export async function generateMorningBriefing(
+    businessId: string,
+): Promise<AIInsight> {
+    const response = await apiClient.post<ApiSuccess<AIInsight>>(
+        `/businesses/${businessId}/ai/insights/morning-briefing`,
+    );
+    return unwrap(response);
+}
+
+/** Fetch insights filtered by type */
+export async function getInsightsByType(
+    businessId: string,
+    type: string,
+): Promise<AIInsight[]> {
+    const response = await apiClient.get<ApiSuccess<AIInsight[]>>(
+        `/businesses/${businessId}/ai/insights`,
+        { params: { type } },
+    );
+    return unwrap(response);
+}

@@ -1,9 +1,19 @@
 "use client";
 
 import { useTranslations } from "next-intl";
-import { useCallback, useEffect, useState } from "react";
-import apiClient from "@/lib/api";
-import TrendIndicator from "./TrendIndicator";
+import { useCallback, useState } from "react";
+import {
+    generateWeeklySummary,
+    generateExpenseIntelligence,
+    generateDueIntelligence,
+    generateDailySummary,
+    generateCustomerAnalytics,
+    generateSalesForecast,
+    generateProfitOptimization,
+    generateSeasonalTrends,
+    generateMorningBriefing,
+} from "@/lib/aiInsightsApi";
+import type { AIInsight } from "@/types/aiInsight";
 
 interface InsightData {
     summary: string;
@@ -15,150 +25,206 @@ interface InsightData {
     };
 }
 
-interface ApiSuccess<T> {
-    success: boolean;
-    data: T;
-    message?: string;
+interface InsightCardConfig {
+    key: string;
+    icon: string;
+    generateFn: (businessId: string) => Promise<AIInsight>;
+    feature?: "aiInsights" | "customerAnalytics" | "forecasting";
 }
 
+const INSIGHT_CARDS: InsightCardConfig[] = [
+    {
+        key: "morningBriefing",
+        icon: "wb_sunny",
+        generateFn: generateMorningBriefing,
+    },
+    {
+        key: "dailySummary",
+        icon: "today",
+        generateFn: generateDailySummary,
+    },
+    {
+        key: "weeklySummary",
+        icon: "date_range",
+        generateFn: generateWeeklySummary,
+    },
+    {
+        key: "expenseIntelligence",
+        icon: "account_balance_wallet",
+        generateFn: generateExpenseIntelligence,
+    },
+    {
+        key: "dueIntelligence",
+        icon: "payments",
+        generateFn: generateDueIntelligence,
+    },
+    {
+        key: "customerAnalytics",
+        icon: "group",
+        generateFn: generateCustomerAnalytics,
+        feature: "customerAnalytics",
+    },
+    {
+        key: "salesForecast",
+        icon: "trending_up",
+        generateFn: generateSalesForecast,
+        feature: "forecasting",
+    },
+    {
+        key: "profitOptimization",
+        icon: "monetization_on",
+        generateFn: generateProfitOptimization,
+        feature: "forecasting",
+    },
+    {
+        key: "seasonalTrends",
+        icon: "calendar_month",
+        generateFn: generateSeasonalTrends,
+        feature: "forecasting",
+    },
+];
+
 /**
- * AI-powered business insights panel.
- * Fetches AI-generated recommendations and trend analysis.
- * Available for Pro and Plus plans only.
+ * AI-powered business insights panel with advanced insight types.
+ * Shows a grid of insight cards that can be generated on demand.
  */
 export default function AIInsightPanel({ businessId }: { businessId: string }) {
     const t = useTranslations("shop.reports");
-    const [insight, setInsight] = useState<InsightData | null>(null);
-    const [isLoading, setIsLoading] = useState(true);
+    const [activeInsight, setActiveInsight] = useState<AIInsight | null>(null);
+    const [activeKey, setActiveKey] = useState<string | null>(null);
+    const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
 
-    const fetchInsight = useCallback(async () => {
+    const handleGenerate = useCallback(async (card: InsightCardConfig) => {
         setIsLoading(true);
         setError(null);
+        setActiveKey(card.key);
         try {
-            const response = await apiClient.post<ApiSuccess<InsightData>>("/ai/chat", {
-                message: `Analyze my business performance for business ${businessId}. Give me a summary, 3 actionable recommendations, and trend analysis (revenue, profit, expense changes as percentages).`,
-                businessId,
-            });
-            setInsight(response.data.data);
+            const insight = await card.generateFn(businessId);
+            setActiveInsight(insight);
         } catch {
-            // If AI endpoint fails, show a graceful fallback
-            setInsight({
-                summary: t("insights.fallbackSummary"),
-                recommendations: [
-                    t("insights.fallbackRec1"),
-                    t("insights.fallbackRec2"),
-                    t("insights.fallbackRec3"),
-                ],
-                trends: {
-                    revenueChange: null,
-                    profitChange: null,
-                    expenseChange: null,
-                },
-            });
+            setError(t("insights.generateError"));
+            setActiveInsight(null);
         } finally {
             setIsLoading(false);
         }
     }, [businessId, t]);
 
-    useEffect(() => {
-        fetchInsight();
-    }, [fetchInsight]);
-
     return (
-        <div className="relative overflow-hidden rounded-[24px] bg-surface-container-lowest p-6 shadow-sm">
-            {/* Decorative gradient */}
-            <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-secondary/5 pointer-events-none" />
+        <div className="space-y-6">
+            {/* Insight Type Cards Grid */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                {INSIGHT_CARDS.map((card) => {
+                    const isActive = activeKey === card.key;
+                    return (
+                        <button
+                            key={card.key}
+                            onClick={() => handleGenerate(card)}
+                            disabled={isLoading}
+                            className={`relative overflow-hidden rounded-2xl p-4 text-left transition-all duration-200 border ${isActive
+                                    ? "bg-primary-container border-primary/30 shadow-md"
+                                    : "bg-surface-container-lowest border-outline-variant/20 hover:bg-surface-container hover:border-primary/30 hover:shadow-sm"
+                                } ${isLoading ? "opacity-70 cursor-wait" : "cursor-pointer"}`}
+                        >
+                            <div className="flex items-center gap-3 mb-2">
+                                <div className={`flex items-center justify-center w-9 h-9 rounded-xl ${isActive ? "bg-primary text-on-primary" : "bg-surface-container text-on-surface-variant"
+                                    }`}>
+                                    <span className="material-symbols-outlined text-lg">{card.icon}</span>
+                                </div>
+                                <h4 className="text-sm font-bold text-on-surface">
+                                    {t(`insights.types.${card.key}.title`)}
+                                </h4>
+                            </div>
+                            <p className="text-xs text-on-surface-variant line-clamp-2">
+                                {t(`insights.types.${card.key}.description`)}
+                            </p>
+                            {isActive && isLoading && (
+                                <div className="absolute top-2 right-2">
+                                    <span className="material-symbols-outlined animate-spin text-primary text-sm">
+                                        progress_activity
+                                    </span>
+                                </div>
+                            )}
+                            {isActive && activeInsight && !isLoading && (
+                                <div className="absolute top-2 right-2">
+                                    <span className="material-symbols-outlined text-primary text-sm">check_circle</span>
+                                </div>
+                            )}
+                        </button>
+                    );
+                })}
+            </div>
 
-            <div className="relative">
-                {/* Header */}
-                <div className="flex items-center gap-3 mb-6">
-                    <div className="flex items-center justify-center w-10 h-10 rounded-xl bg-primary-container text-on-primary-container">
-                        <span className="material-symbols-outlined">auto_awesome</span>
-                    </div>
-                    <div>
-                        <h3 className="text-lg font-bold text-primary">{t("insights.title")}</h3>
-                        <p className="text-xs text-on-surface-variant">{t("insights.subtitle")}</p>
-                    </div>
+            {/* Loading State */}
+            {isLoading && (
+                <div className="flex items-center gap-3 py-6 text-on-surface-variant">
+                    <span className="material-symbols-outlined animate-spin text-primary">
+                        progress_activity
+                    </span>
+                    <span className="text-sm">{t("insights.generating")}</span>
                 </div>
+            )}
 
-                {/* Loading */}
-                {isLoading && (
-                    <div className="flex items-center gap-3 py-8 text-on-surface-variant">
-                        <span className="material-symbols-outlined animate-spin text-primary">
-                            progress_activity
-                        </span>
-                        <span className="text-sm">{t("insights.loading")}</span>
-                    </div>
-                )}
+            {/* Error */}
+            {error && !isLoading && (
+                <div className="rounded-xl bg-error-container p-4 text-on-error-container text-sm">
+                    {error}
+                </div>
+            )}
 
-                {/* Error */}
-                {error && !isLoading && (
-                    <div className="rounded-xl bg-error-container p-4 text-on-error-container text-sm">
-                        {error}
-                    </div>
-                )}
-
-                {/* Content */}
-                {insight && !isLoading && (
-                    <div className="space-y-6">
-                        {/* Trend indicators */}
-                        <div className="flex flex-wrap gap-4">
-                            <TrendIndicator
-                                value={insight.trends.revenueChange}
-                                label={t("insights.revenueChange")}
-                            />
-                            <TrendIndicator
-                                value={insight.trends.profitChange}
-                                label={t("insights.profitChange")}
-                            />
-                            <TrendIndicator
-                                value={insight.trends.expenseChange}
-                                label={t("insights.expenseChange")}
-                                invert
-                            />
+            {/* Active Insight Display */}
+            {activeInsight && !isLoading && (
+                <div className="relative overflow-hidden rounded-[24px] bg-surface-container-lowest p-6 shadow-sm">
+                    <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-secondary/5 pointer-events-none" />
+                    <div className="relative space-y-4">
+                        {/* Header */}
+                        <div className="flex items-center justify-between">
+                            <div className="flex items-center gap-3">
+                                <div className="flex items-center justify-center w-10 h-10 rounded-xl bg-primary-container text-on-primary-container">
+                                    <span className="material-symbols-outlined">auto_awesome</span>
+                                </div>
+                                <div>
+                                    <h3 className="text-lg font-bold text-primary">
+                                        {activeInsight.title}
+                                    </h3>
+                                    <p className="text-xs text-on-surface-variant">
+                                        {new Date(activeInsight.createdAt).toLocaleDateString()} · {" "}
+                                        {t(`insights.severity.${activeInsight.severity.toLowerCase()}`)}
+                                    </p>
+                                </div>
+                            </div>
+                            <div className={`px-3 py-1 rounded-full text-xs font-bold ${activeInsight.severity === "CRITICAL"
+                                    ? "bg-error-container text-on-error-container"
+                                    : activeInsight.severity === "WARNING"
+                                        ? "bg-tertiary-container text-on-tertiary-container"
+                                        : "bg-primary-container text-on-primary-container"
+                                }`}>
+                                {Math.round(activeInsight.confidence * 100)}% {t("insights.confidence")}
+                            </div>
                         </div>
 
-                        {/* Summary */}
+                        {/* Message */}
                         <div className="rounded-xl bg-surface-container p-4">
-                            <p className="text-sm text-on-surface leading-relaxed">
-                                {insight.summary}
+                            <p className="text-sm text-on-surface leading-relaxed whitespace-pre-line">
+                                {activeInsight.message}
                             </p>
                         </div>
 
-                        {/* Recommendations */}
-                        {insight.recommendations.length > 0 && (
-                            <div>
-                                <h4 className="text-sm font-bold text-primary mb-3">
-                                    {t("insights.recommendations")}
-                                </h4>
-                                <div className="space-y-2">
-                                    {insight.recommendations.map((rec, idx) => (
-                                        <div
-                                            key={idx}
-                                            className="flex items-start gap-3 rounded-xl bg-surface-container p-3"
-                                        >
-                                            <span className="flex items-center justify-center w-6 h-6 rounded-full bg-primary text-white text-xs font-bold shrink-0">
-                                                {idx + 1}
-                                            </span>
-                                            <p className="text-sm text-on-surface">{rec}</p>
-                                        </div>
-                                    ))}
+                        {/* Action Suggested */}
+                        {activeInsight.actionSuggested && (
+                            <div className="rounded-xl bg-secondary-container p-4">
+                                <div className="flex items-center gap-2 mb-1">
+                                    <span className="material-symbols-outlined text-on-secondary-container text-sm">lightbulb</span>
+                                    <span className="text-xs font-bold text-on-secondary-container">
+                                        {t("insights.actionSuggested")}
+                                    </span>
                                 </div>
+                                <p className="text-sm text-on-secondary-container">{activeInsight.actionSuggested}</p>
                             </div>
                         )}
-
-                        {/* Refresh */}
-                        <button
-                            onClick={fetchInsight}
-                            className="flex items-center gap-2 text-sm font-bold text-primary hover:text-primary-container transition-colors"
-                        >
-                            <span className="material-symbols-outlined text-sm">refresh</span>
-                            {t("insights.refresh")}
-                        </button>
                     </div>
-                )}
-            </div>
+                </div>
+            )}
         </div>
     );
 }

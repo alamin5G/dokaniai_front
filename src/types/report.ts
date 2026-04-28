@@ -115,6 +115,19 @@ export interface StockAlertReport {
     items: StockAlertItem[];
 }
 
+export interface ExpenseCategoryItem {
+    category: string;
+    amount: number;
+    percentage: number;
+}
+
+export interface ExpenseBreakdownReport {
+    startDate: string;
+    endDate: string;
+    totalExpenses: number;
+    categories: ExpenseCategoryItem[];
+}
+
 export interface DashboardSummary {
     todaySales: number;
     todayProfit: number;

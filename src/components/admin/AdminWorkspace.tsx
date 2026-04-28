@@ -14,6 +14,7 @@ import type {
 import type { SupportTicket } from "@/types/support";
 import CouponsTab from "./CouponsTab";
 import ExpenseCategoriesTab from "./ExpenseCategoriesTab";
+import PlanFeaturesTab from "./PlanFeaturesTab";
 import PaymentsTab from "./PaymentsTab";
 import ReferralConfigTab from "./ReferralConfigTab";
 import ReferralEventsTab from "./ReferralEventsTab";
@@ -103,7 +104,7 @@ function IconPayment({ className = "w-5 h-5" }: { className?: string }) {
 
 // ─── Tab type ────────────────────────────────────────────────────────────────
 
-type TabKey = "dashboard" | "users" | "coupons" | "categories" | "expenseCategories" | "payments" | "referral" | "referralEvents" | "tickets" | "audit";
+type TabKey = "dashboard" | "users" | "coupons" | "categories" | "expenseCategories" | "planFeatures" | "payments" | "referral" | "referralEvents" | "tickets" | "audit";
 
 // ─── Status Badge ───────────────────────────────────────────────────────────
 
@@ -187,6 +188,7 @@ export default function AdminWorkspace() {
         { key: "coupons", label: t("tabs.coupons"), icon: <IconTag /> },
         { key: "categories", label: t("tabs.categories"), icon: <IconFolder /> },
         { key: "expenseCategories", label: "Expense Categories", icon: <IconFolder /> },
+        { key: "planFeatures", label: t("tabs.planFeatures"), icon: <IconShield /> },
         { key: "payments", label: t("tabs.payments"), icon: <IconPayment /> },
         { key: "referral", label: t("tabs.referral"), icon: <IconTag /> },
         { key: "referralEvents", label: t("tabs.referralEvents"), icon: <IconClipboard /> },
@@ -229,6 +231,7 @@ export default function AdminWorkspace() {
             {activeTab === "users" && <UsersTab />}
             {activeTab === "coupons" && <CouponsTab />}
             {activeTab === "expenseCategories" && <ExpenseCategoriesTab />}
+            {activeTab === "planFeatures" && <PlanFeaturesTab />}
             {activeTab === "payments" && <PaymentsTab />}
             {activeTab === "referral" && <ReferralConfigTab />}
             {activeTab === "referralEvents" && <ReferralEventsTab />}

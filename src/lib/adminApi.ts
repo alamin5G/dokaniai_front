@@ -323,3 +323,45 @@ export async function toggleAdminExpenseCategory(id: string): Promise<AdminExpen
 export async function deleteAdminExpenseCategory(id: string): Promise<void> {
     await apiClient.delete(`/admin/expense-categories/${id}`);
 }
+
+// ─── Plan Feature Management ────────────────────────────────────────────────
+
+export interface AdminPlan {
+    id: string;
+    name: string;
+    displayNameEn: string | null;
+    displayNameBn: string | null;
+    priceBdt: number;
+    annualPriceBdt: number | null;
+    durationDays: number;
+    gracePeriodDays: number;
+    maxBusinesses: number;
+    maxProductsPerBusiness: number;
+    aiQueriesPerDay: number;
+    maxAiTokensPerQuery: number;
+    maxQueryCharacters: number;
+    conversationHistoryTurns: number;
+    features: Record<string, boolean> | null;
+    isActive: boolean;
+    highlight: boolean;
+    badge: string | null;
+    createdAt: string;
+    updatedAt: string;
+}
+
+export async function getPlans(): Promise<AdminPlan[]> {
+    const { data } = await apiClient.get("/admin/plans");
+    return data.data;
+}
+
+export async function togglePlanFeature(
+    planName: string,
+    featureName: string,
+    enabled: boolean
+): Promise<AdminPlan> {
+    const { data } = await apiClient.put(`/admin/plans/${planName}/features`, {
+        featureName,
+        enabled,
+    });
+    return data.data;
+}

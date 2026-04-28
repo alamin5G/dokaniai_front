@@ -10,6 +10,8 @@ import type {
     NetProfitReport,
     DueLedgerReport,
     StockAlertReport,
+    ExpenseBreakdownReport,
+    ExpenseCategoryItem,
     TopSellingItem,
     ProductProfitItem,
     StockAlertItem,
@@ -24,6 +26,7 @@ import {
     getNetProfitReport,
     getDueLedgerReport,
     getStockAlertReport,
+    getExpenseBreakdown,
     exportReport,
 } from "@/lib/reportApi";
 import { trackReportView } from "@/lib/activityTracker";
@@ -84,6 +87,7 @@ export default function ReportWorkspace({
     const [netProfit, setNetProfit] = useState<NetProfitReport | null>(null);
     const [dueReport, setDueReport] = useState<DueLedgerReport | null>(null);
     const [stockAlert, setStockAlert] = useState<StockAlertReport | null>(null);
+    const [expenseBreakdown, setExpenseBreakdown] = useState<ExpenseBreakdownReport | null>(null);
 
     // ── Sales period ──
     const [salesPeriod, setSalesPeriod] = useState<"daily" | "weekly" | "monthly">("daily");
@@ -162,6 +166,42 @@ export default function ReportWorkspace({
         }
     }, [businessId, t]);
 
+    const loadExpenseReport = useCallback(async () => {
+        setIsLoading(true);
+        try {
+            const [breakdown, net] = await Promise.all([
+                getExpenseBreakdown(businessId),
+                getNetProfitReport(businessId),
+            ]);
+            setExpenseBreakdown(breakdown);
+            setNetProfit(net);
+        } catch {
+            setError(t("messages.loadError"));
+        } finally {
+            setIsLoading(false);
+        }
+    }, [businessId, t]);
+
+    const loadAdvancedData = useCallback(async () => {
+        setIsLoading(true);
+        try {
+            const [weekly, monthly, net, due] = await Promise.all([
+                getWeeklySalesReport(businessId),
+                getMonthlySalesReport(businessId),
+                getNetProfitReport(businessId),
+                getDueLedgerReport(businessId),
+            ]);
+            setWeeklySales(weekly);
+            setMonthlySales(monthly);
+            setNetProfit(net);
+            setDueReport(due);
+        } catch {
+            setError(t("messages.loadError"));
+        } finally {
+            setIsLoading(false);
+        }
+    }, [businessId, t]);
+
     // Load based on active tab
     useEffect(() => {
         switch (activeTab) {
@@ -181,10 +221,13 @@ export default function ReportWorkspace({
                 loadStockReport();
                 break;
             case "expenses":
-                loadProfitReport(); // reuse profit report which has expense data
+                loadExpenseReport();
+                break;
+            case "advanced":
+                loadAdvancedData();
                 break;
         }
-    }, [activeTab, loadDashboard, loadSalesReport, loadProfitReport, loadDueReport, loadStockReport]);
+    }, [activeTab, loadDashboard, loadSalesReport, loadProfitReport, loadDueReport, loadStockReport, loadExpenseReport, loadAdvancedData]);
 
     useEffect(() => {
         const reportTypeMap: Record<TabKey, string> = {
@@ -212,24 +255,30 @@ export default function ReportWorkspace({
         try {
             const typeMap: Record<TabKey, ReportType> = {
                 dashboard: "DAILY_SALES",
-                sales: "DAILY_SALES",
+                sales: salesPeriod === "monthly" ? "MONTHLY_SALES" : salesPeriod === "weekly" ? "WEEKLY_SALES" : "DAILY_SALES",
                 profit: "NET_PROFIT",
                 expenses: "EXPENSE_BREAKDOWN",
                 due: "DUE_LEDGER",
                 stock: "STOCK_ALERT",
-                discounts: "CUSTOM",
-                returns: "CUSTOM",
-                advanced: "CUSTOM",
+                discounts: "AGED_DUES",
+                returns: "AGED_DUES",
+                advanced: "NET_PROFIT",
             };
             const blob = await exportReport(businessId, typeMap[activeTab], format);
             const url = URL.createObjectURL(blob);
             const a = document.createElement("a");
             a.href = url;
-            a.download = `report_${activeTab}.${format}`;
+            a.download = `report_${activeTab}_${new Date().toISOString().slice(0, 10)}.${format}`;
             a.click();
             URL.revokeObjectURL(url);
-        } catch {
-            setError(t("messages.exportError"));
+        } catch (err: unknown) {
+            // Gracefully handle 403 (feature not available) and other errors
+            const message = err instanceof Error ? err.message : "";
+            if (message.includes("403") || message.toLowerCase().includes("forbidden")) {
+                setError(t("messages.exportError") + " " + t("upgrade.currentPlan", { plan: plan.planName || "Free" }));
+            } else {
+                setError(t("messages.exportError"));
+            }
         }
     }
 
@@ -341,7 +390,7 @@ export default function ReportWorkspace({
 
                     {/* ────── EXPENSES TAB ────── */}
                     {activeTab === "expenses" && netProfit && (
-                        <ExpensesTab netProfit={netProfit} t={t} formatMoney={formatMoney} />
+                        <ExpensesTab netProfit={netProfit} expenseBreakdown={expenseBreakdown} t={t} formatMoney={formatMoney} formatPct={formatPct} />
                     )}
 
                     {/* ────── DUE TAB ────── */}
@@ -692,12 +741,16 @@ function ProfitTab({
 
 function ExpensesTab({
     netProfit,
+    expenseBreakdown,
     t,
     formatMoney,
+    formatPct,
 }: {
     netProfit: NetProfitReport;
+    expenseBreakdown: ExpenseBreakdownReport | null;
     t: (key: string) => string;
     formatMoney: (v: number | null | undefined) => string;
+    formatPct: (v: number | null | undefined) => string;
 }) {
     return (
         <div className="space-y-6">
@@ -716,6 +769,33 @@ function ExpensesTab({
                     <ProfitBar label={t("profit.netProfit")} value={netProfit.netProfit} max={netProfit.totalRevenue} color="bg-secondary" formatMoney={formatMoney} />
                 </div>
             </div>
+
+            {/* Expense Category Breakdown */}
+            {expenseBreakdown && expenseBreakdown.categories.length > 0 && (
+                <div className="overflow-hidden rounded-2xl bg-surface-container-lowest shadow-sm">
+                    <div className="p-6 bg-surface-container-low/50">
+                        <h3 className="font-bold text-primary">{t("expenses.title")} — {t("expenses.category")}</h3>
+                    </div>
+                    <table className="min-w-full text-left">
+                        <thead className="bg-surface-container-low text-sm font-bold text-on-surface-variant">
+                            <tr>
+                                <th className="px-6 py-4">{t("expenses.category")}</th>
+                                <th className="px-6 py-4 text-right">{t("expenses.amount")}</th>
+                                <th className="px-6 py-4 text-right">{t("expenses.percentage")}</th>
+                            </tr>
+                        </thead>
+                        <tbody className="divide-y divide-surface-container">
+                            {expenseBreakdown.categories.map((cat: ExpenseCategoryItem) => (
+                                <tr key={cat.category} className="hover:bg-surface-container-low transition-colors">
+                                    <td className="px-6 py-4 text-sm font-medium text-on-surface">{cat.category}</td>
+                                    <td className="px-6 py-4 text-right font-bold text-error">৳ {formatMoney(cat.amount)}</td>
+                                    <td className="px-6 py-4 text-right text-on-surface-variant">{formatPct(cat.percentage)}</td>
+                                </tr>
+                            ))}
+                        </tbody>
+                    </table>
+                </div>
+            )}
         </div>
     );
 }
@@ -817,7 +897,11 @@ function StockTab({
                                                 ? "bg-tertiary-container text-on-tertiary-container"
                                                 : "bg-surface-container-high text-on-surface-variant"
                                             }`}>
-                                            {item.status}
+                                            {item.status === "OUT_OF_STOCK"
+                                                ? t("stock.outOfStock")
+                                                : item.status === "LOW_STOCK"
+                                                    ? t("stock.lowStock")
+                                                    : item.status}
                                         </span>
                                     </td>
                                 </tr>

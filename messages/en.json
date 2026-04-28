@@ -2058,7 +2058,54 @@
           "fallbackSummary": "Connect more sales data to unlock personalized AI insights about your business performance.",
           "fallbackRec1": "Track daily sales consistently for better trend analysis.",
           "fallbackRec2": "Keep product costs updated for accurate profit calculations.",
-          "fallbackRec3": "Review due balances weekly to maintain healthy cash flow."
+          "fallbackRec3": "Review due balances weekly to maintain healthy cash flow.",
+          "generating": "Generating AI insight…",
+          "generateError": "Failed to generate insight. Please try again.",
+          "confidence": "confidence",
+          "actionSuggested": "Suggested Action",
+          "severity": {
+            "info": "Info",
+            "warning": "Warning",
+            "critical": "Critical"
+          },
+          "types": {
+            "morningBriefing": {
+              "title": "Morning Briefing",
+              "description": "Start your day with AI-powered action items and priorities"
+            },
+            "dailySummary": {
+              "title": "Daily Summary",
+              "description": "Get a comprehensive summary of today's business performance"
+            },
+            "weeklySummary": {
+              "title": "Weekly Summary",
+              "description": "Review your business performance over the past week with AI analysis"
+            },
+            "expenseIntelligence": {
+              "title": "Expense Intelligence",
+              "description": "AI-powered expense analysis with cost optimization suggestions"
+            },
+            "dueIntelligence": {
+              "title": "Due Intelligence",
+              "description": "Smart due collection analysis with priority recommendations"
+            },
+            "customerAnalytics": {
+              "title": "Customer Analytics",
+              "description": "AI-powered customer growth analysis and retention strategies"
+            },
+            "salesForecast": {
+              "title": "Sales Forecast",
+              "description": "Predict next week's sales with AI-powered forecasting"
+            },
+            "profitOptimization": {
+              "title": "Profit Optimization",
+              "description": "Get AI recommendations to maximize your profit margins"
+            },
+            "seasonalTrends": {
+              "title": "Seasonal Trends",
+              "description": "Discover seasonal patterns and plan your inventory accordingly"
+            }
+          }
         },
         "customerAnalytics": {
           "title": "Customer Analytics",
@@ -2792,7 +2839,18 @@
       "tickets": "Tickets",
       "audit": "Audit Logs",
       "referral": "Referral",
-      "referralEvents": "Referral Events"
+      "referralEvents": "Referral Events",
+      "planFeatures": "Plan Features"
+    },
+    "planFeatures": {
+      "title": "Plan Feature Toggles",
+      "subtitle": "Enable or disable AI features per subscription plan.",
+      "colPlan": "Plan",
+      "aiInsights": "AI Insights",
+      "customerAnalytics": "Customer Analytics",
+      "forecasting": "Forecasting",
+      "noPlans": "No plans found.",
+      "infoNote": "Changes take effect immediately. Disabled features will be hidden from users on that plan."
     },
     "dashboard": {
       "error": "Failed to load system statistics.",
