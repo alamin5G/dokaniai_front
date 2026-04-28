@@ -91,16 +91,6 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                     </div>
                     <div className="hidden md:flex items-center gap-4 text-on-surface" />
                     <div className="flex flex-1 justify-end gap-4 md:gap-6 items-center">
-                        <div className="relative w-full max-w-sm hidden md:block">
-                            <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                                <span className="material-symbols-outlined text-on-surface-variant">search</span>
-                            </div>
-                            <input
-                                className="block w-full pl-11 pr-4 py-2.5 bg-surface-container-low border-0 rounded-full text-on-surface placeholder-on-surface-variant text-sm focus:ring-0 focus:bg-surface-container-high transition-colors"
-                                placeholder="Search shops, users, transactions..."
-                                type="text"
-                            />
-                        </div>
                         <button className="size-10 rounded-full bg-surface-container-low flex items-center justify-center text-on-surface-variant hover:bg-surface-container-high transition-colors relative">
                             <span className="material-symbols-outlined">notifications</span>
                             <span className="absolute top-2 right-2 size-2 bg-error rounded-full" />

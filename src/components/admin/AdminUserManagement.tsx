@@ -4,7 +4,7 @@ import { useTranslations } from "next-intl";
 import { useCallback, useEffect, useState } from "react";
 import { useAuthStore } from "@/store/authStore";
 import * as adminApi from "@/lib/adminApi";
-import type { AdminUser, UserRole, UserStatus } from "@/types/admin";
+import type { AdminUser, AdminUserBusiness, UserRole, UserStatus } from "@/types/admin";
 import type { AdminBusiness } from "@/lib/adminApi";
 
 const AVATAR_COLORS = [
@@ -26,7 +26,7 @@ function initial(name: string | null, phone: string): string {
     return phone.charAt(0);
 }
 
-function PlanBadge({ business }: { business: AdminBusiness }) {
+function PlanBadge({ business }: { business: AdminUserBusiness }) {
     return (
         <span className="inline-flex items-center gap-1 px-2 py-1 rounded-md bg-primary-fixed/30 text-on-primary-fixed text-[10px] font-bold">
             <span className="material-symbols-outlined text-[12px]">storefront</span>
@@ -67,7 +67,7 @@ function StatusBadge({ status }: { status: string }) {
     );
 }
 
-function BusinessRow({ business, t }: { business: AdminBusiness; t: (key: string) => string }) {
+function BusinessRow({ business, t }: { business: AdminUserBusiness; t: (key: string) => string }) {
     return (
         <div className="grid grid-cols-12 gap-4 items-center px-6 py-3 bg-surface-container-lowest rounded-xl hover:bg-surface-container-high transition-colors">
             <div className="col-span-4 flex items-center gap-3">
@@ -307,7 +307,7 @@ export default function AdminUserManagement() {
                 ) : (
                     users.map((user) => {
                         const isExpanded = expandedUser === user.id;
-                        const businesses = userBusinesses[user.id] || [];
+                        const businesses = user.businesses || userBusinesses[user.id] || [];
                         const isLoadingBiz = loadingBusinesses[user.id];
 
                         return (

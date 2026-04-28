@@ -11,6 +11,19 @@ export type UserStatus = "ACTIVE" | "SUSPENDED" | "ARCHIVED" | "DELETED";
 
 // ─── User (Admin view) ──────────────────────────────────────────────────────
 
+export interface AdminUserBusiness {
+    id: string;
+    name: string;
+    type: string | null;
+    status: string | null;
+    // Optional fields for compatibility with AdminBusiness (populated on expand)
+    userId?: string;
+    slug?: string;
+    archivedAt?: string | null;
+    createdAt?: string;
+    updatedAt?: string;
+}
+
 export interface AdminUser {
     id: string;
     name: string | null;
@@ -30,6 +43,7 @@ export interface AdminUser {
     lastLoginAt: string | null;
     createdAt: string;
     updatedAt: string;
+    businesses: AdminUserBusiness[];
 }
 
 // ─── Paginated Users ────────────────────────────────────────────────────────
