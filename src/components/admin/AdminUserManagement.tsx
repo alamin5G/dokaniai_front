@@ -127,10 +127,12 @@ export default function AdminUserManagement() {
                 page,
                 size: 20,
             });
-            setUsers(result.content);
-            setTotalPages(result.totalPages);
-        } catch {
-            // silent
+            setUsers(result?.content ?? []);
+            setTotalPages(result?.totalPages ?? 0);
+        } catch (error) {
+            console.error("[AdminUsers] Failed to load users:", error);
+            setUsers([]);
+            setTotalPages(0);
         } finally {
             setLoading(false);
         }

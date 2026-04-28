@@ -39,8 +39,16 @@ export async function listUsers(params?: ListUsersParams): Promise<PagedUsers> {
     if (params?.size !== undefined) query.set("size", String(params.size));
 
     const qs = query.toString();
-    const { data } = await apiClient.get(`/admin/users${qs ? `?${qs}` : ""}`);
-    return data.data;
+    const url = `/admin/users${qs ? `?${qs}` : ""}`;
+    const { data: response } = await apiClient.get(url);
+    console.log("[AdminUsers] API response:", {
+        url,
+        success: response?.success,
+        userCount: response?.data?.content?.length,
+        totalElements: response?.data?.totalElements,
+        totalPages: response?.data?.totalPages,
+    });
+    return response.data;
 }
 
 export async function getUserDetails(userId: string): Promise<AdminUser> {
