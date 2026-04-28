@@ -97,6 +97,7 @@ export interface CustomerDueSummary {
     totalJomaAmount: number;
     lastTransactionDate: string | null;
     lastPaymentDate: string | null;
+    lastReminderSentAt?: string | null;
 }
 
 export interface CustomerDueItem {
@@ -151,14 +152,17 @@ export interface WhatsAppLink {
 }
 
 export interface WhatsAppReminderResponse {
+    reminderId: string | null;
     customerId: string;
+    businessId: string;
     customerName: string;
-    phone: string;
+    phone: string | null;
     link: string;
     message: string;
-    encodedMessage: string;
-    contextType: string;
+    contextType: string | null;
+    status: string;
     alreadySentToday: boolean;
+    aiGenerated: boolean;
     resetAt: string | null;
 }
 

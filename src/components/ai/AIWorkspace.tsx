@@ -4,7 +4,6 @@ import { useTranslations } from "next-intl";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { usePlanLimits } from "@/hooks/usePlanLimits";
 import type {
-    AIResponse,
     AIMessage,
     ConversationSummary,
     ParsedAction,
@@ -28,6 +27,9 @@ import {
 } from "@/lib/aiApi";
 import { usePlanFeatures } from "@/hooks/usePlanFeatures";
 import UpgradeCta from "../reports/UpgradeCta";
+import ConfirmationRouter from "./confirmations/ConfirmationRouter";
+import ErrorRecoveryPanel from "./ErrorRecoveryPanel";
+import AIResponseRenderer from "./AIResponseRenderer";
 
 type TabKey = "chat" | "voice" | "commands";
 
@@ -49,8 +51,12 @@ const ACTION_META: Record<AIActionType, { icon: string; color: string }> = {
 
 export default function AIWorkspace({ businessId }: { businessId: string }) {
     const t = useTranslations("shop.ai");
-    const { maxQueryCharacters } = usePlanLimits();
+    const { limits } = usePlanLimits();
     const plan = usePlanFeatures();
+
+    // ── Plan limit values ──
+    const aiQueriesPerDay = limits?.aiQueriesPerDay ?? 0;
+    const maxAiTokensPerQuery = limits?.maxAiTokensPerQuery ?? 0;
 
     const [activeTab, setActiveTab] = useState<TabKey>("chat");
 
@@ -60,6 +66,9 @@ export default function AIWorkspace({ businessId }: { businessId: string }) {
     useEffect(() => {
         getAIUsageStats().then(setUsage).catch(() => { });
     }, []);
+
+    // ── Daily limit check ──
+    const isDailyLimitReached = aiQueriesPerDay > 0 && usage != null && usage.queriesToday >= aiQueriesPerDay;
 
     const tabs: { key: TabKey; icon: string }[] = [
         { key: "chat", icon: "chat" },
@@ -111,13 +120,34 @@ export default function AIWorkspace({ businessId }: { businessId: string }) {
                         {tab.key === "voice" && !plan.voice && (
                             <span className="material-symbols-outlined text-xs text-tertiary">lock</span>
                         )}
+                        {tab.key === "commands" && !plan.textNlp && (
+                            <span className="material-symbols-outlined text-xs text-tertiary">lock</span>
+                        )}
                     </button>
                 ))}
             </div>
 
+            {/* ── Subscription limit banner ── */}
+            {isDailyLimitReached && (
+                <div className="rounded-2xl bg-amber-50 dark:bg-amber-900/20 p-4 flex items-center justify-between gap-4">
+                    <div className="flex items-center gap-3">
+                        <span className="material-symbols-outlined text-amber-600">warning</span>
+                        <div>
+                            <p className="text-sm font-bold text-amber-800 dark:text-amber-200">{t("subscription.limitReached")}</p>
+                            <p className="text-xs text-amber-700 dark:text-amber-300">{t("subscription.limitReachedDesc")}</p>
+                        </div>
+                    </div>
+                    <UpgradeCta feature="aiInsights" />
+                </div>
+            )}
+
             {/* ── Tab Content ── */}
             {activeTab === "chat" && (
-                <ChatTab businessId={businessId} />
+                <ChatTab
+                    businessId={businessId}
+                    isDailyLimitReached={isDailyLimitReached}
+                    maxAiTokensPerQuery={maxAiTokensPerQuery}
+                />
             )}
             {activeTab === "voice" && (
                 plan.voice ? (
@@ -127,7 +157,15 @@ export default function AIWorkspace({ businessId }: { businessId: string }) {
                 )
             )}
             {activeTab === "commands" && (
-                <CommandsTab businessId={businessId} />
+                plan.textNlp ? (
+                    <CommandsTab
+                        businessId={businessId}
+                        isDailyLimitReached={isDailyLimitReached}
+                        maxAiTokensPerQuery={maxAiTokensPerQuery}
+                    />
+                ) : (
+                    <UpgradeCta feature="aiInsights" />
+                )
             )}
         </div>
     );
@@ -137,7 +175,11 @@ export default function AIWorkspace({ businessId }: { businessId: string }) {
 // CHAT TAB
 // ═══════════════════════════════════════════════════════════
 
-function ChatTab({ businessId }: { businessId: string }) {
+function ChatTab({ businessId, isDailyLimitReached, maxAiTokensPerQuery }: {
+    businessId: string;
+    isDailyLimitReached: boolean;
+    maxAiTokensPerQuery: number;
+}) {
     const t = useTranslations("shop.ai");
     const { maxQueryCharacters } = usePlanLimits();
     const [messages, setMessages] = useState<AIMessage[]>([]);
@@ -146,6 +188,7 @@ function ChatTab({ businessId }: { businessId: string }) {
     const [conversations, setConversations] = useState<ConversationSummary[]>([]);
     const [activeConvId, setActiveConvId] = useState<string | null>(null);
     const [showHistory, setShowHistory] = useState(false);
+    const [typingMessageId, setTypingMessageId] = useState<string | null>(null);
     const messagesEndRef = useRef<HTMLDivElement>(null);
 
     // Load conversations
@@ -182,7 +225,20 @@ function ChatTab({ businessId }: { businessId: string }) {
             confidenceScore: null,
             createdAt: new Date().toISOString(),
         };
+        // Show typing indicator
+        const typingId = `typing-${Date.now()}`;
         setMessages((prev) => [...prev, optimisticUser]);
+        setTypingMessageId(typingId);
+        setMessages((prev) => [...prev, {
+            id: typingId,
+            conversationId: activeConvId ?? "",
+            role: "ASSISTANT",
+            content: "",
+            actionType: null,
+            structuredOutput: null,
+            confidenceScore: null,
+            createdAt: new Date().toISOString(),
+        }]);
 
         try {
             const response = await sendChatMessage({
@@ -196,7 +252,8 @@ function ChatTab({ businessId }: { businessId: string }) {
                 setActiveConvId(response.conversationId);
             }
 
-            // Add AI response
+            // Remove typing indicator and add AI response
+            setTypingMessageId(null);
             const aiMessage: AIMessage = {
                 id: response.messageId,
                 conversationId: response.conversationId,
@@ -207,10 +264,11 @@ function ChatTab({ businessId }: { businessId: string }) {
                 confidenceScore: response.confidenceScore,
                 createdAt: new Date().toISOString(),
             };
-            setMessages((prev) => [...prev, aiMessage]);
+            setMessages((prev) => [...prev.filter((m) => m.id !== typingMessageId), aiMessage]);
         } catch {
+            setTypingMessageId(null);
             setMessages((prev) => [
-                ...prev,
+                ...prev.filter((m) => m.id !== typingMessageId),
                 {
                     id: `error-${Date.now()}`,
                     conversationId: activeConvId ?? "",
@@ -225,7 +283,7 @@ function ChatTab({ businessId }: { businessId: string }) {
         } finally {
             setIsSending(false);
         }
-    }, [input, isSending, businessId, activeConvId, t]);
+    }, [input, isSending, businessId, activeConvId, typingMessageId, t]);
 
     const handleNewChat = useCallback(() => {
         setActiveConvId(null);
@@ -249,6 +307,15 @@ function ChatTab({ businessId }: { businessId: string }) {
 
     return (
         <div className="grid gap-6 lg:grid-cols-[280px_1fr]">
+            {/* Mobile: History toggle */}
+            <button
+                onClick={() => setShowHistory(!showHistory)}
+                className="lg:hidden flex items-center gap-2 rounded-xl bg-surface-container px-4 py-2.5 text-sm font-bold text-on-surface-variant"
+            >
+                <span className="material-symbols-outlined text-sm">history</span>
+                {showHistory ? t("chat.newChat") : "History"}
+            </button>
+
             {/* Sidebar: Conversation History */}
             <aside className={`space-y-3 ${showHistory ? "block" : "hidden lg:block"}`}>
                 <button
@@ -311,8 +378,20 @@ function ChatTab({ businessId }: { businessId: string }) {
                                     : "bg-surface-container text-on-surface rounded-bl-md"
                                     }`}
                             >
-                                <p className="text-sm whitespace-pre-wrap">{msg.content}</p>
-                                {msg.actionType && msg.actionType !== "UNKNOWN" && msg.actionType !== "QUERY" && (
+                                {/* Typing indicator */}
+                                {msg.id === typingMessageId ? (
+                                    <div className="flex items-center gap-1.5 py-1">
+                                        <span className="w-2 h-2 rounded-full bg-on-surface-variant animate-bounce" style={{ animationDelay: "0ms" }} />
+                                        <span className="w-2 h-2 rounded-full bg-on-surface-variant animate-bounce" style={{ animationDelay: "150ms" }} />
+                                        <span className="w-2 h-2 rounded-full bg-on-surface-variant animate-bounce" style={{ animationDelay: "300ms" }} />
+                                    </div>
+                                ) : (
+                                    <AIResponseRenderer
+                                        content={msg.content}
+                                        variant={msg.role === "USER" ? "user" : "ai"}
+                                    />
+                                )}
+                                {msg.actionType && msg.actionType !== "UNKNOWN" && msg.actionType !== "QUERY" && msg.id !== typingMessageId && (
                                     <div className="mt-2 flex items-center gap-2 rounded-lg bg-surface-container-low px-3 py-1.5">
                                         <span className={`material-symbols-outlined text-sm ${ACTION_META[msg.actionType].color}`}>
                                             {ACTION_META[msg.actionType].icon}
@@ -376,15 +455,20 @@ function ChatTab({ businessId }: { businessId: string }) {
                                 placeholder={t("chat.placeholder")}
                                 maxLength={maxQueryCharacters}
                                 className="w-full rounded-xl bg-surface-container px-4 py-3 pr-16 text-sm text-on-surface placeholder:text-on-surface-variant focus:outline-none focus:ring-2 focus:ring-primary/30"
-                                disabled={isSending}
+                                disabled={isSending || isDailyLimitReached}
                             />
-                            <span className={`absolute right-3 top-1/2 -translate-y-1/2 text-xs ${input.length > maxQueryCharacters * 0.9 ? "text-error" : "text-on-surface-variant"}`}>
-                                {input.length}/{maxQueryCharacters}
+                            <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-on-surface-variant flex items-center gap-1">
+                                {maxAiTokensPerQuery > 0 && (
+                                    <span className="text-primary/50">~{Math.ceil(input.length / 4)}t</span>
+                                )}
+                                <span className={input.length > maxQueryCharacters * 0.9 ? "text-error" : ""}>
+                                    {input.length}/{maxQueryCharacters}
+                                </span>
                             </span>
                         </div>
                         <button
                             type="submit"
-                            disabled={!input.trim() || isSending}
+                            disabled={!input.trim() || isSending || isDailyLimitReached}
                             className="flex items-center justify-center w-11 h-11 rounded-xl bg-primary text-white hover:bg-primary-container transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                         >
                             <span className="material-symbols-outlined">
@@ -524,11 +608,15 @@ function VoiceTab({ businessId }: { businessId: string }) {
         }
     }, [session, parsedAction, t]);
 
+    // Recovery panel state
+    const [showRecovery, setShowRecovery] = useState(false);
+
     // Reset
     const handleReset = useCallback(() => {
         setSession(null);
         setParsedAction(null);
         setError(null);
+        setShowRecovery(false);
     }, []);
 
     const isLowRisk = parsedAction?.actionType === "EXPENSE" || parsedAction?.actionType === "QUERY";
@@ -653,12 +741,24 @@ function VoiceTab({ businessId }: { businessId: string }) {
                 </div>
             )}
 
+            {/* Error Recovery Panel */}
+            {showRecovery && parsedAction && (
+                <ErrorRecoveryPanel
+                    actionType={parsedAction.actionType}
+                    businessId={businessId}
+                    onDismiss={handleReset}
+                />
+            )}
+
             {/* Parsed Action Preview */}
-            {parsedAction && (
-                <CommandPreview
-                    action={parsedAction}
-                    onExecute={isLowRisk ? handleExecute : undefined}
+            {parsedAction && !showRecovery && (
+                <ConfirmationRouter
+                    parsedAction={parsedAction}
+                    onConfirm={handleExecute}
+                    onReject={() => setShowRecovery(true)}
                     isProcessing={isProcessing}
+                    isLowRisk={isLowRisk}
+                    onExecute={isLowRisk ? handleExecute : undefined}
                 />
             )}
         </div>
@@ -669,7 +769,11 @@ function VoiceTab({ businessId }: { businessId: string }) {
 // COMMANDS TAB (Text NLP)
 // ═══════════════════════════════════════════════════════════
 
-function CommandsTab({ businessId }: { businessId: string }) {
+function CommandsTab({ businessId, isDailyLimitReached, maxAiTokensPerQuery }: {
+    businessId: string;
+    isDailyLimitReached: boolean;
+    maxAiTokensPerQuery: number;
+}) {
     const t = useTranslations("shop.ai");
     const { maxQueryCharacters } = usePlanLimits();
     const [input, setInput] = useState("");
@@ -732,6 +836,8 @@ function CommandsTab({ businessId }: { businessId: string }) {
         }
     }, [confirmationToken, input, businessId, t]);
 
+    const [showRecovery, setShowRecovery] = useState(false);
+
     const isLowRisk = parsedAction?.actionType === "EXPENSE" || parsedAction?.actionType === "QUERY";
 
     return (
@@ -741,6 +847,15 @@ function CommandsTab({ businessId }: { businessId: string }) {
                 <div className="rounded-2xl bg-error-container p-4 text-on-error-container text-sm">
                     {error}
                 </div>
+            )}
+
+            {/* Error Recovery Panel */}
+            {showRecovery && parsedAction && (
+                <ErrorRecoveryPanel
+                    actionType={parsedAction.actionType}
+                    businessId={businessId}
+                    onDismiss={() => { setShowRecovery(false); setParsedAction(null); setConfirmationToken(null); }}
+                />
             )}
 
             {/* Success */}
@@ -768,15 +883,20 @@ function CommandsTab({ businessId }: { businessId: string }) {
                             onKeyDown={(e) => {
                                 if (e.key === "Enter" && !confirmationToken) handleParse();
                             }}
-                            disabled={isProcessing}
+                            disabled={isProcessing || isDailyLimitReached}
                         />
-                        <span className={`absolute right-3 top-1/2 -translate-y-1/2 text-xs ${input.length > maxQueryCharacters * 0.9 ? "text-error" : "text-on-surface-variant"}`}>
-                            {input.length}/{maxQueryCharacters}
+                        <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-on-surface-variant flex items-center gap-1">
+                            {maxAiTokensPerQuery > 0 && (
+                                <span className="text-primary/50">~{Math.ceil(input.length / 4)}t</span>
+                            )}
+                            <span className={input.length > maxQueryCharacters * 0.9 ? "text-error" : ""}>
+                                {input.length}/{maxQueryCharacters}
+                            </span>
                         </span>
                     </div>
                     <button
                         onClick={confirmationToken ? handleConfirmExecute : handleParse}
-                        disabled={!input.trim() || isProcessing}
+                        disabled={!input.trim() || isProcessing || isDailyLimitReached}
                         className={`flex items-center gap-2 rounded-xl px-5 py-3 text-sm font-bold text-white transition-colors disabled:opacity-50 ${confirmationToken
                             ? "bg-secondary hover:bg-secondary-container"
                             : "bg-primary hover:bg-primary-container"
@@ -804,110 +924,16 @@ function CommandsTab({ businessId }: { businessId: string }) {
             </div>
 
             {/* Parsed Action Preview */}
-            {parsedAction && (
-                <CommandPreview
-                    action={parsedAction}
-                    onExecute={isLowRisk ? handleConfirmExecute : undefined}
+            {parsedAction && !showRecovery && (
+                <ConfirmationRouter
+                    parsedAction={parsedAction}
+                    onConfirm={handleConfirmExecute}
+                    onReject={() => setShowRecovery(true)}
                     isProcessing={isProcessing}
-                    confirmationToken={confirmationToken}
+                    isLowRisk={isLowRisk}
+                    onExecute={isLowRisk ? handleConfirmExecute : undefined}
                 />
             )}
-        </div>
-    );
-}
-
-// ═══════════════════════════════════════════════════════════
-// SHARED: Command Preview Component
-// ═══════════════════════════════════════════════════════════
-
-function CommandPreview({
-    action,
-    onExecute,
-    isProcessing,
-    confirmationToken,
-}: {
-    action: ParsedAction;
-    onExecute?: () => void;
-    isProcessing: boolean;
-    confirmationToken?: string | null;
-}) {
-    const t = useTranslations("shop.ai");
-    const meta = ACTION_META[action.actionType] ?? ACTION_META.UNKNOWN;
-
-    return (
-        <div className="relative overflow-hidden rounded-[24px] bg-surface-container-lowest p-6 shadow-sm">
-            {/* Decorative gradient */}
-            <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-secondary/5 pointer-events-none" />
-
-            <div className="relative space-y-4">
-                {/* Header */}
-                <div className="flex items-center gap-3">
-                    <div className={`flex items-center justify-center w-10 h-10 rounded-xl bg-surface-container ${meta.color}`}>
-                        <span className="material-symbols-outlined">{meta.icon}</span>
-                    </div>
-                    <div>
-                        <h3 className="font-bold text-on-surface">{t(`actions.${action.actionType}`)}</h3>
-                        <p className="text-xs text-on-surface-variant">
-                            {t("commands.originalText")}: &ldquo;{action.originalText}&rdquo;
-                        </p>
-                    </div>
-                    <div className="ml-auto">
-                        <span className={`rounded-full px-3 py-1 text-xs font-bold ${action.confidenceScore > 0.8
-                            ? "bg-secondary-container text-on-secondary-container"
-                            : action.confidenceScore > 0.5
-                                ? "bg-tertiary-container text-on-tertiary-container"
-                                : "bg-error-container text-on-error-container"
-                            }`}>
-                            {(action.confidenceScore * 100).toFixed(0)}%
-                        </span>
-                    </div>
-                </div>
-
-                {/* Structured output */}
-                {action.structuredOutput && (
-                    <div className="rounded-xl bg-surface-container p-4">
-                        <pre className="text-xs text-on-surface whitespace-pre-wrap font-mono">
-                            {action.structuredOutput}
-                        </pre>
-                    </div>
-                )}
-
-                {/* Uncertainty warning */}
-                {action.needsConfirmation && action.uncertaintyReason && (
-                    <div className="rounded-xl bg-tertiary-container/20 p-4 text-sm text-on-surface">
-                        <div className="flex items-center gap-2">
-                            <span className="material-symbols-outlined text-sm text-tertiary">warning</span>
-                            <span className="font-bold text-tertiary">{t("commands.needsConfirmation")}</span>
-                        </div>
-                        <p className="mt-1 text-on-surface-variant">{action.uncertaintyReason}</p>
-                    </div>
-                )}
-
-                {/* Execute button (low-risk only) */}
-                {onExecute && (
-                    <button
-                        onClick={onExecute}
-                        disabled={isProcessing}
-                        className="flex items-center gap-2 rounded-xl bg-primary px-5 py-3 text-sm font-bold text-white hover:bg-primary-container transition-colors disabled:opacity-50"
-                    >
-                        <span className="material-symbols-outlined text-sm">
-                            {isProcessing ? "progress_activity" : "play_arrow"}
-                        </span>
-                        {t("commands.execute")}
-                    </button>
-                )}
-
-                {/* High-risk notice */}
-                {!onExecute && action.actionType !== "QUERY" && action.actionType !== "UNKNOWN" && (
-                    <div className="rounded-xl bg-error-container/20 p-4 text-sm text-error">
-                        <div className="flex items-center gap-2">
-                            <span className="material-symbols-outlined text-sm">shield</span>
-                            <span className="font-bold">{t("commands.highRisk")}</span>
-                        </div>
-                        <p className="mt-1">{t("commands.highRiskHint")}</p>
-                    </div>
-                )}
-            </div>
         </div>
     );
 }

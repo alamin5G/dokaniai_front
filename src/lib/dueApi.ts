@@ -230,7 +230,17 @@ export async function generateAiReminder(
     const { data } = await apiClient.post(
         `/api/v1/businesses/${businessId}/reminders/ai/${customerId}`
     );
-    return unwrap<WhatsAppReminderResponse>(data);
+    const reminder = unwrap<WhatsAppReminderResponse & {
+        customerPhone?: string | null;
+        whatsappLink?: string | null;
+    }>(data);
+    return {
+        ...reminder,
+        phone: reminder.phone ?? reminder.customerPhone ?? null,
+        link: reminder.link ?? reminder.whatsappLink ?? "",
+        message: reminder.message ?? "",
+        resetAt: reminder.resetAt ?? null,
+    };
 }
 
 // ─── Bulk WhatsApp Reminders ────────────────────────────

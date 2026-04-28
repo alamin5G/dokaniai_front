@@ -81,8 +81,10 @@ const initialCustomerForm: CustomerFormState = {
 
 export default function DueLedgerWorkspace({
     businessId,
+    initialCustomerId,
 }: {
     businessId: string;
+    initialCustomerId?: string;
 }) {
     const t = useTranslations("shop.dueLedger");
     const locale = useLocale();
@@ -200,6 +202,12 @@ export default function DueLedgerWorkspace({
         [businessId, t]
     );
 
+    useEffect(() => {
+        if (initialCustomerId && !isLoading && !ledgerData) {
+            loadLedger(initialCustomerId);
+        }
+    }, [initialCustomerId, isLoading, ledgerData, loadLedger]);
+
     // ── Toast auto-clear ──
     useEffect(() => {
         if (toast) {
@@ -243,6 +251,9 @@ export default function DueLedgerWorkspace({
             }
             setShowTxForm(false);
             loadData();
+            if (selectedCustomerId) {
+                loadLedger(selectedCustomerId);
+            }
         } catch {
             setToast(t("messages.saveError"));
         } finally {
@@ -281,6 +292,7 @@ export default function DueLedgerWorkspace({
     function handleReminderSent() {
         setReminderCustomer(null);
         setToast(t("messages.reminderSent"));
+        loadData();
     }
 
     async function handleBulkReminders() {
@@ -779,6 +791,7 @@ export default function DueLedgerWorkspace({
                         filteredCustomers.map((customer) => {
                             const priority = getCustomerPriority(customer);
                             const days = daysSincePayment(customer.lastPaymentDate);
+                            const reminderDays = daysSincePayment(customer.lastReminderSentAt ?? null);
 
                             return (
                                 <div
@@ -811,6 +824,15 @@ export default function DueLedgerWorkspace({
                                                     ? t("customerList.never")
                                                     : `${days} ${t("customerList.daysAgo")}`}
                                             </p>
+                                            {reminderDays !== null && (
+                                                <p className="text-on-surface-variant text-xs flex items-center gap-1">
+                                                    <span className="material-symbols-outlined text-xs">mark_chat_read</span>
+                                                    {t("customerList.lastReminder")}{" "}
+                                                    {reminderDays === 0
+                                                        ? t("customerList.today")
+                                                        : `${reminderDays} ${t("customerList.daysAgo")}`}
+                                                </p>
+                                            )}
                                         </div>
                                     </div>
 
@@ -1082,4 +1104,3 @@ export default function DueLedgerWorkspace({
         </div>
     );
 }
-

@@ -58,6 +58,14 @@ function IconChart({ className = "w-5 h-5" }: { className?: string }) {
   );
 }
 
+function IconReturn({ className = "w-5 h-5" }: { className?: string }) {
+  return (
+    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className={className}>
+      <path strokeLinecap="round" strokeLinejoin="round" d="M9 15 3 9m0 0 6-6M3 9h12a6 6 0 0 1 0 12h-3" />
+    </svg>
+  );
+}
+
 function IconAI({ className = "w-5 h-5" }: { className?: string }) {
   return (
     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className={className}>
@@ -98,6 +106,7 @@ const NAV_ITEMS: NavItem[] = [
   { key: "expenses", section: "/expenses", icon: IconExpense },
   { key: "dueLedger", section: "/due-ledger", icon: IconBook },
   { key: "products", section: "/products", icon: IconBox },
+  { key: "returns", section: "/returns", icon: IconReturn },
   { key: "reports", section: "/reports", icon: IconChart },
   { key: "aiAssistant", section: "/ai", icon: IconAI },
 ];

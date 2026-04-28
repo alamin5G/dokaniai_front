@@ -815,6 +815,15 @@
     "dueLedger": {
       "title": "Due Ledger - Top 3",
       "lastDue": "Last due: {days} days ago",
+      "lastTransactionUnknown": "No recent transaction",
+      "totalDue": "Total Due",
+      "noDues": "No outstanding dues",
+      "noDuesDesc": "All customer balances are clear.",
+      "sendReminder": "Send reminder",
+      "sendReminderAria": "Send reminder to {name}",
+      "customersCount": "{count} customers with due",
+      "loadError": "Failed to load due data.",
+      "retry": "Retry",
       "viewAll": "View Full Ledger"
     },
     "workspace": {
@@ -946,6 +955,7 @@
     "expenses": "Expenses",
     "dueLedger": "Due Ledger",
     "products": "Products",
+    "returns": "Returns",
     "stockManagement": "Stock Management",
     "reports": "Reports",
     "aiAssistant": "AI Assistant",
@@ -1495,6 +1505,12 @@
       "returns": {
         "title": "Record Return",
         "subtitle": "Process a product return for this sale.",
+        "walkInCustomer": "Walk-in",
+        "workspace": {
+          "title": "Product Returns",
+          "subtitle": "Record full or item-level returns, restore stock, and monitor repeat return patterns.",
+          "recent": "Recent Returns"
+        },
         "returnType": {
           "FULL": "Full Return",
           "PARTIAL": "Partial Return",
@@ -1502,11 +1518,14 @@
           "EXCHANGE": "Exchange"
         },
         "form": {
+          "sale": "Original Sale",
+          "item": "Returned Item",
           "type": "Return Type",
           "reason": "Reason",
           "reasonPlaceholder": "Why is this being returned?",
           "notes": "Notes",
           "notesPlaceholder": "Additional details (optional)",
+          "refundPreview": "Refund Preview",
           "submit": "Process Return",
           "submitting": "Processing...",
           "void": "Void Return",
@@ -1532,6 +1551,16 @@
           "partialReturns": "Partial Returns",
           "defectiveReturns": "Defective",
           "stockRestored": "Stock Restored"
+        },
+        "analytics": {
+          "topProducts": "Most Returned Products",
+          "topCustomers": "Customers With Most Returns",
+          "noProductData": "No product-level return data yet.",
+          "noCustomerData": "No customer return pattern yet."
+        },
+        "abuse": {
+          "title": "Return Pattern Alerts",
+          "detail": "{count} returns, ৳{amount} refund, {severity} risk"
         },
         "table": {
           "date": "Date",
@@ -1816,6 +1845,8 @@
         "viewAll": "View All Customers",
         "totalDue": "Total Due",
         "lastPayment": "Last payment:",
+        "lastReminder": "Last reminder:",
+        "today": "Today",
         "never": "Never",
         "daysAgo": "days ago",
         "addBaki": "Add Due",
@@ -1871,7 +1902,11 @@
         "type": "Type",
         "description": "Description",
         "amount": "Amount",
-        "back": "Back to List"
+        "back": "Back to List",
+        "subtitle": "Full transaction history",
+        "empty": "No transactions found.",
+        "paymentReceived": "Payment received",
+        "creditAdded": "Credit added"
       },
       "filter": {
         "all": "All",
@@ -1899,6 +1934,7 @@
         "customerCreated": "Customer added successfully.",
         "customerUpdated": "Customer updated successfully.",
         "reminderSent": "WhatsApp reminder link generated.",
+        "reminderBulkSent": "reminder links generated.",
         "voidSuccess": "Transaction voided successfully.",
         "loadError": "Failed to load due data.",
         "saveError": "Failed to save transaction.",
@@ -1909,6 +1945,7 @@
         "tooltip": "AI-powered voice/text command"
       },
       "autoMfs": {
+        "title": "Auto MFS payment",
         "badge": "Auto",
         "badgeTooltip": "Auto-credited via MFS SMS",
         "filter": "Auto MFS",
@@ -2231,6 +2268,47 @@
             "dueJoma": "রহিম জমা দিল ১০০০ টাকা",
             "query": "আজকের বিক্রি কত?"
           }
+        },
+        "confirmation": {
+          "title": "Action Confirmation",
+          "titleUncertain": "Please Verify",
+          "titleRejected": "Low Confidence",
+          "confidence": "Confidence",
+          "yourWords": "Your words:",
+          "confirm": "Confirm & Execute",
+          "reject": "Cancel",
+          "items": "Items",
+          "product": "Product",
+          "quantity": "Quantity",
+          "unitPrice": "Unit Price",
+          "total": "Total",
+          "payment": "Payment",
+          "cash": "Cash",
+          "credit": "Credit",
+          "customer": "Customer",
+          "category": "Category",
+          "amount": "Amount",
+          "description": "Description",
+          "paymentMethod": "Payment Method",
+          "discountType": "Discount Type",
+          "discountMethod": "Method",
+          "discountValue": "Value",
+          "discountCalc": "Calculation",
+          "refundAmount": "Refund Amount",
+          "returnRef": "Sale Reference",
+          "infoBadge": "Query Result"
+        },
+        "subscription": {
+          "limitReached": "Daily AI query limit reached",
+          "limitReachedDesc": "Upgrade your plan for more queries",
+          "tokenEstimate": "Estimated tokens: {tokens}",
+          "cached": "Cached result"
+        },
+        "recovery": {
+          "acknowledgment": "Something went wrong. You can try again or enter manually.",
+          "manualEntry": "Prefer to enter manually?",
+          "manualEntryLink": "Open Manual Form",
+          "dismiss": "Dismiss"
         }
       }
     },

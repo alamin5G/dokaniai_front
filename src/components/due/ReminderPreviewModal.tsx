@@ -9,6 +9,36 @@ function resolveLocale(locale?: string): string {
     return locale?.toLowerCase().startsWith("bn") ? "bn-BD" : "en-US";
 }
 
+function bangladeshDateKey(date: Date): string {
+    return new Intl.DateTimeFormat("en-CA", {
+        timeZone: "Asia/Dhaka",
+        year: "numeric",
+        month: "2-digit",
+        day: "2-digit",
+    }).format(date);
+}
+
+function wasSentToday(dateStr: string | null | undefined): boolean {
+    if (!dateStr) return false;
+    const date = new Date(dateStr);
+    if (Number.isNaN(date.getTime())) return false;
+    return bangladeshDateKey(date) === bangladeshDateKey(new Date());
+}
+
+function nextBangladeshResetIso(): string {
+    const now = new Date();
+    const parts = new Intl.DateTimeFormat("en-CA", {
+        timeZone: "Asia/Dhaka",
+        year: "numeric",
+        month: "2-digit",
+        day: "2-digit",
+    }).formatToParts(now);
+    const year = Number(parts.find((p) => p.type === "year")?.value);
+    const month = Number(parts.find((p) => p.type === "month")?.value);
+    const day = Number(parts.find((p) => p.type === "day")?.value);
+    return new Date(Date.UTC(year, month - 1, day + 1, -6, 0, 0)).toISOString();
+}
+
 interface ReminderPreviewModalProps {
     businessId: string;
     customer: CustomerDueSummary;
@@ -35,8 +65,11 @@ export default function ReminderPreviewModal({
     const [useCustom, setUseCustom] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
     const [previewMessage, setPreviewMessage] = useState<string | null>(null);
-    const [alreadySentToday, setAlreadySentToday] = useState(false);
-    const [resetAt, setResetAt] = useState<string | null>(null);
+    const [previewLink, setPreviewLink] = useState<string | null>(null);
+    const [alreadySentToday, setAlreadySentToday] = useState(() => wasSentToday(customer.lastReminderSentAt));
+    const [resetAt, setResetAt] = useState<string | null>(() =>
+        wasSentToday(customer.lastReminderSentAt) ? nextBangladeshResetIso() : null
+    );
     const [aiGenerated, setAiGenerated] = useState(false);
 
     useEffect(() => {
@@ -44,28 +77,38 @@ export default function ReminderPreviewModal({
     }, []);
 
     async function handlePreview() {
+        if (alreadySentToday) {
+            setPreviewMessage(null);
+            setPreviewLink(null);
+            return;
+        }
         setIsLoading(true);
         try {
             if (useCustom && customMessage.trim()) {
-                const link = await generateDueReminder(
-                    businessId,
-                    customer.customerId,
-                    customMessage.trim()
-                );
-                setPreviewMessage(link.message);
+                setPreviewMessage(customMessage.trim());
+                setPreviewLink(null);
                 setAiGenerated(false);
             } else {
                 const res = await generateAiReminder(businessId, customer.customerId);
-                setPreviewMessage(res.message);
-                setAiGenerated(res.contextType !== undefined);
                 if (res.alreadySentToday) {
                     setAlreadySentToday(true);
-                    setResetAt(res.resetAt);
+                    setResetAt(res.resetAt ?? nextBangladeshResetIso());
+                    setPreviewMessage(null);
+                    setPreviewLink(null);
+                } else if (res.message) {
+                    setPreviewMessage(res.message);
+                    setPreviewLink(res.link || null);
+                    setAlreadySentToday(true);
+                    setResetAt(res.resetAt ?? nextBangladeshResetIso());
+                    setAiGenerated(Boolean(res.aiGenerated));
+                } else {
+                    setPreviewMessage(null);
+                    setPreviewLink(null);
                 }
             }
         } catch {
-            const link = await generateDueReminder(businessId, customer.customerId);
-            setPreviewMessage(link.message);
+            setPreviewMessage(null);
+            setPreviewLink(null);
             setAiGenerated(false);
         } finally {
             setIsLoading(false);
@@ -73,21 +116,33 @@ export default function ReminderPreviewModal({
     }
 
     async function handleSend() {
+        if (alreadySentToday && !previewLink) return;
         setIsLoading(true);
         try {
             if (useCustom && customMessage.trim()) {
+                if (alreadySentToday) return;
                 const link = await generateDueReminder(
                     businessId,
                     customer.customerId,
                     customMessage.trim()
                 );
                 if (link.link) window.open(link.link, "_blank");
+                setAlreadySentToday(true);
+                setResetAt(nextBangladeshResetIso());
             } else {
-                const res = await generateAiReminder(businessId, customer.customerId);
-                if (res.link) window.open(res.link, "_blank");
-                if (res.alreadySentToday) {
+                if (previewLink) {
+                    window.open(previewLink, "_blank");
+                    setResetAt(resetAt ?? nextBangladeshResetIso());
+                } else {
+                    const res = await generateAiReminder(businessId, customer.customerId);
+                    if (res.alreadySentToday) {
+                        setAlreadySentToday(true);
+                        setResetAt(res.resetAt ?? nextBangladeshResetIso());
+                        return;
+                    }
+                    if (res.link) window.open(res.link, "_blank");
+                    setResetAt(res.resetAt ?? nextBangladeshResetIso());
                     setAlreadySentToday(true);
-                    setResetAt(res.resetAt);
                 }
             }
             onSent();
@@ -159,7 +214,10 @@ export default function ReminderPreviewModal({
                 <div className="flex items-center gap-3">
                     <button
                         type="button"
-                        onClick={() => { setUseCustom(false); setAlreadySentToday(false); }}
+                        onClick={() => {
+                            setUseCustom(false);
+                            if (!alreadySentToday) handlePreview();
+                        }}
                         className={`flex-1 rounded-xl px-4 py-3 text-sm font-bold transition-colors ${!useCustom
                                 ? "bg-primary text-white"
                                 : "bg-surface-container text-on-surface-variant hover:bg-surface-container-high"
@@ -172,7 +230,12 @@ export default function ReminderPreviewModal({
                     </button>
                     <button
                         type="button"
-                        onClick={() => setUseCustom(true)}
+                        onClick={() => {
+                            setUseCustom(true);
+                            setPreviewMessage(customMessage.trim() || null);
+                            setPreviewLink(null);
+                            setAiGenerated(false);
+                        }}
                         className={`flex-1 rounded-xl px-4 py-3 text-sm font-bold transition-colors ${useCustom
                                 ? "bg-primary text-white"
                                 : "bg-surface-container text-on-surface-variant hover:bg-surface-container-high"
@@ -185,19 +248,27 @@ export default function ReminderPreviewModal({
                 {useCustom && (
                     <textarea
                         value={customMessage}
-                        onChange={(e) => setCustomMessage(e.target.value)}
+                        onChange={(e) => {
+                            setCustomMessage(e.target.value);
+                            setPreviewMessage(e.target.value.trim() || null);
+                            setPreviewLink(null);
+                        }}
                         className="w-full rounded-xl bg-surface-container px-4 py-3 text-sm text-on-surface min-h-[80px] resize-y"
                         placeholder={t("reminder.customMessagePlaceholder")}
                     />
                 )}
 
-                {alreadySentToday && !useCustom && (
+                {alreadySentToday && (
                     <div className="rounded-xl bg-amber-50 border border-amber-200 p-3 flex items-center gap-2">
                         <span className="material-symbols-outlined text-amber-600 text-base">schedule</span>
                         <p className="text-xs text-amber-800">
-                            {locale?.startsWith("bn")
-                                ? "আজ ইতিমধ্যে এই গ্রাহককে রিমাইন্ডার পাঠানো হয়েছে। তবে WhatsApp এ যেতে পারবেন।"
-                                : "Already sent today. You can still open WhatsApp."}
+                            {previewLink
+                                ? locale?.startsWith("bn")
+                                    ? `আজকের AI রিমাইন্ডার তৈরি হয়েছে। আবার তৈরি করা যাবে না। ${formatResetTime(resetAt)}।`
+                                    : `Today's AI reminder is generated. It cannot be generated again. ${formatResetTime(resetAt)}.`
+                                : locale?.startsWith("bn")
+                                    ? `আজ ইতিমধ্যে এই গ্রাহককে রিমাইন্ডার পাঠানো হয়েছে। ${formatResetTime(resetAt)}।`
+                                    : `Already sent today. ${formatResetTime(resetAt)}.`}
                         </p>
                     </div>
                 )}
@@ -238,7 +309,7 @@ export default function ReminderPreviewModal({
                     </button>
                     <button
                         onClick={handleSend}
-                        disabled={isLoading}
+                        disabled={isLoading || (alreadySentToday && !previewLink)}
                         className="flex-1 rounded-xl bg-[#25D366] px-4 py-3 text-sm font-bold text-white hover:bg-[#25D366]/90 transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
                     >
                         <svg className="w-5 h-5 fill-current" viewBox="0 0 24 24">

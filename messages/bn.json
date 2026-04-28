@@ -815,6 +815,15 @@
     "dueLedger": {
       "title": "বাকি খাতা - শীর্ষ ৩",
       "lastDue": "শেষ বাকি: {days} দিন আগে",
+      "lastTransactionUnknown": "সাম্প্রতিক লেনদেন নেই",
+      "totalDue": "মোট বাকী",
+      "noDues": "কোনো বাকী নেই",
+      "noDuesDesc": "সব কাস্টমারের ব্যালেন্স পরিষ্কার।",
+      "sendReminder": "রিমাইন্ডার পাঠান",
+      "sendReminderAria": "{name}-কে রিমাইন্ডার পাঠান",
+      "customersCount": "{count} জন কাস্টমারের বাকী আছে",
+      "loadError": "বাকী তথ্য লোড করা যায়নি।",
+      "retry": "আবার চেষ্টা করুন",
       "viewAll": "সম্পূর্ণ খাতা দেখুন"
     },
     "workspace": {
@@ -946,6 +955,7 @@
     "expenses": "খরচ",
     "dueLedger": "বাকি খাতা",
     "products": "পণ্য",
+    "returns": "রিটার্ন",
     "stockManagement": "স্টক ম্যানেজমেন্ট",
     "reports": "রিপোর্ট",
     "aiAssistant": "AI সহকারী",
@@ -1495,6 +1505,12 @@
       "returns": {
         "title": "রিটার্ন রেকর্ড",
         "subtitle": "এই বিক্রির জন্য পণ্য রিটার্ন প্রসেস করুন।",
+        "walkInCustomer": "সাধারণ ক্রেতা",
+        "workspace": {
+          "title": "পণ্য রিটার্ন",
+          "subtitle": "সম্পূর্ণ বা আইটেমভিত্তিক রিটার্ন রেকর্ড করুন, স্টক ফেরত নিন এবং বারবার রিটার্ন প্যাটার্ন দেখুন।",
+          "recent": "সাম্প্রতিক রিটার্ন"
+        },
         "returnType": {
           "FULL": "সম্পূর্ণ রিটার্ন",
           "PARTIAL": "আংশিক রিটার্ন",
@@ -1502,11 +1518,14 @@
           "EXCHANGE": "বিনিময়"
         },
         "form": {
+          "sale": "মূল বিক্রয়",
+          "item": "রিটার্ন আইটেম",
           "type": "রিটার্ন টাইপ",
           "reason": "কারণ",
           "reasonPlaceholder": "কেন রিটার্ন করা হচ্ছে?",
           "notes": "নোট",
           "notesPlaceholder": "অতিরিক্ত তথ্য (ঐচ্ছিক)",
+          "refundPreview": "ফেরত প্রিভিউ",
           "submit": "রিটার্ন প্রসেস করুন",
           "submitting": "প্রসেস হচ্ছে...",
           "void": "রিটার্ন বাতিল",
@@ -1532,6 +1551,16 @@
           "partialReturns": "আংশিক রিটার্ন",
           "defectiveReturns": "ত্রুটিপূর্ণ",
           "stockRestored": "স্টক পুনরুদ্ধার"
+        },
+        "analytics": {
+          "topProducts": "সবচেয়ে বেশি রিটার্ন পণ্য",
+          "topCustomers": "সবচেয়ে বেশি রিটার্ন ক্রেতা",
+          "noProductData": "এখনও পণ্যভিত্তিক রিটার্ন ডেটা নেই।",
+          "noCustomerData": "এখনও ক্রেতার রিটার্ন প্যাটার্ন নেই।"
+        },
+        "abuse": {
+          "title": "রিটার্ন প্যাটার্ন সতর্কতা",
+          "detail": "{count}টি রিটার্ন, ৳{amount} ফেরত, {severity} ঝুঁকি"
         },
         "table": {
           "date": "তারিখ",
@@ -1816,6 +1845,8 @@
         "viewAll": "সব কাস্টমার দেখুন",
         "totalDue": "মোট বকেয়া",
         "lastPayment": "শেষ পেমেন্ট:",
+        "lastReminder": "শেষ রিমাইন্ডার:",
+        "today": "আজ",
         "never": "কখনও না",
         "daysAgo": "দিন আগে",
         "addBaki": "বাকি যোগ",
@@ -1871,7 +1902,11 @@
         "type": "ধরন",
         "description": "বিবরণ",
         "amount": "পরিমাণ",
-        "back": "তালিকায় ফিরুন"
+        "back": "তালিকায় ফিরুন",
+        "subtitle": "সম্পূর্ণ লেনদেন ইতিহাস",
+        "empty": "কোনো লেনদেন পাওয়া যায়নি।",
+        "paymentReceived": "পেমেন্ট পাওয়া গেছে",
+        "creditAdded": "বাকী যোগ হয়েছে"
       },
       "filter": {
         "all": "সব",
@@ -1899,6 +1934,7 @@
         "customerCreated": "কাস্টমার সফলভাবে যোগ হয়েছে।",
         "customerUpdated": "কাস্টমার সফলভাবে আপডেট হয়েছে।",
         "reminderSent": "WhatsApp রিমাইন্ডার লিংক তৈরি হয়েছে।",
+        "reminderBulkSent": "টি রিমাইন্ডার লিংক তৈরি হয়েছে।",
         "voidSuccess": "লেনদেন সফলভাবে বাতিল হয়েছে।",
         "loadError": "বকেয়া তথ্য লোড করা যায়নি।",
         "saveError": "লেনদেন সংরক্ষণ করা যায়নি।",
@@ -1909,6 +1945,7 @@
         "tooltip": "AI-পাওয়ার্ড ভয়েস/টেক্সট কমান্ড"
       },
       "autoMfs": {
+        "title": "অটো MFS পেমেন্ট",
         "badge": "অটো",
         "badgeTooltip": "MFS SMS এর মাধ্যমে অটো-ক্রেডিট",
         "filter": "অটো MFS",
@@ -2275,6 +2312,47 @@
             "dueJoma": "রহিম জমা দিল ১০০০ টাকা",
             "query": "আজকের বিক্রি কত?"
           }
+        },
+        "confirmation": {
+          "title": "অ্যাকশন কনফার্মেশন",
+          "titleUncertain": "অনুগ্রহ করে যাচাই করুন",
+          "titleRejected": "কম আত্মবিশ্বাস",
+          "confidence": "কনফিডেন্স",
+          "yourWords": "আপনার কথা:",
+          "confirm": "কনফার্ম ও এক্সিকিউট",
+          "reject": "বাতিল",
+          "items": "আইটেম",
+          "product": "পণ্য",
+          "quantity": "পরিমাণ",
+          "unitPrice": "একক মূল্য",
+          "total": "মোট",
+          "payment": "পেমেন্ট",
+          "cash": "নগদ",
+          "credit": "বাকী",
+          "customer": "ক্রেতা",
+          "category": "ক্যাটাগরি",
+          "amount": "পরিমাণ",
+          "description": "বিবরণ",
+          "paymentMethod": "পেমেন্ট মেথড",
+          "discountType": "ডিসকাউন্ট টাইপ",
+          "discountMethod": "মেথড",
+          "discountValue": "মান",
+          "discountCalc": "হিসাব",
+          "refundAmount": "রিফান্ড পরিমাণ",
+          "returnRef": "সেল রেফারেন্স",
+          "infoBadge": "কুয়েরি ফলাফল"
+        },
+        "subscription": {
+          "limitReached": "দৈনিক AI কুয়েরি সীমা পৌঁছেছে",
+          "limitReachedDesc": "আরও কুয়েরির জন্য প্ল্যান আপগ্রেড করুন",
+          "tokenEstimate": "আনুমানিক টোকেন: {tokens}",
+          "cached": "ক্যাশড ফলাফল"
+        },
+        "recovery": {
+          "acknowledgment": "কিছু একটা সমস্যা হয়েছে। আবার চেষ্টা করুন অথবা ম্যানুয়ালি এন্ট্রি করুন।",
+          "manualEntry": "ম্যানুয়ালি এন্ট্রি করতে চান?",
+          "manualEntryLink": "ম্যানুয়াল ফর্ম খুলুন",
+          "dismiss": "বাতিল"
         }
       }
     },
