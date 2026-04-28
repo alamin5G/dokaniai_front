@@ -47,7 +47,7 @@ export async function listDueTransactions(
     businessId: string,
     params: ListDueTransactionsParams = {}
 ): Promise<PagedDueTransactions> {
-    const { data } = await apiClient.get(`/api/v1/businesses/${businessId}/due-transactions`, { params });
+    const { data } = await apiClient.get(`/businesses/${businessId}/due-transactions`, { params });
     return unwrap<PagedDueTransactions>(data);
 }
 
@@ -56,7 +56,7 @@ export async function createBaki(
     request: DueTransactionRequest
 ): Promise<DueTransaction> {
     const { data } = await apiClient.post(
-        `/api/v1/businesses/${businessId}/due-transactions/baki`,
+        `/businesses/${businessId}/due-transactions/baki`,
         request
     );
     return unwrap<DueTransaction>(data);
@@ -67,7 +67,7 @@ export async function createJoma(
     request: DueTransactionRequest
 ): Promise<DueTransaction> {
     const { data } = await apiClient.post(
-        `/api/v1/businesses/${businessId}/due-transactions/joma`,
+        `/businesses/${businessId}/due-transactions/joma`,
         request
     );
     return unwrap<DueTransaction>(data);
@@ -78,7 +78,7 @@ export async function createAdjustment(
     request: DueTransactionRequest
 ): Promise<DueTransaction> {
     const { data } = await apiClient.post(
-        `/api/v1/businesses/${businessId}/due-transactions/adjustment`,
+        `/businesses/${businessId}/due-transactions/adjustment`,
         request
     );
     return unwrap<DueTransaction>(data);
@@ -89,7 +89,7 @@ export async function getDueTransaction(
     transactionId: string
 ): Promise<DueTransaction> {
     const { data } = await apiClient.get(
-        `/api/v1/businesses/${businessId}/due-transactions/${transactionId}`
+        `/businesses/${businessId}/due-transactions/${transactionId}`
     );
     return unwrap<DueTransaction>(data);
 }
@@ -100,7 +100,7 @@ export async function voidDueTransaction(
     reason: string
 ): Promise<void> {
     await apiClient.post(
-        `/api/v1/businesses/${businessId}/due-transactions/${transactionId}/void`,
+        `/businesses/${businessId}/due-transactions/${transactionId}/void`,
         null,
         { params: { reason } }
     );
@@ -113,7 +113,7 @@ export async function getDueSummary(
     customerId: string
 ): Promise<CustomerDueSummary> {
     const { data } = await apiClient.get(
-        `/api/v1/businesses/${businessId}/due-transactions/summary`,
+        `/businesses/${businessId}/due-transactions/summary`,
         { params: { customerId } }
     );
     return unwrap<CustomerDueSummary>(data);
@@ -123,7 +123,7 @@ export async function getCustomersWithDue(
     businessId: string
 ): Promise<CustomerDueSummary[]> {
     const { data } = await apiClient.get(
-        `/api/v1/businesses/${businessId}/due-transactions/customers-with-due`
+        `/businesses/${businessId}/due-transactions/customers-with-due`
     );
     return unwrap<CustomerDueSummary[]>(data);
 }
@@ -135,7 +135,7 @@ export async function getCustomerDueLedger(
     size = 20
 ): Promise<DueLedgerResponse> {
     const { data } = await apiClient.get(
-        `/api/v1/businesses/${businessId}/due-transactions/customer/${customerId}/ledger`,
+        `/businesses/${businessId}/due-transactions/customer/${customerId}/ledger`,
         { params: { page, size } }
     );
     return unwrap<DueLedgerResponse>(data);
@@ -147,7 +147,7 @@ export async function getAgedDues(
     businessId: string
 ): Promise<AgedDuesResponse> {
     const { data } = await apiClient.get(
-        `/api/v1/businesses/${businessId}/due-transactions/aged`
+        `/businesses/${businessId}/due-transactions/aged`
     );
     return unwrap<AgedDuesResponse>(data);
 }
@@ -166,7 +166,7 @@ export async function listCustomers(
     params: ListCustomersParams = {}
 ): Promise<PagedCustomers> {
     const { data } = await apiClient.get(
-        `/api/v1/businesses/${businessId}/customers`,
+        `/businesses/${businessId}/customers`,
         { params }
     );
     return unwrap<PagedCustomers>(data);
@@ -177,7 +177,7 @@ export async function createCustomer(
     request: CustomerCreateRequest
 ): Promise<CustomerResponse> {
     const { data } = await apiClient.post(
-        `/api/v1/businesses/${businessId}/customers`,
+        `/businesses/${businessId}/customers`,
         request
     );
     return unwrap<CustomerResponse>(data);
@@ -188,7 +188,7 @@ export async function getCustomer(
     customerId: string
 ): Promise<CustomerResponse> {
     const { data } = await apiClient.get(
-        `/api/v1/businesses/${businessId}/customers/${customerId}`
+        `/businesses/${businessId}/customers/${customerId}`
     );
     return unwrap<CustomerResponse>(data);
 }
@@ -199,7 +199,7 @@ export async function updateCustomer(
     request: CustomerUpdateRequest
 ): Promise<CustomerResponse> {
     const { data } = await apiClient.put(
-        `/api/v1/businesses/${businessId}/customers/${customerId}`,
+        `/businesses/${businessId}/customers/${customerId}`,
         request
     );
     return unwrap<CustomerResponse>(data);
@@ -216,7 +216,7 @@ export async function generateDueReminder(
     if (customMessage) params.customMessage = customMessage;
 
     const { data } = await apiClient.post(
-        `/api/v1/businesses/${businessId}/customers/${customerId}/reminder`,
+        `/businesses/${businessId}/customers/${customerId}/reminder`,
         null,
         { params }
     );
@@ -228,7 +228,7 @@ export async function generateAiReminder(
     customerId: string
 ): Promise<WhatsAppReminderResponse> {
     const { data } = await apiClient.post(
-        `/api/v1/businesses/${businessId}/reminders/ai/${customerId}`
+        `/businesses/${businessId}/reminders/ai/${customerId}`
     );
     const reminder = unwrap<WhatsAppReminderResponse & {
         customerPhone?: string | null;
@@ -249,7 +249,7 @@ export async function generateBulkReminders(
     businessId: string
 ): Promise<WhatsAppLink[]> {
     const { data } = await apiClient.post(
-        `/api/v1/businesses/${businessId}/customers/bulk-reminder`
+        `/businesses/${businessId}/customers/bulk-reminder`
     );
     return unwrap<WhatsAppLink[]>(data);
 }
