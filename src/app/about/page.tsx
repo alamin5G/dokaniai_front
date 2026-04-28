@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { useTranslations } from "next-intl";
 import { Footer } from "@/components/home/Footer";
@@ -31,7 +32,7 @@ export default function AboutPage() {
                     </div>
                 </section>
 
-                {/* Mission Section */}
+                {/* Mission Section with Image */}
                 <section className="py-20 px-6 bg-surface-container-low">
                     <div className="max-w-6xl mx-auto grid md:grid-cols-2 gap-16 items-center">
                         <div className="space-y-6">
@@ -58,34 +59,14 @@ export default function AboutPage() {
                         </div>
                         <div className="relative">
                             <div className="absolute -inset-4 bg-primary-container/20 rounded-[2rem] blur-2xl"></div>
-                            <div className="relative bg-surface-container-lowest rounded-[2rem] p-10 space-y-6">
-                                <div className="flex items-start gap-4">
-                                    <div className="w-12 h-12 bg-primary-fixed text-on-primary-fixed rounded-xl flex items-center justify-center shrink-0">
-                                        <span className="material-symbols-outlined">store</span>
-                                    </div>
-                                    <div>
-                                        <h4 className="font-bold text-on-surface">{t("mission.card1Title")}</h4>
-                                        <p className="text-sm text-on-surface-variant mt-1">{t("mission.card1Desc")}</p>
-                                    </div>
-                                </div>
-                                <div className="flex items-start gap-4">
-                                    <div className="w-12 h-12 bg-secondary-container text-on-secondary-container rounded-xl flex items-center justify-center shrink-0">
-                                        <span className="material-symbols-outlined">psychology</span>
-                                    </div>
-                                    <div>
-                                        <h4 className="font-bold text-on-surface">{t("mission.card2Title")}</h4>
-                                        <p className="text-sm text-on-surface-variant mt-1">{t("mission.card2Desc")}</p>
-                                    </div>
-                                </div>
-                                <div className="flex items-start gap-4">
-                                    <div className="w-12 h-12 bg-tertiary-container text-on-tertiary-container rounded-xl flex items-center justify-center shrink-0">
-                                        <span className="material-symbols-outlined">trending_up</span>
-                                    </div>
-                                    <div>
-                                        <h4 className="font-bold text-on-surface">{t("mission.card3Title")}</h4>
-                                        <p className="text-sm text-on-surface-variant mt-1">{t("mission.card3Desc")}</p>
-                                    </div>
-                                </div>
+                            <div className="relative rounded-[2rem] overflow-hidden aspect-[4/3]">
+                                <Image
+                                    src="/icons/image/self-help.jpg"
+                                    alt="Smart shop management"
+                                    fill
+                                    className="object-cover"
+                                    sizes="(max-width: 768px) 100vw, 50vw"
+                                />
                             </div>
                         </div>
                     </div>
@@ -142,10 +123,94 @@ export default function AboutPage() {
                     </div>
                 </section>
 
-                {/* Why DokaniAI */}
+                {/* ROI Section - What You Pay vs What You Get */}
                 <section className="py-20 px-6">
+                    <div className="max-w-6xl mx-auto">
+                        <div className="text-center mb-16 space-y-4">
+                            <div className="inline-flex items-center gap-2 px-4 py-2 bg-tertiary-container text-on-tertiary-container rounded-full font-medium text-sm">
+                                {t("roi.badge")}
+                            </div>
+                            <h2 className="text-3xl font-black text-primary font-headline">{t("roi.title")}</h2>
+                            <p className="text-on-surface-variant max-w-2xl mx-auto text-lg">{t("roi.subtitle")}</p>
+                        </div>
+
+                        <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
+                            {/* What you pay */}
+                            <div className="bg-surface-container-lowest p-8 rounded-2xl border border-outline-variant/10 space-y-6">
+                                <h3 className="text-xl font-bold text-on-surface flex items-center gap-3">
+                                    <span className="w-10 h-10 bg-on-surface-variant/10 text-on-surface-variant rounded-xl flex items-center justify-center">
+                                        <span className="material-symbols-outlined">payments</span>
+                                    </span>
+                                    {t("roi.payTitle")}
+                                </h3>
+                                {[
+                                    { title: t("roi.pay1Title"), desc: t("roi.pay1Desc"), icon: "local_cafe" },
+                                    { title: t("roi.pay2Title"), desc: t("roi.pay2Desc"), icon: "card_giftcard" },
+                                    { title: t("roi.pay3Title"), desc: t("roi.pay3Desc"), icon: "phone_android" },
+                                ].map((item, i) => (
+                                    <div key={i} className="flex items-start gap-4 p-4 bg-surface-container-low rounded-xl">
+                                        <span className="material-symbols-outlined text-on-surface-variant mt-0.5">{item.icon}</span>
+                                        <div>
+                                            <h4 className="font-bold text-on-surface">{item.title}</h4>
+                                            <p className="text-sm text-on-surface-variant">{item.desc}</p>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+
+                            {/* What you get */}
+                            <div className="relative bg-primary-container/30 p-8 rounded-2xl border-2 border-primary/20 space-y-5 overflow-hidden">
+                                <div className="absolute top-3 right-3 px-3 py-1 bg-primary text-on-primary text-xs font-bold rounded-full">★ BEST VALUE</div>
+                                <h3 className="text-xl font-bold text-primary flex items-center gap-3">
+                                    <span className="w-10 h-10 bg-primary text-on-primary rounded-xl flex items-center justify-center">
+                                        <span className="material-symbols-outlined">emoji_events</span>
+                                    </span>
+                                    {t("roi.getTitle")}
+                                </h3>
+                                {[
+                                    { title: t("roi.get1Title"), desc: t("roi.get1Desc"), icon: "savings" },
+                                    { title: t("roi.get2Title"), desc: t("roi.get2Desc"), icon: "psychology" },
+                                    { title: t("roi.get3Title"), desc: t("roi.get3Desc"), icon: "inventory" },
+                                    { title: t("roi.get4Title"), desc: t("roi.get4Desc"), icon: "chat" },
+                                    { title: t("roi.get5Title"), desc: t("roi.get5Desc"), icon: "bar_chart" },
+                                ].map((item, i) => (
+                                    <div key={i} className="flex items-start gap-4 p-3 bg-primary-container/40 rounded-xl">
+                                        <span className="material-symbols-outlined text-primary mt-0.5">{item.icon}</span>
+                                        <div>
+                                            <h4 className="font-bold text-on-surface">{item.title}</h4>
+                                            <p className="text-sm text-on-surface-variant">{item.desc}</p>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+
+                        {/* Tagline */}
+                        <div className="text-center mt-12">
+                            <p className="text-2xl font-bold text-primary font-headline">{t("roi.tagline")}</p>
+                            <div className="mt-6">
+                                <CtaButton />
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                {/* Why DokaniAI with Image */}
+                <section className="py-20 px-6 bg-surface-container-low">
                     <div className="max-w-6xl mx-auto grid md:grid-cols-2 gap-16 items-center">
-                        <div className="space-y-8">
+                        <div className="relative order-2 md:order-1">
+                            <div className="absolute -inset-4 bg-secondary/10 rounded-[2rem] blur-2xl"></div>
+                            <div className="relative rounded-[2rem] overflow-hidden aspect-[4/3]">
+                                <Image
+                                    src="/icons/image/why-we.jpg"
+                                    alt="Why DokaniAI"
+                                    fill
+                                    className="object-cover"
+                                    sizes="(max-width: 768px) 100vw, 50vw"
+                                />
+                            </div>
+                        </div>
+                        <div className="space-y-8 order-1 md:order-2">
                             <h2 className="text-3xl font-black text-primary font-headline">{t("why.title")}</h2>
                             {[
                                 { icon: "language", title: t("why.w1Title"), desc: t("why.w1Desc") },
@@ -163,20 +228,6 @@ export default function AboutPage() {
                                     </div>
                                 </div>
                             ))}
-                        </div>
-                        <div className="relative">
-                            <div className="absolute -inset-4 bg-secondary/10 rounded-[2rem] blur-2xl"></div>
-                            <div className="relative bg-surface-container-lowest rounded-[2rem] p-10 text-center space-y-6">
-                                <div className="w-20 h-20 bg-primary rounded-full flex items-center justify-center mx-auto">
-                                    <span className="material-symbols-outlined text-on-primary text-4xl" style={{ fontVariationSettings: "'FILL' 1" }}>volunteer_activism</span>
-                                </div>
-                                <h3 className="text-2xl font-black text-primary font-headline">{t("why.ctaTitle")}</h3>
-                                <p className="text-on-surface-variant">{t("why.ctaDesc")}</p>
-                                <div className="flex justify-center">
-                                    <CtaButton />
-                                </div>
-                                <p className="text-xs text-on-surface-variant/60">{t("why.ctaSubtext")}</p>
-                            </div>
                         </div>
                     </div>
                 </section>

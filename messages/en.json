@@ -480,6 +480,30 @@
       "description": "Try DokaniAI free for 65 days. No credit card, no commitment. Just speak and see the magic.",
       "startFree": "Start Free Trial",
       "viewPricing": "View Plans"
+    },
+    "roi": {
+      "badge": "💰 Cost vs Benefit",
+      "title": "Make Your Shop Smart for the Price of a Cup of Tea",
+      "subtitle": "For just ৳5/day, your shop gets a smart AI assistant",
+      "payTitle": "What You Pay",
+      "pay1Title": "Only ৳5/day",
+      "pay1Desc": "The price of one cup of tea!",
+      "pay2Title": "65 Days Free Trial",
+      "pay2Desc": "Try first, then decide",
+      "pay3Title": "No Card Needed",
+      "pay3Desc": "Just a mobile number to get started",
+      "getTitle": "What You Get",
+      "get1Title": "৳17,000+/year Savings",
+      "get1Desc": "Smart expense management & due recovery",
+      "get2Title": "24/7 AI Assistant",
+      "get2Desc": "Voice-powered accounting anytime",
+      "get3Title": "Stock Alerts",
+      "get3Desc": "Know before products run out",
+      "get4Title": "Smart AI WhatsApp Reminders",
+      "get4Desc": "AI-written due reminders sent automatically",
+      "get5Title": "Smart Reports",
+      "get5Desc": "Which products sell best, when profit is highest",
+      "tagline": "☕ Digitize your shop for the price of a daily cup of tea"
     }
   },
   "authLayout": {
