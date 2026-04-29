@@ -82,8 +82,13 @@ export function useSSE() {
                 window.dispatchEvent(new CustomEvent("sse:referral-reward-granted"));
             });
 
-            source.addEventListener("NOTIFICATION_NEW", () => {
-                window.dispatchEvent(new CustomEvent("sse:notification-new"));
+            source.addEventListener("NOTIFICATION_NEW", (e) => {
+                try {
+                    const data = JSON.parse(e.data);
+                    window.dispatchEvent(new CustomEvent("sse:notification-new", { detail: data }));
+                } catch {
+                    window.dispatchEvent(new CustomEvent("sse:notification-new"));
+                }
             });
 
             source.addEventListener("LOW_STOCK_ALERT", (e) => {

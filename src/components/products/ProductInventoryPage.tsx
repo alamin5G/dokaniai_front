@@ -96,10 +96,22 @@ export default function ProductInventoryPage({
     });
     const { stats } = useProductStats(businessId);
     const { lowStockProducts } = useLowStockProducts(businessId);
-    const { categories } = useCategoriesByBusinessType(activeBusiness?.type ?? null);
+    const { categories, mutate: mutateCategories } = useCategoriesByBusinessType(activeBusiness?.type ?? null);
 
     // SSE-driven optimistic cache updates for stock alerts (no extra DB hit)
     useSSEStockAlerts(businessId);
+
+    useEffect(() => {
+        const handleNotification = (event: Event) => {
+            const detail = (event as CustomEvent).detail as { type?: string } | undefined;
+            if (detail?.type === "CATEGORY_REQUEST") {
+                mutateCategories();
+            }
+        };
+
+        window.addEventListener("sse:notification-new", handleNotification);
+        return () => window.removeEventListener("sse:notification-new", handleNotification);
+    }, [mutateCategories]);
 
     // Mutations — SWR-backed with cache invalidation
     const { submitCreate, submitUpdate, submitArchive } = useProductMutations(businessId);
