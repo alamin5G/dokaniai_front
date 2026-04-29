@@ -1432,6 +1432,10 @@
     "sales": {
       "title": "Sales",
       "subtitle": "Record sales, manage cart, apply discounts and complete transactions.",
+      "tabs": {
+        "newSale": "New Sale",
+        "returns": "Returns"
+      },
       "productSearch": "Search products (rice, dal, oil...)",
       "scanner": "Scanner",
       "allCategories": "All",
