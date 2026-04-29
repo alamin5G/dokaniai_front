@@ -255,12 +255,14 @@ export default function ModerationPage() {
                     )}
                   </div>
                   <div className="flex gap-2">
-                    <button
-                      onClick={(e) => { e.stopPropagation(); handleQuickApprove(req.id); }}
-                      className="flex-1 py-2 bg-gradient-to-r from-primary to-primary-container text-on-primary rounded-full font-label text-xs font-bold transition-all hover:opacity-90"
-                    >
-                      {t("approve")}
-                    </button>
+                    {["PENDING", "UNDER_REVIEW", "AWAITING_CONFIRMATION"].includes(req.status) && (
+                      <button
+                        onClick={(e) => { e.stopPropagation(); handleQuickApprove(req.id); }}
+                        className="flex-1 py-2 bg-gradient-to-r from-primary to-primary-container text-on-primary rounded-full font-label text-xs font-bold transition-all hover:opacity-90"
+                      >
+                        {t("approve")}
+                      </button>
+                    )}
                     <button
                       onClick={(e) => { e.stopPropagation(); router.push(`/admin/categories/requests/${req.id}`); }}
                       className="flex-1 py-2 bg-surface-container-highest text-on-surface rounded-full font-label text-xs font-bold transition-all hover:bg-surface-variant"

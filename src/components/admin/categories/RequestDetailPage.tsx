@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { useParams } from "next/navigation";
 import type {
   CategoryRequestDecisionAction,
+  CategoryRequestStatus,
 } from "@/types/categoryRequest";
 import type { CategoryResponse } from "@/types/category";
 import {
@@ -110,6 +111,26 @@ export default function RequestDetailPage() {
   function handleActionChange(action: CategoryRequestDecisionAction) {
     setDecision((d) => ({ ...d, action, suggestedCategoryId: "" }));
   }
+
+  const statusBadgeStyle = (status: CategoryRequestStatus) => {
+    switch (status) {
+      case "APPROVED_GLOBAL":
+      case "APPROVED_BUSINESS":
+        return "bg-green-100 text-green-700";
+      case "REJECTED":
+        return "bg-red-100 text-red-700";
+      case "CANCELLED":
+        return "bg-gray-100 text-gray-700";
+      case "DUPLICATE_SUGGESTED":
+        return "bg-purple-100 text-purple-700";
+      case "AWAITING_CONFIRMATION":
+        return "bg-amber-100 text-amber-800";
+      case "UNDER_REVIEW":
+        return "bg-blue-100 text-blue-700";
+      default:
+        return "bg-yellow-100 text-yellow-700";
+    }
+  };
 
   const scoreColor = (score: number) => {
     if (score >= 0.90) return "bg-red-100 text-red-700";
@@ -345,135 +366,202 @@ export default function RequestDetailPage() {
         </div>
       </div>
 
-      <div className="bg-surface-container-lowest rounded-xl p-8 shadow-sm">
-        <h2 className="text-lg font-headline font-bold text-on-surface mb-6 border-b-2 border-surface-container-low pb-2 inline-block">
-          {t("decision")}
-        </h2>
+      {/* Decision section — read-only for finalized requests */}
+      {(["APPROVED_GLOBAL", "APPROVED_BUSINESS", "REJECTED", "CANCELLED", "DUPLICATE_SUGGESTED"] as string[]).includes(request.status) ? (
+        <div className="bg-surface-container-lowest rounded-xl p-8 shadow-sm">
+          <h2 className="text-lg font-headline font-bold text-on-surface mb-6 border-b-2 border-surface-container-low pb-2 inline-block">
+            {t("decisionSummary")}
+          </h2>
 
-        {successMessage && (
-          <div className="rounded-xl bg-green-50 px-4 py-3 text-sm font-medium text-green-700 mb-4 flex items-center gap-2">
-            <span className="material-symbols-outlined text-[18px]">check_circle</span>
-            {successMessage}
-          </div>
-        )}
-
-        {error && (
-          <div className="rounded-xl bg-rose-50 px-4 py-3 text-sm font-medium text-rose-700 mb-4">{error}</div>
-        )}
-
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-          <button
-            onClick={() => handleActionChange("APPROVE_GLOBAL")}
-            className={`p-6 rounded-xl text-left flex flex-col justify-between transition-all h-32 group ${decision.action === "APPROVE_GLOBAL"
-              ? "bg-gradient-to-br from-primary to-primary-container text-on-primary shadow-md -translate-y-1"
-              : "bg-surface-container-high text-on-surface hover:bg-surface-container-highest"
-              }`}
-          >
-            <span className={`material-symbols-outlined mb-2 group-hover:scale-110 transition-transform`}>public</span>
-            <div>
-              <p className="font-bold text-sm">{t("approveGlobal")}</p>
-              <p className={`text-xs mt-1 ${decision.action === "APPROVE_GLOBAL" ? "opacity-80" : "text-on-surface-variant"}`}>
-                {t("approveGlobalDesc", { businessType: request.businessType?.replace(/_/g, " ") ?? "business" })}
-              </p>
-            </div>
-          </button>
-
-          <button
-            onClick={() => handleActionChange("APPROVE_BUSINESS")}
-            className={`p-6 rounded-xl text-left flex flex-col justify-between transition-all h-32 group ${decision.action === "APPROVE_BUSINESS"
-              ? "bg-gradient-to-br from-secondary to-secondary-container text-on-secondary shadow-md -translate-y-1"
-              : "bg-surface-container-high text-on-surface hover:bg-surface-container-highest"
-              }`}
-          >
-            <span className={`material-symbols-outlined mb-2 group-hover:scale-110 transition-transform`}>storefront</span>
-            <div>
-              <p className="font-bold text-sm">{t("approveBusiness")}</p>
-              <p className={`text-xs mt-1 ${decision.action === "APPROVE_BUSINESS" ? "opacity-80" : "text-on-surface-variant"}`}>
-                {t("approveBusinessDescDetailed", { businessName: request.businessName || request.requestedByName || "this shop" })}
-              </p>
-            </div>
-          </button>
-
-          <div className={`bg-surface-container-low rounded-xl p-4 flex flex-col justify-between h-32 border-2 transition-colors relative ${decision.action === "MERGE" ? "border-secondary" : "border-transparent"
-            }`}>
-            <div className="flex items-center gap-2 mb-2 text-secondary">
-              <span className="material-symbols-outlined text-[20px]">call_merge</span>
-              <span className="font-bold text-sm">{t("merge")}</span>
-            </div>
-            <div className="relative w-full">
-              <select
-                value={decision.suggestedCategoryId}
-                onChange={(e) => setDecision((d) => ({ ...d, action: "MERGE", suggestedCategoryId: e.target.value }))}
-                className="w-full bg-surface-container-lowest border-none rounded-lg text-sm py-2 px-3 text-on-surface focus:ring-0 cursor-pointer appearance-none"
-              >
-                <option disabled value="">{t("selectTarget")}</option>
-                {request.similarCategories && request.similarCategories.length > 0 && (
-                  <>
-                    {request.similarCategories.map((sim) => (
-                      <option key={sim.categoryId} value={sim.categoryId}>
-                        {sim.nameBn} {sim.nameEn ? `(${sim.nameEn})` : ""} — {Math.round(sim.similarityScore * 100)}%
-                      </option>
-                    ))}
-                    <option disabled>──────────</option>
-                  </>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {/* Decision outcome */}
+            <div className="bg-surface-container-low rounded-xl p-5">
+              <p className="text-xs font-bold text-on-surface-variant uppercase tracking-wider mb-2">{t("decisionOutcome")}</p>
+              <div className="flex items-center gap-2">
+                {request.status === "REJECTED" ? (
+                  <span className="material-symbols-outlined text-error text-[20px]">cancel</span>
+                ) : request.status === "CANCELLED" ? (
+                  <span className="material-symbols-outlined text-on-surface-variant text-[20px]">block</span>
+                ) : (
+                  <span className="material-symbols-outlined text-green-600 text-[20px]">check_circle</span>
                 )}
-                {filteredCategories.slice(0, 20).map((cat) => (
-                  <option key={cat.id} value={cat.id}>{cat.nameBn} {cat.nameEn ? `(${cat.nameEn})` : ""}</option>
-                ))}
-              </select>
-              <span className="material-symbols-outlined absolute right-2 top-1/2 -translate-y-1/2 text-on-surface-variant pointer-events-none text-sm">expand_more</span>
+                <span className={`px-3 py-1 rounded-full text-xs font-bold ${statusBadgeStyle(request.status)}`}>
+                  {t(`status.${request.status}`)}
+                </span>
+              </div>
+              {request.approvedScope && (
+                <p className="text-sm text-on-surface-variant mt-2">
+                  {t("approvedScopeLabel")}: <span className="font-medium text-on-surface">{request.approvedScope}</span>
+                </p>
+              )}
+            </div>
+
+            {/* Reviewer info */}
+            <div className="bg-surface-container-low rounded-xl p-5">
+              <p className="text-xs font-bold text-on-surface-variant uppercase tracking-wider mb-2">{t("reviewerInfo")}</p>
+              <p className="text-sm text-on-surface">{request.reviewedByName || "—"}</p>
+              {request.reviewedAt && (
+                <p className="text-xs text-on-surface-variant mt-1">{new Date(request.reviewedAt).toLocaleString()}</p>
+              )}
+            </div>
+
+            {/* Rejection reason */}
+            {request.rejectionReason && (
+              <div className="md:col-span-2 bg-red-50 rounded-xl p-5 border border-red-100">
+                <p className="text-xs font-bold text-red-700 uppercase tracking-wider mb-2">{t("rejectionReason")}</p>
+                <p className="text-sm text-red-800">{request.rejectionReason}</p>
+              </div>
+            )}
+
+            {/* Review notes */}
+            {request.reviewNotes && (
+              <div className="md:col-span-2 bg-surface-container-low rounded-xl p-5">
+                <p className="text-xs font-bold text-on-surface-variant uppercase tracking-wider mb-2">{t("reviewNotes")}</p>
+                <p className="text-sm text-on-surface">{request.reviewNotes}</p>
+              </div>
+            )}
+          </div>
+
+          <div className="flex gap-3 justify-end mt-6">
+            <button
+              onClick={() => router.push("/admin/categories/moderation")}
+              className="rounded-xl px-5 py-2.5 text-sm font-medium text-on-surface-variant hover:bg-surface-container-low transition-colors"
+            >
+              {t("backToModeration")}
+            </button>
+          </div>
+        </div>
+      ) : (
+        <div className="bg-surface-container-lowest rounded-xl p-8 shadow-sm">
+          <h2 className="text-lg font-headline font-bold text-on-surface mb-6 border-b-2 border-surface-container-low pb-2 inline-block">
+            {t("decision")}
+          </h2>
+
+          {successMessage && (
+            <div className="rounded-xl bg-green-50 px-4 py-3 text-sm font-medium text-green-700 mb-4 flex items-center gap-2">
+              <span className="material-symbols-outlined text-[18px]">check_circle</span>
+              {successMessage}
+            </div>
+          )}
+
+          {error && (
+            <div className="rounded-xl bg-rose-50 px-4 py-3 text-sm font-medium text-rose-700 mb-4">{error}</div>
+          )}
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+            <button
+              onClick={() => handleActionChange("APPROVE_GLOBAL")}
+              className={`p-6 rounded-xl text-left flex flex-col justify-between transition-all h-32 group ${decision.action === "APPROVE_GLOBAL"
+                ? "bg-gradient-to-br from-primary to-primary-container text-on-primary shadow-md -translate-y-1"
+                : "bg-surface-container-high text-on-surface hover:bg-surface-container-highest"
+                }`}
+            >
+              <span className={`material-symbols-outlined mb-2 group-hover:scale-110 transition-transform`}>public</span>
+              <div>
+                <p className="font-bold text-sm">{t("approveGlobal")}</p>
+                <p className={`text-xs mt-1 ${decision.action === "APPROVE_GLOBAL" ? "opacity-80" : "text-on-surface-variant"}`}>
+                  {t("approveGlobalDesc", { businessType: request.businessType?.replace(/_/g, " ") ?? "business" })}
+                </p>
+              </div>
+            </button>
+
+            <button
+              onClick={() => handleActionChange("APPROVE_BUSINESS")}
+              className={`p-6 rounded-xl text-left flex flex-col justify-between transition-all h-32 group ${decision.action === "APPROVE_BUSINESS"
+                ? "bg-gradient-to-br from-secondary to-secondary-container text-on-secondary shadow-md -translate-y-1"
+                : "bg-surface-container-high text-on-surface hover:bg-surface-container-highest"
+                }`}
+            >
+              <span className={`material-symbols-outlined mb-2 group-hover:scale-110 transition-transform`}>storefront</span>
+              <div>
+                <p className="font-bold text-sm">{t("approveBusiness")}</p>
+                <p className={`text-xs mt-1 ${decision.action === "APPROVE_BUSINESS" ? "opacity-80" : "text-on-surface-variant"}`}>
+                  {t("approveBusinessDescDetailed", { businessName: request.businessName || request.requestedByName || "this shop" })}
+                </p>
+              </div>
+            </button>
+
+            <div className={`bg-surface-container-low rounded-xl p-4 flex flex-col justify-between h-32 border-2 transition-colors relative ${decision.action === "MERGE" ? "border-secondary" : "border-transparent"
+              }`}>
+              <div className="flex items-center gap-2 mb-2 text-secondary">
+                <span className="material-symbols-outlined text-[20px]">call_merge</span>
+                <span className="font-bold text-sm">{t("merge")}</span>
+              </div>
+              <div className="relative w-full">
+                <select
+                  value={decision.suggestedCategoryId}
+                  onChange={(e) => setDecision((d) => ({ ...d, action: "MERGE", suggestedCategoryId: e.target.value }))}
+                  className="w-full bg-surface-container-lowest border-none rounded-lg text-sm py-2 px-3 text-on-surface focus:ring-0 cursor-pointer appearance-none"
+                >
+                  <option disabled value="">{t("selectTarget")}</option>
+                  {request.similarCategories && request.similarCategories.length > 0 && (
+                    <>
+                      {request.similarCategories.map((sim) => (
+                        <option key={sim.categoryId} value={sim.categoryId}>
+                          {sim.nameBn} {sim.nameEn ? `(${sim.nameEn})` : ""} — {Math.round(sim.similarityScore * 100)}%
+                        </option>
+                      ))}
+                      <option disabled>──────────</option>
+                    </>
+                  )}
+                  {filteredCategories.slice(0, 20).map((cat) => (
+                    <option key={cat.id} value={cat.id}>{cat.nameBn} {cat.nameEn ? `(${cat.nameEn})` : ""}</option>
+                  ))}
+                </select>
+                <span className="material-symbols-outlined absolute right-2 top-1/2 -translate-y-1/2 text-on-surface-variant pointer-events-none text-sm">expand_more</span>
+              </div>
+            </div>
+
+            <div className={`bg-error-container/30 rounded-xl p-4 flex flex-col justify-between h-32 border-2 transition-colors ${decision.action === "REJECT" ? "border-error" : "border-transparent"
+              }`}>
+              <div className="flex items-center gap-2 mb-2 text-error">
+                <span className="material-symbols-outlined text-[20px]">block</span>
+                <span className="font-bold text-sm">{t("reject")}</span>
+              </div>
+              <input
+                value={decision.rejectionReason}
+                onChange={(e) => setDecision((d) => ({ ...d, action: "REJECT", rejectionReason: e.target.value }))}
+                placeholder={t("rejectionPlaceholder")}
+                type="text"
+                className="w-full bg-surface-container-lowest border-none rounded-lg text-sm py-2 px-3 text-on-surface focus:ring-0 placeholder:text-on-surface-variant/50"
+              />
             </div>
           </div>
 
-          <div className={`bg-error-container/30 rounded-xl p-4 flex flex-col justify-between h-32 border-2 transition-colors ${decision.action === "REJECT" ? "border-error" : "border-transparent"
-            }`}>
-            <div className="flex items-center gap-2 mb-2 text-error">
-              <span className="material-symbols-outlined text-[20px]">block</span>
-              <span className="font-bold text-sm">{t("reject")}</span>
-            </div>
-            <input
-              value={decision.rejectionReason}
-              onChange={(e) => setDecision((d) => ({ ...d, action: "REJECT", rejectionReason: e.target.value }))}
-              placeholder={t("rejectionPlaceholder")}
-              type="text"
-              className="w-full bg-surface-container-lowest border-none rounded-lg text-sm py-2 px-3 text-on-surface focus:ring-0 placeholder:text-on-surface-variant/50"
-            />
+          <div className="mt-6">
+            <label className="block">
+              <span className="text-xs font-medium text-on-surface-variant">{t("reviewNotes")}</span>
+              <textarea
+                value={decision.reviewNotes}
+                onChange={(e) => setDecision((d) => ({ ...d, reviewNotes: e.target.value }))}
+                rows={2}
+                placeholder={t("reviewNotesPlaceholder")}
+                className="mt-1 w-full rounded-xl bg-surface-container-low p-3 text-sm text-on-surface border border-outline-variant/20 focus:border-primary focus:outline-none resize-none"
+              />
+            </label>
+          </div>
+
+          <div className="flex gap-3 justify-end mt-4">
+            <button
+              onClick={() => router.push("/admin/categories/moderation")}
+              className="rounded-xl px-5 py-2.5 text-sm font-medium text-on-surface-variant hover:bg-surface-container-low transition-colors"
+            >
+              {t("cancel")}
+            </button>
+            <button
+              onClick={handleSubmit}
+              disabled={
+                submitting ||
+                (decision.action === "REJECT" && !decision.rejectionReason.trim()) ||
+                (decision.action === "MERGE" && !decision.suggestedCategoryId)
+              }
+              className="rounded-xl bg-gradient-to-r from-primary to-primary-container px-5 py-2.5 text-sm font-bold text-on-primary hover:opacity-90 disabled:opacity-50 transition-opacity"
+            >
+              {submitting ? "…" : t("submitDecision")}
+            </button>
           </div>
         </div>
-
-        <div className="mt-6">
-          <label className="block">
-            <span className="text-xs font-medium text-on-surface-variant">{t("reviewNotes")}</span>
-            <textarea
-              value={decision.reviewNotes}
-              onChange={(e) => setDecision((d) => ({ ...d, reviewNotes: e.target.value }))}
-              rows={2}
-              placeholder={t("reviewNotesPlaceholder")}
-              className="mt-1 w-full rounded-xl bg-surface-container-low p-3 text-sm text-on-surface border border-outline-variant/20 focus:border-primary focus:outline-none resize-none"
-            />
-          </label>
-        </div>
-
-        <div className="flex gap-3 justify-end mt-4">
-          <button
-            onClick={() => router.push("/admin/categories/moderation")}
-            className="rounded-xl px-5 py-2.5 text-sm font-medium text-on-surface-variant hover:bg-surface-container-low transition-colors"
-          >
-            {t("cancel")}
-          </button>
-          <button
-            onClick={handleSubmit}
-            disabled={
-              submitting ||
-              (decision.action === "REJECT" && !decision.rejectionReason.trim()) ||
-              (decision.action === "MERGE" && !decision.suggestedCategoryId)
-            }
-            className="rounded-xl bg-gradient-to-r from-primary to-primary-container px-5 py-2.5 text-sm font-bold text-on-primary hover:opacity-90 disabled:opacity-50 transition-opacity"
-          >
-            {submitting ? "…" : t("submitDecision")}
-          </button>
-        </div>
-      </div>
+      )}
     </div>
   );
 }
