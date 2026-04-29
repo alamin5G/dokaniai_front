@@ -1519,7 +1519,7 @@
         "phonePlaceholder": "ফোন নম্বর (ঐচ্ছিক)",
         "whatsappPlaceholder": "WhatsApp নম্বর *",
         "whatsappHint": "WhatsApp না থাকলে ফোন নম্বর দিলেও হবে — রিমাইন্ডার SMS এ পাঠানো হবে",
-        "addressPlaceholder": "এলাকা ও বাড়ির নাম (যেমন: কলেজ রোড, বাড়ি ১২)",
+        "addressPlaceholder": "এলাকা ও বাড়ির নাম (যেমন কলেজ রোড, বাড়ি ১২)",
         "createBtn": "তৈরি করুন",
         "creating": "তৈরি হচ্ছে...",
         "createError": "ক্রেতা তৈরি করা যায়নি। আবার চেষ্টা করুন।",

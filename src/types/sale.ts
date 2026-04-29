@@ -154,6 +154,13 @@ export interface SaleCreatedResponse {
     paymentStatus: string;
     itemCount: number;
     todaySummary: TodaySalesSummary | null;
+    customerId: string | null;
+    customerName: string | null;
+    customerPhone: string | null;
+    customerAddress: string | null;
+    dueAmount: number | null;
+    runningBalance: number | null;
+    whatsappReminderUrl: string | null;
 }
 
 export interface TodaySalesSummary {

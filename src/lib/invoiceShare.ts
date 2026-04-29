@@ -1,0 +1,101 @@
+/**
+ * Invoice text formatting & WhatsApp deep-link generation.
+ * Used by Cash/Credit sale success modals for instant invoice sharing.
+ */
+
+import type { CartItem, SaleCreatedResponse } from "@/types/sale";
+
+export interface InvoiceBusinessInfo {
+    name: string;
+    phone?: string | null;
+    receiptFooter?: string | null;
+}
+
+const tk = (n: number) =>
+    `৳ ${n.toLocaleString("bn-BD", { minimumFractionDigits: 0, maximumFractionDigits: 2 })}`;
+
+/**
+ * Format a sale as a readable Bengali text invoice for WhatsApp sharing.
+ */
+export function formatInvoiceText(
+    sale: SaleCreatedResponse,
+    cartItems: CartItem[],
+    business: InvoiceBusinessInfo,
+): string {
+    const lines: string[] = [];
+
+    // Header — shop info
+    lines.push(`🧾 ${business.name || "DokaniAI ইনভয়েস"}`);
+    if (business.phone) lines.push(`📞 ${business.phone}`);
+    lines.push("────────────────────");
+
+    // Invoice meta
+    lines.push(`ইনভয়েস: ${sale.invoiceNumber}`);
+    const now = new Date();
+    lines.push(`তারিখ: ${now.toLocaleDateString("bn-BD")}`);
+
+    // Customer info
+    if (sale.customerName) {
+        lines.push(`ক্রেতা: ${sale.customerName}`);
+        if (sale.customerPhone) lines.push(`📞 ${sale.customerPhone}`);
+        if (sale.customerAddress) lines.push(`📍 ${sale.customerAddress}`);
+    }
+
+    lines.push("────────────────────");
+
+    // Items
+    if (cartItems.length > 0) {
+        lines.push("পণ্য          পরিমাণ    মূল্য");
+        for (const item of cartItems) {
+            const name = item.productName.length > 12
+                ? item.productName.slice(0, 12) + "…"
+                : item.productName;
+            const qty = `${item.quantity} ${item.unit || "টি"}`;
+            lines.push(`${name}   ${qty}   ${tk(item.unitPrice * item.quantity)}`);
+        }
+        lines.push("────────────────────");
+    }
+
+    // Totals
+    lines.push(`সাবটোটাল: ${tk(sale.subtotal)}`);
+    if (sale.totalDiscount > 0) {
+        lines.push(`ডিসকাউন্ট: −${tk(sale.totalDiscount)}`);
+    }
+    lines.push(`মোট: ${tk(sale.totalAmount)}`);
+    lines.push(`পেমেন্ট: ${sale.paymentMethod === "CREDIT" ? "বাকী" : "নগদ"} ✅`);
+
+    // Footer
+    lines.push("────────────────────");
+    lines.push("ধন্যবাদ! আবার আসুন 🙏");
+    if (business.receiptFooter) {
+        lines.push(business.receiptFooter);
+    }
+
+    return lines.join("\n");
+}
+
+/**
+ * Build a WhatsApp deep-link for sharing an invoice.
+ * If customerPhone is provided, opens directly to that contact's chat.
+ * Otherwise opens WhatsApp with just the text (shop owner picks contact).
+ */
+export function buildWhatsAppInvoiceLink(
+    invoiceText: string,
+    customerPhone?: string | null,
+): string {
+    const encoded = encodeURIComponent(invoiceText);
+    if (customerPhone) {
+        // Strip non-digit chars, ensure country code
+        const digits = customerPhone.replace(/\D/g, "");
+        const phone = digits.startsWith("880") ? digits : digits.startsWith("0") ? `880${digits.slice(1)}` : digits;
+        return `https://wa.me/${phone}?text=${encoded}`;
+    }
+    return `https://wa.me/?text=${encoded}`;
+}
+
+/**
+ * Build the PDF download URL for a sale invoice.
+ */
+export function buildInvoicePdfUrl(businessId: string, saleId: string): string {
+    return `/api/v1/businesses/${businessId}/sales/${saleId}/invoice`;
+}

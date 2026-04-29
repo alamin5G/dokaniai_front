@@ -23,6 +23,7 @@ import CustomerPickerDialog from "@/components/sales/CustomerPickerDialog";
 import CreditSaleSuccessModal from "@/components/sales/CreditSaleSuccessModal";
 import type { CustomerResponse } from "@/types/due";
 import type { CartSuggestion } from "@/lib/cartIntelligenceApi";
+import type { InvoiceBusinessInfo } from "@/lib/invoiceShare";
 
 import ProductSelector from "./ProductSelector";
 import CartPanel from "./CartPanel";
@@ -72,6 +73,9 @@ export default function SalesWorkspace({
 
     // Cash sale success modal
     const [cashSaleResult, setCashSaleResult] = useState<SaleCreatedResponse | null>(null);
+
+    // Snapshot of cart items before clear — needed for invoice text in success modals
+    const [lastCartItems, setLastCartItems] = useState<import("@/types/sale").CartItem[]>([]);
 
     // Credit sale: customer picker
     const [customerPickerOpen, setCustomerPickerOpen] = useState(false);
@@ -243,6 +247,8 @@ export default function SalesWorkspace({
         try {
             const request = buildSaleRequest(paymentMethod, customer);
             const sale = await submitCreate(request);
+            // Snapshot cart items before clearing for invoice sharing
+            setLastCartItems([...cartItems]);
             if (paymentMethod === "CASH") {
                 setCashSaleResult(sale);
             } else {
@@ -287,6 +293,7 @@ export default function SalesWorkspace({
 
         try {
             const sale = await submitForceCreate(pendingRequest);
+            setLastCartItems([...cartItems]);
             if (pendingRequest.paymentMethod === "CASH") {
                 setCashSaleResult(sale);
             } else {
@@ -317,6 +324,11 @@ export default function SalesWorkspace({
         setPendingRequest(null);
         setError(null);
     }
+
+    // Business info for invoice sharing
+    const businessInfo: InvoiceBusinessInfo = useMemo(() => ({
+        name: activeBusiness?.name ?? "DokaniAI",
+    }), [activeBusiness]);
 
     return (
         <div className="flex flex-1 flex-col lg:flex-row overflow-hidden h-[calc(100vh-12rem)]">
@@ -371,6 +383,9 @@ export default function SalesWorkspace({
             {cashSaleResult && (
                 <CashSaleSuccessModal
                     result={cashSaleResult}
+                    cartItems={lastCartItems}
+                    businessInfo={businessInfo}
+                    businessId={businessId}
                     onClose={() => setCashSaleResult(null)}
                 />
             )}
@@ -391,6 +406,9 @@ export default function SalesWorkspace({
                 <CreditSaleSuccessModal
                     result={creditSaleResult}
                     customerName={selectedCustomer?.name ?? ""}
+                    cartItems={lastCartItems}
+                    businessInfo={businessInfo}
+                    businessId={businessId}
                     onClose={() => {
                         setCreditSaleResult(null);
                         setSelectedCustomer(null);
