@@ -164,6 +164,16 @@ export async function generateMorningBriefing(
     return unwrap(response);
 }
 
+/** Generate monthly return analysis with AI */
+export async function generateReturnAnalysis(
+    businessId: string,
+): Promise<AIInsight> {
+    const response = await apiClient.post<ApiSuccess<AIInsight>>(
+        `/businesses/${businessId}/ai/insights/return-analysis`,
+    );
+    return unwrap(response);
+}
+
 /** Fetch insights filtered by type */
 export async function getInsightsByType(
     businessId: string,

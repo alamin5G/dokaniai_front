@@ -424,6 +424,7 @@ function ChatTab({ businessId, isDailyLimitReached, maxAiTokensPerQuery }: {
                             { key: "QQ-06", bn: "গত সপ্তাহের খরচ?", en: "Last week expense?" },
                             { key: "QQ-07", bn: "স্টক রিঅর্ডার কোনগুলো?", en: "Reorder items?" },
                             { key: "QQ-08", bn: "আজকের ডিসকাউন্ট কত?", en: "Today discounts?" },
+                            { key: "QQ-09", bn: "রিটার্ন বিশ্লেষণ দাও", en: "Return analysis?" },
                         ].map((qq) => (
                             <button
                                 key={qq.key}
