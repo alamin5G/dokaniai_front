@@ -1,6 +1,7 @@
 "use client";
 
 import { useLocale, useTranslations } from "next-intl";
+import axios from "axios";
 import type { FormEvent } from "react";
 import type {
     Expense,
@@ -31,6 +32,21 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 
 function resolveLocale(locale?: string): string {
     return locale?.toLowerCase().startsWith("bn") ? "bn-BD" : "en-US";
+}
+
+/** Convert "YYYY-MM-DD" → ISO-8601 OffsetDateTime string for backend */
+function toIsoDate(dateStr: string | undefined): string | undefined {
+    if (!dateStr) return undefined;
+    return new Date(dateStr + "T00:00:00").toISOString();
+}
+
+/** Extract user-friendly error message; prefers backend i18n message, falls back to localized default */
+function extractErrorMessage(err: unknown, fallback: string): string {
+    if (axios.isAxiosError(err)) {
+        const backendMsg = err.response?.data?.message;
+        if (typeof backendMsg === "string" && backendMsg.trim()) return backendMsg;
+    }
+    return fallback;
 }
 
 interface FormState {
@@ -295,7 +311,7 @@ export default function ExpenseWorkspace({
             setForm((current) => ({ ...current, vendorId: vendor.id, vendorName: vendor.name }));
             setNewVendorName("");
         } catch (createError) {
-            setError(createError instanceof Error ? createError.message : t("messages.saveError"));
+            setError(extractErrorMessage(createError, t("messages.saveError")));
         }
     }
 
@@ -312,7 +328,7 @@ export default function ExpenseWorkspace({
                     customCategoryName: form.category === "CUSTOM" ? form.customCategoryName : undefined,
                     amount: Number(form.amount),
                     description: form.description || undefined,
-                    expenseDate: form.expenseDate || undefined,
+                    expenseDate: toIsoDate(form.expenseDate),
                     paymentMethod: form.paymentMethod || undefined,
                     vendorId: form.vendorId || null,
                     vendorName: form.vendorId ? undefined : form.vendorName,
@@ -325,7 +341,7 @@ export default function ExpenseWorkspace({
                     customCategoryName: form.category === "CUSTOM" ? form.customCategoryName : undefined,
                     amount: Number(form.amount),
                     description: form.description || undefined,
-                    expenseDate: form.expenseDate || undefined,
+                    expenseDate: toIsoDate(form.expenseDate),
                     paymentMethod: form.paymentMethod || undefined,
                     vendorId: form.vendorId || undefined,
                     vendorName: form.vendorId ? undefined : form.vendorName || undefined,
@@ -343,7 +359,7 @@ export default function ExpenseWorkspace({
                 setSummary(s);
             } catch { /* ignore */ }
         } catch (submitError) {
-            setError(submitError instanceof Error ? submitError.message : t("messages.saveError"));
+            setError(extractErrorMessage(submitError, t("messages.saveError")));
         } finally {
             setIsSubmitting(false);
         }
@@ -358,7 +374,7 @@ export default function ExpenseWorkspace({
             setNotice(t("messages.deleted"));
             await loadExpenses();
         } catch (deleteError) {
-            setError(deleteError instanceof Error ? deleteError.message : t("messages.deleteError"));
+            setError(extractErrorMessage(deleteError, t("messages.deleteError")));
         }
     }
 
@@ -589,7 +605,7 @@ export default function ExpenseWorkspace({
 
                         <form className="mt-6 space-y-4" onSubmit={handleSubmit}>
                             {/* Category — Searchable grouped dropdown */}
-                            <div className="block" data-cat-dropdown>
+                            <div className="relative block" data-cat-dropdown>
                                 <span className="mb-2 block text-sm font-medium text-on-surface">{t("form.category")}</span>
                                 <input
                                     type="text"
@@ -601,7 +617,7 @@ export default function ExpenseWorkspace({
                                 />
                                 <input type="hidden" value={form.category} />
                                 {categoryDropdownOpen && (
-                                    <div className="absolute z-50 mt-1 max-h-[320px] w-full overflow-hidden rounded-[20px] bg-surface-container-lowest shadow-lg ring-1 ring-outline-variant" style={{ width: "calc(100% - 48px)" }}>
+                                    <div className="absolute left-0 right-0 z-50 mt-1 max-h-[320px] overflow-hidden rounded-[20px] bg-surface-container-lowest shadow-lg ring-1 ring-outline-variant">
                                         <div className="sticky top-0 z-10 border-b border-surface-container bg-surface-container-lowest px-3 py-2">
                                             <div className="flex items-center gap-2 rounded-full bg-surface-container-highest px-3 py-2">
                                                 <span className="material-symbols-outlined text-base text-on-surface-variant">search</span>
@@ -762,8 +778,8 @@ export default function ExpenseWorkspace({
                                             type="button"
                                             onClick={() => updateForm("paymentMethod", pm.value)}
                                             className={`flex flex-col items-center gap-1 rounded-[16px] border px-2 py-3 text-center text-xs font-semibold transition ${form.paymentMethod === pm.value
-                                                    ? pm.color + " ring-2 ring-primary/30"
-                                                    : "border-outline-variant bg-surface-container-highest text-on-surface-variant hover:bg-surface-container-high"
+                                                ? pm.color + " ring-2 ring-primary/30"
+                                                : "border-outline-variant bg-surface-container-highest text-on-surface-variant hover:bg-surface-container-high"
                                                 }`}
                                         >
                                             <span className="material-symbols-outlined text-lg">{pm.icon}</span>
