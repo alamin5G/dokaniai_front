@@ -1,6 +1,7 @@
 "use client";
 
 import { useLocale, useTranslations } from "next-intl";
+import { useEffect, useRef } from "react";
 import type { CartItem, DiscountMethod, PaymentMethod } from "@/types/sale";
 import DiscountInput from "./DiscountInput";
 import SmartQuantityInput from "./SmartQuantityInput";
@@ -63,6 +64,16 @@ export default function CartPanel({
     const locale = useLocale();
     const loc = resolveLocale(locale);
 
+    // Auto-scroll cart to bottom when new item is added
+    const cartItemsRef = useRef<HTMLDivElement>(null);
+    const prevCartCountRef = useRef(cartItems.length);
+    useEffect(() => {
+        if (cartItems.length > prevCartCountRef.current && cartItemsRef.current) {
+            cartItemsRef.current.scrollTop = cartItemsRef.current.scrollHeight;
+        }
+        prevCartCountRef.current = cartItems.length;
+    }, [cartItems.length]);
+
     const currencyFormatter = new Intl.NumberFormat(loc, {
         maximumFractionDigits: 2,
     });
@@ -91,7 +102,7 @@ export default function CartPanel({
             </div>
 
             {/* Cart Items — scrollable when content overflows */}
-            <div className="mb-3 min-h-0 flex-1 space-y-1.5 overflow-y-auto pr-1">
+            <div ref={cartItemsRef} className="mb-3 min-h-0 flex-1 space-y-1.5 overflow-y-auto pr-1">
                 {cartItems.length === 0 ? (
                     <p className="py-6 text-center text-sm text-on-surface-variant">
                         {t("cart.empty")}

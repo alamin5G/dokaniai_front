@@ -194,7 +194,7 @@ export default function SalesWorkspace({
     }
 
     // Build sale request payload (shared between normal & force submit)
-    function buildSaleRequest(paymentMethod: PaymentMethod): SaleCreateRequest {
+    function buildSaleRequest(paymentMethod: PaymentMethod, customer?: CustomerResponse | null): SaleCreateRequest {
         const discounts: DiscountRequest[] =
             discountAmount > 0
                 ? [
@@ -207,6 +207,8 @@ export default function SalesWorkspace({
                 ]
                 : [];
 
+        const effectiveCustomer = customer ?? selectedCustomer;
+
         return {
             items: cartItems.map((ci) => ({
                 productId: ci.productId,
@@ -217,12 +219,12 @@ export default function SalesWorkspace({
             discounts,
             paymentMethod,
             recordedVia: "MANUAL",
-            customerId: paymentMethod === "CREDIT" ? selectedCustomer?.id ?? null : null,
+            customerId: paymentMethod === "CREDIT" ? effectiveCustomer?.id ?? null : null,
         };
     }
 
-    // Sale submission
-    async function handleSubmit(paymentMethod: PaymentMethod) {
+    // Sale submission — accepts optional customer override to avoid stale state
+    async function handleSubmit(paymentMethod: PaymentMethod, customer?: CustomerResponse | null) {
         if (cartItems.length === 0) return;
 
         setIsSubmitting(true);
@@ -239,11 +241,13 @@ export default function SalesWorkspace({
         }
 
         try {
-            const request = buildSaleRequest(paymentMethod);
+            const request = buildSaleRequest(paymentMethod, customer);
             const sale = await submitCreate(request);
             if (paymentMethod === "CASH") {
                 setCashSaleResult(sale);
             } else {
+                // Use the customer passed directly (not stale state)
+                setSelectedCustomer(customer ?? selectedCustomer);
                 setCreditSaleResult(sale);
             }
             clearAll();
@@ -256,7 +260,7 @@ export default function SalesWorkspace({
                 axiosErr.response?.data?.error?.details
             ) {
                 setConflictDetail(axiosErr.response.data.error.details);
-                setPendingRequest(buildSaleRequest(paymentMethod));
+                setPendingRequest(buildSaleRequest(paymentMethod, customer));
                 setConflictOpen(true);
             } else {
                 // Prefer server-provided error message over raw Axios string
@@ -377,9 +381,8 @@ export default function SalesWorkspace({
                 open={customerPickerOpen}
                 onClose={() => setCustomerPickerOpen(false)}
                 onSelect={(customer) => {
-                    setSelectedCustomer(customer);
                     setCustomerPickerOpen(false);
-                    handleSubmit("CREDIT");
+                    handleSubmit("CREDIT", customer);
                 }}
             />
 

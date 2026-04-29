@@ -25,6 +25,7 @@ export default function CustomerPickerDialog({
     const [showCreate, setShowCreate] = useState(false);
     const [newName, setNewName] = useState("");
     const [newPhone, setNewPhone] = useState("");
+    const [newAddress, setNewAddress] = useState("");
     const [creating, setCreating] = useState(false);
     const [error, setError] = useState<string | null>(null);
 
@@ -47,6 +48,7 @@ export default function CustomerPickerDialog({
             setShowCreate(false);
             setNewName("");
             setNewPhone("");
+            setNewAddress("");
             setError(null);
         }
     }, [open, fetchCustomers]);
@@ -59,13 +61,14 @@ export default function CustomerPickerDialog({
     );
 
     async function handleCreate() {
-        if (!newName.trim()) return;
+        if (!newName.trim() || !newPhone.trim()) return;
         setCreating(true);
         setError(null);
         try {
             const created = await createCustomer(businessId, {
                 name: newName.trim(),
-                phone: newPhone.trim() || undefined,
+                phone: newPhone.trim(),
+                address: newAddress.trim() || undefined,
             });
             onSelect(created);
         } catch {
@@ -155,21 +158,40 @@ export default function CustomerPickerDialog({
                         {error && (
                             <div className="rounded-lg bg-rose-50 px-3 py-2 text-xs text-rose-700">{error}</div>
                         )}
-                        <input
-                            type="text"
-                            value={newName}
-                            onChange={(e) => setNewName(e.target.value)}
-                            placeholder={t("customer.namePlaceholder")}
-                            className="w-full rounded-lg border border-surface-container-low bg-surface-container-lowest px-3 py-2 text-sm outline-none focus:border-primary"
-                            autoFocus
-                        />
-                        <input
-                            type="text"
-                            value={newPhone}
-                            onChange={(e) => setNewPhone(e.target.value)}
-                            placeholder={t("customer.phonePlaceholder")}
-                            className="w-full rounded-lg border border-surface-container-low bg-surface-container-lowest px-3 py-2 text-sm outline-none focus:border-primary"
-                        />
+                        <div>
+                            <input
+                                type="text"
+                                value={newName}
+                                onChange={(e) => setNewName(e.target.value)}
+                                placeholder={t("customer.namePlaceholder")}
+                                className="w-full rounded-lg border border-surface-container-low bg-surface-container-lowest px-3 py-2 text-sm outline-none focus:border-primary"
+                                autoFocus
+                            />
+                        </div>
+                        <div>
+                            <div className="relative">
+                                <input
+                                    type="tel"
+                                    value={newPhone}
+                                    onChange={(e) => setNewPhone(e.target.value)}
+                                    placeholder={t("customer.whatsappPlaceholder")}
+                                    className="w-full rounded-lg border border-surface-container-low bg-surface-container-lowest pl-10 pr-3 py-2 text-sm outline-none focus:border-primary"
+                                />
+                                <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-base text-green-600">chat</span>
+                            </div>
+                            <p className="mt-1 text-[10px] text-on-surface-variant">
+                                {t("customer.whatsappHint")}
+                            </p>
+                        </div>
+                        <div>
+                            <input
+                                type="text"
+                                value={newAddress}
+                                onChange={(e) => setNewAddress(e.target.value)}
+                                placeholder={t("customer.addressPlaceholder")}
+                                className="w-full rounded-lg border border-surface-container-low bg-surface-container-lowest px-3 py-2 text-sm outline-none focus:border-primary"
+                            />
+                        </div>
                         <div className="flex gap-2">
                             <button
                                 type="button"
@@ -181,7 +203,7 @@ export default function CustomerPickerDialog({
                             <button
                                 type="button"
                                 onClick={handleCreate}
-                                disabled={creating || !newName.trim()}
+                                disabled={creating || !newName.trim() || !newPhone.trim()}
                                 className="flex-1 rounded-lg bg-primary py-2 text-sm font-bold text-white transition-colors hover:bg-primary/90 disabled:opacity-50"
                             >
                                 {creating ? t("customer.creating") : t("customer.createBtn")}
