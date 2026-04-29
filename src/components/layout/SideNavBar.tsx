@@ -106,7 +106,6 @@ const NAV_ITEMS: NavItem[] = [
   { key: "expenses", section: "/expenses", icon: IconExpense },
   { key: "dueLedger", section: "/due-ledger", icon: IconBook },
   { key: "products", section: "/products", icon: IconBox },
-  { key: "returns", section: "/returns", icon: IconReturn },
   { key: "reports", section: "/reports", icon: IconChart },
   { key: "aiAssistant", section: "/ai", icon: IconAI },
 ];

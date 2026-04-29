@@ -165,7 +165,7 @@ export default function QuickActions() {
         {
             label: t("recordReturn"),
             icon: <IconReturn className="w-5 h-5" />,
-            section: "/returns",
+            section: "/sales?tab=returns",
         },
     ];
 

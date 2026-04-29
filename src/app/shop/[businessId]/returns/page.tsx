@@ -1,4 +1,4 @@
-import ReturnsWorkspace from "@/components/returns/ReturnsWorkspace";
+import { redirect } from "next/navigation";
 
 export default async function ShopReturnsPage({
     params,
@@ -6,5 +6,5 @@ export default async function ShopReturnsPage({
     params: Promise<{ businessId: string }>;
 }) {
     const { businessId } = await params;
-    return <ReturnsWorkspace businessId={businessId} />;
+    redirect(`/shop/${businessId}/sales?tab=returns`);
 }
