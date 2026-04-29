@@ -116,7 +116,7 @@ export function getProductUnitLabel(unit: string, locale: string): string {
 export const UNIT_STEP_MAP: Record<string, number> = {
     // Weight (metric) — precision 0.01 (allows 0.1, 0.175, 1.2 kg etc.)
     kg: 0.01,
-    gram: 1,
+    gram: 0.1,
     // Weight (South Asian) — precision 0.01
     maund: 0.01,
     seer: 0.01,
@@ -124,7 +124,7 @@ export const UNIT_STEP_MAP: Record<string, number> = {
     quintal: 0.01,
     // Volume — precision 0.01
     liter: 0.01,
-    ml: 1,
+    ml: 0.5,
     // Precious metals — precision 0.01
     bhori: 0.01,
     tola: 0.01,
@@ -138,34 +138,66 @@ export const UNIT_STEP_MAP: Record<string, number> = {
     inch: 0.01,
     yard: 0.01,
     hath: 0.01,
+    cm: 0.1,
+    // Traditional BD counting — half-dozen, half-ganda, half-hali
+    dozen: 0.5,
+    ganda: 0.5,
+    hali: 0.5,
+    // Thread — fabric shops sell by fractional weight/length
+    thread: 0.01,
 };
 
 /** Step size for −/+ buttons (larger, convenience increments). */
 export const UNIT_BUTTON_STEP: Record<string, number> = {
+    // Weight (metric)
     kg: 0.25,
+    gram: 0.5,
+    // Weight (South Asian)
     maund: 0.25,
     seer: 0.25,
     chitak: 0.25,
     quintal: 0.25,
+    // Volume
     liter: 0.25,
+    ml: 1,
+    // Precious metals
     bhori: 0.5,
     tola: 0.5,
     ana: 0.5,
     masha: 0.5,
     ratti: 0.5,
     carat: 0.5,
+    // Length
     meter: 0.25,
     feet: 0.25,
-    inch: 0.5,
+    inch: 0.25,
     yard: 0.25,
     hath: 0.25,
+    cm: 0.5,
+    // Traditional BD counting — আধা ডজন, আধা গণ্ডা, আধা হালি
+    dozen: 1,
+    ganda: 1,
+    hali: 1,
+    // Thread — fabric shops
+    thread: 0.25,
 };
 
 /** Units that show quick-fraction chips (¼ ½ ¾ ১). */
 export const FRACTIONAL_UNITS = new Set([
-    "kg", "liter", "maund", "seer", "chitak", "quintal",
+    // Weight (metric)
+    "kg", "gram",
+    // Weight (South Asian)
+    "maund", "seer", "chitak", "quintal",
+    // Volume
+    "liter", "ml",
+    // Precious metals
     "bhori", "tola", "ana", "masha", "ratti", "carat",
-    "meter", "feet", "yard", "hath",
+    // Length
+    "meter", "feet", "inch", "yard", "hath", "cm",
+    // Traditional BD counting — আধা ডজন, আধা গণ্ডা, আধা হালি
+    "dozen", "ganda", "hali",
+    // Thread — fabric shops
+    "thread",
 ]);
 
 /** Get minimum precision for a given unit (default = 1). */

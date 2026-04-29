@@ -72,7 +72,7 @@ export default function CartPanel({
     }
 
     return (
-        <aside className="flex w-full lg:w-[26rem] flex-col border-t lg:border-t-0 lg:border-l border-surface-container-low bg-[rgba(255,255,255,0.7)] p-4 shadow-2xl backdrop-blur-xl">
+        <aside className="flex w-full lg:w-[26rem] shrink-0 max-h-[50vh] lg:max-h-none flex-col border-t lg:border-t-0 lg:border-l border-surface-container-low bg-[rgba(255,255,255,0.7)] p-4 shadow-2xl backdrop-blur-xl">
             {/* Header */}
             <div className="mb-3 flex items-center justify-between">
                 <h2 className="flex items-center gap-1.5 text-lg font-bold text-primary">
@@ -90,8 +90,8 @@ export default function CartPanel({
                 ) : null}
             </div>
 
-            {/* Cart Items */}
-            <div className="mb-3 flex-1 space-y-1.5 overflow-y-auto pr-1">
+            {/* Cart Items — scrollable when content overflows */}
+            <div className="mb-3 min-h-0 flex-1 space-y-1.5 overflow-y-auto pr-1">
                 {cartItems.length === 0 ? (
                     <p className="py-6 text-center text-sm text-on-surface-variant">
                         {t("cart.empty")}

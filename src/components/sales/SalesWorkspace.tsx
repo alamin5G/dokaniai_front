@@ -315,7 +315,7 @@ export default function SalesWorkspace({
     }
 
     return (
-        <div className="flex flex-1 flex-col lg:flex-row overflow-hidden min-h-[calc(100vh-12rem)]">
+        <div className="flex flex-1 flex-col lg:flex-row overflow-hidden h-[calc(100vh-12rem)]">
             {/* Left: Product Selection */}
             <ProductSelector
                 products={products}

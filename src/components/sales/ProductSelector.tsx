@@ -129,7 +129,7 @@ export default function ProductSelector({
     );
 
     return (
-        <section className="flex flex-1 flex-col lg:overflow-hidden p-4 lg:p-6">
+        <section className="flex flex-1 min-h-0 flex-col lg:overflow-hidden p-4 lg:p-6">
             {/* Search + Scanner */}
             <div className="mb-6 flex flex-col gap-4">
                 <div className="flex items-center gap-4">
