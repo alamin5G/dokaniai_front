@@ -405,5 +405,5 @@ export async function markAllAdminNotificationsRead(): Promise<void> {
 }
 
 export async function dismissAdminNotification(id: number): Promise<void> {
-    await apiClient.delete(`/admin/notifications/${id}`);
+    await apiClient.put(`/admin/notifications/${id}/dismiss`);
 }

@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState, useRef, useCallback } from "react";
+import { useRouter } from "next/navigation";
 import type { AdminNotification } from "@/types/admin";
 import {
     getAdminNotifications,
@@ -47,6 +48,7 @@ function timeAgo(dateStr: string): string {
 }
 
 export default function AdminNotificationBell() {
+    const router = useRouter();
     const [count, setCount] = useState<number>(0);
     const [notifications, setNotifications] = useState<AdminNotification[]>([]);
     const [open, setOpen] = useState(false);
@@ -140,6 +142,27 @@ export default function AdminNotificationBell() {
         refreshCount();
     };
 
+    const getNotificationHref = (notification: AdminNotification) => {
+        if (
+            notification.type === "CATEGORY_REQUEST" &&
+            notification.sourceType === "CATEGORY_REQUEST" &&
+            notification.sourceId
+        ) {
+            return `/admin/categories/requests/${notification.sourceId}`;
+        }
+        return null;
+    };
+
+    const handleNotificationClick = async (notification: AdminNotification) => {
+        const href = getNotificationHref(notification);
+        if (!href) return;
+        if (!notification.read) {
+            await handleMarkRead(notification.id);
+        }
+        setOpen(false);
+        router.push(href);
+    };
+
     return (
         <div className="relative" ref={panelRef}>
             <button
@@ -183,7 +206,9 @@ export default function AdminNotificationBell() {
                             notifications.map((n) => (
                                 <div
                                     key={n.id}
-                                    className={`px-4 py-3 border-b border-outline-variant/10 hover:bg-surface-container-low transition-colors group ${!n.read ? "bg-primary/5" : ""
+                                    onClick={() => handleNotificationClick(n)}
+                                    className={`px-4 py-3 border-b border-outline-variant/10 hover:bg-surface-container-low transition-colors group ${getNotificationHref(n) ? "cursor-pointer" : ""
+                                        } ${!n.read ? "bg-primary/5" : ""
                                         }`}
                                 >
                                     <div className="flex items-start gap-3">
@@ -214,7 +239,10 @@ export default function AdminNotificationBell() {
                                         <div className="flex flex-col gap-1 shrink-0 opacity-0 group-hover:opacity-100 transition-opacity">
                                             {!n.read && (
                                                 <button
-                                                    onClick={() => handleMarkRead(n.id)}
+                                                    onClick={(e) => {
+                                                        e.stopPropagation();
+                                                        handleMarkRead(n.id);
+                                                    }}
                                                     className="text-primary text-[10px] font-medium hover:underline"
                                                     title="Mark as read"
                                                 >
@@ -224,7 +252,10 @@ export default function AdminNotificationBell() {
                                                 </button>
                                             )}
                                             <button
-                                                onClick={() => handleDismiss(n.id)}
+                                                onClick={(e) => {
+                                                    e.stopPropagation();
+                                                    handleDismiss(n.id);
+                                                }}
                                                 className="text-on-surface-variant text-[10px] hover:text-error"
                                                 title="Dismiss"
                                             >
