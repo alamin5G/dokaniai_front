@@ -96,6 +96,10 @@ export default function ProductInsightPanel({
         return map;
     }, [products, lowStockProducts]);
 
+    if (totalAlerts <= 0 && displayedInsights.length === 0 && displayedAlerts.length === 0) {
+        return null;
+    }
+
     function insightMessage(item: StockAlertItem): string {
         if (item.status === "OUT_OF_STOCK") {
             return locale.toLowerCase().startsWith("bn")
@@ -218,5 +222,4 @@ export default function ProductInsightPanel({
         </div>
     );
 }
-
 
