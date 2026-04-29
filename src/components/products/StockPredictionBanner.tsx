@@ -1,6 +1,7 @@
 "use client";
 
 import { useTranslations } from "next-intl";
+import AIResponseRenderer from "@/components/ai/AIResponseRenderer";
 import type { StockPrediction } from "@/types/restockIntelligence";
 
 interface StockPredictionBannerProps {
@@ -83,11 +84,11 @@ export default function StockPredictionBanner({
                 </div>
             </div>
 
-            {/* AI reasoning */}
+            {/* AI reasoning — rendered with markdown */}
             {prediction.aiReasoning && (
-                <p className="text-xs text-on-surface-variant leading-relaxed mb-2">
-                    {prediction.aiReasoning}
-                </p>
+                <div className="text-xs text-on-surface-variant leading-relaxed mb-2">
+                    <AIResponseRenderer content={prediction.aiReasoning} className="text-xs" />
+                </div>
             )}
 
             {/* Suggested order date */}

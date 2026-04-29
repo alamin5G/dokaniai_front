@@ -376,11 +376,12 @@ function NotificationCard({
     const tone = notification.tone || "INFO";
     const actionLabel = notification.aiContext?.actionLabel;
     const isFallback = notification.aiContext?.fallback === true;
+    const isRejection = notification.type === "CATEGORY_REQUEST" && /reject/i.test(notification.title);
 
     // Determine left border color based on tone for AI notifications
     const borderClass = isAi
         ? `border-l-3 ${toneBorders[tone] || "border-l-blue-400"}`
-        : "";
+        : isRejection ? "border-l-3 border-l-red-400" : "";
 
     return (
         <div
@@ -390,8 +391,9 @@ function NotificationCard({
         >
             {/* Type badge */}
             <div className="flex-shrink-0 mt-0.5">
-                <span className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-bold ${typeColors[notification.type] || "bg-gray-100 text-gray-700"}`}>
-                    {isAi && <IconSparkle className="w-2.5 h-2.5" />}
+                <span className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-bold ${isRejection ? "bg-red-100 text-red-700" : typeColors[notification.type] || "bg-gray-100 text-gray-700"}`}>
+                    {isRejection && <span className="material-symbols-outlined text-[11px]">close</span>}
+                    {isAi && !isRejection && <IconSparkle className="w-2.5 h-2.5" />}
                     {typeLabel}
                 </span>
                 {isFallback && (
@@ -497,9 +499,11 @@ function NotificationDetailModal({
         return () => document.removeEventListener("keydown", handleEscape);
     }, [onClose]);
 
+    const isRejection = notification.type === "CATEGORY_REQUEST" && /reject/i.test(notification.title);
+
     const borderClass = isAi
         ? `border-l-4 ${toneBorders[tone] || "border-l-blue-400"}`
-        : "";
+        : isRejection ? "border-l-4 border-l-red-400" : "";
 
     return createPortal(
         <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/40 backdrop-blur-sm">
@@ -510,8 +514,9 @@ function NotificationDetailModal({
                 {/* Header */}
                 <div className="flex items-center justify-between px-5 py-4 border-b border-surface-container">
                     <div className="flex items-center gap-2">
-                        <span className={`inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-[11px] font-bold ${typeColors[notification.type] || "bg-gray-100 text-gray-700"}`}>
-                            {isAi && <IconSparkle className="w-3 h-3" />}
+                        <span className={`inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-[11px] font-bold ${isRejection ? "bg-red-100 text-red-700" : typeColors[notification.type] || "bg-gray-100 text-gray-700"}`}>
+                            {isRejection && <span className="material-symbols-outlined text-[13px]">close</span>}
+                            {isAi && !isRejection && <IconSparkle className="w-3 h-3" />}
                             {typeLabel}
                         </span>
                         {isAi && (

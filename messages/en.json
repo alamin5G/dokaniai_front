@@ -1022,7 +1022,8 @@
       "AI_TIP": "AI Tip",
       "PATTERN_ALERT": "Alert",
       "RESTOCK_INSIGHT": "Restock AI",
-      "STOCK_PREDICTION": "Stock AI"
+      "STOCK_PREDICTION": "Stock AI",
+      "CATEGORY_REQUEST": "Category Request"
     }
   },
   "userProfile": {
@@ -4501,6 +4502,7 @@
       "colType": "Business Type",
       "colJustification": "Justification",
       "colDate": "Requested",
+      "colStatus": "Status",
       "colActions": "Actions",
       "prev": "Previous",
       "next": "Next",

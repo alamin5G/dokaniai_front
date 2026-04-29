@@ -1022,7 +1022,8 @@
       "AI_TIP": "এআই টিপস",
       "PATTERN_ALERT": "সতর্কতা",
       "RESTOCK_INSIGHT": "রিস্টক এআই",
-      "STOCK_PREDICTION": "স্টক এআই"
+      "STOCK_PREDICTION": "স্টক এআই",
+      "CATEGORY_REQUEST": "ক্যাটাগরি অনুরোধ"
     }
   },
   "userProfile": {
@@ -4562,6 +4563,7 @@
       "colType": "ব্যবসার ধরন",
       "colJustification": "যৌক্তিকতা",
       "colDate": "অনুরোধের তারিখ",
+      "colStatus": "স্ট্যাটাস",
       "colActions": "অ্যাকশন",
       "prev": "আগে",
       "next": "পরে",

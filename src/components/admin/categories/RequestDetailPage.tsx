@@ -323,23 +323,15 @@ export default function RequestDetailPage() {
                       </button>
                     </div>
                   ))}
-                  <div className="mt-auto pt-2 text-center">
-                    <button
-                      onClick={() => router.push("/admin/categories")}
-                      className="text-[10px] font-bold text-primary hover:underline"
-                    >
-                      {t("viewAllBranches")}
-                    </button>
-                  </div>
                 </div>
 
                 {/* Reasoning / Analysis Info */}
                 {request.aiReasoning && (
-                  <div className="mt-3 relative z-10 bg-surface-container-low/50 rounded-lg p-2.5 border border-outline-variant/10">
-                    <p className="text-[9px] font-bold text-on-surface-variant uppercase tracking-wider mb-0.5">
+                  <div className="mt-2 relative z-10 bg-surface-container-low/50 rounded-lg p-3 border border-outline-variant/10">
+                    <p className="text-[10px] font-bold text-on-surface-variant uppercase tracking-wider mb-1">
                       {aiActuallyUsed ? "AI Reasoning" : t("analysisInfo")}
                     </p>
-                    <p className="text-[10px] text-on-surface-variant leading-relaxed">{request.aiReasoning}</p>
+                    <p className="text-xs text-on-surface-variant leading-relaxed">{request.aiReasoning}</p>
                   </div>
                 )}
               </>
@@ -350,50 +342,6 @@ export default function RequestDetailPage() {
               </div>
             )}
           </div>
-        </div>
-      </div>
-
-      {/* Timeline Section */}
-      <div className="bg-surface-container-lowest rounded-xl p-8 shadow-sm">
-        <h2 className="text-lg font-headline font-bold text-on-surface mb-6 border-b-2 border-surface-container-low pb-2 inline-block flex items-center gap-2">
-          <span className="material-symbols-outlined text-primary">schedule</span>
-          {t("timeline")}
-        </h2>
-        <div className="flex flex-col sm:flex-row gap-6 sm:gap-12">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-full bg-primary-fixed/30 flex items-center justify-center">
-              <span className="material-symbols-outlined text-primary text-[20px]">add_circle</span>
-            </div>
-            <div>
-              <p className="text-xs font-bold text-on-surface-variant uppercase tracking-wider">{t("timelineCreated")}</p>
-              <p className="text-sm text-on-surface font-medium">{new Date(request.createdAt).toLocaleString()}</p>
-            </div>
-          </div>
-          {request.reviewedAt && (
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-full bg-secondary-fixed/30 flex items-center justify-center">
-                <span className="material-symbols-outlined text-secondary text-[20px]">visibility</span>
-              </div>
-              <div>
-                <p className="text-xs font-bold text-on-surface-variant uppercase tracking-wider">{t("timelineReviewed")}</p>
-                <p className="text-sm text-on-surface font-medium">{new Date(request.reviewedAt).toLocaleString()}</p>
-                {request.reviewedByName && (
-                  <p className="text-xs text-on-surface-variant">by {request.reviewedByName}</p>
-                )}
-              </div>
-            </div>
-          )}
-          {request.status === "APPROVED_GLOBAL" || request.status === "APPROVED_BUSINESS" || request.status === "REJECTED" ? (
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-full bg-tertiary-fixed/30 flex items-center justify-center">
-                <span className="material-symbols-outlined text-tertiary text-[20px]">verified</span>
-              </div>
-              <div>
-                <p className="text-xs font-bold text-on-surface-variant uppercase tracking-wider">{t("timelineDecided")}</p>
-                <p className="text-sm text-on-surface font-medium">{new Date(request.updatedAt).toLocaleString()}</p>
-              </div>
-            </div>
-          ) : null}
         </div>
       </div>
 

@@ -1,6 +1,8 @@
 "use client";
 
+import { useState } from "react";
 import { useTranslations } from "next-intl";
+import AIResponseRenderer from "@/components/ai/AIResponseRenderer";
 import type { RestockInsight } from "@/types/restockIntelligence";
 
 interface RestockInsightCardProps {
@@ -19,6 +21,8 @@ const insightTypeConfig: Record<string, { icon: string; bg: string; border: stri
 export default function RestockInsightCard({ insight, onDismiss }: RestockInsightCardProps) {
     const t = useTranslations("shop.products.restockIntelligence");
     const config = insightTypeConfig[insight.insightType] || insightTypeConfig.PATTERN;
+    const [expanded, setExpanded] = useState(false);
+    const hasLongText = insight.insightText && insight.insightText.length > 150;
 
     const confidenceColor =
         insight.confidenceScore >= 80
@@ -44,10 +48,22 @@ export default function RestockInsightCard({ insight, onDismiss }: RestockInsigh
                         </span>
                     </div>
 
-                    {/* AI-generated Bengali text */}
-                    <p className="text-sm text-on-surface leading-relaxed">
-                        {insight.insightText}
-                    </p>
+                    {/* AI-generated Bengali text — rendered with markdown */}
+                    <div className={`text-sm text-on-surface leading-relaxed ${!expanded && hasLongText ? "max-h-20 overflow-hidden relative" : ""}`}>
+                        <AIResponseRenderer content={insight.insightText} />
+                        {!expanded && hasLongText && (
+                            <div className="absolute bottom-0 left-0 right-0 h-6 bg-gradient-to-t from-white/80 to-transparent" />
+                        )}
+                    </div>
+                    {hasLongText && (
+                        <button
+                            type="button"
+                            onClick={() => setExpanded(!expanded)}
+                            className="mt-1 text-xs text-primary font-medium hover:underline"
+                        >
+                            {expanded ? "কম দেখুন" : "আরও দেখুন"}
+                        </button>
+                    )}
 
                     {/* Confidence bar */}
                     <div className="mt-3 flex items-center gap-2">
