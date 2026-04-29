@@ -425,23 +425,23 @@ export default function RequestDetailPage() {
             <div>
               <p className="font-bold text-sm">{t("approveGlobal")}</p>
               <p className={`text-xs mt-1 ${decision.action === "APPROVE_GLOBAL" ? "opacity-80" : "text-on-surface-variant"}`}>
-                {t("approveGlobalDesc")}
+                {t("approveGlobalDesc", { businessType: request.businessType?.replace(/_/g, " ") ?? "business" })}
               </p>
             </div>
           </button>
 
           <button
             onClick={() => handleActionChange("APPROVE_BUSINESS")}
-            className={`p-6 rounded-xl text-left flex flex-col justify-between transition-all h-32 ${decision.action === "APPROVE_BUSINESS"
-              ? "bg-surface-container-high text-on-surface shadow-md -translate-y-1"
+            className={`p-6 rounded-xl text-left flex flex-col justify-between transition-all h-32 group ${decision.action === "APPROVE_BUSINESS"
+              ? "bg-gradient-to-br from-secondary to-secondary-container text-on-secondary shadow-md -translate-y-1"
               : "bg-surface-container-high text-on-surface hover:bg-surface-container-highest"
               }`}
           >
-            <span className={`material-symbols-outlined mb-2 ${decision.action !== "APPROVE_BUSINESS" ? "text-primary" : ""}`}>storefront</span>
+            <span className={`material-symbols-outlined mb-2 group-hover:scale-110 transition-transform`}>storefront</span>
             <div>
               <p className="font-bold text-sm">{t("approveBusiness")}</p>
               <p className={`text-xs mt-1 ${decision.action === "APPROVE_BUSINESS" ? "opacity-80" : "text-on-surface-variant"}`}>
-                {t("approveBusinessDescDetailed", { businessType: request.businessType?.replace(/_/g, " ") ?? "business" })}
+                {t("approveBusinessDescDetailed", { businessName: request.businessName || request.requestedByName || "this shop" })}
               </p>
             </div>
           </button>

@@ -3553,6 +3553,7 @@
       "approvedScope": "Approved as",
       "mergedWith": "Merged with",
       "status": {
+        "AWAITING_CONFIRMATION": "Awaiting Confirmation",
         "PENDING": "Pending",
         "UNDER_REVIEW": "Under Review",
         "APPROVED_GLOBAL": "Approved (All Shops)",
@@ -4609,6 +4610,7 @@
         "pageInfo": "Page {page}",
         "requestedBy": "Requested by",
         "aiDetected": "AI found {count} similar",
+        "aiMatches": "AI matches",
         "review": "Review",
         "requestAttributes": "Request Attributes",
         "labelBn": "Primary Label (Bengali)",
@@ -4622,10 +4624,10 @@
         "mergeInto": "Merge into this category",
         "decision": "Moderation Decision",
         "approveGlobal": "Approve Global",
-        "approveGlobalDesc": "Available to all merchants",
+        "approveGlobalDesc": "Available to all {businessType} shops",
         "approveBusiness": "Approve Business",
         "approveBusinessDesc": "Restrict to this business",
-        "approveBusinessDescDetailed": "Restrict to {businessType} only",
+        "approveBusinessDescDetailed": "Only for {businessName} shop",
         "merge": "Merge",
         "reject": "Reject",
         "selectTarget": "Select target…",
@@ -4661,6 +4663,7 @@
         "previous": "Previous",
         "statusTabs": {
           "all": "All",
+          "awaitingConfirmation": "Awaiting Confirmation",
           "pending": "Pending",
           "underReview": "Under Review",
           "approvedGlobal": "Approved (Global)",
@@ -4669,6 +4672,7 @@
           "cancelled": "Cancelled"
         },
         "status": {
+          "AWAITING_CONFIRMATION": "Awaiting Confirmation",
           "PENDING": "Pending",
           "UNDER_REVIEW": "Under Review",
           "APPROVED_GLOBAL": "Approved (Global)",

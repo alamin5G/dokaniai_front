@@ -106,6 +106,17 @@ export function useSSE() {
 
             // ─── Admin Notification Events ──────────────────────────────
 
+            source.addEventListener("STOCK_UPDATED", (e) => {
+                try {
+                    const data = JSON.parse(e.data);
+                    window.dispatchEvent(new CustomEvent("sse:stock-updated", { detail: data }));
+                } catch {
+                    // ignore malformed data
+                }
+            });
+
+            // ─── Admin Notification Events ──────────────────────────────
+
             source.addEventListener("ADMIN_NOTIFICATION_NEW", (e) => {
                 try {
                     const data = JSON.parse(e.data);

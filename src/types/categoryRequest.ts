@@ -5,6 +5,7 @@ export type CategoryRequestDecisionAction =
   | 'REJECT';
 
 export type CategoryRequestStatus =
+  | 'AWAITING_CONFIRMATION'
   | 'PENDING'
   | 'UNDER_REVIEW'
   | 'APPROVED_GLOBAL'
@@ -70,6 +71,7 @@ export interface CategoryRequestDecisionPayload {
 }
 
 export interface CategoryRequestStats {
+  awaitingConfirmation: number;
   pending: number;
   approvedGlobal: number;
   approvedBusiness: number;

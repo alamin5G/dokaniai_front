@@ -6,6 +6,7 @@ import type { CategoryRequestResponse, CategoryRequestStatus } from "@/types/cat
 import { getBusinessCategoryRequests, cancelCategoryRequest } from "@/lib/categoryApi";
 
 const statusIcon: Record<CategoryRequestStatus, string> = {
+  AWAITING_CONFIRMATION: "help_outline",
   PENDING: "schedule",
   UNDER_REVIEW: "visibility",
   APPROVED_GLOBAL: "public",
@@ -16,6 +17,7 @@ const statusIcon: Record<CategoryRequestStatus, string> = {
 };
 
 const statusColor: Record<CategoryRequestStatus, string> = {
+  AWAITING_CONFIRMATION: "bg-amber-100 text-amber-800",
   PENDING: "bg-error-container text-on-error-container",
   UNDER_REVIEW: "bg-secondary-container text-on-secondary-container",
   APPROVED_GLOBAL: "bg-emerald-100 text-emerald-700",

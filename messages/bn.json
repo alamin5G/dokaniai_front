@@ -2246,6 +2246,7 @@
           "rejectionReason": "কারণ",
           "adminNotes": "অ্যাডমিন নোট",
           "status": {
+            "AWAITING_CONFIRMATION": "নিশ্চিতকরণ অপেক্ষমাণ",
             "PENDING": "অপেক্ষমাণ",
             "UNDER_REVIEW": "পর্যালোচনাধীন",
             "APPROVED_GLOBAL": "অনুমোদিত (সব দোকান)",
@@ -3597,6 +3598,7 @@
       "approvedScope": "অনুমোদিত স্কোপ",
       "mergedWith": "যার সাথে একত্রিত",
       "status": {
+        "AWAITING_CONFIRMATION": "নিশ্চিতকরণ অপেক্ষমাণ",
         "PENDING": "অপেক্ষমাণ",
         "UNDER_REVIEW": "পর্যালোচনাধীন",
         "APPROVED_GLOBAL": "অনুমোদিত (সব দোকান)",
@@ -4669,6 +4671,7 @@
         "pageInfo": "পৃষ্ঠা {page}",
         "requestedBy": "অনুরোধকারী",
         "aiDetected": "AI {count}টি সমজাতীয় খুঁজে পেয়েছে",
+        "aiMatches": "AI মিল",
         "review": "পর্যালোচনা",
         "requestAttributes": "অনুরোধের বৈশিষ্ট্য",
         "labelBn": "প্রাথমিক লেবেল (বাংলা)",
@@ -4682,10 +4685,10 @@
         "mergeInto": "এই ক্যাটেগরিতে একত্রিত করুন",
         "decision": "মডারেশন সিদ্ধান্ত",
         "approveGlobal": "গ্লোবাল অনুমোদন",
-        "approveGlobalDesc": "সব ব্যবসায়ীদের জন্য উপলব্ধ",
+        "approveGlobalDesc": "সব {businessType} দোকানের জন্য উপলব্ধ",
         "approveBusiness": "ব্যবসা অনুমোদন",
         "approveBusinessDesc": "শুধু এই ব্যবসার জন্য",
-        "approveBusinessDescDetailed": "শুধু {businessType} এর জন্য সীমাবদ্ধ",
+        "approveBusinessDescDetailed": "শুধু {businessName} দোকানের জন্য ব্যক্তিগত",
         "merge": "একত্রিত",
         "reject": "প্রত্যাখ্যান",
         "selectTarget": "টার্গেট নির্বাচন করুন…",
@@ -4721,6 +4724,7 @@
         "previous": "আগে",
         "statusTabs": {
           "all": "সব",
+          "awaitingConfirmation": "নিশ্চিতকরণ অপেক্ষমাণ",
           "pending": "অপেক্ষমাণ",
           "underReview": "পর্যালোচনাধীন",
           "approvedGlobal": "অনুমোদিত (গ্লোবাল)",
@@ -4729,6 +4733,7 @@
           "cancelled": "বাতিল"
         },
         "status": {
+          "AWAITING_CONFIRMATION": "নিশ্চিতকরণ অপেক্ষমাণ",
           "PENDING": "অপেক্ষমাণ",
           "UNDER_REVIEW": "পর্যালোচনাধীন",
           "APPROVED_GLOBAL": "অনুমোদিত (গ্লোবাল)",

@@ -110,11 +110,20 @@ export function useSSEStockAlerts(businessId: string | null | undefined) {
             }
         }
 
+        function handleStockUpdated(e: Event) {
+            const payload = (e as CustomEvent).detail as SSEStockPayload;
+            if (payload?.businessId === bid) {
+                optimisticallyUpdateProductCache(payload);
+            }
+        }
+
         window.addEventListener("sse:low-stock-alert", handleLowStock);
         window.addEventListener("sse:out-of-stock-alert", handleOutOfStock);
+        window.addEventListener("sse:stock-updated", handleStockUpdated);
         return () => {
             window.removeEventListener("sse:low-stock-alert", handleLowStock);
             window.removeEventListener("sse:out-of-stock-alert", handleOutOfStock);
+            window.removeEventListener("sse:stock-updated", handleStockUpdated);
         };
     }, [businessId, mutate]);
 }

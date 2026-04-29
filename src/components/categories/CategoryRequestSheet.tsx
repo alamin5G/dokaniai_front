@@ -7,7 +7,8 @@ import type {
   CategoryRequestSubmitResult,
   CategorySuggestion,
 } from "@/types/categoryRequest";
-import { submitCategoryRequest, confirmCategoryRequest } from "@/lib/categoryApi";
+import { submitCategoryRequest, confirmCategoryRequest, cancelCategoryRequest } from "@/lib/categoryApi";
+import type { AxiosError } from "axios";
 
 type Step = "form" | "suggestions" | "submitted";
 
@@ -38,6 +39,20 @@ export default function CategoryRequestSheet({
   const parentCategories = categories.filter((c) => !c.parentId);
   const [parentId, setParentId] = useState("");
 
+  /**
+   * Extract a human-readable error message from the API response.
+   * The backend returns errors in: { success: false, message: "..." }
+   * or as validation errors in the data field.
+   */
+  function extractErrorMessage(err: unknown): string {
+    if (err && typeof err === "object" && "response" in err) {
+      const axiosErr = err as AxiosError<{ message?: string; data?: { message?: string } }>;
+      const serverMsg = axiosErr.response?.data?.message || axiosErr.response?.data?.data?.message;
+      if (serverMsg) return serverMsg;
+    }
+    return t("submitError");
+  }
+
   async function handleSubmit() {
     if (!nameBn.trim()) return;
     setSubmitting(true);
@@ -60,8 +75,8 @@ export default function CategoryRequestSheet({
       } else {
         setStep("submitted");
       }
-    } catch {
-      setError(t("submitError"));
+    } catch (err) {
+      setError(extractErrorMessage(err));
     } finally {
       setSubmitting(false);
     }
@@ -73,20 +88,43 @@ export default function CategoryRequestSheet({
     try {
       await confirmCategoryRequest(result.requestId);
       setStep("submitted");
-    } catch {
-      setError(t("submitError"));
+    } catch (err) {
+      setError(extractErrorMessage(err));
     } finally {
       setSubmitting(false);
     }
   }
 
-  function handleUseSuggestion(suggestion: CategorySuggestion) {
+  /**
+   * Cancel the pending request when user chooses to use an existing category.
+   * This prevents orphaned PENDING requests in the database.
+   */
+  async function handleUseSuggestion(suggestion: CategorySuggestion) {
+    // Cancel the pending request first (fire-and-forget, don't block UI)
+    if (result?.requestId) {
+      cancelCategoryRequest(result.requestId).catch(() => {
+        /* Silently ignore cancel failures — the request will be cleaned up by the backend */
+      });
+    }
     onUseExistingCategory?.(suggestion.id);
     onClose();
   }
 
+  /**
+   * Handle closing the sheet — if we're in the suggestions step,
+   * cancel the pending request to prevent orphaned PENDING records.
+   */
+  async function handleClose() {
+    if (step === "suggestions" && result?.requestId) {
+      cancelCategoryRequest(result.requestId).catch(() => {
+        /* Silently ignore cancel failures */
+      });
+    }
+    onClose();
+  }
+
   return (
-    <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center" onClick={onClose}>
+    <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center" onClick={handleClose}>
       <div className="absolute inset-0 bg-black/40" />
       <div
         className="relative w-full sm:max-w-lg bg-surface-container-lowest rounded-t-3xl sm:rounded-2xl p-6 max-h-[85vh] overflow-y-auto"
@@ -94,7 +132,7 @@ export default function CategoryRequestSheet({
       >
         <div className="flex items-center justify-between mb-5">
           <h3 className="text-lg font-bold text-on-surface">{t("title")}</h3>
-          <button onClick={onClose} className="text-on-surface-variant hover:text-on-surface p-1">
+          <button onClick={handleClose} className="text-on-surface-variant hover:text-on-surface p-1">
             <span className="material-symbols-outlined">close</span>
           </button>
         </div>
@@ -164,11 +202,10 @@ export default function CategoryRequestSheet({
                     key={s}
                     type="button"
                     onClick={() => setRequestedScope(s)}
-                    className={`flex-1 py-2.5 rounded-xl text-sm font-semibold transition ${
-                      requestedScope === s
+                    className={`flex-1 py-2.5 rounded-xl text-sm font-semibold transition ${requestedScope === s
                         ? "bg-primary text-on-primary"
                         : "bg-surface-container-low text-on-surface-variant"
-                    }`}
+                      }`}
                   >
                     <span className="material-symbols-outlined text-[16px] align-middle mr-1">
                       {s === "GLOBAL" ? "public" : "storefront"}
@@ -214,9 +251,8 @@ export default function CategoryRequestSheet({
                   <div>
                     <p className="font-semibold text-on-surface">{sug.nameBn}</p>
                     {sug.nameEn && <p className="text-xs text-on-surface-variant">{sug.nameEn}</p>}
-                    <span className={`inline-block mt-1 text-[10px] px-2 py-0.5 rounded-full font-bold ${
-                      sug.scope === "GLOBAL" ? "bg-primary/10 text-primary" : "bg-secondary/10 text-secondary"
-                    }`}>
+                    <span className={`inline-block mt-1 text-[10px] px-2 py-0.5 rounded-full font-bold ${sug.scope === "GLOBAL" ? "bg-primary/10 text-primary" : "bg-secondary/10 text-secondary"
+                      }`}>
                       {sug.scope}
                     </span>
                   </div>

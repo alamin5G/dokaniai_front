@@ -9,6 +9,7 @@ import { useCategoryRequestStats } from "@/hooks/useCategories";
 
 const STATUS_TABS: { key: CategoryRequestStatus | "ALL"; labelKey: string }[] = [
   { key: "ALL", labelKey: "all" },
+  { key: "AWAITING_CONFIRMATION", labelKey: "awaitingConfirmation" },
   { key: "PENDING", labelKey: "pending" },
   { key: "UNDER_REVIEW", labelKey: "underReview" },
   { key: "APPROVED_GLOBAL", labelKey: "approvedGlobal" },
@@ -38,6 +39,8 @@ const BUSINESS_TYPE_ICONS: Record<string, string> = {
 
 const statusBadgeStyle = (status: CategoryRequestStatus) => {
   switch (status) {
+    case "AWAITING_CONFIRMATION":
+      return "bg-amber-100 text-amber-800";
     case "PENDING":
       return "bg-error-container text-on-error-container";
     case "UNDER_REVIEW":
