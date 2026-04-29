@@ -74,19 +74,63 @@ export default function PaymentPolicyPage() {
     const t = useTranslations("shop.legal");
 
     return (
-        <div className="min-h-screen bg-background text-on-background font-body selection:bg-primary-fixed">
-            {/* Header */}
+        <div className="min-h-screen bg-background text-on-background font-body selection:bg-primary-fixed overflow-x-hidden">
+            {/* ═══════ Hero Header ═══════ */}
+            <div
+                className="relative overflow-hidden"
+                style={{ background: "linear-gradient(135deg, #003727 0%, #001a12 100%)" }}
+            >
+                <div className="max-w-7xl mx-auto px-6 py-16 sm:py-20 text-center">
+                    <span
+                        className="material-symbols-outlined text-5xl text-primary-container mb-4 block"
+                        style={{ fontVariationSettings: "'FILL' 1" }}
+                    >
+                        payments
+                    </span>
+                    <h1 className="text-3xl sm:text-4xl md:text-5xl font-black text-white font-headline leading-tight">
+                        {t("payment.title")}
+                    </h1>
+                    <p className="mt-4 text-white/60 text-sm">{t("payment.lastUpdated")}</p>
+
+                    {/* Quick nav */}
+                    <div className="flex flex-wrap justify-center gap-3 mt-8">
+                        {[
+                            { href: "#methods", label: t("payment.methods.title"), icon: "account_balance_wallet" },
+                            { href: "#billing", label: t("payment.billing.title"), icon: "card_membership" },
+                            { href: "#refund", label: t("payment.refund.process.title"), icon: "undo" },
+                            { href: "#contact", label: t("payment.contact.title"), icon: "mail" },
+                        ].map((tab) => (
+                            <Link
+                                key={tab.href}
+                                href={tab.href}
+                                className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/10 text-white/80 text-sm font-semibold hover:bg-white/20 hover:text-white transition-all"
+                            >
+                                <span className="material-symbols-outlined text-base">{tab.icon}</span>
+                                {tab.label}
+                            </Link>
+                        ))}
+                    </div>
+                </div>
+            </div>
+
+            {/* ═══════ Top Nav Bar ═══════ */}
             <nav className="bg-[#f7faf6]/80 backdrop-blur-md border-b border-black/5 sticky top-0 z-50 w-full">
                 <div className="flex justify-between items-center w-full px-6 py-4 max-w-7xl mx-auto">
-                    <Link href="/" className="text-2xl font-black text-primary tracking-tight hover:opacity-80 transition-opacity font-headline">
+                    <Link
+                        href="/"
+                        className="text-2xl font-black text-primary tracking-tight hover:opacity-80 transition-opacity font-headline"
+                    >
                         DokaniAI
                     </Link>
-                    <div className="flex items-center gap-6">
-                        <Link href="/legal/terms" className="text-on-surface-variant hover:text-primary font-semibold text-sm">
+                    <div className="flex items-center gap-4 sm:gap-6">
+                        <Link href="/legal/terms" className="text-on-surface-variant hover:text-primary font-semibold text-sm hidden sm:inline">
                             {t("tabs.terms")}
                         </Link>
-                        <Link href="/legal/privacy" className="text-on-surface-variant hover:text-primary font-semibold text-sm">
+                        <Link href="/legal/privacy" className="text-on-surface-variant hover:text-primary font-semibold text-sm hidden sm:inline">
                             {t("tabs.privacy")}
+                        </Link>
+                        <Link href="/legal/cookies" className="text-on-surface-variant hover:text-primary font-semibold text-sm hidden sm:inline">
+                            {t("home.footer.cookies")}
                         </Link>
                         <Link href="/register" className="text-on-surface-variant hover:text-primary font-semibold text-sm">
                             {t("backToRegister")}
@@ -95,22 +139,10 @@ export default function PaymentPolicyPage() {
                 </div>
             </nav>
 
-            <main className="max-w-4xl mx-auto px-6 py-12">
-                {/* Page Title */}
-                <div className="mb-12">
-                    <div className="flex items-center gap-3 mb-2">
-                        <Link href="/legal" className="text-on-surface-variant hover:text-primary transition-colors">
-                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-                            </svg>
-                        </Link>
-                        <h1 className="text-4xl font-black text-primary font-headline">{t("payment.title")}</h1>
-                    </div>
-                    <p className="text-on-surface-variant ml-8">{t("payment.lastUpdated")}</p>
-                </div>
+            <main className="max-w-4xl mx-auto px-4 sm:px-6 py-12">
 
                 {/* Content */}
-                <div className="bg-surface-container-lowest rounded-2xl p-8 md:p-12 space-y-8">
+                <div className="bg-surface-container-lowest rounded-2xl p-6 sm:p-8 md:p-12 space-y-8">
 
                     {/* ═══════ PART 1: PAYMENT TERMS ═══════ */}
                     <div className="pb-6 border-b border-black/5">
@@ -238,7 +270,7 @@ export default function PaymentPolicyPage() {
                             <thead>
                                 <tr className="bg-primary/5">
                                     <th className="text-left p-3 font-bold text-on-surface">{t("payment.table.plan")}</th>
-                                    <th className="text-left p-3 font-bold text-on-surface">{t("payment.billing.cycle")}</th>
+                                    <th className="text-left p-3 font-bold text-on-surface">{t("payment.billing.cycleHeader")}</th>
                                     <th className="text-left p-3 font-bold text-on-surface">{t("payment.billing.renewal")}</th>
                                 </tr>
                             </thead>

@@ -56,6 +56,7 @@ export function Footer() {
               <li><Link className={navLinkClass} href="/legal/privacy">{t("home.footer.privacy")}</Link></li>
               <li><Link className={navLinkClass} href="/legal/payment">{t("home.footer.paymentPolicy")}</Link></li>
               <li><Link className={navLinkClass} href="/legal/cookies">{t("home.footer.cookies")}</Link></li>
+              <li><Link className={navLinkClass} href="/legal/ai">AI Policy</Link></li>
             </ul>
           </div>
 

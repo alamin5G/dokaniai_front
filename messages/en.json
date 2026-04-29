@@ -2547,7 +2547,8 @@
           "cancel": {
             "title": "3.4 Subscription Cancellation",
             "p1": "You can cancel your subscription at any time.",
-            "p2": "After cancellation, the service will continue until the end of the current billing period."
+            "p2": "After cancellation, the service will continue until the end of the current billing period.",
+            "p3": "No additional charges apply after cancellation."
           }
         },
         "ai": {
@@ -3004,7 +3005,9 @@
             "p1": "You must provide accurate phone number and business information.",
             "p2": "Incorrect information may delay payment verification.",
             "p3": "DokaniAI reserves the right to verify provided information."
-          }
+          },
+          "cycleHeader": "Billing Cycle",
+          "renewal": "Renewal"
         },
         "failure": {
           "title": "4. Payment Failure & Account Lifecycle",
@@ -3149,6 +3152,9 @@
             "p1": "You will receive SMS notification at each stage.",
             "p2": "Refund status available in Settings → Billing → Refund History.",
             "p3": "For disputes, contact support with your refund ticket number."
+          },
+          "eligible": {
+            "title": "Eligible Refund Situations"
           }
         },
         "prorata": {
@@ -3336,6 +3342,172 @@
           "timeWindowVal": "TrxID must be within 30 minutes of submission",
           "mfsMatch": "MFS Provider",
           "mfsMatchVal": "MFS provider must match selected payment method"
+        }
+      },
+      "aiPolicy": {
+        "title": "AI Data & Usage Policy",
+        "lastUpdated": "Last Updated: May 2026 | Version 1.0",
+        "part1Badge": "Part 1: AI Overview",
+        "part2Badge": "Part 2: Data & Security",
+        "part3Badge": "Part 3: Your Rights",
+        "part4Badge": "Part 4: Legal & FAQ",
+        "intro": {
+          "title": "1. Introduction",
+          "p1": "DokaniAI is an AI-powered business management platform designed for micro and small shopkeepers in Bangladesh. We use artificial intelligence to make your business operations faster, easier, and smarter.",
+          "p2": "This policy explains how our AI features work, what data they process, and how we protect your information. Your trust is our top priority."
+        },
+        "features": {
+          "title": "AI Features We Offer",
+          "voice": "Voice Command Processing — Speak in Bangla to record sales, expenses, and due transactions",
+          "text": "Natural Language Commands — Type commands in everyday Bangla like \"আজকের বিক্রয় কত?\"",
+          "chatbot": "AI Chatbot — Ask business questions and get instant answers based on your data",
+          "insights": "Business Insights — AI-generated analysis of your sales trends, expenses, and inventory",
+          "suggestions": "Smart Suggestions — Product recommendations and restock alerts during data entry"
+        },
+        "howItWorks": {
+          "title": "2. How Our AI Works",
+          "p1": "DokaniAI uses a privacy-first approach. This means AI models never have direct access to your database.",
+          "rag": {
+            "title": "What is the Privacy-First Approach?",
+            "desc": "Our privacy-first approach retrieves only the specific data needed for your question, provides it as temporary context to the AI, and the context is deleted after the response is generated.",
+            "b1": "AI never connects directly to your database",
+            "b2": "Only minimum necessary data is retrieved per query",
+            "b3": "AI context is deleted after processing — no permanent storage",
+            "b4": "AI cannot independently access or query your data"
+          }
+        },
+        "dataHandling": {
+          "title": "3. Data Handling & Privacy",
+          "sees": {
+            "title": "What Data AI Processes",
+            "p1": "Your text/voice command (e.g., \"চাল ২০ কেজি বিক্রি ১২০০ টাকায়\")",
+            "p2": "Product names needed for matching (e.g., \"চাল\", \"ডাল\")",
+            "p3": "Aggregated statistics (e.g., \"Today's total sales: ৳12,500\")",
+            "p4": "Recent conversation context for chat continuity"
+          },
+          "neverSees": {
+            "title": "What AI Never Sees",
+            "p1": "Passwords, OTPs, and session tokens — never leave our encrypted server",
+            "p2": "Payment data — bKash/Nagad account details and transaction PINs",
+            "p3": "Complete inventory, full customer database, or all transaction history",
+            "p4": "Personal information — phone numbers, email, physical addresses, national ID",
+            "p5": "Voice recordings — deleted immediately after text transcription"
+          }
+        },
+        "providers": {
+          "title": "4. AI Service Providers",
+          "desc": "We partner with enterprise-grade AI providers that meet strict security and privacy standards:",
+          "colProvider": "Provider",
+          "colPurpose": "Purpose",
+          "colRetention": "Data Retention",
+          "zai": {
+            "purpose": "Primary AI — NLP parsing, chatbot, business insights",
+            "retention": "Max 30 days, then auto-deleted"
+          },
+          "gemini": {
+            "purpose": "Backup AI — Used only when primary is unavailable",
+            "retention": "Per Google Cloud policy, not used for training"
+          },
+          "noShare": "We do NOT share your data with advertisers, data brokers, social media platforms, or any other third party."
+        },
+        "retention": {
+          "title": "5. Data Retention Periods",
+          "colType": "Data Type",
+          "colPeriod": "Retention",
+          "voice": "Voice recordings",
+          "voicePeriod": "Deleted immediately",
+          "aiContext": "AI processing context",
+          "aiContextPeriod": "Max 30 days (provider auto-delete)",
+          "queryLog": "AI query logs",
+          "queryLogPeriod": "90 days, then auto-deleted",
+          "businessData": "Business data (sales, expenses, dues)",
+          "businessDataPeriod": "Active account lifetime"
+        },
+        "safety": {
+          "title": "6. AI Safety & Fairness",
+          "training": {
+            "title": "Does AI train on my data?",
+            "answer": "No. Never.",
+            "desc": "Our agreements with Z.ai and Google Gemini explicitly prohibit training AI models on your data. Your business data remains yours alone."
+          },
+          "fairness": {
+            "title": "Fairness & Non-Discrimination",
+            "p1": "Our AI is designed to treat all users equally regardless of business size, location, or background",
+            "p2": "AI insights are based solely on your own business data — no cross-user data comparison",
+            "p3": "We regularly review AI outputs for bias, errors, or unfair patterns"
+          },
+          "accuracy": {
+            "title": "Accuracy & Limitations",
+            "p1": "Important disclaimers about AI-generated content:",
+            "p2": "AI responses may occasionally be inaccurate — always verify important financial decisions",
+            "p3": "AI insights are suggestions, not guaranteed financial advice",
+            "p4": "You are responsible for reviewing and confirming all AI-suggested actions before they are saved"
+          }
+        },
+        "rights": {
+          "title": "7. Your AI Rights & Controls",
+          "p1": "Opt-out — Disable all AI features from Settings → AI → Disable AI Features",
+          "p2": "Data access — View all your data from Settings → Data → View My Data",
+          "p3": "Data export — Download your data in CSV/JSON format",
+          "p4": "Data deletion — Delete your account and all associated data",
+          "p5": "AI transparency — See which actions were AI-assisted in your activity log"
+        },
+        "generated": {
+          "title": "8. AI-Generated Content",
+          "p1": "Business insights, suggestions, and analysis generated by AI are informational only",
+          "p2": "DokaniAI is not liable for financial decisions made based on AI-generated insights",
+          "p3": "AI-generated content does not constitute professional financial, tax, or legal advice"
+        },
+        "children": {
+          "title": "9. Children's Safety",
+          "desc": "DokaniAI's AI features are designed for adults running businesses. The platform is not intended for use by children under 18. We do not knowingly collect data from minors."
+        },
+        "changes": {
+          "title": "10. Policy Changes",
+          "p1": "We will notify you via email 7 days before any significant policy change",
+          "p2": "An in-app banner notification will be shown for important updates",
+          "p3": "The 'Last Updated' date on this page will always reflect the latest version"
+        },
+        "related": {
+          "title": "Related Policies",
+          "privacy": "How we collect, use, and protect your data",
+          "terms": "Terms of service, account management, and liability",
+          "payment": "Subscription plans, billing, and refund policy",
+          "cookies": "How we use cookies and tracking technologies"
+        },
+        "faq": {
+          "title": "Frequently Asked Questions",
+          "q1": {
+            "q": "Does AI store my personal data permanently?",
+            "a": "No. AI providers automatically delete your data within 30 days. Voice recordings are deleted immediately after transcription. No personal data is stored permanently by any AI system."
+          },
+          "q2": {
+            "q": "Can AI access my full customer list or inventory?",
+            "a": "No. AI only receives the minimum data needed to answer your specific question. For example, asking \"করিমের বাকী কত?\" only retrieves Karim's current due amount — not the entire customer list."
+          },
+          "q3": {
+            "q": "Is my data used to train AI models?",
+            "a": "Absolutely not. Our contracts with all AI providers explicitly prohibit using your data for model training. This is a binding legal commitment."
+          },
+          "q4": {
+            "q": "What happens to my voice recordings?",
+            "a": "Voice recordings are converted to text in real-time and the audio file is immediately deleted. No voice recording is ever stored in any database or sent to any third party."
+          },
+          "q5": {
+            "q": "Can I use DokaniAI without AI features?",
+            "a": "Yes. You can disable AI features from Settings → AI → Disable AI Features. The platform will still work for manual data entry, though some smart features will be unavailable."
+          },
+          "q6": {
+            "q": "Is my data safe during the free trial?",
+            "a": "Yes. Free trial and paid plans follow the exact same security standards. Your data is equally protected regardless of your subscription plan."
+          }
+        },
+        "contact": {
+          "title": "Contact Us",
+          "desc": "For any questions about our AI practices or data handling:",
+          "email": "Email",
+          "phone": "Phone",
+          "address": "Address"
         }
       },
       "home": {
