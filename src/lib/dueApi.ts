@@ -28,8 +28,11 @@ interface ApiSuccess<T> {
     message?: string;
 }
 
-function unwrap<T>(response: { data: ApiSuccess<T> }): T {
-    return response.data.data;
+function unwrap<T>(response: ApiSuccess<T>): T {
+    if (!response || !response.success) {
+        throw new Error(response?.message ?? "API request failed");
+    }
+    return response.data;
 }
 
 // ─── Due Transactions ────────────────────────────────────

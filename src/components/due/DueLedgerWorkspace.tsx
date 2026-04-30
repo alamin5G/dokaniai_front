@@ -175,8 +175,8 @@ export default function DueLedgerWorkspace({
                 getCustomersWithDue(businessId),
                 listCustomers(businessId, { size: 100 }),
             ]);
-            setCustomersWithDue(dueCustomers);
-            setAllCustomers(customers.content);
+            setCustomersWithDue(dueCustomers ?? []);
+            setAllCustomers(customers?.content ?? []);
         } catch {
             setError(t("messages.loadError"));
         } finally {
