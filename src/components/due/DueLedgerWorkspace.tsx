@@ -20,6 +20,7 @@ import {
     generateDueReminder,
 } from "@/lib/dueApi";
 import ReminderPreviewModal from "./ReminderPreviewModal";
+import PendingDuePaymentsPanel from "./PendingDuePaymentsPanel";
 
 // ─── Helpers ─────────────────────────────────────────────
 
@@ -115,6 +116,7 @@ export default function DueLedgerWorkspace({
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [toast, setToast] = useState<string | null>(null);
     const [reminderCustomer, setReminderCustomer] = useState<CustomerDueSummary | null>(null);
+    const [showPendingPayments, setShowPendingPayments] = useState(false);
 
     // ── Computed stats ──
     const totalDue = useMemo(
@@ -628,6 +630,13 @@ export default function DueLedgerWorkspace({
                         <span className="material-symbols-outlined">person_add</span>
                         {t("actions.newCustomer")}
                     </button>
+                    <button
+                        onClick={() => setShowPendingPayments(true)}
+                        className="bg-surface-container-highest text-on-surface px-5 py-3 rounded-xl font-bold flex items-center gap-2 hover:bg-surface-container transition-colors shadow-sm"
+                    >
+                        <span className="material-symbols-outlined">pending_actions</span>
+                        {locale?.startsWith("bn") ? "পেন্ডিং পেমেন্ট" : "Pending Payments"}
+                    </button>
                 </div>
             </header>
 
@@ -1099,6 +1108,15 @@ export default function DueLedgerWorkspace({
                     customer={reminderCustomer}
                     onClose={() => setReminderCustomer(null)}
                     onSent={handleReminderSent}
+                />
+            )}
+
+            {/* ── Pending Due Payments Panel ── */}
+            {showPendingPayments && (
+                <PendingDuePaymentsPanel
+                    businessId={businessId}
+                    onClose={() => setShowPendingPayments(false)}
+                    onAction={() => loadData()}
                 />
             )}
         </div>

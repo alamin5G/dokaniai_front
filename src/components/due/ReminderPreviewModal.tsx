@@ -1,7 +1,7 @@
 "use client";
 
 import { useLocale, useTranslations } from "next-intl";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import type { CustomerDueSummary } from "@/types/due";
 import { generateDueReminder, generateAiReminder } from "@/lib/dueApi";
 
@@ -55,6 +55,14 @@ export default function ReminderPreviewModal({
     const t = useTranslations("shop.dueLedger");
     const locale = useLocale();
     const loc = resolveLocale(locale);
+
+    // Payment link for this customer
+    const paymentLink = useMemo(
+        () => `https://dokaniai.com/pay/${businessId}?c=${customer.customerId}`,
+        [businessId, customer.customerId]
+    );
+    const [includePaymentLink, setIncludePaymentLink] = useState(true);
+    const [copiedLink, setCopiedLink] = useState(false);
 
     const currencyFmt = new Intl.NumberFormat(loc, { maximumFractionDigits: 0 });
     function formatMoney(value: number | null | undefined): string {
@@ -115,23 +123,38 @@ export default function ReminderPreviewModal({
         }
     }
 
+    function buildFinalMessage(msg: string): string {
+        if (includePaymentLink) {
+            const linkText = locale?.startsWith("bn")
+                ? `\n\n💳 অনলাইনে পেমেন্ট করুন: ${paymentLink}`
+                : `\n\n💳 Pay online: ${paymentLink}`;
+            return msg + linkText;
+        }
+        return msg;
+    }
+
     async function handleSend() {
         if (alreadySentToday && !previewLink) return;
         setIsLoading(true);
         try {
             if (useCustom && customMessage.trim()) {
                 if (alreadySentToday) return;
+                const finalMsg = buildFinalMessage(customMessage.trim());
                 const link = await generateDueReminder(
                     businessId,
                     customer.customerId,
-                    customMessage.trim()
+                    finalMsg
                 );
                 if (link.link) window.open(link.link, "_blank");
                 setAlreadySentToday(true);
                 setResetAt(nextBangladeshResetIso());
             } else {
                 if (previewLink) {
-                    window.open(previewLink, "_blank");
+                    // If we have a WhatsApp link from AI, we need to append payment link to the URL
+                    const finalLink = includePaymentLink && previewMessage
+                        ? appendToWhatsAppLink(previewLink, buildFinalMessage(previewMessage))
+                        : previewLink;
+                    window.open(finalLink, "_blank");
                     setResetAt(resetAt ?? nextBangladeshResetIso());
                 } else {
                     const res = await generateAiReminder(businessId, customer.customerId);
@@ -140,7 +163,12 @@ export default function ReminderPreviewModal({
                         setResetAt(res.resetAt ?? nextBangladeshResetIso());
                         return;
                     }
-                    if (res.link) window.open(res.link, "_blank");
+                    if (res.link) {
+                        const finalLink = includePaymentLink && res.message
+                            ? appendToWhatsAppLink(res.link, buildFinalMessage(res.message))
+                            : res.link;
+                        window.open(finalLink, "_blank");
+                    }
                     setResetAt(res.resetAt ?? nextBangladeshResetIso());
                     setAlreadySentToday(true);
                 }
@@ -149,6 +177,16 @@ export default function ReminderPreviewModal({
         } catch {
         } finally {
             setIsLoading(false);
+        }
+    }
+
+    function appendToWhatsAppLink(link: string, message: string): string {
+        try {
+            const url = new URL(link);
+            url.searchParams.set("text", message);
+            return url.toString();
+        } catch {
+            return link;
         }
     }
 
@@ -257,6 +295,46 @@ export default function ReminderPreviewModal({
                         placeholder={t("reminder.customMessagePlaceholder")}
                     />
                 )}
+
+                {/* Payment link section */}
+                <div className="rounded-xl bg-primary/5 border border-primary/10 p-4 space-y-3">
+                    <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-2">
+                            <span className="material-symbols-outlined text-primary text-base">link</span>
+                            <span className="text-sm font-bold text-on-surface">
+                                {locale?.startsWith("bn") ? "পেমেন্ট লিঙ্ক" : "Payment Link"}
+                            </span>
+                        </div>
+                        <button
+                            type="button"
+                            onClick={() => {
+                                navigator.clipboard.writeText(paymentLink).then(() => {
+                                    setCopiedLink(true);
+                                    setTimeout(() => setCopiedLink(false), 2000);
+                                });
+                            }}
+                            className="text-xs font-bold px-3 py-1.5 rounded-lg bg-primary text-white"
+                        >
+                            {copiedLink
+                                ? (locale?.startsWith("bn") ? "কপি হয়েছে!" : "Copied!")
+                                : (locale?.startsWith("bn") ? "কপি" : "Copy")}
+                        </button>
+                    </div>
+                    <p className="text-xs text-on-surface-variant font-mono break-all">{paymentLink}</p>
+                    <label className="flex items-center gap-2 cursor-pointer">
+                        <input
+                            type="checkbox"
+                            checked={includePaymentLink}
+                            onChange={(e) => setIncludePaymentLink(e.target.checked)}
+                            className="rounded border-outline text-primary focus:ring-primary"
+                        />
+                        <span className="text-xs font-medium text-on-surface-variant">
+                            {locale?.startsWith("bn")
+                                ? "WhatsApp মেসেজে পেমেন্ট লিঙ্ক যুক্ত করুন"
+                                : "Include payment link in WhatsApp message"}
+                        </span>
+                    </label>
+                </div>
 
                 {alreadySentToday && (
                     <div className="rounded-xl bg-amber-50 border border-amber-200 p-3 flex items-center gap-2">

@@ -2013,6 +2013,16 @@
         "description": "Auto-credited via {method} (TrxID: {trxId})"
       }
     },
+    "duePayment": {
+      "pendingPayments": {
+        "title": "Pending Payments",
+        "empty": "No pending payments",
+        "verify": "Verify",
+        "reject": "Reject",
+        "rejectReasonPlaceholder": "Enter rejection reason (optional)",
+        "footer": "Verifying a payment will update the customer's due balance"
+      }
+    },
     "support": {
       "title": "Help & Support",
       "subtitle": "Get help with your account and business",
