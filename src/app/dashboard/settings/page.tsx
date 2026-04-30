@@ -65,7 +65,7 @@ const PAYMENT_CHANNELS: PaymentMethod[] = [
 ];
 
 const PAYMENT_CHANNEL_LABELS: Record<PaymentMethod, { bn: string; en: string }> = {
-    CASH: { bn: "নগদ", en: "Cash" },
+    CASH: { bn: "ক্যাশ", en: "Cash" },
     CREDIT: { bn: "বাকি", en: "Credit" },
     BKASH: { bn: "বিকাশ", en: "bKash" },
     NAGAD: { bn: "নগদ (MFS)", en: "Nagad" },
@@ -131,17 +131,48 @@ function humanizeBusinessType(value: string | null | undefined): string {
         .replace(/\b\w/g, (char) => char.toUpperCase());
 }
 
-function buildInvoicePrefixSuggestion(name: string): string {
-    const letters = name
-        .trim()
-        .split(/\s+/)
-        .map((part) => part.replace(/[^A-Za-z0-9]/g, ""))
-        .filter(Boolean)
-        .slice(0, 3)
-        .map((part) => part.slice(0, 2).toUpperCase())
-        .join("");
+const BANGLA_TO_LATIN: Record<string, string> = {
+    "অ": "A", "আ": "A", "ই": "I", "ঈ": "I", "উ": "U", "ঊ": "U",
+    "ঋ": "R", "এ": "E", "ঐ": "OI", "ও": "O", "ঔ": "OU",
+    "ক": "K", "খ": "KH", "গ": "G", "ঘ": "GH", "ঙ": "NG",
+    "চ": "C", "ছ": "CH", "জ": "J", "ঝ": "JH", "ঞ": "NY",
+    "ট": "T", "ঠ": "TH", "ড": "D", "ঢ": "DH", "ণ": "N",
+    "ত": "T", "থ": "TH", "দ": "D", "ধ": "DH", "ন": "N",
+    "প": "P", "ফ": "PH", "ব": "B", "ভ": "BH", "ম": "M",
+    "য": "Y", "র": "R", "ল": "L", "শ": "SH", "ষ": "SH",
+    "স": "S", "হ": "H", "ড়": "R", "ঢ়": "RH", "য়": "Y",
+    "্": "", "়": "",
+    "া": "", "ি": "", "ী": "", "ু": "", "ূ": "",
+    "ৃ": "", "ে": "", "ৈ": "", "ো": "", "ৌ": "",
+    "ৎ": "T", "ৄ": "",
+    "ং": "N", "ঃ": "H",
+};
 
-    return letters || "INV";
+function buildInvoicePrefixSuggestion(name: string): string {
+    const words = name.trim().split(/\s+/).filter(Boolean);
+    if (words.length === 0) return "INV";
+
+    const transliterateWord = (word: string): string => {
+        const hasBangla = /[\u0980-\u09FF]/.test(word);
+        if (!hasBangla) {
+            return word.replace(/[^A-Za-z0-9]/g, "").slice(0, 2).toUpperCase();
+        }
+        let result = "";
+        for (const ch of word) {
+            const mapped = BANGLA_TO_LATIN[ch];
+            if (mapped !== undefined) {
+                result += mapped;
+            } else if (/[A-Za-z0-9]/.test(ch)) {
+                result += ch.toUpperCase();
+            }
+        }
+        return result.replace(/[^A-Z0-9]/g, "").slice(0, 2);
+    };
+
+    const firstPart = transliterateWord(words[0]);
+    const lastPart = words.length > 1 ? transliterateWord(words[words.length - 1]) : "";
+    const combined = (firstPart + lastPart).slice(0, 6) || "INV";
+    return combined.length >= 2 ? combined : "INV";
 }
 
 function resolveBusinessTypeState(value: string | null | undefined) {

@@ -84,6 +84,73 @@ const PAYMENT_CHANNELS: PaymentMethod[] = [
 ];
 
 // ---------------------------------------------------------------------------
+// Bangla → Latin transliteration map (vowel-stripped, consonant-first chars)
+// Used to derive a meaningful invoice prefix from a Bengali shop name.
+// ---------------------------------------------------------------------------
+
+const BANGLA_TO_LATIN: Record<string, string> = {
+    // Vowels (independent)
+    "অ": "A", "আ": "A", "ই": "I", "ঈ": "I", "উ": "U", "ঊ": "U",
+    "ঋ": "R", "এ": "E", "ঐ": "OI", "ও": "O", "ঔ": "OU",
+    // Consonants
+    "ক": "K", "খ": "KH", "গ": "G", "ঘ": "GH", "ঙ": "NG",
+    "চ": "C", "ছ": "CH", "জ": "J", "ঝ": "JH", "ঞ": "NY",
+    "ট": "T", "ঠ": "TH", "ড": "D", "ঢ": "DH", "ণ": "N",
+    "ত": "T", "থ": "TH", "দ": "D", "ধ": "DH", "ন": "N",
+    "প": "P", "ফ": "PH", "ব": "B", "ভ": "BH", "ম": "M",
+    "য": "Y", "র": "R", "ল": "L", "শ": "SH", "ষ": "SH",
+    "স": "S", "হ": "H", "ড়": "R", "ঢ়": "RH", "য়": "Y",
+    // Hasanta & nukta (strip)
+    "্": "", "়": "",
+    // Matras (vowel diacritics — strip)
+    "া": "", "ি": "", "ী": "", "ু": "", "ূ": "",
+    "ৃ": "", "ে": "", "ৈ": "", "ো": "", "ৌ": "",
+    "ৎ": "T", "ৄ": "",
+    // Anusvara / Visarga
+    "ং": "N", "ঃ": "H",
+    // Digits (keep as-is handled below)
+};
+
+/**
+ * Derives a short uppercase invoice prefix from a shop name.
+ * Handles both Bangla and Latin words.
+ * Strategy: take first word's first 2 chars + last word's first 2 chars (if different), uppercase.
+ * For Bangla chars, map each character through BANGLA_TO_LATIN then take first 2 Latin letters.
+ */
+function buildInvoicePrefixFromName(name: string): string {
+    const words = name.trim().split(/\s+/).filter(Boolean);
+    if (words.length === 0) return "INV";
+
+    const transliterateWord = (word: string): string => {
+        // Check if it has any Bangla characters
+        const hasBangla = /[\u0980-\u09FF]/.test(word);
+        if (!hasBangla) {
+            // Latin word — strip non-alphanumeric, take first 2 uppercase letters
+            return word.replace(/[^A-Za-z0-9]/g, "").slice(0, 2).toUpperCase();
+        }
+        // Bangla word — map chars through BANGLA_TO_LATIN, collect result
+        let result = "";
+        for (const ch of word) {
+            const mapped = BANGLA_TO_LATIN[ch];
+            if (mapped !== undefined) {
+                result += mapped;
+            } else if (/[A-Za-z0-9]/.test(ch)) {
+                result += ch.toUpperCase();
+            }
+            // else: unknown char, skip
+        }
+        // Take first 2 Latin letters from result
+        return result.replace(/[^A-Z0-9]/g, "").slice(0, 2);
+    };
+
+    const firstPart = transliterateWord(words[0]);
+    const lastPart = words.length > 1 ? transliterateWord(words[words.length - 1]) : "";
+
+    const combined = (firstPart + lastPart).slice(0, 6) || "INV";
+    return combined.length >= 2 ? combined : "INV";
+}
+
+// ---------------------------------------------------------------------------
 // Inline SVG Icons (HeroIcons style, 24×24, stroke-based)
 // ---------------------------------------------------------------------------
 
@@ -822,6 +889,7 @@ function OnboardingPageContent() {
         setIsLoading(true);
         setError("");
         try {
+            const autoInvoicePrefix = buildInvoicePrefixFromName(businessData.name ?? "");
             await businessApi.updateBusinessSettings(bid, {
                 taxEnabled,
                 taxRate: taxEnabled ? parsedTaxRate : undefined,
@@ -829,6 +897,7 @@ function OnboardingPageContent() {
                 paymentChannel: paymentChannel || undefined,
                 paymentReceiverNumber: paymentReceiverNumber.trim() || undefined,
                 aiAssistantEnabled,
+                invoicePrefix: autoInvoicePrefix !== "INV" ? autoInvoicePrefix : undefined,
             });
 
             if (paymentReceiverNumber.trim()) {

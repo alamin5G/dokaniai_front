@@ -945,10 +945,10 @@
       "taxRateInvalid": "সঠিক ট্যাক্স হার লিখুন।",
       "saveFailed": "Due setup essentials সেভ করা যায়নি। আবার চেষ্টা করুন।",
       "channel": {
-        "CASH": "নগদ",
+        "CASH": "ক্যাশ",
         "CREDIT": "ক্রেডিট",
         "BKASH": "বিকাশ",
-        "NAGAD": "নগদ",
+        "NAGAD": "নগদ (MFS)",
         "ROCKET": "রকেট",
         "CARD": "কার্ড",
         "BANK": "ব্যাংক",
