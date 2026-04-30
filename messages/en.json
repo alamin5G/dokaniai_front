@@ -1524,7 +1524,9 @@
         "creating": "Creating...",
         "createError": "Failed to create customer.",
         "back": "Back",
-        "due": "Due"
+        "due": "Due",
+        "loadError": "Failed to load customer list.",
+        "retry": "Try again"
       },
       "taxLabel": "VAT/Tax",
       "taxRate": "Tax Rate",

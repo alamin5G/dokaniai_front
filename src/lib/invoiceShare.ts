@@ -95,7 +95,10 @@ export function buildWhatsAppInvoiceLink(
 
 /**
  * Build the PDF download URL for a sale invoice.
+ * Uses NEXT_PUBLIC_API_URL to point directly at the backend,
+ * so the browser downloads from the correct server (not Next.js dev server).
  */
 export function buildInvoicePdfUrl(businessId: string, saleId: string): string {
-    return `/api/v1/businesses/${businessId}/sales/${saleId}/invoice`;
+    const base = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8081/api/v1";
+    return `${base}/businesses/${businessId}/sales/${saleId}/invoice`;
 }

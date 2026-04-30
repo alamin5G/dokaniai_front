@@ -29,17 +29,26 @@ export default function CustomerPickerDialog({
     const [creating, setCreating] = useState(false);
     const [error, setError] = useState<string | null>(null);
 
-    const fetchCustomers = useCallback(async () => {
+    const [fetchError, setFetchError] = useState<string | null>(null);
+
+    const fetchCustomers = useCallback(async (searchQuery?: string) => {
         setLoading(true);
+        setFetchError(null);
         try {
-            const res = await listCustomers(businessId, { page: 0, size: 50 });
+            const params: { page: number; size: number; search?: string } = { page: 0, size: 50 };
+            if (searchQuery && searchQuery.trim()) {
+                params.search = searchQuery.trim();
+            }
+            const res = await listCustomers(businessId, params);
             setCustomers(res.content ?? []);
-        } catch {
+        } catch (err) {
+            console.error("[CustomerPicker] Failed to fetch customers:", err);
             setCustomers([]);
+            setFetchError(t("customer.loadError"));
         } finally {
             setLoading(false);
         }
-    }, [businessId]);
+    }, [businessId, t]);
 
     useEffect(() => {
         if (open) {
@@ -50,6 +59,7 @@ export default function CustomerPickerDialog({
             setNewPhone("");
             setNewAddress("");
             setError(null);
+            setFetchError(null);
         }
     }, [open, fetchCustomers]);
 
@@ -107,13 +117,27 @@ export default function CustomerPickerDialog({
                             className="mb-3 w-full rounded-lg border border-surface-container-low bg-surface-container-lowest px-3 py-2 text-sm outline-none focus:border-primary"
                         />
 
+                        {/* Fetch error with retry */}
+                        {fetchError && (
+                            <div className="mb-3 flex items-center gap-2 rounded-lg bg-rose-50 px-3 py-2 text-xs text-rose-700">
+                                <span>{fetchError}</span>
+                                <button
+                                    type="button"
+                                    onClick={() => fetchCustomers(search)}
+                                    className="ml-auto shrink-0 rounded bg-rose-100 px-2 py-1 text-[10px] font-medium hover:bg-rose-200"
+                                >
+                                    {t("customer.retry")}
+                                </button>
+                            </div>
+                        )}
+
                         {/* Customer list */}
                         <div className="max-h-64 space-y-1.5 overflow-y-auto">
                             {loading ? (
                                 <p className="py-4 text-center text-sm text-on-surface-variant">
                                     {t("customer.loading")}
                                 </p>
-                            ) : filtered.length === 0 ? (
+                            ) : fetchError ? null : filtered.length === 0 ? (
                                 <p className="py-4 text-center text-sm text-on-surface-variant">
                                     {t("customer.noCustomers")}
                                 </p>

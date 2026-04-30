@@ -47,8 +47,9 @@ export default function CreditSaleSuccessModal({
     );
 
     /** WhatsApp deep-link for due reminder per SRS §6.11.1 */
+    const displayName = result.customerName || customerName || "ক্রেতা";
     const whatsappReminderLink = result.whatsappReminderUrl ?? `https://wa.me/?text=${encodeURIComponent(
-        `আসসালামু আলাইকুম ${customerName}, আপনার বাকী ${formatTk(result.totalAmount)} টাকা (${result.invoiceNumber})। অনুগ্রহ করে শীঘ্রই পরিশোধ করুন। - DokaniAI`,
+        `আসসালামু আলাইকুম ${displayName}, আপনার বাকী ${formatTk(result.totalAmount)} টাকা (${result.invoiceNumber})। অনুগ্রহ করে শীঘ্রই পরিশোধ করুন। - ${businessInfo.name}`,
     )}`;
 
     return (
@@ -82,7 +83,7 @@ export default function CreditSaleSuccessModal({
                             person
                         </span>
                         <span className="font-semibold text-amber-900">
-                            {customerName || "অজানা ক্রেতা"}
+                            {result.customerName || customerName || "অজানা ক্রেতা"}
                         </span>
                     </div>
                     <p className="mt-1 text-xs text-amber-700">
