@@ -3,6 +3,7 @@
 import { FormInput, GradientButton } from "@/components/ui/FormPrimitives";
 import { TrialExpiryBanner } from "@/components/subscription/TrialExpiryBanner";
 import * as businessApi from "@/lib/businessApi";
+import { registerMfsNumber } from "@/lib/paymentAdminApi";
 import { getCategoriesByBusinessType } from "@/lib/categoryApi";
 import { createProduct } from "@/lib/productApi";
 import { formatLocalizedNumber, sanitizeNumericInput } from "@/lib/localeNumber";
@@ -380,6 +381,8 @@ function OnboardingPageContent() {
         taxNumber: string;
         paymentChannel: "" | PaymentMethod;
         paymentReceiverNumber: string;
+        accountType: string;
+        simSlot: number;
         aiAssistantEnabled: boolean;
         tutorialIndex: number;
     };
@@ -406,6 +409,8 @@ function OnboardingPageContent() {
     const [taxNumber, setTaxNumber] = useState("");
     const [paymentChannel, setPaymentChannel] = useState<"" | PaymentMethod>("");
     const [paymentReceiverNumber, setPaymentReceiverNumber] = useState("");
+    const [accountType, setAccountType] = useState<string>("PERSONAL");
+    const [simSlot, setSimSlot] = useState<number>(0);
     const [aiAssistantEnabled, setAiAssistantEnabled] = useState(true);
 
     // Step 6: Tutorial
@@ -485,6 +490,8 @@ function OnboardingPageContent() {
                     : "",
             );
             setPaymentReceiverNumber(draft.paymentReceiverNumber || "");
+            setAccountType(draft.accountType || "PERSONAL");
+            setSimSlot(typeof draft.simSlot === "number" ? draft.simSlot : 0);
             setAiAssistantEnabled(draft.aiAssistantEnabled !== false);
             setTutorialIndex(typeof draft.tutorialIndex === "number" ? draft.tutorialIndex : 0);
         } catch {
@@ -510,6 +517,8 @@ function OnboardingPageContent() {
         setTaxNumber("");
         setPaymentChannel("");
         setPaymentReceiverNumber("");
+        setAccountType("PERSONAL");
+        setSimSlot(0);
         setAiAssistantEnabled(true);
         setTutorialIndex(0);
         setError("");
@@ -636,6 +645,8 @@ function OnboardingPageContent() {
             taxNumber,
             paymentChannel,
             paymentReceiverNumber,
+            accountType,
+            simSlot,
             aiAssistantEnabled,
             tutorialIndex,
         };
@@ -655,6 +666,8 @@ function OnboardingPageContent() {
         taxNumber,
         paymentChannel,
         paymentReceiverNumber,
+        accountType,
+        simSlot,
         aiAssistantEnabled,
         tutorialIndex,
     ]);
@@ -910,6 +923,20 @@ function OnboardingPageContent() {
                 await businessApi.updateBusinessProfile(bid, {
                     whatsappNumber: paymentReceiverNumber.trim(),
                 });
+            }
+
+            // Register MFS number for AI payment verification
+            if (paymentChannel && ["BKASH", "NAGAD", "ROCKET"].includes(paymentChannel) && paymentReceiverNumber.trim()) {
+                try {
+                    await registerMfsNumber({
+                        mfsType: paymentChannel as "BKASH" | "NAGAD" | "ROCKET",
+                        mfsNumber: paymentReceiverNumber.trim(),
+                        simSlot,
+                        accountType: (accountType as "PERSONAL" | "MERCHANT" | "AGENT") || "PERSONAL",
+                    });
+                } catch {
+                    // Non-blocking: MFS registration failure shouldn't block onboarding
+                }
             }
 
             await advanceStep(6);
@@ -1546,10 +1573,29 @@ function OnboardingPageContent() {
                 />
 
                 {paymentChannel && ["BKASH", "NAGAD", "ROCKET"].includes(paymentChannel) && paymentReceiverNumber.trim() && (
-                    <p className="text-xs text-primary-fixed-dim flex items-center gap-1.5 -mt-1">
-                        <svg xmlns="http://www.w3.org/2000/svg" className="h-3.5 w-3.5 shrink-0" viewBox="0 0 20 20" fill="currentColor"><path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" /></svg>
-                        {t("dueSetup.mfsVerificationHint")}
-                    </p>
+                    <>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                            <div className="space-y-2">
+                                <label className="block text-sm font-medium text-on-surface-variant">{t("dueSetup.accountTypeLabel")}</label>
+                                <select value={accountType} onChange={(e) => setAccountType(e.target.value)} className="w-full pl-4 pr-10 py-3 bg-surface-container-highest rounded-xl text-on-surface appearance-none focus:ring-2 focus:ring-primary-fixed-dim transition-all">
+                                    <option value="PERSONAL">Personal (Send Money)</option>
+                                    <option value="MERCHANT" disabled>Merchant (শীঘ্রই আসছে)</option>
+                                    <option value="AGENT" disabled>Agent (শীঘ্রই আসছে)</option>
+                                </select>
+                            </div>
+                            <div className="space-y-2">
+                                <label className="block text-sm font-medium text-on-surface-variant">{t("dueSetup.simSlotLabel")}</label>
+                                <select value={String(simSlot)} onChange={(e) => setSimSlot(Number(e.target.value))} className="w-full pl-4 pr-10 py-3 bg-surface-container-highest rounded-xl text-on-surface appearance-none focus:ring-2 focus:ring-primary-fixed-dim transition-all">
+                                    <option value="0">{t("dueSetup.simSlot0")}</option>
+                                    <option value="1">{t("dueSetup.simSlot1")}</option>
+                                </select>
+                            </div>
+                        </div>
+                        <p className="text-xs text-primary-fixed-dim flex items-center gap-1.5">
+                            <svg xmlns="http://www.w3.org/2000/svg" className="h-3.5 w-3.5 shrink-0" viewBox="0 0 20 20" fill="currentColor"><path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" /></svg>
+                            {t("dueSetup.mfsVerificationHint")}
+                        </p>
+                    </>
                 )}
 
                 <div className="flex items-center justify-between">

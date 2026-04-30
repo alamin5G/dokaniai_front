@@ -101,6 +101,7 @@ export interface MfsNumberRegistrationRequest {
     mfsType: MfsType;
     mfsNumber: string;
     simSlot?: number;
+    accountType?: "PERSONAL" | "MERCHANT" | "AGENT";
 }
 
 export interface PaymentSettingsResponse {

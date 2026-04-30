@@ -383,7 +383,7 @@ export default function BusinessSettingsPage() {
     const [mfsNumbers, setMfsNumbers] = useState<MfsNumberResponse[]>([]);
     const [mfsNumbersLoading, setMfsNumbersLoading] = useState(false);
     const [mfsRegistering, setMfsRegistering] = useState(false);
-    const [mfsForm, setMfsForm] = useState({ mfsType: "BKASH" as "BKASH" | "NAGAD" | "ROCKET", mfsNumber: "", simSlot: 0, accountType: "MERCHANT" as string });
+    const [mfsForm, setMfsForm] = useState({ mfsType: "BKASH" as "BKASH" | "NAGAD" | "ROCKET", mfsNumber: "", simSlot: 0, accountType: "PERSONAL" as string });
     const [mfsMessage, setMfsMessage] = useState<{ type: "success" | "error"; text: string } | null>(null);
 
     const showFeedback = (type: "success" | "error" | "warning", message: string) => {
@@ -775,9 +775,10 @@ export default function BusinessSettingsPage() {
                 mfsType: mfsForm.mfsType,
                 mfsNumber: mfsForm.mfsNumber.trim(),
                 simSlot: mfsForm.simSlot,
+                accountType: (mfsForm.accountType as "PERSONAL" | "MERCHANT" | "AGENT") || "PERSONAL",
             });
             setMfsMessage({ type: "success", text: t("settings.mfsNumbers.registerSuccess") });
-            setMfsForm({ mfsType: "BKASH", mfsNumber: "", simSlot: 0, accountType: "MERCHANT" });
+            setMfsForm({ mfsType: "BKASH", mfsNumber: "", simSlot: 0, accountType: "PERSONAL" });
             await loadMfsNumbers();
         } catch (err: unknown) {
             const msg = err instanceof Error ? err.message : t("settings.mfsNumbers.registerError");
@@ -1492,9 +1493,9 @@ export default function BusinessSettingsPage() {
                                         <div>
                                             <label className="text-sm font-semibold text-on-surface-variant block mb-2">{t("settings.mfsNumbers.accountTypeLabel")}</label>
                                             <select value={mfsForm.accountType} onChange={(e) => setMfsForm((f) => ({ ...f, accountType: e.target.value }))} className="w-full px-4 py-4 rounded-xl text-base font-medium text-on-surface bg-surface-container-low focus:ring-1 focus:ring-primary outline-none border-none appearance-none cursor-pointer">
-                                                <option value="MERCHANT">Merchant (Payment)</option>
                                                 <option value="PERSONAL">Personal (Send Money)</option>
-                                                <option value="AGENT">Agent</option>
+                                                <option value="MERCHANT" disabled>Merchant (শীঘ্রই আসছে)</option>
+                                                <option value="AGENT" disabled>Agent (শীঘ্রই আসছে)</option>
                                             </select>
                                         </div>
                                         <div>
@@ -1507,7 +1508,7 @@ export default function BusinessSettingsPage() {
                                     </div>
 
                                     <div className="flex items-center justify-end gap-4">
-                                        <button type="button" onClick={() => setMfsForm({ mfsType: "BKASH", mfsNumber: "", simSlot: 0, accountType: "MERCHANT" })} className="px-6 py-3 text-on-surface font-bold hover:bg-surface-container-high rounded-xl transition-colors">{t("settings.mfsNumbers.cancel")}</button>
+                                        <button type="button" onClick={() => setMfsForm({ mfsType: "BKASH", mfsNumber: "", simSlot: 0, accountType: "PERSONAL" })} className="px-6 py-3 text-on-surface font-bold hover:bg-surface-container-high rounded-xl transition-colors">{t("settings.mfsNumbers.cancel")}</button>
                                         <button type="submit" disabled={mfsRegistering} className="inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-primary to-primary-container px-8 py-3 text-sm font-bold text-white hover:opacity-90 disabled:opacity-50 transition-opacity shadow-sm">
                                             {t("settings.mfsNumbers.registerButton")}
                                             <span className="material-symbols-outlined text-sm">arrow_forward</span>
