@@ -1,9 +1,11 @@
 "use client";
 
-import { useTranslations } from "next-intl";
-import { useRouter } from "next/navigation";
-import { useBusinessStore } from "@/store/businessStore";
+import { useDashboardSummary } from "@/hooks/useDashboard";
+import { formatCurrencyBDT } from "@/lib/localeNumber";
 import { buildShopPath } from "@/lib/shopRouting";
+import { useLocale, useTranslations } from "next-intl";
+import { useRouter } from "next/navigation";
+import type { RecentActivity } from "@/types/report";
 
 // ---------------------------------------------------------------------------
 // Inline SVG Icons
@@ -67,73 +69,142 @@ function IconBolt({ className = "w-5 h-5" }: { className?: string }) {
 }
 
 // ---------------------------------------------------------------------------
-// Placeholder transaction data
+// Activity type config helper
 // ---------------------------------------------------------------------------
 
-interface Transaction {
-    id: string;
-    type: "sale" | "return" | "expense";
-    description: string;
-    amount: string;
-    amountColor: string;
-    badge: string;
-    badgeStyle: string;
-    timeAgo: string;
+interface ActivityStyle {
     iconBg: string;
     iconColor: string;
     icon: React.ReactNode;
+    amountColor: string;
+    badgeKey: string;
+    badgeStyle: string;
+    amountPrefix: string;
 }
 
-const placeholderTransactions: Transaction[] = [
-    {
-        id: "1",
-        type: "sale",
-        description: "নগদ বিক্রয় #৩৪৩২",
-        amount: "+৳ ৮৫০",
-        amountColor: "text-primary",
-        badge: "success",
-        badgeStyle: "bg-primary-fixed/40 text-primary",
-        timeAgo: "২ মিনিট আগে • ৫টি পণ্য",
-        iconBg: "bg-primary/10",
-        iconColor: "text-primary",
-        icon: <IconShoppingCart />,
-    },
-    {
-        id: "2",
-        type: "return",
-        description: "পণ্য ফেরত - রহিম স্টোর",
-        amount: "-৳ ১২০",
-        amountColor: "text-tertiary",
-        badge: "return",
-        badgeStyle: "bg-tertiary-fixed/40 text-tertiary",
-        timeAgo: "১৫ মিনিট আগে",
-        iconBg: "bg-tertiary/10",
-        iconColor: "text-tertiary",
-        icon: <IconReturn />,
-    },
-    {
-        id: "3",
-        type: "expense",
-        description: "বিদ্যুৎ বিল পরিশোধ",
-        amount: "-৳ ২,৪০০",
-        amountColor: "text-on-surface",
-        badge: "expense",
-        badgeStyle: "bg-surface-container-highest text-on-surface-variant",
-        timeAgo: "১ ঘণ্টা আগে",
-        iconBg: "bg-secondary-fixed/30",
-        iconColor: "text-secondary",
-        icon: <IconBolt />,
-    },
-];
+function getActivityStyle(type: string): ActivityStyle {
+    const upperType = type.toUpperCase();
+    switch (upperType) {
+        case "SALE":
+        case "CASH_SALE":
+        case "CREDIT_SALE":
+            return {
+                iconBg: "bg-primary/10",
+                iconColor: "text-primary",
+                icon: <IconShoppingCart />,
+                amountColor: "text-primary",
+                badgeKey: "success",
+                badgeStyle: "bg-primary-fixed/40 text-primary",
+                amountPrefix: "+",
+            };
+        case "RETURN":
+        case "SALE_RETURN":
+            return {
+                iconBg: "bg-tertiary/10",
+                iconColor: "text-tertiary",
+                icon: <IconReturn />,
+                amountColor: "text-tertiary",
+                badgeKey: "return",
+                badgeStyle: "bg-tertiary-fixed/40 text-tertiary",
+                amountPrefix: "-",
+            };
+        case "EXPENSE":
+            return {
+                iconBg: "bg-secondary-fixed/30",
+                iconColor: "text-secondary",
+                icon: <IconBolt />,
+                amountColor: "text-on-surface",
+                badgeKey: "expense",
+                badgeStyle: "bg-surface-container-highest text-on-surface-variant",
+                amountPrefix: "-",
+            };
+        default:
+            return {
+                iconBg: "bg-surface-container-high",
+                iconColor: "text-on-surface-variant",
+                icon: <IconShoppingCart />,
+                amountColor: "text-on-surface",
+                badgeKey: "success",
+                badgeStyle: "bg-surface-container-highest text-on-surface-variant",
+                amountPrefix: "",
+            };
+    }
+}
+
+// ---------------------------------------------------------------------------
+// Relative time formatter
+// ---------------------------------------------------------------------------
+
+function getRelativeTime(timestamp: string, locale: string | undefined): string {
+    const now = new Date();
+    const then = new Date(timestamp);
+    const diffMs = now.getTime() - then.getTime();
+    const diffSeconds = Math.floor(diffMs / 1000);
+    const diffMinutes = Math.floor(diffSeconds / 60);
+    const diffHours = Math.floor(diffMinutes / 60);
+    const diffDays = Math.floor(diffHours / 24);
+
+    const isBn = locale?.startsWith("bn");
+
+    if (diffSeconds < 60) {
+        return isBn ? "এইমাত্র" : "just now";
+    } else if (diffMinutes < 60) {
+        return isBn ? `${toBengaliNum(diffMinutes)} মিনিট আগে` : `${diffMinutes}m ago`;
+    } else if (diffHours < 24) {
+        return isBn ? `${toBengaliNum(diffHours)} ঘণ্টা আগে` : `${diffHours}h ago`;
+    } else if (diffDays < 7) {
+        return isBn ? `${toBengaliNum(diffDays)} দিন আগে` : `${diffDays}d ago`;
+    } else {
+        return then.toLocaleDateString(isBn ? "bn-BD" : "en-US", {
+            month: "short",
+            day: "numeric",
+        });
+    }
+}
+
+function toBengaliNum(n: number): string {
+    const bengaliDigits = ["০", "১", "২", "৩", "৪", "৫", "৬", "৭", "৮", "৯"];
+    return String(n).replace(/\d/g, (d) => bengaliDigits[parseInt(d)]);
+}
+
+// ---------------------------------------------------------------------------
+// Skeleton
+// ---------------------------------------------------------------------------
+
+function TransactionSkeleton() {
+    return (
+        <div className="bg-surface-container-lowest p-4 rounded-xl flex items-center justify-between animate-pulse">
+            <div className="flex items-center gap-4">
+                <div className="w-12 h-12 rounded-full bg-surface-container-highest" />
+                <div className="space-y-2">
+                    <div className="h-4 w-32 rounded bg-surface-container-highest" />
+                    <div className="h-3 w-20 rounded bg-surface-container-highest" />
+                </div>
+            </div>
+            <div className="space-y-2 text-right">
+                <div className="h-4 w-16 rounded bg-surface-container-highest ml-auto" />
+                <div className="h-3 w-12 rounded bg-surface-container-highest ml-auto" />
+            </div>
+        </div>
+    );
+}
 
 // ---------------------------------------------------------------------------
 // RecentTransactions Component
 // ---------------------------------------------------------------------------
 
-export default function RecentTransactions() {
+interface RecentTransactionsProps {
+    businessId?: string;
+}
+
+export default function RecentTransactions({ businessId }: RecentTransactionsProps) {
     const t = useTranslations("dashboard.transactions");
+    const locale = useLocale();
     const router = useRouter();
-    const { activeBusinessId } = useBusinessStore();
+
+    const { summary, isLoading } = useDashboardSummary(businessId ?? null);
+
+    const activities = summary?.recentActivities ?? [];
 
     // Map badge keys to translations
     const badgeLabel = (badge: string) => {
@@ -149,6 +220,11 @@ export default function RecentTransactions() {
         }
     };
 
+    const fmtAmount = (amount: number, prefix: string) => {
+        const formatted = formatCurrencyBDT(Math.abs(amount), locale);
+        return `${prefix}${formatted}`;
+    };
+
     return (
         <section className="bg-surface-container-low rounded-2xl p-6">
             {/* Header */}
@@ -156,7 +232,7 @@ export default function RecentTransactions() {
                 <h4 className="text-xl font-bold">{t("title")}</h4>
                 <button
                     className="text-primary font-bold text-sm hover:underline"
-                    onClick={() => activeBusinessId && router.push(buildShopPath(activeBusinessId, "/sales"))}
+                    onClick={() => businessId && router.push(buildShopPath(businessId, "/sales"))}
                 >
                     {t("viewAll")}
                 </button>
@@ -164,37 +240,54 @@ export default function RecentTransactions() {
 
             {/* Transaction List */}
             <div className="space-y-3">
-                {placeholderTransactions.map((txn) => (
-                    <div
-                        key={txn.id}
-                        className="bg-surface-container-lowest p-4 rounded-xl flex items-center justify-between"
-                    >
-                        {/* Left: Icon + Details */}
-                        <div className="flex items-center gap-4">
-                            <div
-                                className={`w-12 h-12 rounded-full flex items-center justify-center ${txn.iconBg} ${txn.iconColor}`}
-                            >
-                                {txn.icon}
-                            </div>
-                            <div>
-                                <p className="font-bold text-sm">{txn.description}</p>
-                                <p className="text-xs text-on-surface-variant">{txn.timeAgo}</p>
-                            </div>
-                        </div>
-
-                        {/* Right: Amount + Badge */}
-                        <div className="text-right">
-                            <p className={`font-bold text-sm ${txn.amountColor}`}>
-                                {txn.amount}
-                            </p>
-                            <p
-                                className={`text-[10px] px-2 py-0.5 rounded-full inline-block mt-1 ${txn.badgeStyle}`}
-                            >
-                                {badgeLabel(txn.badge)}
-                            </p>
-                        </div>
+                {isLoading ? (
+                    <>
+                        <TransactionSkeleton />
+                        <TransactionSkeleton />
+                        <TransactionSkeleton />
+                    </>
+                ) : activities.length === 0 ? (
+                    <div className="py-8 text-center text-on-surface-variant">
+                        <p className="text-sm">{t("noTransactions") ?? "কোনো সাম্প্রতিক লেনদেন নেই"}</p>
                     </div>
-                ))}
+                ) : (
+                    activities.slice(0, 5).map((activity, index) => {
+                        const style = getActivityStyle(activity.type);
+                        return (
+                            <div
+                                key={`${activity.type}-${index}-${activity.timestamp}`}
+                                className="bg-surface-container-lowest p-4 rounded-xl flex items-center justify-between"
+                            >
+                                {/* Left: Icon + Details */}
+                                <div className="flex items-center gap-4">
+                                    <div
+                                        className={`w-12 h-12 rounded-full flex items-center justify-center ${style.iconBg} ${style.iconColor}`}
+                                    >
+                                        {style.icon}
+                                    </div>
+                                    <div>
+                                        <p className="font-bold text-sm">{activity.description}</p>
+                                        <p className="text-xs text-on-surface-variant">
+                                            {getRelativeTime(activity.timestamp, locale)}
+                                        </p>
+                                    </div>
+                                </div>
+
+                                {/* Right: Amount + Badge */}
+                                <div className="text-right">
+                                    <p className={`font-bold text-sm ${style.amountColor}`}>
+                                        {fmtAmount(activity.amount, style.amountPrefix)}
+                                    </p>
+                                    <p
+                                        className={`text-[10px] px-2 py-0.5 rounded-full inline-block mt-1 ${style.badgeStyle}`}
+                                    >
+                                        {badgeLabel(style.badgeKey)}
+                                    </p>
+                                </div>
+                            </div>
+                        );
+                    })
+                )}
             </div>
         </section>
     );

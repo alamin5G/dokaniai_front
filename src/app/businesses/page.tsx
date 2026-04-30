@@ -183,7 +183,16 @@ export default function BusinessesPage() {
     const locale = useLocale();
     const t = useTranslations("business");
     const tc = useTranslations("common");
-    const hasToken = getAccessTokenRaw() != null;
+
+    // Defer token check to client-only to avoid hydration mismatch
+    // (getAccessTokenRaw uses typeof window which differs between server and client)
+    const [hasToken, setHasToken] = useState(false);
+
+    useEffect(() => {
+        const token = getAccessTokenRaw();
+        setHasToken(token != null);
+    }, []);
+
     const { loading: subLoading, hasSubscription } = useSubscriptionGuard();
     const {
         businesses,

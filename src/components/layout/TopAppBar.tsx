@@ -1,5 +1,6 @@
 "use client";
 
+import MobileNavDrawer from "@/components/layout/MobileNavDrawer";
 import { LanguageSwitcher } from "@/components/ui/LanguageSwitcher";
 import NotificationBell from "@/components/layout/NotificationBell";
 import UserProfileSection from "@/components/ui/UserProfileSection";
@@ -7,7 +8,7 @@ import { buildShopPath, replaceShopBusinessInPath } from "@/lib/shopRouting";
 import { useBusinessStore } from "@/store/businessStore";
 import { useTranslations } from "next-intl";
 import { usePathname, useRouter } from "next/navigation";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 // ---------------------------------------------------------------------------
 // Inline SVG Icons
@@ -71,8 +72,11 @@ export default function TopAppBar({ title, businessId }: TopAppBarProps) {
   }, [pathname, title, t, routePageMap]);
 
   const [isSwitcherOpen, setIsSwitcherOpen] = useState(false);
+  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const desktopDropdownRef = useRef<HTMLDivElement>(null);
   const mobileDropdownRef = useRef<HTMLDivElement>(null);
+
+  const closeDrawer = useCallback(() => setIsDrawerOpen(false), []);
 
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
@@ -115,7 +119,7 @@ export default function TopAppBar({ title, businessId }: TopAppBarProps) {
             <div className="flex items-center gap-2">
               <button
                 type="button"
-                onClick={() => router.push("/businesses")}
+                onClick={() => setIsDrawerOpen(true)}
                 className="inline-flex h-9 w-9 items-center justify-center rounded-full bg-surface-container text-on-surface"
                 aria-label={t("dashboard")}
               >
@@ -222,6 +226,13 @@ export default function TopAppBar({ title, businessId }: TopAppBarProps) {
 
         <UserProfileSection variant="compact" />
       </div>
+
+      {/* Mobile navigation drawer */}
+      <MobileNavDrawer
+        businessId={businessId}
+        open={isDrawerOpen}
+        onClose={closeDrawer}
+      />
     </header>
   );
 }

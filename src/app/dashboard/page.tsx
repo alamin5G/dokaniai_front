@@ -3,7 +3,7 @@
 import { formatCurrencyBDT, formatLocalizedNumber } from "@/lib/localeNumber";
 import { buildShopPath } from "@/lib/shopRouting";
 import { useBusinessStore } from "@/store/businessStore";
-import { useBusinessStats, useOnboarding } from "@/hooks/useDashboard";
+import { useBusinessStats, useMonthlyExpense, useOnboarding } from "@/hooks/useDashboard";
 import { useLocale, useTranslations } from "next-intl";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
@@ -99,6 +99,7 @@ export default function DashboardPage() {
     // Stats & onboarding — SWR-backed (auto-revalidation, shared cache)
     const { stats, isLoading } = useBusinessStats(activeBusinessId ?? null);
     const { onboardingData } = useOnboarding(activeBusinessId ?? null);
+    const { expenseSummary } = useMonthlyExpense(activeBusinessId ?? null);
 
     useEffect(() => {
         if (pathname === "/dashboard" && activeBusinessId) {
@@ -231,9 +232,10 @@ export default function DashboardPage() {
                         <Link href={buildShopPath(activeBusinessId, "/expenses")} className="block hover:scale-[1.02] transition-transform">
                             <KpiCard
                                 title={t("kpi.todayExpense")}
-                                value={fmtCurrency(undefined)}
+                                value={fmtCurrency(expenseSummary?.totalExpenses)}
                                 icon={<IconWallet className="w-5 h-5" />}
                                 accentColor="text-on-surface"
+                                subtitle={expenseSummary?.expenseCount ? `${expenseSummary.expenseCount} টি খরচ` : undefined}
                             />
                         </Link>
                         <Link href={buildShopPath(activeBusinessId, "/products")} className="block hover:scale-[1.02] transition-transform">
@@ -253,7 +255,7 @@ export default function DashboardPage() {
 
             <div className="grid grid-cols-1 gap-8 lg:grid-cols-12">
                 <div className="space-y-8 lg:col-span-8">
-                    <RecentTransactions />
+                    <RecentTransactions businessId={activeBusinessId} />
                 </div>
                 <div className="space-y-8 lg:col-span-4">
                     <StockAlerts />

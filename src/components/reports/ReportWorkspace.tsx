@@ -99,7 +99,8 @@ export default function ReportWorkspace({
         try {
             const data = await getDashboardSummary(businessId);
             setDashboard(data);
-        } catch {
+        } catch (err) {
+            console.error("[Reports] loadDashboard failed:", err);
             setError(t("messages.loadError"));
         } finally {
             setIsLoading(false);
@@ -108,6 +109,7 @@ export default function ReportWorkspace({
 
     const loadSalesReport = useCallback(async () => {
         setIsLoading(true);
+        setError(null);
         try {
             if (salesPeriod === "daily") {
                 const data = await getDailySalesReport(businessId);
@@ -119,7 +121,8 @@ export default function ReportWorkspace({
                 const data = await getMonthlySalesReport(businessId);
                 setMonthlySales(data);
             }
-        } catch {
+        } catch (err) {
+            console.error("[Reports] loadSalesReport failed:", err);
             setError(t("messages.loadError"));
         } finally {
             setIsLoading(false);
@@ -128,6 +131,7 @@ export default function ReportWorkspace({
 
     const loadProfitReport = useCallback(async () => {
         setIsLoading(true);
+        setError(null);
         try {
             const [profit, net] = await Promise.all([
                 getProductProfitReport(businessId),
@@ -135,7 +139,8 @@ export default function ReportWorkspace({
             ]);
             setProductProfit(profit);
             setNetProfit(net);
-        } catch {
+        } catch (err) {
+            console.error("[Reports] loadProfitReport failed:", err);
             setError(t("messages.loadError"));
         } finally {
             setIsLoading(false);
@@ -144,10 +149,12 @@ export default function ReportWorkspace({
 
     const loadDueReport = useCallback(async () => {
         setIsLoading(true);
+        setError(null);
         try {
             const data = await getDueLedgerReport(businessId);
             setDueReport(data);
-        } catch {
+        } catch (err) {
+            console.error("[Reports] loadDueReport failed:", err);
             setError(t("messages.loadError"));
         } finally {
             setIsLoading(false);
@@ -156,10 +163,12 @@ export default function ReportWorkspace({
 
     const loadStockReport = useCallback(async () => {
         setIsLoading(true);
+        setError(null);
         try {
             const data = await getStockAlertReport(businessId);
             setStockAlert(data);
-        } catch {
+        } catch (err) {
+            console.error("[Reports] loadStockReport failed:", err);
             setError(t("messages.loadError"));
         } finally {
             setIsLoading(false);
@@ -168,6 +177,7 @@ export default function ReportWorkspace({
 
     const loadExpenseReport = useCallback(async () => {
         setIsLoading(true);
+        setError(null);
         try {
             const [breakdown, net] = await Promise.all([
                 getExpenseBreakdown(businessId),
@@ -175,7 +185,8 @@ export default function ReportWorkspace({
             ]);
             setExpenseBreakdown(breakdown);
             setNetProfit(net);
-        } catch {
+        } catch (err) {
+            console.error("[Reports] loadExpenseReport failed:", err);
             setError(t("messages.loadError"));
         } finally {
             setIsLoading(false);
@@ -184,6 +195,7 @@ export default function ReportWorkspace({
 
     const loadAdvancedData = useCallback(async () => {
         setIsLoading(true);
+        setError(null);
         try {
             const [weekly, monthly, net, due] = await Promise.all([
                 getWeeklySalesReport(businessId),
@@ -195,7 +207,8 @@ export default function ReportWorkspace({
             setMonthlySales(monthly);
             setNetProfit(net);
             setDueReport(due);
-        } catch {
+        } catch (err) {
+            console.error("[Reports] loadAdvancedData failed:", err);
             setError(t("messages.loadError"));
         } finally {
             setIsLoading(false);

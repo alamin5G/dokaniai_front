@@ -993,7 +993,8 @@
     "aiAssistant": "AI সহকারী",
     "subscription": "সাবস্ক্রিপশন",
     "settings": "সেটিংস",
-    "newEntry": "নতুন এন্ট্রি"
+    "newEntry": "নতুন এন্ট্রি",
+    "allBusinesses": "সব ব্যবসা"
   },
   "notifications": {
     "title": "বিজ্ঞপ্তি",
@@ -4375,6 +4376,9 @@
         "rejected": "প্রত্যাখ্যাত",
         "rejectReasonPrompt": "প্রত্যাখ্যানের কারণ লিখুন",
         "pendingTitle": "অপেক্ষমাণ অনুমোদন",
+        "subPending": "অপেক্ষমাণ",
+        "subApproved": "অনুমোদিত নম্বর",
+        "subRejected": "প্রত্যাখ্যাত নম্বর",
         "reviewingCount": "{count}টি জমা দেওয়া নম্বর রিভিউ করা হচ্ছে",
         "submittedNumber": "জমা দেওয়া নম্বর",
         "policyTitle": "নীতি তথ্য",

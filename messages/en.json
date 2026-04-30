@@ -993,7 +993,8 @@
     "aiAssistant": "AI Assistant",
     "subscription": "Subscription",
     "settings": "Settings",
-    "newEntry": "New Entry"
+    "newEntry": "New Entry",
+    "allBusinesses": "All Businesses"
   },
   "notifications": {
     "title": "Notifications",
@@ -4314,6 +4315,9 @@
         "rejected": "Rejected",
         "rejectReasonPrompt": "Enter rejection reason",
         "pendingTitle": "Pending Approvals",
+        "subPending": "Pending",
+        "subApproved": "Approved Numbers",
+        "subRejected": "Rejected Numbers",
         "reviewingCount": "Reviewing {count} submitted numbers",
         "submittedNumber": "Submitted Number",
         "policyTitle": "Policy Info",
