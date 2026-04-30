@@ -99,6 +99,6 @@ export function buildWhatsAppInvoiceLink(
  * so the browser downloads from the correct server (not Next.js dev server).
  */
 export function buildInvoicePdfUrl(businessId: string, saleId: string): string {
-    const base = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8081/api/v1";
+    const base = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8082/api/v1";
     return `${base}/businesses/${businessId}/sales/${saleId}/invoice`;
 }

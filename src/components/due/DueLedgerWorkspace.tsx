@@ -785,7 +785,7 @@ export default function DueLedgerWorkspace({
                         </div>
                     ) : filteredCustomers.length === 0 ? (
                         <div className="rounded-2xl bg-surface-container-lowest p-12 text-center text-on-surface-variant">
-                            No customers with outstanding dues.
+                            {t("customerList.empty")}
                         </div>
                     ) : (
                         filteredCustomers.map((customer) => {

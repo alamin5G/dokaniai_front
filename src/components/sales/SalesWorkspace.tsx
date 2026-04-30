@@ -397,6 +397,13 @@ export default function SalesWorkspace({
                 onClose={() => setCustomerPickerOpen(false)}
                 onSelect={(customer) => {
                     setCustomerPickerOpen(false);
+                    // Defensive: ensure customer has a valid ID before submitting credit sale
+                    if (!customer?.id) {
+                        console.error("[CREDIT SALE] Customer object missing id:", customer);
+                        setError(t("cart.error") + " — Customer ID missing. Please try again.");
+                        return;
+                    }
+                    console.log("[CREDIT SALE] Submitting with customer:", { id: customer.id, name: customer.name });
                     handleSubmit("CREDIT", customer);
                 }}
             />

@@ -1,9 +1,11 @@
 "use client";
 
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback, useRef } from "react";
 import { useTranslations } from "next-intl";
 import type { CustomerResponse } from "@/types/due";
 import { listCustomers, createCustomer } from "@/lib/dueApi";
+
+const PAGE_SIZE = 5;
 
 interface CustomerPickerDialogProps {
     businessId: string;
@@ -21,44 +23,80 @@ export default function CustomerPickerDialog({
     const t = useTranslations("shop.sales");
     const [customers, setCustomers] = useState<CustomerResponse[]>([]);
     const [loading, setLoading] = useState(false);
+    const [loadingMore, setLoadingMore] = useState(false);
     const [search, setSearch] = useState("");
+    const [debouncedSearch, setDebouncedSearch] = useState("");
+    const [currentPage, setCurrentPage] = useState(0);
+    const [totalPages, setTotalPages] = useState(1);
     const [showCreate, setShowCreate] = useState(false);
     const [newName, setNewName] = useState("");
     const [newPhone, setNewPhone] = useState("");
     const [newAddress, setNewAddress] = useState("");
     const [creating, setCreating] = useState(false);
     const [error, setError] = useState<string | null>(null);
-
     const [fetchError, setFetchError] = useState<string | null>(null);
+    const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-    const fetchCustomers = useCallback(async (searchQuery?: string) => {
-        setLoading(true);
+    // Debounce search input (300ms)
+    useEffect(() => {
+        if (debounceRef.current) clearTimeout(debounceRef.current);
+        debounceRef.current = setTimeout(() => {
+            setDebouncedSearch(search);
+            setCurrentPage(0);
+        }, 300);
+        return () => {
+            if (debounceRef.current) clearTimeout(debounceRef.current);
+        };
+    }, [search]);
+
+    const fetchCustomers = useCallback(async (searchQuery: string, page: number, append: boolean) => {
+        if (append) {
+            setLoadingMore(true);
+        } else {
+            setLoading(true);
+        }
         setFetchError(null);
         try {
-            const params: { page: number; size: number; search?: string } = { page: 0, size: 50 };
-            if (searchQuery && searchQuery.trim()) {
+            const params: { page: number; size: number; search?: string } = { page, size: PAGE_SIZE };
+            if (searchQuery.trim()) {
                 params.search = searchQuery.trim();
             }
             const res = await listCustomers(businessId, params);
             if (!res) {
                 setFetchError(t("customer.loadError"));
-                setCustomers([]);
+                if (!append) setCustomers([]);
                 return;
             }
-            setCustomers(res.content ?? []);
+            const newCustomers = res.content ?? [];
+            setTotalPages(res.totalPages ?? 1);
+            if (append) {
+                setCustomers((prev) => [...prev, ...newCustomers]);
+            } else {
+                setCustomers(newCustomers);
+            }
         } catch (err) {
             console.error("[CustomerPicker] Failed to fetch customers:", err);
-            setCustomers([]);
+            if (!append) setCustomers([]);
             setFetchError(t("customer.loadError"));
         } finally {
             setLoading(false);
+            setLoadingMore(false);
         }
     }, [businessId, t]);
 
+    // Fetch first page when dialog opens or search changes
     useEffect(() => {
         if (open) {
-            fetchCustomers();
+            fetchCustomers(debouncedSearch, 0, false);
+        }
+    }, [open, debouncedSearch, fetchCustomers]);
+
+    // Reset state when dialog opens
+    useEffect(() => {
+        if (open) {
             setSearch("");
+            setDebouncedSearch("");
+            setCurrentPage(0);
             setShowCreate(false);
             setNewName("");
             setNewPhone("");
@@ -66,14 +104,17 @@ export default function CustomerPickerDialog({
             setError(null);
             setFetchError(null);
         }
-    }, [open, fetchCustomers]);
+    }, [open]);
+
+    const hasMore = currentPage + 1 < totalPages;
+
+    function handleLoadMore() {
+        const nextPage = currentPage + 1;
+        setCurrentPage(nextPage);
+        fetchCustomers(debouncedSearch, nextPage, true);
+    }
 
     if (!open) return null;
-
-    const filtered = customers.filter((c) =>
-        c.name.toLowerCase().includes(search.toLowerCase()) ||
-        (c.phone && c.phone.includes(search))
-    );
 
     async function handleCreate() {
         if (!newName.trim() || !newPhone.trim()) return;
@@ -114,13 +155,16 @@ export default function CustomerPickerDialog({
                 {!showCreate ? (
                     <>
                         {/* Search */}
-                        <input
-                            type="text"
-                            value={search}
-                            onChange={(e) => setSearch(e.target.value)}
-                            placeholder={t("customer.searchPlaceholder")}
-                            className="mb-3 w-full rounded-lg border border-surface-container-low bg-surface-container-lowest px-3 py-2 text-sm outline-none focus:border-primary"
-                        />
+                        <div className="relative mb-3">
+                            <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-base text-on-surface-variant">search</span>
+                            <input
+                                type="text"
+                                value={search}
+                                onChange={(e) => setSearch(e.target.value)}
+                                placeholder={t("customer.searchPlaceholder")}
+                                className="w-full rounded-lg border border-surface-container-low bg-surface-container-lowest pl-9 pr-3 py-2 text-sm outline-none focus:border-primary"
+                            />
+                        </div>
 
                         {/* Fetch error with retry */}
                         {fetchError && (
@@ -128,7 +172,7 @@ export default function CustomerPickerDialog({
                                 <span>{fetchError}</span>
                                 <button
                                     type="button"
-                                    onClick={() => fetchCustomers(search)}
+                                    onClick={() => fetchCustomers(debouncedSearch, 0, false)}
                                     className="ml-auto shrink-0 rounded bg-rose-100 px-2 py-1 text-[10px] font-medium hover:bg-rose-200"
                                 >
                                     {t("customer.retry")}
@@ -139,15 +183,17 @@ export default function CustomerPickerDialog({
                         {/* Customer list */}
                         <div className="max-h-64 space-y-1.5 overflow-y-auto">
                             {loading ? (
+                                <div className="flex items-center justify-center py-6">
+                                    <span className="material-symbols-outlined animate-spin text-primary">progress_activity</span>
+                                </div>
+                            ) : fetchError ? null : customers.length === 0 ? (
                                 <p className="py-4 text-center text-sm text-on-surface-variant">
-                                    {t("customer.loading")}
-                                </p>
-                            ) : fetchError ? null : filtered.length === 0 ? (
-                                <p className="py-4 text-center text-sm text-on-surface-variant">
-                                    {t("customer.noCustomers")}
+                                    {debouncedSearch.trim()
+                                        ? t("customer.noCustomers")
+                                        : t("customer.noCustomers")}
                                 </p>
                             ) : (
-                                filtered.map((c) => (
+                                customers.map((c) => (
                                     <button
                                         key={c.id}
                                         type="button"
@@ -168,6 +214,25 @@ export default function CustomerPickerDialog({
                                         )}
                                     </button>
                                 ))
+                            )}
+
+                            {/* Load More */}
+                            {hasMore && !loading && (
+                                <button
+                                    type="button"
+                                    onClick={handleLoadMore}
+                                    disabled={loadingMore}
+                                    className="flex w-full items-center justify-center gap-1.5 rounded-lg border border-surface-container-low py-2 text-xs font-medium text-primary hover:bg-primary/5 disabled:opacity-50"
+                                >
+                                    {loadingMore ? (
+                                        <span className="material-symbols-outlined animate-spin text-sm">progress_activity</span>
+                                    ) : (
+                                        <>
+                                            <span className="material-symbols-outlined text-sm">expand_more</span>
+                                            আরও দেখুন
+                                        </>
+                                    )}
+                                </button>
                             )}
                         </div>
 

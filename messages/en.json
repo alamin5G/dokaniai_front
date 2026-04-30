@@ -1894,6 +1894,7 @@
         "addBaki": "Add Due",
         "collectPayment": "Collect",
         "whatsappReminder": "WhatsApp Reminder",
+        "empty": "No customers with outstanding dues.",
         "priority": {
           "urgent": "Urgent",
           "regular": "Regular",

@@ -1894,6 +1894,7 @@
         "addBaki": "বাকি যোগ",
         "collectPayment": "পেমেন্ট নিন",
         "whatsappReminder": "WhatsApp রিমাইন্ডার",
+        "empty": "কোনো কাস্টমারের বকেয়া নেই।",
         "priority": {
           "urgent": "অতি জরুরি",
           "regular": "নিয়মিত",

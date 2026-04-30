@@ -3,7 +3,8 @@
 import { useMemo, useState } from "react";
 import type { CartItem, SaleCreatedResponse } from "@/types/sale";
 import type { InvoiceBusinessInfo } from "@/lib/invoiceShare";
-import { formatInvoiceText, buildWhatsAppInvoiceLink, buildInvoicePdfUrl } from "@/lib/invoiceShare";
+import { formatInvoiceText, buildWhatsAppInvoiceLink } from "@/lib/invoiceShare";
+import { downloadInvoice } from "@/lib/saleApi";
 
 interface CreditSaleSuccessModalProps {
     result: SaleCreatedResponse;
@@ -41,10 +42,26 @@ export default function CreditSaleSuccessModal({
         () => buildWhatsAppInvoiceLink(invoiceText, result.customerPhone),
         [invoiceText, result.customerPhone],
     );
-    const pdfUrl = useMemo(
-        () => buildInvoicePdfUrl(businessId, result.id),
-        [businessId, result.id],
-    );
+    const [downloadingPdf, setDownloadingPdf] = useState(false);
+
+    async function handlePdfDownload() {
+        setDownloadingPdf(true);
+        try {
+            const blob = await downloadInvoice(businessId, result.id);
+            const url = window.URL.createObjectURL(blob);
+            const link = document.createElement("a");
+            link.href = url;
+            link.download = `invoice-${result.invoiceNumber || result.id}.pdf`;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            window.URL.revokeObjectURL(url);
+        } catch (err) {
+            console.error("[CreditSaleModal] PDF download failed:", err);
+        } finally {
+            setDownloadingPdf(false);
+        }
+    }
 
     /** WhatsApp deep-link for due reminder per SRS §6.11.1 */
     const displayName = result.customerName || customerName || "ক্রেতা";
@@ -167,16 +184,16 @@ export default function CreditSaleSuccessModal({
                     </a>
 
                     {/* PDF Download */}
-                    <a
-                        href={pdfUrl}
-                        download
-                        className="flex w-full items-center justify-center gap-2 rounded-xl border border-gray-200 bg-white py-2 text-sm font-semibold text-gray-700 transition hover:bg-gray-50 active:scale-[0.98]"
+                    <button
+                        onClick={handlePdfDownload}
+                        disabled={downloadingPdf}
+                        className="flex w-full items-center justify-center gap-2 rounded-xl border border-gray-200 bg-white py-2 text-sm font-semibold text-gray-700 transition hover:bg-gray-50 active:scale-[0.98] disabled:opacity-50"
                     >
                         <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                             <path strokeLinecap="round" strokeLinejoin="round" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                         </svg>
-                        PDF ডাউনলোড
-                    </a>
+                        {downloadingPdf ? "ডাউনলোড হচ্ছে..." : "PDF ডাউনলোড"}
+                    </button>
 
                     {/* Close button */}
                     <button
