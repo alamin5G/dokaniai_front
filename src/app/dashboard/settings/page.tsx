@@ -1072,17 +1072,6 @@ export default function BusinessSettingsPage() {
                                         ))}
                                     </SelectField>
                                     <FormInput
-                                        label={t("settings.paymentReceiverLabel")}
-                                        value={settingsForm.paymentReceiverNumber}
-                                        onChange={(event) =>
-                                            setSettingsForm((current) => ({
-                                                ...current,
-                                                paymentReceiverNumber: event.target.value,
-                                            }))
-                                        }
-                                        placeholder="01XXXXXXXXX"
-                                    />
-                                    <FormInput
                                         label={t("settings.invoicePrefixLabel")}
                                         value={settingsForm.invoicePrefix}
                                         onChange={(event) =>

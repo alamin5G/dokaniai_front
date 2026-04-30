@@ -940,6 +940,7 @@
       "paymentReceiverNumber": "পেমেন্ট গ্রহণের নম্বর",
       "paymentReceiverNumberOptional": "পেমেন্ট গ্রহণের নম্বর (ঐচ্ছিক)",
       "paymentReceiverNumberPlaceholder": "যেমন: 01822679672",
+      "mfsVerificationHint": "এই নম্বরটি অ্যাডমিন ভেরিফিকেশনের জন্য পাঠানো হবে। সেটিংস → MFS নম্বর থেকে ভেরিফাইড নম্বর পরিচালনা করুন।",
       "aiAssistantSync": "AI সহকারী সিঙ্ক চালু করুন",
       "aiAssistantSyncDesc": "ড্যাশবোর্ডে AI ইঙ্গিত ও কুইক কমান্ড ব্যবহার করুন।",
       "taxRateInvalid": "সঠিক ট্যাক্স হার লিখুন।",
