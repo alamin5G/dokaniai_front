@@ -1480,6 +1480,9 @@
         "cashSale": "Cash Sale",
         "cashSaleDesc": "Print instant receipt",
         "creditSale": "Credit Sale (Due)",
+        "dueSale": "Due Sale",
+        "givenAmount": "Customer Given",
+        "dueAmount": "Due",
         "saving": "Processing...",
         "success": "Sale recorded successfully! Invoice: {invoice}",
         "error": "Failed to record sale.",
@@ -1527,7 +1530,8 @@
         "back": "Back",
         "due": "Due",
         "loadError": "Failed to load customer list.",
-        "retry": "Try again"
+        "retry": "Try again",
+        "skipForCash": "Skip — Sale Without Customer"
       },
       "taxLabel": "VAT/Tax",
       "taxRate": "Tax Rate",
@@ -1866,6 +1870,19 @@
       }
     },
     "dueLedger": {
+      "reminder": {
+        "title": "Send Reminder",
+        "customer": "Customer",
+        "dueAmount": "Due Amount",
+        "mfsNumber": "MFS Number",
+        "mfsNumberHint": "e.g. 017... (Optional)",
+        "customMessage": "Custom Message",
+        "customMessagePlaceholder": "e.g. Please pay as soon as possible...",
+        "preview": "Message Preview",
+        "close": "Close",
+        "send": "Send Message",
+        "sending": "Sending..."
+      },
       "dashboard": "Dashboard",
       "title": "Due Ledger",
       "subtitle": "বাকী খাতা — Customer credit management",
@@ -1993,366 +2010,6 @@
         "badgeTooltip": "Auto-credited via MFS SMS",
         "filter": "Auto MFS",
         "description": "Auto-credited via {method} (TrxID: {trxId})"
-      },
-      "reports": {
-        "dashboard": {
-          "todaySales": "Today's Sales",
-          "todayProfit": "Today's Profit",
-          "monthSales": "Monthly Sales",
-          "monthProfit": "Monthly Profit",
-          "totalDue": "Total Due",
-          "customersWithDue": "Customers with Due",
-          "lowStock": "Low Stock Items",
-          "reorderNeeded": "Reorder Needed",
-          "topSelling": "Top Selling Today",
-          "recentActivity": "Recent Activity",
-          "noData": "No data available yet."
-        },
-        "title": "Reports",
-        "subtitle": "Business analytics and insights",
-        "tabs": {
-          "dashboard": "Dashboard",
-          "sales": "Sales",
-          "profit": "Profit",
-          "expenses": "Expenses",
-          "due": "Due",
-          "stock": "Stock",
-          "discounts": "Discounts",
-          "returns": "Returns",
-          "advanced": "Advanced Analytics"
-        },
-        "sales": {
-          "title": "Sales Report",
-          "daily": "Daily",
-          "weekly": "Weekly",
-          "monthly": "Monthly",
-          "totalSales": "Total Sales",
-          "totalRevenue": "Total Revenue",
-          "totalProfit": "Total Profit",
-          "totalDiscount": "Total Discount",
-          "itemsSold": "Items Sold",
-          "topItems": "Top Selling Items",
-          "dailyBreakdown": "Daily Breakdown",
-          "date": "Date",
-          "revenue": "Revenue",
-          "profit": "Profit",
-          "sales": "Sales",
-          "quantity": "Qty"
-        },
-        "profit": {
-          "title": "Profit Analysis",
-          "totalRevenue": "Total Revenue",
-          "totalCost": "Total Cost",
-          "totalProfit": "Total Profit",
-          "grossProfit": "Gross Profit",
-          "totalExpenses": "Total Expenses",
-          "netProfit": "Net Profit",
-          "profitMargin": "Profit Margin",
-          "cogs": "Cost of Goods Sold",
-          "product": "Product",
-          "revenue": "Revenue",
-          "cost": "Cost",
-          "profit": "Profit",
-          "margin": "Margin",
-          "quantity": "Qty Sold"
-        },
-        "expenses": {
-          "title": "Expense Breakdown",
-          "category": "Category",
-          "amount": "Amount",
-          "percentage": "%",
-          "count": "Count"
-        },
-        "due": {
-          "title": "Due Report",
-          "totalDue": "Total Outstanding",
-          "customersWithDue": "Customers with Due",
-          "customer": "Customer",
-          "phone": "Phone",
-          "dueAmount": "Due Amount",
-          "lastTransaction": "Last Transaction"
-        },
-        "stock": {
-          "title": "Stock Alerts",
-          "lowStock": "Low Stock",
-          "outOfStock": "Out of Stock",
-          "reorderNeeded": "Reorder Needed",
-          "product": "Product",
-          "sku": "SKU",
-          "currentStock": "Current Stock",
-          "reorderPoint": "Reorder Point",
-          "status": "Status"
-        },
-        "dateRange": {
-          "today": "Today",
-          "thisWeek": "This Week",
-          "thisMonth": "This Month",
-          "last30Days": "Last 30 Days",
-          "custom": "Custom",
-          "startDate": "Start Date",
-          "endDate": "End Date",
-          "apply": "Apply"
-        },
-        "export": {
-          "pdf": "Export PDF",
-          "csv": "Export CSV"
-        },
-        "messages": {
-          "loadError": "Failed to load report data.",
-          "exportError": "Failed to export report.",
-          "noData": "No data available for the selected period."
-        },
-        "charts": {
-          "salesTrend": "Sales Trend",
-          "revenue": "Revenue",
-          "profit": "Profit",
-          "expenses": "Expenses",
-          "cogs": "Cost of Goods",
-          "profitAnalysis": "Profit Analysis",
-          "margin": "Margin: {value}%",
-          "revenueDistribution": "Revenue Distribution",
-          "totalExpenses": "Total Expenses",
-          "dueByCustomer": "Due by Customer",
-          "dueAging": "Due Aging Analysis",
-          "amount": "Amount",
-          "periodComparison": "Period Comparison",
-          "currentPeriod": "Current Period",
-          "previousPeriod": "Previous Period",
-          "day": "Day {n}",
-          "aging": {
-            "current": "Current",
-            "days30": "1-30 Days",
-            "days60": "31-60 Days",
-            "days90": "90+ Days"
-          }
-        },
-        "insights": {
-          "title": "AI Business Insights",
-          "subtitle": "Powered by AI analysis",
-          "loading": "Analyzing your business data…",
-          "revenueChange": "Revenue",
-          "profitChange": "Profit",
-          "expenseChange": "Expenses",
-          "recommendations": "Recommendations",
-          "refresh": "Refresh Insights",
-          "fallbackSummary": "Connect more sales data to unlock personalized AI insights about your business performance.",
-          "fallbackRec1": "Track daily sales consistently for better trend analysis.",
-          "fallbackRec2": "Keep product costs updated for accurate profit calculations.",
-          "fallbackRec3": "Review due balances weekly to maintain healthy cash flow.",
-          "generating": "Generating AI insight…",
-          "generateError": "Failed to generate insight. Please try again.",
-          "confidence": "confidence",
-          "actionSuggested": "Suggested Action",
-          "severity": {
-            "info": "Info",
-            "warning": "Warning",
-            "critical": "Critical"
-          },
-          "types": {
-            "morningBriefing": {
-              "title": "Morning Briefing",
-              "description": "Start your day with AI-powered action items and priorities"
-            },
-            "dailySummary": {
-              "title": "Daily Summary",
-              "description": "Get a comprehensive summary of today's business performance"
-            },
-            "weeklySummary": {
-              "title": "Weekly Summary",
-              "description": "Review your business performance over the past week with AI analysis"
-            },
-            "expenseIntelligence": {
-              "title": "Expense Intelligence",
-              "description": "AI-powered expense analysis with cost optimization suggestions"
-            },
-            "dueIntelligence": {
-              "title": "Due Intelligence",
-              "description": "Smart due collection analysis with priority recommendations"
-            },
-            "customerAnalytics": {
-              "title": "Customer Analytics",
-              "description": "AI-powered customer growth analysis and retention strategies"
-            },
-            "salesForecast": {
-              "title": "Sales Forecast",
-              "description": "Predict next week's sales with AI-powered forecasting"
-            },
-            "profitOptimization": {
-              "title": "Profit Optimization",
-              "description": "Get AI recommendations to maximize your profit margins"
-            },
-            "seasonalTrends": {
-              "title": "Seasonal Trends",
-              "description": "Discover seasonal patterns and plan your inventory accordingly"
-            }
-          }
-        },
-        "customerAnalytics": {
-          "title": "Customer Analytics",
-          "noData": "Customer analytics data is not available yet. Keep processing sales to unlock insights.",
-          "totalCustomers": "Total Customers",
-          "activeCustomers": "Active Customers",
-          "avgLifetimeValue": "Avg. Lifetime Value",
-          "avgOrderValue": "Avg. Order Value",
-          "topCustomers": "Top Customers",
-          "customerName": "Customer",
-          "totalSpent": "Total Spent",
-          "orders": "Orders",
-          "avgOrder": "Avg. Order",
-          "segments": "Customer Segments",
-          "customers": "customers"
-        },
-        "upgrade": {
-          "currentPlan": "Current plan: {plan}",
-          "toPro": "Upgrade to Pro — ৳399/mo",
-          "toPlus": "Upgrade to Plus — ৳799/mo",
-          "advancedReports": {
-            "title": "Advanced Analytics",
-            "description": "Unlock trend charts, period comparisons, AI insights, and more with a Pro subscription."
-          },
-          "aiInsights": {
-            "title": "AI Business Insights",
-            "description": "Get AI-powered recommendations and trend analysis for your business."
-          },
-          "customerAnalytics": {
-            "title": "Customer Analytics",
-            "description": "Understand your customers better with lifetime value, segmentation, and purchase frequency analysis."
-          },
-          "forecasting": {
-            "title": "Revenue Forecasting",
-            "description": "Predict future revenue and plan your business with AI-powered forecasting."
-          }
-        }
-      },
-      "ai": {
-        "dashboard": "Dashboard",
-        "title": "AI Assistant",
-        "subtitle": "Your intelligent business companion",
-        "tabs": {
-          "chat": "Chat",
-          "voice": "Voice",
-          "commands": "Commands"
-        },
-        "usage": {
-          "queries": "AI Queries: {used}/{limit} today"
-        },
-        "actions": {
-          "SALE": "Sale",
-          "EXPENSE": "Expense",
-          "DUE_BAKI": "Due (Baki)",
-          "DUE_JOMA": "Due (Joma)",
-          "DISCOUNT": "Discount",
-          "RETURN": "Return",
-          "QUERY": "Query",
-          "UNKNOWN": "Unknown"
-        },
-        "chat": {
-          "newChat": "New Chat",
-          "welcome": "How can I help your business today?",
-          "welcomeHint": "Ask me about sales, expenses, dues, or give me a command in Bengali.",
-          "placeholder": "Type a message or command…",
-          "error": "Sorry, I couldn't process that. Please try again.",
-          "quickQueries": {
-            "title": "Quick Queries",
-            "QQ-01": "Today's sales?",
-            "QQ-02": "Month's profit?",
-            "QQ-03": "Low stock?",
-            "QQ-04": "Who owes?",
-            "QQ-05": "Best seller?",
-            "QQ-06": "Last week expense?",
-            "QQ-07": "Reorder items?",
-            "QQ-08": "Today discounts?"
-          }
-        },
-        "voice": {
-          "tapToRecord": "Tap to start recording",
-          "recording": "Recording… tap to stop",
-          "processing": "Processing audio…",
-          "micError": "Could not access microphone. Please allow microphone permission.",
-          "transcribeError": "Failed to transcribe audio. Please try again.",
-          "updateError": "Failed to update transcript.",
-          "confirmError": "Failed to confirm transcript.",
-          "parseError": "Failed to parse the command.",
-          "executeError": "Failed to execute the command.",
-          "dismiss": "Dismiss",
-          "session": "Voice Session",
-          "transcript": "Transcript",
-          "confidence": "Confidence: {value}%",
-          "confirm": "Confirm",
-          "parse": "Parse Command",
-          "reset": "Start Over",
-          "status": {
-            "DRAFT": "Draft",
-            "TRANSCRIBED": "Transcribed",
-            "EDITED": "Edited",
-            "CONFIRMED": "Confirmed",
-            "EXECUTED": "Executed",
-            "CANCELLED": "Cancelled",
-            "EXPIRED": "Expired"
-          }
-        },
-        "commands": {
-          "title": "Quick Commands",
-          "hint": "Type a command in Bengali or English. AI will parse and execute it.",
-          "placeholder": "e.g., চাল ২০ কেজি বিক্রি ১২০০ টাকায়",
-          "parse": "Parse",
-          "confirm": "Confirm & Execute",
-          "execute": "Execute",
-          "executed": "Command executed successfully!",
-          "error": "Failed to process command. Please try again.",
-          "originalText": "Original",
-          "needsConfirmation": "Confirmation Required",
-          "highRisk": "High-Risk Action",
-          "highRiskHint": "This action modifies financial data. Please review carefully before confirming in the chat.",
-          "examples": {
-            "sale": "চাল ২০ কেজি বিক্রি ১২০০ টাকায়",
-            "expense": "ভাড়া ৫০০০ টাকা দিলাম",
-            "dueBaki": "রহিম বাকী ৩০০০ টাকা",
-            "dueJoma": "রহিম জমা দিল ১০০০ টাকা",
-            "query": "আজকের বিক্রি কত?"
-          }
-        },
-        "confirmation": {
-          "title": "Action Confirmation",
-          "titleUncertain": "Please Verify",
-          "titleRejected": "Low Confidence",
-          "confidence": "Confidence",
-          "yourWords": "Your words:",
-          "confirm": "Confirm & Execute",
-          "reject": "Cancel",
-          "items": "Items",
-          "product": "Product",
-          "quantity": "Quantity",
-          "unitPrice": "Unit Price",
-          "total": "Total",
-          "payment": "Payment",
-          "cash": "Cash",
-          "credit": "Credit",
-          "customer": "Customer",
-          "category": "Category",
-          "amount": "Amount",
-          "description": "Description",
-          "paymentMethod": "Payment Method",
-          "discountType": "Discount Type",
-          "discountMethod": "Method",
-          "discountValue": "Value",
-          "discountCalc": "Calculation",
-          "refundAmount": "Refund Amount",
-          "returnRef": "Sale Reference",
-          "infoBadge": "Query Result"
-        },
-        "subscription": {
-          "limitReached": "Daily AI query limit reached",
-          "limitReachedDesc": "Upgrade your plan for more queries",
-          "tokenEstimate": "Estimated tokens: {tokens}",
-          "cached": "Cached result"
-        },
-        "recovery": {
-          "acknowledgment": "Something went wrong. You can try again or enter manually.",
-          "manualEntry": "Prefer to enter manually?",
-          "manualEntryLink": "Open Manual Form",
-          "dismiss": "Dismiss"
-        }
       }
     },
     "support": {
@@ -3574,6 +3231,366 @@
         "CANCELLED": "Cancelled",
         "DUPLICATE_SUGGESTED": "Duplicate Found"
       }
+    },
+    "reports": {
+      "dashboard": {
+        "todaySales": "Today's Sales",
+        "todayProfit": "Today's Profit",
+        "monthSales": "Monthly Sales",
+        "monthProfit": "Monthly Profit",
+        "totalDue": "Total Due",
+        "customersWithDue": "Customers with Due",
+        "lowStock": "Low Stock Items",
+        "reorderNeeded": "Reorder Needed",
+        "topSelling": "Top Selling Today",
+        "recentActivity": "Recent Activity",
+        "noData": "No data available yet."
+      },
+      "title": "Reports",
+      "subtitle": "Business analytics and insights",
+      "tabs": {
+        "dashboard": "Dashboard",
+        "sales": "Sales",
+        "profit": "Profit",
+        "expenses": "Expenses",
+        "due": "Due",
+        "stock": "Stock",
+        "discounts": "Discounts",
+        "returns": "Returns",
+        "advanced": "Advanced Analytics"
+      },
+      "sales": {
+        "title": "Sales Report",
+        "daily": "Daily",
+        "weekly": "Weekly",
+        "monthly": "Monthly",
+        "totalSales": "Total Sales",
+        "totalRevenue": "Total Revenue",
+        "totalProfit": "Total Profit",
+        "totalDiscount": "Total Discount",
+        "itemsSold": "Items Sold",
+        "topItems": "Top Selling Items",
+        "dailyBreakdown": "Daily Breakdown",
+        "date": "Date",
+        "revenue": "Revenue",
+        "profit": "Profit",
+        "sales": "Sales",
+        "quantity": "Qty"
+      },
+      "profit": {
+        "title": "Profit Analysis",
+        "totalRevenue": "Total Revenue",
+        "totalCost": "Total Cost",
+        "totalProfit": "Total Profit",
+        "grossProfit": "Gross Profit",
+        "totalExpenses": "Total Expenses",
+        "netProfit": "Net Profit",
+        "profitMargin": "Profit Margin",
+        "cogs": "Cost of Goods Sold",
+        "product": "Product",
+        "revenue": "Revenue",
+        "cost": "Cost",
+        "profit": "Profit",
+        "margin": "Margin",
+        "quantity": "Qty Sold"
+      },
+      "expenses": {
+        "title": "Expense Breakdown",
+        "category": "Category",
+        "amount": "Amount",
+        "percentage": "%",
+        "count": "Count"
+      },
+      "due": {
+        "title": "Due Report",
+        "totalDue": "Total Outstanding",
+        "customersWithDue": "Customers with Due",
+        "customer": "Customer",
+        "phone": "Phone",
+        "dueAmount": "Due Amount",
+        "lastTransaction": "Last Transaction"
+      },
+      "stock": {
+        "title": "Stock Alerts",
+        "lowStock": "Low Stock",
+        "outOfStock": "Out of Stock",
+        "reorderNeeded": "Reorder Needed",
+        "product": "Product",
+        "sku": "SKU",
+        "currentStock": "Current Stock",
+        "reorderPoint": "Reorder Point",
+        "status": "Status"
+      },
+      "dateRange": {
+        "today": "Today",
+        "thisWeek": "This Week",
+        "thisMonth": "This Month",
+        "last30Days": "Last 30 Days",
+        "custom": "Custom",
+        "startDate": "Start Date",
+        "endDate": "End Date",
+        "apply": "Apply"
+      },
+      "export": {
+        "pdf": "Export PDF",
+        "csv": "Export CSV"
+      },
+      "messages": {
+        "loadError": "Failed to load report data.",
+        "exportError": "Failed to export report.",
+        "noData": "No data available for the selected period."
+      },
+      "charts": {
+        "salesTrend": "Sales Trend",
+        "revenue": "Revenue",
+        "profit": "Profit",
+        "expenses": "Expenses",
+        "cogs": "Cost of Goods",
+        "profitAnalysis": "Profit Analysis",
+        "margin": "Margin: {value}%",
+        "revenueDistribution": "Revenue Distribution",
+        "totalExpenses": "Total Expenses",
+        "dueByCustomer": "Due by Customer",
+        "dueAging": "Due Aging Analysis",
+        "amount": "Amount",
+        "periodComparison": "Period Comparison",
+        "currentPeriod": "Current Period",
+        "previousPeriod": "Previous Period",
+        "day": "Day {n}",
+        "aging": {
+          "current": "Current",
+          "days30": "1-30 Days",
+          "days60": "31-60 Days",
+          "days90": "90+ Days"
+        }
+      },
+      "insights": {
+        "title": "AI Business Insights",
+        "subtitle": "Powered by AI analysis",
+        "loading": "Analyzing your business data…",
+        "revenueChange": "Revenue",
+        "profitChange": "Profit",
+        "expenseChange": "Expenses",
+        "recommendations": "Recommendations",
+        "refresh": "Refresh Insights",
+        "fallbackSummary": "Connect more sales data to unlock personalized AI insights about your business performance.",
+        "fallbackRec1": "Track daily sales consistently for better trend analysis.",
+        "fallbackRec2": "Keep product costs updated for accurate profit calculations.",
+        "fallbackRec3": "Review due balances weekly to maintain healthy cash flow.",
+        "generating": "Generating AI insight…",
+        "generateError": "Failed to generate insight. Please try again.",
+        "confidence": "confidence",
+        "actionSuggested": "Suggested Action",
+        "severity": {
+          "info": "Info",
+          "warning": "Warning",
+          "critical": "Critical"
+        },
+        "types": {
+          "morningBriefing": {
+            "title": "Morning Briefing",
+            "description": "Start your day with AI-powered action items and priorities"
+          },
+          "dailySummary": {
+            "title": "Daily Summary",
+            "description": "Get a comprehensive summary of today's business performance"
+          },
+          "weeklySummary": {
+            "title": "Weekly Summary",
+            "description": "Review your business performance over the past week with AI analysis"
+          },
+          "expenseIntelligence": {
+            "title": "Expense Intelligence",
+            "description": "AI-powered expense analysis with cost optimization suggestions"
+          },
+          "dueIntelligence": {
+            "title": "Due Intelligence",
+            "description": "Smart due collection analysis with priority recommendations"
+          },
+          "customerAnalytics": {
+            "title": "Customer Analytics",
+            "description": "AI-powered customer growth analysis and retention strategies"
+          },
+          "salesForecast": {
+            "title": "Sales Forecast",
+            "description": "Predict next week's sales with AI-powered forecasting"
+          },
+          "profitOptimization": {
+            "title": "Profit Optimization",
+            "description": "Get AI recommendations to maximize your profit margins"
+          },
+          "seasonalTrends": {
+            "title": "Seasonal Trends",
+            "description": "Discover seasonal patterns and plan your inventory accordingly"
+          }
+        }
+      },
+      "customerAnalytics": {
+        "title": "Customer Analytics",
+        "noData": "Customer analytics data is not available yet. Keep processing sales to unlock insights.",
+        "totalCustomers": "Total Customers",
+        "activeCustomers": "Active Customers",
+        "avgLifetimeValue": "Avg. Lifetime Value",
+        "avgOrderValue": "Avg. Order Value",
+        "topCustomers": "Top Customers",
+        "customerName": "Customer",
+        "totalSpent": "Total Spent",
+        "orders": "Orders",
+        "avgOrder": "Avg. Order",
+        "segments": "Customer Segments",
+        "customers": "customers"
+      },
+      "upgrade": {
+        "currentPlan": "Current plan: {plan}",
+        "toPro": "Upgrade to Pro — ৳399/mo",
+        "toPlus": "Upgrade to Plus — ৳799/mo",
+        "advancedReports": {
+          "title": "Advanced Analytics",
+          "description": "Unlock trend charts, period comparisons, AI insights, and more with a Pro subscription."
+        },
+        "aiInsights": {
+          "title": "AI Business Insights",
+          "description": "Get AI-powered recommendations and trend analysis for your business."
+        },
+        "customerAnalytics": {
+          "title": "Customer Analytics",
+          "description": "Understand your customers better with lifetime value, segmentation, and purchase frequency analysis."
+        },
+        "forecasting": {
+          "title": "Revenue Forecasting",
+          "description": "Predict future revenue and plan your business with AI-powered forecasting."
+        }
+      }
+    },
+    "ai": {
+      "dashboard": "Dashboard",
+      "title": "AI Assistant",
+      "subtitle": "Your intelligent business companion",
+      "tabs": {
+        "chat": "Chat",
+        "voice": "Voice",
+        "commands": "Commands"
+      },
+      "usage": {
+        "queries": "AI Queries: {used}/{limit} today"
+      },
+      "actions": {
+        "SALE": "Sale",
+        "EXPENSE": "Expense",
+        "DUE_BAKI": "Due (Baki)",
+        "DUE_JOMA": "Due (Joma)",
+        "DISCOUNT": "Discount",
+        "RETURN": "Return",
+        "QUERY": "Query",
+        "UNKNOWN": "Unknown"
+      },
+      "chat": {
+        "newChat": "New Chat",
+        "welcome": "How can I help your business today?",
+        "welcomeHint": "Ask me about sales, expenses, dues, or give me a command in Bengali.",
+        "placeholder": "Type a message or command…",
+        "error": "Sorry, I couldn't process that. Please try again.",
+        "quickQueries": {
+          "title": "Quick Queries",
+          "QQ-01": "Today's sales?",
+          "QQ-02": "Month's profit?",
+          "QQ-03": "Low stock?",
+          "QQ-04": "Who owes?",
+          "QQ-05": "Best seller?",
+          "QQ-06": "Last week expense?",
+          "QQ-07": "Reorder items?",
+          "QQ-08": "Today discounts?"
+        }
+      },
+      "voice": {
+        "tapToRecord": "Tap to start recording",
+        "recording": "Recording… tap to stop",
+        "processing": "Processing audio…",
+        "micError": "Could not access microphone. Please allow microphone permission.",
+        "transcribeError": "Failed to transcribe audio. Please try again.",
+        "updateError": "Failed to update transcript.",
+        "confirmError": "Failed to confirm transcript.",
+        "parseError": "Failed to parse the command.",
+        "executeError": "Failed to execute the command.",
+        "dismiss": "Dismiss",
+        "session": "Voice Session",
+        "transcript": "Transcript",
+        "confidence": "Confidence: {value}%",
+        "confirm": "Confirm",
+        "parse": "Parse Command",
+        "reset": "Start Over",
+        "status": {
+          "DRAFT": "Draft",
+          "TRANSCRIBED": "Transcribed",
+          "EDITED": "Edited",
+          "CONFIRMED": "Confirmed",
+          "EXECUTED": "Executed",
+          "CANCELLED": "Cancelled",
+          "EXPIRED": "Expired"
+        }
+      },
+      "commands": {
+        "title": "Quick Commands",
+        "hint": "Type a command in Bengali or English. AI will parse and execute it.",
+        "placeholder": "e.g., চাল ২০ কেজি বিক্রি ১২০০ টাকায়",
+        "parse": "Parse",
+        "confirm": "Confirm & Execute",
+        "execute": "Execute",
+        "executed": "Command executed successfully!",
+        "error": "Failed to process command. Please try again.",
+        "originalText": "Original",
+        "needsConfirmation": "Confirmation Required",
+        "highRisk": "High-Risk Action",
+        "highRiskHint": "This action modifies financial data. Please review carefully before confirming in the chat.",
+        "examples": {
+          "sale": "চাল ২০ কেজি বিক্রি ১২০০ টাকায়",
+          "expense": "ভাড়া ৫০০০ টাকা দিলাম",
+          "dueBaki": "রহিম বাকী ৩০০০ টাকা",
+          "dueJoma": "রহিম জমা দিল ১০০০ টাকা",
+          "query": "আজকের বিক্রি কত?"
+        }
+      },
+      "confirmation": {
+        "title": "Action Confirmation",
+        "titleUncertain": "Please Verify",
+        "titleRejected": "Low Confidence",
+        "confidence": "Confidence",
+        "yourWords": "Your words:",
+        "confirm": "Confirm & Execute",
+        "reject": "Cancel",
+        "items": "Items",
+        "product": "Product",
+        "quantity": "Quantity",
+        "unitPrice": "Unit Price",
+        "total": "Total",
+        "payment": "Payment",
+        "cash": "Cash",
+        "credit": "Credit",
+        "customer": "Customer",
+        "category": "Category",
+        "amount": "Amount",
+        "description": "Description",
+        "paymentMethod": "Payment Method",
+        "discountType": "Discount Type",
+        "discountMethod": "Method",
+        "discountValue": "Value",
+        "discountCalc": "Calculation",
+        "refundAmount": "Refund Amount",
+        "returnRef": "Sale Reference",
+        "infoBadge": "Query Result"
+      },
+      "subscription": {
+        "limitReached": "Daily AI query limit reached",
+        "limitReachedDesc": "Upgrade your plan for more queries",
+        "tokenEstimate": "Estimated tokens: {tokens}",
+        "cached": "Cached result"
+      },
+      "recovery": {
+        "acknowledgment": "Something went wrong. You can try again or enter manually.",
+        "manualEntry": "Prefer to enter manually?",
+        "manualEntryLink": "Open Manual Form",
+        "dismiss": "Dismiss"
+      }
     }
   },
   "admin": {
@@ -4652,7 +4669,7 @@
         "cancel": "Cancel",
         "submitDecision": "Submit Decision",
         "decisionError": "Failed to process decision.",
-        "decisionSuccess": "Decision submitted successfully!",
+        "decisionSuccess": "Decision submitted successfully",
         "decisionSummary": "Decision Summary",
         "decisionOutcome": "Decision",
         "reviewerInfo": "Reviewer",
@@ -4668,7 +4685,6 @@
         "suggestedCategories": "Suggested Categories",
         "allCategories": "All Categories",
         "searchPlaceholder": "Search requests...",
-        "decisionSuccess": "Decision submitted successfully",
         "quickApproveSuccess": "Quick approve successful",
         "quickApproveError": "Quick approve failed",
         "timeline": "Timeline",

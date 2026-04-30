@@ -23,6 +23,8 @@ interface CartPanelProps {
     taxRate: number;
     taxAmount: number;
     total: number;
+    givenAmount: string;
+    onGivenAmountChange: (value: string) => void;
     isSubmitting: boolean;
     onSubmitCash: () => void;
     onSubmitCredit: () => void;
@@ -52,6 +54,8 @@ export default function CartPanel({
     taxRate,
     taxAmount,
     total,
+    givenAmount,
+    onGivenAmountChange,
     isSubmitting,
     onSubmitCash,
     onSubmitCredit,
@@ -212,33 +216,75 @@ export default function CartPanel({
                             </p>
                         </div>
                     </div>
+
+                    {/* Given Amount Input — partial payment */}
+                    {cartItems.length > 0 && total > 0 && (
+                        <>
+                            <div className="flex items-center gap-2 pt-2">
+                                <span className="text-xs font-bold text-on-surface-variant shrink-0">
+                                    {t("cart.givenAmount")}
+                                </span>
+                                <div className="flex items-center gap-1 flex-1">
+                                    <input
+                                        type="number"
+                                        min="0"
+                                        max={total}
+                                        step="1"
+                                        value={givenAmount}
+                                        onChange={(e) => onGivenAmountChange(e.target.value)}
+                                        className="w-full rounded-lg bg-surface-container-low py-1.5 px-3 text-right text-sm font-bold text-on-surface outline-none focus:ring-1 focus:ring-primary"
+                                        placeholder={formatMoney(total)}
+                                    />
+                                    <span className="text-xs font-bold text-on-surface-variant shrink-0">৳</span>
+                                </div>
+                            </div>
+                            {(() => {
+                                const parsed = givenAmount === "" ? total : Math.min(Math.max(parseFloat(givenAmount) || 0, 0), total);
+                                const due = Math.max(0, total - parsed);
+                                return due > 0 ? (
+                                    <div className="flex justify-between text-xs pt-1">
+                                        <span className="font-bold text-tertiary">{t("cart.dueAmount")}</span>
+                                        <span className="font-bold text-tertiary">৳ {formatMoney(due)}</span>
+                                    </div>
+                                ) : null;
+                            })()}
+                        </>
+                    )}
                 </div>
 
                 {/* Action Buttons — compact grid */}
-                <div className="grid grid-cols-2 gap-2">
-                    <button
-                        type="button"
-                        onClick={onSubmitCash}
-                        disabled={isSubmitting || cartItems.length === 0}
-                        className="flex w-full flex-col items-center justify-center rounded-xl bg-primary py-3 text-white shadow-md transition-all active:scale-[0.98] hover:bg-primary-container disabled:cursor-not-allowed disabled:opacity-60"
-                    >
-                        <span className="text-sm font-bold">
-                            {isSubmitting ? t("cart.saving") : t("cart.cashSale")}
-                        </span>
-                        <span className="text-[10px] opacity-80">{t("cart.cashSaleDesc")}</span>
-                    </button>
-                    <button
-                        type="button"
-                        onClick={onSubmitCredit}
-                        disabled={isSubmitting || cartItems.length === 0}
-                        className="flex w-full items-center justify-center gap-1.5 rounded-xl bg-secondary py-3 text-sm font-bold text-white shadow-md transition-all active:scale-[0.98] hover:bg-secondary-container disabled:cursor-not-allowed disabled:opacity-60"
-                    >
-                        <span className="material-symbols-outlined text-base">
-                            account_balance_wallet
-                        </span>
-                        {isSubmitting ? t("cart.saving") : t("cart.creditSale")}
-                    </button>
-                </div>
+                {(() => {
+                    const parsedGiven = givenAmount === "" ? total : Math.min(Math.max(parseFloat(givenAmount) || 0, 0), total);
+                    const dueAmount = Math.max(0, total - parsedGiven);
+                    const hasDue = dueAmount > 0;
+                    const hasItems = cartItems.length > 0;
+                    return (
+                        <div className="grid grid-cols-2 gap-2">
+                            <button
+                                type="button"
+                                onClick={onSubmitCash}
+                                disabled={isSubmitting || !hasItems || hasDue}
+                                className="flex w-full flex-col items-center justify-center rounded-xl bg-primary py-3 text-white shadow-md transition-all active:scale-[0.98] hover:bg-primary-container disabled:cursor-not-allowed disabled:opacity-60"
+                            >
+                                <span className="text-sm font-bold">
+                                    {isSubmitting ? t("cart.saving") : t("cart.cashSale")}
+                                </span>
+                                <span className="text-[10px] opacity-80">{t("cart.cashSaleDesc")}</span>
+                            </button>
+                            <button
+                                type="button"
+                                onClick={onSubmitCredit}
+                                disabled={isSubmitting || !hasItems || !hasDue}
+                                className="flex w-full items-center justify-center gap-1.5 rounded-xl bg-secondary py-3 text-sm font-bold text-white shadow-md transition-all active:scale-[0.98] hover:bg-secondary-container disabled:cursor-not-allowed disabled:opacity-60"
+                            >
+                                <span className="material-symbols-outlined text-base">
+                                    account_balance_wallet
+                                </span>
+                                {isSubmitting ? t("cart.saving") : t("cart.dueSale")}
+                            </button>
+                        </div>
+                    );
+                })()}
             </div>
         </aside>
     );

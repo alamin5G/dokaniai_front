@@ -11,6 +11,8 @@ interface CashSaleSuccessModalProps {
     cartItems: CartItem[];
     businessInfo: InvoiceBusinessInfo;
     businessId: string;
+    /** Customer name if linked, null for walk-in */
+    customerName: string | null;
     onClose: () => void;
 }
 
@@ -19,6 +21,7 @@ export default function CashSaleSuccessModal({
     cartItems,
     businessInfo,
     businessId,
+    customerName,
     onClose,
 }: CashSaleSuccessModalProps) {
     const [closing, setClosing] = useState(false);
@@ -93,6 +96,11 @@ export default function CashSaleSuccessModal({
                     <p className="mt-0.5 text-xs text-gray-500">
                         ইনভয়েস: {result.invoiceNumber}
                     </p>
+                    {customerName && (
+                        <p className="mt-0.5 text-xs text-green-700 font-medium">
+                            🧑 {customerName}
+                        </p>
+                    )}
                 </div>
 
                 {/* ── Sale Details ── */}

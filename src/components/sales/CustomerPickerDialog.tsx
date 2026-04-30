@@ -12,6 +12,8 @@ interface CustomerPickerDialogProps {
     open: boolean;
     onClose: () => void;
     onSelect: (customer: CustomerResponse) => void;
+    /** If provided, shows a "Skip" button (used only for CASH sales). */
+    onSkip?: () => void;
 }
 
 export default function CustomerPickerDialog({
@@ -19,6 +21,7 @@ export default function CustomerPickerDialog({
     open,
     onClose,
     onSelect,
+    onSkip,
 }: CustomerPickerDialogProps) {
     const t = useTranslations("shop.sales");
     const [customers, setCustomers] = useState<CustomerResponse[]>([]);
@@ -245,6 +248,18 @@ export default function CustomerPickerDialog({
                             <span className="material-symbols-outlined text-base">add</span>
                             {t("customer.createNew")}
                         </button>
+
+                        {/* Skip — only shown for CASH sales (when onSkip is provided) */}
+                        {onSkip && (
+                            <button
+                                type="button"
+                                onClick={onSkip}
+                                className="mt-2 flex w-full items-center justify-center gap-1.5 rounded-lg border-2 border-dashed border-gray-300 py-2.5 text-sm font-medium text-gray-500 transition-colors hover:border-gray-400 hover:bg-gray-50 hover:text-gray-700"
+                            >
+                                <span className="material-symbols-outlined text-base">person_off</span>
+                                {t("customer.skipForCash")}
+                            </button>
+                        )}
                     </>
                 ) : (
                     /* Create new customer form */

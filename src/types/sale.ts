@@ -51,6 +51,7 @@ export interface SaleCreateRequest {
     items: SaleItemRequest[];
     discounts?: DiscountRequest[];
     paymentMethod: PaymentMethod;
+    amountPaid?: number;
     saleDate?: string;
     recordedVia?: EntryMode;
     voiceTranscript?: string;

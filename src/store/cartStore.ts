@@ -10,6 +10,7 @@ interface CartState {
     cartItems: CartItem[];
     discountMethod: DiscountMethod;
     discountValue: string;
+    givenAmount: string;
 
     // Actions
     addItem: (item: CartItem) => void;
@@ -27,6 +28,7 @@ interface CartState {
     clearAll: () => void;
     setDiscountMethod: (method: DiscountMethod) => void;
     setDiscountValue: (value: string) => void;
+    setGivenAmount: (value: string) => void;
 }
 
 /**
@@ -40,6 +42,7 @@ export function createCartStore(businessId: string) {
                 cartItems: [],
                 discountMethod: "FIXED" as DiscountMethod,
                 discountValue: "",
+                givenAmount: "",
 
                 addItem: (item: CartItem) =>
                     set((state) => ({
@@ -108,6 +111,7 @@ export function createCartStore(businessId: string) {
                     set({
                         cartItems: [],
                         discountValue: "",
+                        givenAmount: "",
                     }),
 
                 setDiscountMethod: (method) =>
@@ -115,6 +119,9 @@ export function createCartStore(businessId: string) {
 
                 setDiscountValue: (value) =>
                     set({ discountValue: value }),
+
+                setGivenAmount: (value) =>
+                    set({ givenAmount: value }),
             }),
             {
                 name: `dokaniai-cart-${businessId}`,
@@ -124,6 +131,7 @@ export function createCartStore(businessId: string) {
                     cartItems: state.cartItems,
                     discountMethod: state.discountMethod,
                     discountValue: state.discountValue,
+                    givenAmount: state.givenAmount,
                 }),
             },
         ),

@@ -55,7 +55,8 @@ export default function SalesWorkspace({
     const cartItems = cartStore((s) => s.cartItems);
     const discountMethod = cartStore((s) => s.discountMethod);
     const discountValue = cartStore((s) => s.discountValue);
-    const { addOrUpdateItem, updateQuantity, setQuantity, removeItem, clearAll, setDiscountMethod, setDiscountValue } = cartStore.getState();
+    const givenAmount = cartStore((s) => s.givenAmount);
+    const { addOrUpdateItem, updateQuantity, setQuantity, removeItem, clearAll, setDiscountMethod, setDiscountValue, setGivenAmount } = cartStore.getState();
 
     // Tax settings
     const [taxEnabled, setTaxEnabled] = useState(false);
@@ -80,6 +81,10 @@ export default function SalesWorkspace({
     // Credit sale: customer picker
     const [customerPickerOpen, setCustomerPickerOpen] = useState(false);
     const [selectedCustomer, setSelectedCustomer] = useState<CustomerResponse | null>(null);
+
+    // Cash sale: customer picker (optional — with Skip)
+    const [cashCustomerPickerOpen, setCashCustomerPickerOpen] = useState(false);
+    const [cashSaleCustomer, setCashSaleCustomer] = useState<CustomerResponse | null>(null);
 
     // Credit sale success modal
     const [creditSaleResult, setCreditSaleResult] = useState<SaleCreatedResponse | null>(null);
@@ -152,6 +157,18 @@ export default function SalesWorkspace({
         [subtotal, discountAmount, taxAmount],
     );
 
+    const givenAmountValue = useMemo(() => {
+        if (givenAmount === "") return total;
+        const parsed = parseFloat(givenAmount);
+        if (isNaN(parsed) || parsed < 0) return total;
+        return Math.min(parsed, total);
+    }, [givenAmount, total]);
+
+    const dueAmount = useMemo(
+        () => Math.max(0, total - givenAmountValue),
+        [total, givenAmountValue],
+    );
+
     // Cart actions
     function handleAddProduct(product: Product) {
         // Guard: block out-of-stock products from being added
@@ -213,6 +230,10 @@ export default function SalesWorkspace({
 
         const effectiveCustomer = customer ?? selectedCustomer;
 
+        // Calculate amountPaid based on givenAmount input
+        const parsedGiven = givenAmount === "" ? total : Math.min(Math.max(parseFloat(givenAmount) || 0, 0), total);
+        const amountPaid = paymentMethod === "CASH" ? total : parsedGiven;
+
         return {
             items: cartItems.map((ci) => ({
                 productId: ci.productId,
@@ -222,8 +243,9 @@ export default function SalesWorkspace({
             })),
             discounts,
             paymentMethod,
+            amountPaid,
             recordedVia: "MANUAL",
-            customerId: paymentMethod === "CREDIT" ? effectiveCustomer?.id ?? null : null,
+            customerId: paymentMethod === "CREDIT" ? effectiveCustomer?.id ?? null : (paymentMethod === "CASH" ? (cashSaleCustomer?.id ?? null) : null),
         };
     }
 
@@ -361,8 +383,10 @@ export default function SalesWorkspace({
                 taxRate={taxEnabled ? taxRate : 0}
                 taxAmount={taxAmount}
                 total={total}
+                givenAmount={givenAmount}
+                onGivenAmountChange={setGivenAmount}
                 isSubmitting={isSubmitting}
-                onSubmitCash={() => handleSubmit("CASH")}
+                onSubmitCash={() => setCashCustomerPickerOpen(true)}
                 onSubmitCredit={() => setCustomerPickerOpen(true)}
                 error={error}
                 notice={notice}
@@ -379,6 +403,25 @@ export default function SalesWorkspace({
                 onDiscard={handleConflictDiscard}
             />
 
+            {/* Cash Sale: Customer Picker (optional — with Skip button) */}
+            <CustomerPickerDialog
+                businessId={businessId}
+                open={cashCustomerPickerOpen}
+                onClose={() => setCashCustomerPickerOpen(false)}
+                onSelect={(customer) => {
+                    setCashCustomerPickerOpen(false);
+                    setCashSaleCustomer(customer);
+                    // Submit cash sale with the selected customer
+                    handleSubmit("CASH", customer);
+                }}
+                onSkip={() => {
+                    setCashCustomerPickerOpen(false);
+                    setCashSaleCustomer(null);
+                    // Submit cash sale without customer (walk-in)
+                    handleSubmit("CASH", null);
+                }}
+            />
+
             {/* Cash Sale Success Modal */}
             {cashSaleResult && (
                 <CashSaleSuccessModal
@@ -386,11 +429,15 @@ export default function SalesWorkspace({
                     cartItems={lastCartItems}
                     businessInfo={businessInfo}
                     businessId={businessId}
-                    onClose={() => setCashSaleResult(null)}
+                    customerName={cashSaleCustomer?.name ?? null}
+                    onClose={() => {
+                        setCashSaleResult(null);
+                        setCashSaleCustomer(null);
+                    }}
                 />
             )}
 
-            {/* Credit Sale: Customer Picker */}
+            {/* Credit Sale: Customer Picker (mandatory — no Skip button) */}
             <CustomerPickerDialog
                 businessId={businessId}
                 open={customerPickerOpen}
