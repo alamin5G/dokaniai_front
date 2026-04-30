@@ -13,7 +13,7 @@ import { useProducts } from "@/hooks/useProducts";
 import { useCategoriesByBusinessType } from "@/hooks/useCategories";
 import { useSaleMutations } from "@/hooks/useSaleMutations";
 import { useSSEStockAlerts } from "@/hooks/useSSEStockAlerts";
-import { getBusinessSettings } from "@/lib/businessApi";
+import { getBusinessSettings, getBusinessProfile, getBusinessLocation } from "@/lib/businessApi";
 import { useTranslations } from "next-intl";
 import { useEffect, useMemo, useState } from "react";
 import type { StockConflictDetail } from "@/components/sales/StockConflictModal";
@@ -114,7 +114,11 @@ export default function SalesWorkspace({
         };
     }, [t]);
 
-    // Load tax settings
+    // Profile & location for invoice sharing
+    const [profileData, setProfileData] = useState<{ phone?: string; email?: string; contactPerson?: string; website?: string; facebookPage?: string } | null>(null);
+    const [locationData, setLocationData] = useState<{ address?: string; city?: string; district?: string; postalCode?: string; country?: string } | null>(null);
+
+    // Load tax settings + profile + location
     useEffect(() => {
         let cancelled = false;
         const loadSettings = async () => {
@@ -128,7 +132,40 @@ export default function SalesWorkspace({
                 // Tax settings are optional — default to no tax
             }
         };
+        const loadProfileAndLocation = async () => {
+            try {
+                const [profile, location] = await Promise.allSettled([
+                    getBusinessProfile(businessId),
+                    getBusinessLocation(businessId),
+                ]);
+                if (!cancelled) {
+                    if (profile.status === "fulfilled") {
+                        const p = profile.value;
+                        setProfileData({
+                            phone: p.phone || undefined,
+                            email: p.email || undefined,
+                            contactPerson: p.contactPerson || undefined,
+                            website: p.website || undefined,
+                            facebookPage: p.facebookPage || undefined,
+                        });
+                    }
+                    if (location.status === "fulfilled") {
+                        const loc = location.value;
+                        setLocationData({
+                            address: loc.address || undefined,
+                            city: loc.city || undefined,
+                            district: loc.district || undefined,
+                            postalCode: loc.postalCode || undefined,
+                            country: loc.country || undefined,
+                        });
+                    }
+                }
+            } catch {
+                // Profile/location are optional for invoice
+            }
+        };
         void loadSettings();
+        void loadProfileAndLocation();
         return () => { cancelled = true; };
     }, [businessId]);
 
@@ -350,7 +387,17 @@ export default function SalesWorkspace({
     // Business info for invoice sharing
     const businessInfo: InvoiceBusinessInfo = useMemo(() => ({
         name: activeBusiness?.name ?? "DokaniAI",
-    }), [activeBusiness]);
+        phone: profileData?.phone,
+        email: profileData?.email,
+        contactPerson: profileData?.contactPerson,
+        website: profileData?.website,
+        facebookPage: profileData?.facebookPage,
+        address: locationData?.address,
+        city: locationData?.city,
+        district: locationData?.district,
+        postalCode: locationData?.postalCode,
+        country: locationData?.country,
+    }), [activeBusiness, profileData, locationData]);
 
     return (
         <div className="flex flex-1 flex-col lg:flex-row overflow-hidden h-[calc(100vh-12rem)]">

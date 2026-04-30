@@ -8,6 +8,15 @@ import type { CartItem, SaleCreatedResponse } from "@/types/sale";
 export interface InvoiceBusinessInfo {
     name: string;
     phone?: string | null;
+    email?: string | null;
+    contactPerson?: string | null;
+    website?: string | null;
+    facebookPage?: string | null;
+    address?: string | null;
+    city?: string | null;
+    district?: string | null;
+    postalCode?: string | null;
+    country?: string | null;
     receiptFooter?: string | null;
 }
 
@@ -27,6 +36,13 @@ export function formatInvoiceText(
     // Header — shop info
     lines.push(`🧾 ${business.name || "DokaniAI ইনভয়েস"}`);
     if (business.phone) lines.push(`📞 ${business.phone}`);
+    if (business.email) lines.push(`📧 ${business.email}`);
+    if (business.contactPerson) lines.push(`👤 ${business.contactPerson}`);
+    // Build full address conditionally
+    const addressParts = [business.address, business.city, business.district, business.postalCode, business.country].filter(Boolean);
+    if (addressParts.length > 0) lines.push(`📍 ${addressParts.join(", ")}`);
+    if (business.website) lines.push(`🌐 ${business.website}`);
+    if (business.facebookPage) lines.push(`📘 ${business.facebookPage}`);
     lines.push("────────────────────");
 
     // Invoice meta
