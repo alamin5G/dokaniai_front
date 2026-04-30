@@ -55,7 +55,7 @@ export default function CustomerAnalytics({ businessId }: { businessId: string }
         setIsLoading(true);
         try {
             const response = await apiClient.get<ApiSuccess<CustomerAnalyticsData>>(
-                `/api/v1/businesses/${businessId}/reports/customers/analytics`,
+                `/businesses/${businessId}/reports/customers/analytics`,
             );
             setData(response.data.data);
         } catch {
