@@ -1506,7 +1506,7 @@ export default function BusinessSettingsPage() {
                                     </div>
 
                                     <div className="flex items-center justify-end gap-4">
-                                        <button type="button" onClick={() => setMfsForm({ mfsType: "BKASH", mfsNumber: "", simSlot: 0, accountType: "MERCHANT" })} className="px-6 py-3 text-on-surface font-bold hover:bg-surface-container-high rounded-xl transition-colors">{t("transactionForm.cancel")}</button>
+                                        <button type="button" onClick={() => setMfsForm({ mfsType: "BKASH", mfsNumber: "", simSlot: 0, accountType: "MERCHANT" })} className="px-6 py-3 text-on-surface font-bold hover:bg-surface-container-high rounded-xl transition-colors">{t("settings.mfsNumbers.cancel")}</button>
                                         <button type="submit" disabled={mfsRegistering} className="inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-primary to-primary-container px-8 py-3 text-sm font-bold text-white hover:opacity-90 disabled:opacity-50 transition-opacity shadow-sm">
                                             {t("settings.mfsNumbers.registerButton")}
                                             <span className="material-symbols-outlined text-sm">arrow_forward</span>

@@ -40,6 +40,11 @@ export default function CustomerPickerDialog({
                 params.search = searchQuery.trim();
             }
             const res = await listCustomers(businessId, params);
+            if (!res) {
+                setFetchError(t("customer.loadError"));
+                setCustomers([]);
+                return;
+            }
             setCustomers(res.content ?? []);
         } catch (err) {
             console.error("[CustomerPicker] Failed to fetch customers:", err);

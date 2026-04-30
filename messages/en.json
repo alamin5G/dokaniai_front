@@ -728,7 +728,8 @@
         "configure": "Configure",
         "resend": "Resend",
         "whyRegisterTitle": "Why register MFS numbers?",
-        "whyRegisterDesc": "Registering your numbers allows DokaniAI to automatically read incoming payment SMS messages and match them against your Due Ledger, saving you manual entry time."
+        "whyRegisterDesc": "Registering your numbers allows DokaniAI to automatically read incoming payment SMS messages and match them against your Due Ledger, saving you manual entry time.",
+        "cancel": "Cancel"
       }
     },
     "profile": {
