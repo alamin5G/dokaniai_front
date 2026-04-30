@@ -228,7 +228,7 @@ export default function SalesWorkspace({
                 ]
                 : [];
 
-        const effectiveCustomer = customer ?? selectedCustomer;
+        const effectiveCustomer = customer ?? (paymentMethod === "CREDIT" ? selectedCustomer : cashSaleCustomer);
 
         // Calculate amountPaid based on givenAmount input
         const parsedGiven = givenAmount === "" ? total : Math.min(Math.max(parseFloat(givenAmount) || 0, 0), total);
@@ -245,7 +245,7 @@ export default function SalesWorkspace({
             paymentMethod,
             amountPaid,
             recordedVia: "MANUAL",
-            customerId: paymentMethod === "CREDIT" ? effectiveCustomer?.id ?? null : (paymentMethod === "CASH" ? (cashSaleCustomer?.id ?? null) : null),
+            customerId: effectiveCustomer?.id ?? null,
         };
     }
 
