@@ -56,6 +56,8 @@ export interface BusinessSettingsRequest {
   receiptFooter?: string;
   lowStockThreshold?: number;
   lowStockAlertEnabled?: boolean;
+  dueEnabled?: boolean;
+  paymentDeadlineDays?: number;
 }
 
 export interface OperatingHoursRequest {
@@ -147,6 +149,8 @@ export interface BusinessSettingsResponse {
   receiptFooter: string;
   lowStockThreshold: number;
   lowStockAlertEnabled: boolean;
+  dueEnabled: boolean;
+  paymentDeadlineDays: number;
   createdAt: string;
   updatedAt: string;
 }

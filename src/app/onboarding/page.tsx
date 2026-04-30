@@ -890,6 +890,10 @@ function OnboardingPageContent() {
         setError("");
         try {
             const autoInvoicePrefix = buildInvoicePrefixFromName(businessData.name ?? "");
+            const effectiveDeadlineDays = paymentTerms === "custom"
+                ? (parseInt(customPaymentTerms) || 30)
+                : (parseInt(paymentTerms) || 30);
+
             await businessApi.updateBusinessSettings(bid, {
                 taxEnabled,
                 taxRate: taxEnabled ? parsedTaxRate : undefined,
@@ -898,6 +902,8 @@ function OnboardingPageContent() {
                 paymentReceiverNumber: paymentReceiverNumber.trim() || undefined,
                 aiAssistantEnabled,
                 invoicePrefix: autoInvoicePrefix !== "INV" ? autoInvoicePrefix : undefined,
+                dueEnabled,
+                paymentDeadlineDays: dueEnabled ? effectiveDeadlineDays : undefined,
             });
 
             if (paymentReceiverNumber.trim()) {
