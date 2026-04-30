@@ -26,8 +26,8 @@ interface ApiSuccess<T> {
     message?: string;
 }
 
-function unwrap<T>(response: { data: ApiSuccess<T> }): T {
-    return response.data.data;
+function unwrap<T>(response: ApiSuccess<T>): T {
+    return response.data;
 }
 
 // ─── Reports ─────────────────────────────────────────────
