@@ -180,6 +180,15 @@ export async function getPendingMfsNumbers(): Promise<MfsNumberResponse[]> {
     }
 }
 
+export async function getMfsNumbersByStatus(status: string): Promise<MfsNumberResponse[]> {
+    try {
+        const { data } = await apiClient.get("/payments/admin/mfs-numbers", { params: { status } });
+        return data.data;
+    } catch (error) {
+        throw new Error(getApiErrorMessage(error, "Failed to load MFS numbers."));
+    }
+}
+
 export async function approveMfsNumber(mfsNumberId: string): Promise<MfsNumberResponse> {
     try {
         const { data } = await apiClient.post(

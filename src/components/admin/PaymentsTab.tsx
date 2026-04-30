@@ -25,6 +25,7 @@ import {
     getCompletedPayments,
     getPaymentSummary,
     getPendingMfsNumbers,
+    getMfsNumbersByStatus,
     approveMfsNumber,
     rejectMfsNumber,
     getPaymentSettings,
@@ -97,8 +98,8 @@ function VerificationMethodBadge({ method }: { method: PaymentVerificationMethod
     const isAuto = method === "AUTO";
     return (
         <span className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider ${isAuto
-                ? "bg-emerald-100 text-emerald-700"
-                : "bg-blue-100 text-blue-700"
+            ? "bg-emerald-100 text-emerald-700"
+            : "bg-blue-100 text-blue-700"
             }`}>
             <span className="material-symbols-outlined text-[12px]">{isAuto ? "bolt" : "person_check"}</span>
             {isAuto ? "Auto-verified" : "Manual"}
@@ -130,6 +131,7 @@ export default function PaymentsTab() {
     const [smsPool, setSmsPool] = useState<SmsReportItem[]>([]);
     const [summary, setSummary] = useState<PaymentSummary | null>(null);
     const [mfsNumbers, setMfsNumbers] = useState<MfsNumberResponse[]>([]);
+    const [mfsSubTab, setMfsSubTab] = useState<"PENDING" | "APPROVED" | "REJECTED">("PENDING");
     const [loading, setLoading] = useState(true);
     const [actionLoading, setActionLoading] = useState(false);
 
@@ -906,9 +908,19 @@ export default function PaymentsTab() {
                     {activeInternalTab === "mfsNumbers" && (
                         <div className="flex flex-col lg:flex-row gap-8 items-start">
                             <div className="flex-1 w-full space-y-6">
+                                {/* MFS Sub-tabs */}
+                                <div className="flex gap-2 mb-2">
+                                    {(["PENDING", "APPROVED", "REJECTED"] as const).map((st) => (
+                                        <button key={st} onClick={async () => { setMfsSubTab(st); setLoading(true); try { const data = await getMfsNumbersByStatus(st); setMfsNumbers(data); } catch { setError(t("messages.loadFailed")); } finally { setLoading(false); } }} className={`px-4 py-2 rounded-full text-sm font-semibold transition-all ${mfsSubTab === st ? "bg-primary-fixed text-on-primary-fixed shadow-sm" : "bg-surface-container-high text-on-surface-variant hover:bg-surface-container-highest"}`}>
+                                            {st === "PENDING" && <span className="flex items-center gap-1"><span className="material-symbols-outlined text-sm">schedule</span>{t("mfsNumbers.subPending", { defaultValue: "Pending" })}</span>}
+                                            {st === "APPROVED" && <span className="flex items-center gap-1"><span className="material-symbols-outlined text-sm">check_circle</span>{t("mfsNumbers.subApproved", { defaultValue: "Approved" })}</span>}
+                                            {st === "REJECTED" && <span className="flex items-center gap-1"><span className="material-symbols-outlined text-sm">block</span>{t("mfsNumbers.subRejected", { defaultValue: "Rejected" })}</span>}
+                                        </button>
+                                    ))}
+                                </div>
                                 <div className="flex justify-between items-end mb-4">
                                     <div>
-                                        <h3 className="font-headline font-bold text-lg text-primary tracking-tight">{t("mfsNumbers.pendingTitle")}</h3>
+                                        <h3 className="font-headline font-bold text-lg text-primary tracking-tight">{mfsSubTab === "PENDING" ? t("mfsNumbers.pendingTitle") : mfsSubTab === "APPROVED" ? t("mfsNumbers.subApproved", { defaultValue: "Approved Numbers" }) : t("mfsNumbers.subRejected", { defaultValue: "Rejected Numbers" })}</h3>
                                         <p className="text-xs font-body text-on-surface-variant font-medium mt-1">{t("mfsNumbers.v1Subtitle")}</p>
                                         <p className="text-sm text-on-surface-variant font-body mt-0.5">{t("mfsNumbers.reviewingCount", { count: mfsNumbers.length })}</p>
                                     </div>
