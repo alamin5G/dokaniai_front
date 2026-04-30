@@ -606,9 +606,6 @@ export default function BusinessSettingsPage() {
                     taxNumber: settingsForm.taxEnabled
                         ? settingsForm.taxNumber.trim() || undefined
                         : undefined,
-                    paymentChannel: settingsForm.paymentChannel,
-                    paymentReceiverNumber:
-                        settingsForm.paymentReceiverNumber.trim() || undefined,
                     aiAssistantEnabled: settingsForm.aiAssistantEnabled,
                     invoicePrefix: settingsForm.invoicePrefix.trim() || undefined,
                     invoiceNotes: settingsForm.invoiceNotes.trim() || undefined,
@@ -1052,22 +1049,6 @@ export default function BusinessSettingsPage() {
                                         {CURRENCIES.map((currency) => (
                                             <option key={currency.value} value={currency.value}>
                                                 {currency.label}
-                                            </option>
-                                        ))}
-                                    </SelectField>
-                                    <SelectField
-                                        label={t("settings.paymentChannelLabel")}
-                                        value={settingsForm.paymentChannel}
-                                        onChange={(value) =>
-                                            setSettingsForm((current) => ({
-                                                ...current,
-                                                paymentChannel: value as PaymentMethod,
-                                            }))
-                                        }
-                                    >
-                                        {PAYMENT_CHANNELS.map((channel) => (
-                                            <option key={channel} value={channel}>
-                                                {isBn ? PAYMENT_CHANNEL_LABELS[channel].bn : PAYMENT_CHANNEL_LABELS[channel].en}
                                             </option>
                                         ))}
                                     </SelectField>
