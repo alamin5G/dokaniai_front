@@ -1434,10 +1434,6 @@ export default function BusinessSettingsPage() {
                         </>
                     ) : null}
 
-                    {activeTab === "data" ? (
-                        <DataExportPanel />
-                    ) : null}
-
                     {activeTab === "mfsNumbers" ? (
                         <>
                             <SectionCard title={t("settings.mfsNumbers.title")}>
