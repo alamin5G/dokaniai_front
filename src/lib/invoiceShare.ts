@@ -90,12 +90,20 @@ export function formatInvoiceText(
     const amountDue = sale.amountDue ?? 0;
 
     if (isCredit && amountPaid > 0) {
-        lines.push(`পেমেন্ট: ${tk(amountPaid)} (নগদ)`);
-        lines.push(`বাকী: ${tk(amountDue)}`);
+        lines.push(`জমা: ${tk(amountPaid)} (নগদ)`);
+        lines.push(`এই বাকী: ${tk(sale.dueAmount ?? amountDue)}`);
     } else if (isCredit) {
-        lines.push(`পেমেন্ট: বাকী ${tk(amountDue)}`);
+        lines.push(`এই বাকী: ${tk(sale.dueAmount ?? amountDue)}`);
     } else {
-        lines.push(`পেমেন্ট: নগদ ${tk(amountPaid > 0 ? amountPaid : sale.totalAmount)} ✅`);
+        lines.push(`পরিশোধ: নগদ ${tk(amountPaid > 0 ? amountPaid : sale.totalAmount)} ✅`);
+    }
+
+    // Show total due if customer has previous outstanding
+    const runningBal = sale.runningBalance ?? 0;
+    const thisDue = sale.dueAmount ?? amountDue ?? 0;
+    if (isCredit && runningBal > thisDue) {
+        lines.push(`আগের বাকী: ${tk(runningBal - thisDue)}`);
+        lines.push(`সর্বমোট বাকী: ${tk(runningBal)}`);
     }
 
     // Invoice note

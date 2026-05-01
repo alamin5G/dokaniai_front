@@ -120,10 +120,34 @@ export default function CreditSaleSuccessModal({
                     )}
                     <div className="border-t border-gray-200 pt-2">
                         <Row
-                            label="মোট বাকী"
-                            value={formatTk(result.totalAmount)}
-                            className="font-bold text-base text-amber-700"
+                            label="এই বাকী"
+                            value={formatTk(result.dueAmount ?? result.amountDue)}
+                            className="font-bold text-amber-700"
                         />
+                        {(result.runningBalance ?? 0) > (result.dueAmount ?? result.amountDue ?? 0) && (
+                            <>
+                                <Row
+                                    label="আগের বাকী"
+                                    value={formatTk(
+                                        (result.runningBalance ?? 0) -
+                                        (result.dueAmount ?? result.amountDue ?? 0),
+                                    )}
+                                    className="text-gray-500"
+                                />
+                                <Row
+                                    label="সর্বমোট বাকী"
+                                    value={formatTk(result.runningBalance ?? 0)}
+                                    className="font-bold text-base text-red-600"
+                                />
+                            </>
+                        )}
+                        {(result.runningBalance ?? 0) <= (result.dueAmount ?? result.amountDue ?? 0) && (
+                            <Row
+                                label="মোট বাকী"
+                                value={formatTk(result.dueAmount ?? result.amountDue)}
+                                className="font-bold text-base text-amber-700"
+                            />
+                        )}
                     </div>
                     <Row
                         label="লাভ"
