@@ -64,6 +64,7 @@ export interface SmsReportItem {
     trxId: string;
     smsReceivedAt: string;
     matchStatus: string;
+    smsSource?: "ADMIN" | "SHOPKEEPER";
 }
 
 // ─── Payment Summary ───────────────────────────────────────────────────────

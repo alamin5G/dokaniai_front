@@ -139,6 +139,17 @@ export function useSSE() {
                     // ignore malformed data
                 }
             });
+
+            // ─── Due Payment Events ──────────────────────────────────────
+
+            source.addEventListener("DUE_PAYMENT_STATUS_CHANGED", (e) => {
+                try {
+                    const data = JSON.parse(e.data);
+                    window.dispatchEvent(new CustomEvent("sse:due-payment-status-changed", { detail: data }));
+                } catch {
+                    // ignore malformed data
+                }
+            });
         };
 
         connect();

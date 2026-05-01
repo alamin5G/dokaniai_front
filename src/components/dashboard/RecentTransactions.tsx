@@ -294,7 +294,7 @@ export default function RecentTransactions({ businessId }: RecentTransactionsPro
                 <h4 className="text-xl font-bold">{t("title")}</h4>
                 <button
                     className="text-primary font-bold text-sm hover:underline"
-                    onClick={() => businessId && router.push(buildShopPath(businessId, "/sales"))}
+                    onClick={() => businessId && router.push(buildShopPath(businessId, "/reports"))}
                 >
                     {t("viewAll")}
                 </button>

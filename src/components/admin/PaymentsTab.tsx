@@ -80,6 +80,17 @@ function DeviceStatusBadge({ status }: { status: string }) {
     );
 }
 
+function SmsSourceBadge({ source }: { source?: string }) {
+    if (!source) return <span className="inline-flex items-center rounded-full bg-surface-container-high px-2.5 py-0.5 text-xs font-medium text-on-surface-variant">—</span>;
+    const isShopkeeper = source === "SHOPKEEPER";
+    return (
+        <span className={`inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-xs font-semibold ${isShopkeeper ? "bg-blue-100 text-blue-800" : "bg-purple-100 text-purple-800"}`}>
+            <span className="material-icons text-xs">{isShopkeeper ? "store" : "admin_panel_settings"}</span>
+            {isShopkeeper ? "Shopkeeper" : "Admin"}
+        </span>
+    );
+}
+
 function MatchStatusBadge({ status }: { status: string }) {
     const config: Record<string, string> = {
         MATCHED: "bg-green-100 text-green-800",
@@ -872,12 +883,13 @@ export default function PaymentsTab() {
                                                 <th className="px-6 py-4">{t("table.receiver")}</th>
                                                 <th className="px-6 py-4">{t("table.receivedAt")}</th>
                                                 <th className="px-6 py-4">{t("table.matchStatus")}</th>
+                                                <th className="px-6 py-4">Source</th>
                                                 <th className="px-6 py-4"></th>
                                             </tr>
                                         </thead>
                                         <tbody className="divide-y divide-surface-container">
                                             {filteredSmsPool.length === 0 ? (
-                                                <tr><td colSpan={8} className="px-6 py-12 text-center text-on-surface-variant">{t("messages.noSms")}</td></tr>
+                                                <tr><td colSpan={9} className="px-6 py-12 text-center text-on-surface-variant">{t("messages.noSms")}</td></tr>
                                             ) : (
                                                 filteredSmsPool.map((sms) => (
                                                     <tr key={sms.id} className="hover:bg-surface-container-low transition-colors">
@@ -888,6 +900,7 @@ export default function PaymentsTab() {
                                                         <td className="px-6 py-4 text-sm text-on-surface-variant">{sms.receiverNumber}</td>
                                                         <td className="px-6 py-4 text-sm text-on-surface-variant whitespace-nowrap">{new Date(sms.smsReceivedAt).toLocaleString()}</td>
                                                         <td className="px-6 py-4"><MatchStatusBadge status={sms.matchStatus} /></td>
+                                                        <td className="px-6 py-4"><SmsSourceBadge source={sms.smsSource} /></td>
                                                         <td className="px-6 py-4">
                                                             <button
                                                                 onClick={() => handleDeleteSms(sms.id)}
