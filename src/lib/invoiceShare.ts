@@ -8,8 +8,10 @@ import type { CartItem, SaleCreatedResponse } from "@/types/sale";
 export interface InvoiceBusinessInfo {
     name: string;
     phone?: string | null;
+    whatsappNumber?: string | null;
     email?: string | null;
     contactPerson?: string | null;
+    description?: string | null;
     website?: string | null;
     facebookPage?: string | null;
     address?: string | null;
@@ -18,6 +20,7 @@ export interface InvoiceBusinessInfo {
     postalCode?: string | null;
     country?: string | null;
     receiptFooter?: string | null;
+    invoiceNotes?: string | null;
 }
 
 const tk = (n: number) =>
@@ -35,7 +38,9 @@ export function formatInvoiceText(
 
     // Header — shop info
     lines.push(`🧾 ${business.name || "DokaniAI ইনভয়েস"}`);
+    if (business.description) lines.push(business.description);
     if (business.phone) lines.push(`📞 ${business.phone}`);
+    if (business.whatsappNumber) lines.push(`💬 ${business.whatsappNumber}`);
     if (business.email) lines.push(`📧 ${business.email}`);
     if (business.contactPerson) lines.push(`👤 ${business.contactPerson}`);
     // Build full address conditionally
@@ -78,7 +83,25 @@ export function formatInvoiceText(
         lines.push(`ডিসকাউন্ট: −${tk(sale.totalDiscount)}`);
     }
     lines.push(`মোট: ${tk(sale.totalAmount)}`);
-    lines.push(`পেমেন্ট: ${sale.paymentMethod === "CREDIT" ? "বাকী" : "নগদ"} ✅`);
+
+    // Payment breakdown
+    const isCredit = sale.paymentMethod === "CREDIT";
+    const amountPaid = sale.amountPaid ?? 0;
+    const amountDue = sale.amountDue ?? 0;
+
+    if (isCredit && amountPaid > 0) {
+        lines.push(`পেমেন্ট: ${tk(amountPaid)} (নগদ)`);
+        lines.push(`বাকী: ${tk(amountDue)}`);
+    } else if (isCredit) {
+        lines.push(`পেমেন্ট: বাকী ${tk(amountDue)}`);
+    } else {
+        lines.push(`পেমেন্ট: নগদ ${tk(amountPaid > 0 ? amountPaid : sale.totalAmount)} ✅`);
+    }
+
+    // Invoice note
+    if (business.invoiceNotes) {
+        lines.push(`📝 ${business.invoiceNotes}`);
+    }
 
     // Footer
     lines.push("────────────────────");

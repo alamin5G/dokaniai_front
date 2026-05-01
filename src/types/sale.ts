@@ -159,6 +159,8 @@ export interface SaleCreatedResponse {
     customerName: string | null;
     customerPhone: string | null;
     customerAddress: string | null;
+    amountPaid: number;
+    amountDue: number;
     dueAmount: number | null;
     runningBalance: number | null;
     whatsappReminderUrl: string | null;
