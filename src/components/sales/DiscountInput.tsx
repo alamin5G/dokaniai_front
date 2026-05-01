@@ -31,7 +31,7 @@ export default function DiscountInput({
                         : "text-on-surface-variant hover:bg-surface-container-lowest/50"
                         }`}
                 >
-                    <span className="text-sm">৳</span>
+                    <span className="text-sm"> ৳</span>
                 </button>
                 <button
                     type="button"
