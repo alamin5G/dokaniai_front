@@ -146,6 +146,10 @@ export default function DuePaymentPage() {
         return params.get("c") ?? "";
     }, []);
 
+    // Hydration guard: SSR can't access window.location, so always show loading until mounted
+    const [mounted, setMounted] = useState(false);
+    useEffect(() => { setMounted(true); }, []);
+
     // State
     const [customerInfo, setCustomerInfo] = useState<CustomerDuePublicInfo | null>(null);
     const [isLoading, setIsLoading] = useState(true);
@@ -282,6 +286,15 @@ export default function DuePaymentPage() {
     }, [selectedMfs, customerInfo]);
 
     const theme = selectedMfs ? MFS_THEMES[selectedMfs] : null;
+
+    // ─── Render: Hydration guard (SSR can't read window.location) ──
+    if (!mounted) {
+        return (
+            <div className="min-h-screen bg-surface flex items-center justify-center">
+                <div className="w-10 h-10 rounded-full border-4 border-surface-container-high border-t-primary animate-spin" />
+            </div>
+        );
+    }
 
     // ─── Render: No customer ID ──────────────────────────
     if (!customerId) {
@@ -531,8 +544,8 @@ export default function DuePaymentPage() {
                                             setTrxError(null);
                                         }}
                                         className={`flex flex-col items-center gap-2 p-3 rounded-xl border-2 transition-all ${isSelected
-                                                ? "border-primary bg-primary/5"
-                                                : "border-surface-container-highest bg-surface-container-lowest hover:border-primary/30"
+                                            ? "border-primary bg-primary/5"
+                                            : "border-surface-container-highest bg-surface-container-lowest hover:border-primary/30"
                                             }`}
                                     >
                                         <Image
