@@ -4206,7 +4206,8 @@
         "countLabel": "approved",
         "noCompleted": "No approved payments yet",
         "verificationInfo": "Verification Info",
-        "verifiedAt": "Verified at:"
+        "verifiedAt": "Verified at:",
+        "by": "by"
       },
       "review": {
         "title": "Review Queue",

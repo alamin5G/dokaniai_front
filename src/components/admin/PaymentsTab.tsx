@@ -158,6 +158,8 @@ export default function PaymentsTab() {
     const [settingsLoading, setSettingsLoading] = useState(false);
     const [settingsSaved, setSettingsSaved] = useState(false);
 
+    const [mfsRejectModalItem, setMfsRejectModalItem] = useState<MfsNumberResponse | null>(null);
+    const [mfsRejectReason, setMfsRejectReason] = useState("");
     const [notice, setNotice] = useState<string | null>(null);
     const [error, setError] = useState<string | null>(null);
 
@@ -973,20 +975,58 @@ export default function PaymentsTab() {
                                                                         <span className="material-symbols-outlined text-[14px]">{isMismatch ? "warning" : "sim_card"}</span>
                                                                         {isMismatch ? t("mfsNumbers.mismatch") : `SIM ${mfs.simSlot !== null ? mfs.simSlot + 1 : "?"}`}
                                                                     </p>
+                                                                    <span className="inline-flex items-center gap-0.5 text-[10px] font-bold uppercase tracking-wider bg-surface-container-high px-1.5 py-0.5 rounded-full text-on-surface-variant">
+                                                                        <span className="material-symbols-outlined text-[10px]">account_circle</span>
+                                                                        {(!mfs.accountType || mfs.accountType === "PERSONAL") ? "Personal" : mfs.accountType === "MERCHANT" ? "Merchant" : "Agent"}
+                                                                    </span>
                                                                 </div>
                                                             </div>
                                                         </div>
                                                     </div>
-                                                    <div className="flex sm:flex-col gap-2 shrink-0">
-                                                        <button onClick={async () => { setActionLoading(true); try { await approveMfsNumber(mfs.id); setNotice(t("mfsNumbers.approved")); loadAll(); } catch { setError(t("messages.actionFailed")); } finally { setActionLoading(false); } }} disabled={actionLoading} className="flex-1 sm:flex-none px-6 py-2.5 rounded-full bg-primary text-on-primary font-semibold text-sm hover:bg-primary-container transition-colors flex items-center justify-center gap-2">
-                                                            <span className="material-symbols-outlined text-sm">check_circle</span>
-                                                            {t("mfsNumbers.approve")}
-                                                        </button>
-                                                        <button onClick={async () => { const reason = prompt(t("mfsNumbers.rejectReasonPrompt")); if (reason === null) return; setActionLoading(true); try { await rejectMfsNumber(mfs.id, reason || undefined); setNotice(t("mfsNumbers.rejected")); loadAll(); } catch { setError(t("messages.actionFailed")); } finally { setActionLoading(false); } }} disabled={actionLoading} className="flex-1 sm:flex-none px-6 py-2.5 rounded-full bg-error-container text-on-error-container font-semibold text-sm hover:bg-red-200 transition-colors flex items-center justify-center gap-2">
-                                                            <span className="material-symbols-outlined text-sm">cancel</span>
-                                                            {t("mfsNumbers.reject")}
-                                                        </button>
-                                                    </div>
+                                                    {/* Action buttons — only for PENDING */}
+                                                    {mfsSubTab === "PENDING" && (
+                                                        <div className="flex sm:flex-col gap-2 shrink-0">
+                                                            <button onClick={async () => { setActionLoading(true); try { await approveMfsNumber(mfs.id); setNotice(t("mfsNumbers.approved")); loadAll(); } catch { setError(t("messages.actionFailed")); } finally { setActionLoading(false); } }} disabled={actionLoading} className="flex-1 sm:flex-none px-6 py-2.5 rounded-full bg-primary text-on-primary font-semibold text-sm hover:bg-primary-container transition-colors flex items-center justify-center gap-2">
+                                                                <span className="material-symbols-outlined text-sm">check_circle</span>
+                                                                {t("mfsNumbers.approve")}
+                                                            </button>
+                                                            <button onClick={async () => { const reason = prompt(t("mfsNumbers.rejectReasonPrompt")); if (reason === null) return; setActionLoading(true); try { await rejectMfsNumber(mfs.id, reason || undefined); setNotice(t("mfsNumbers.rejected")); loadAll(); } catch { setError(t("messages.actionFailed")); } finally { setActionLoading(false); } }} disabled={actionLoading} className="flex-1 sm:flex-none px-6 py-2.5 rounded-full bg-error-container text-on-error-container font-semibold text-sm hover:bg-red-200 transition-colors flex items-center justify-center gap-2">
+                                                                <span className="material-symbols-outlined text-sm">cancel</span>
+                                                                {t("mfsNumbers.reject")}
+                                                            </button>
+                                                        </div>
+                                                    )}
+                                                    {/* Status badge + Disable button for APPROVED */}
+                                                    {mfsSubTab === "APPROVED" && (
+                                                        <div className="flex flex-col items-center gap-1.5 shrink-0">
+                                                            <span className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-emerald-100 text-emerald-700 text-sm font-bold">
+                                                                <span className="material-symbols-outlined text-sm" style={{ fontVariationSettings: "'FILL' 1" }}>check_circle</span>
+                                                                অনুমোদিত
+                                                            </span>
+                                                            {mfs.approvedByName && (
+                                                                <span className="text-[10px] text-on-surface-variant font-medium">{t("approved.by")}: {mfs.approvedByName}</span>
+                                                            )}
+                                                            {mfs.approvedAt && (
+                                                                <span className="text-[10px] text-on-surface-variant">{new Date(mfs.approvedAt).toLocaleDateString()}</span>
+                                                            )}
+                                                            <button onClick={() => { setMfsRejectModalItem(mfs); setMfsRejectReason(""); }} className="mt-1 px-4 py-1.5 rounded-full bg-error-container text-on-error-container text-xs font-semibold hover:bg-red-200 transition-colors flex items-center gap-1">
+                                                                <span className="material-symbols-outlined text-xs">cancel</span>
+                                                                নিষ্ক্রিয় করুন
+                                                            </button>
+                                                        </div>
+                                                    )}
+                                                    {/* Status badge for REJECTED */}
+                                                    {mfsSubTab === "REJECTED" && (
+                                                        <div className="flex flex-col items-center gap-1 shrink-0">
+                                                            <span className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-error/10 text-error text-sm font-bold">
+                                                                <span className="material-symbols-outlined text-sm">cancel</span>
+                                                                প্রত্যাখ্যাত
+                                                            </span>
+                                                            {mfs.rejectionReason && (
+                                                                <span className="text-[10px] text-on-surface-variant max-w-[180px] text-center">{mfs.rejectionReason}</span>
+                                                            )}
+                                                        </div>
+                                                    )}
                                                 </div>
                                             </div>
                                         );
@@ -1266,6 +1306,67 @@ export default function PaymentsTab() {
                         <div className="mt-6 flex gap-3 justify-end">
                             <button onClick={() => { setRevokeModalDevice(null); setRevokeReason(""); }} className="rounded-xl px-5 py-2.5 text-sm font-medium text-on-surface-variant hover:bg-surface-container-low transition-colors">{t("actions.cancel")}</button>
                             <button onClick={handleRevoke} disabled={actionLoading} className="rounded-xl bg-error-container text-on-error-container px-5 py-2.5 text-sm font-bold hover:bg-red-200 disabled:opacity-50 transition-colors">{actionLoading ? "..." : t("modal.confirmRevoke")}</button>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* ═══════════════════════════════════════════════════ */}
+            {/* MFS DISABLE MODAL — reject an approved MFS number */}
+            {/* ═══════════════════════════════════════════════════ */}
+            {mfsRejectModalItem && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
+                    <div className="w-full max-w-md rounded-2xl bg-surface-container-lowest p-6 shadow-xl">
+                        <div className="flex items-center gap-3 mb-4">
+                            <div className="w-10 h-10 rounded-full bg-error-container flex items-center justify-center text-error shrink-0">
+                                <span className="material-symbols-outlined">cancel</span>
+                            </div>
+                            <div>
+                                <h3 className="text-lg font-bold text-on-surface">নম্বর নিষ্ক্রিয় করুন</h3>
+                                <p className="text-xs text-on-surface-variant">এই অনুমোদিত MFS নম্বরটি নিষ্ক্রিয় করার কারণ দিন</p>
+                            </div>
+                        </div>
+                        <div className="rounded-xl bg-surface-container-low p-4 space-y-2 mb-4">
+                            <div className="flex justify-between">
+                                <span className="text-sm text-on-surface-variant">ব্যবহারকারী</span>
+                                <span className="text-sm font-medium text-on-surface">{mfsRejectModalItem.userName || "Unknown"}</span>
+                            </div>
+                            <div className="flex justify-between">
+                                <span className="text-sm text-on-surface-variant">নম্বর</span>
+                                <span className="text-sm font-bold text-primary">{mfsRejectModalItem.mfsNumber}</span>
+                            </div>
+                            <div className="flex justify-between">
+                                <span className="text-sm text-on-surface-variant">MFS</span>
+                                <span className="text-sm font-medium text-on-surface">{mfsRejectModalItem.mfsType}</span>
+                            </div>
+                        </div>
+                        <label className="block">
+                            <span className="text-sm font-medium text-on-surface-variant">নিষ্ক্রিয় করার কারণ *</span>
+                            <textarea
+                                value={mfsRejectReason}
+                                onChange={(e) => setMfsRejectReason(e.target.value)}
+                                rows={3}
+                                placeholder="যেমন: সন্দেহজনক কার্যকলাপ, ব্যবহারকারীর অনুরোধ..."
+                                className="mt-1 w-full rounded-xl bg-surface-container-low p-3 text-sm text-on-surface border border-outline-variant/20 focus:border-error focus:outline-none resize-none"
+                            />
+                        </label>
+                        <div className="mt-5 flex gap-3 justify-end">
+                            <button onClick={() => { setMfsRejectModalItem(null); setMfsRejectReason(""); }} className="rounded-xl px-5 py-2.5 text-sm font-medium text-on-surface-variant hover:bg-surface-container-low transition-colors">বাতিল</button>
+                            <button onClick={async () => {
+                                if (!mfsRejectReason.trim()) return;
+                                setActionLoading(true);
+                                try {
+                                    await rejectMfsNumber(mfsRejectModalItem.id, mfsRejectReason);
+                                    setNotice("নম্বর সফলভাবে নিষ্ক্রিয় করা হয়েছে");
+                                    setMfsRejectModalItem(null);
+                                    setMfsRejectReason("");
+                                    loadAll();
+                                } catch { setError(t("messages.actionFailed")); }
+                                finally { setActionLoading(false); }
+                            }} disabled={actionLoading || !mfsRejectReason.trim()} className="rounded-xl bg-error-container text-on-error-container px-5 py-2.5 text-sm font-bold hover:bg-red-200 disabled:opacity-50 transition-colors flex items-center gap-2">
+                                <span className="material-symbols-outlined text-sm">cancel</span>
+                                {actionLoading ? "..." : "নিষ্ক্রিয় করুন"}
+                            </button>
                         </div>
                     </div>
                 </div>
