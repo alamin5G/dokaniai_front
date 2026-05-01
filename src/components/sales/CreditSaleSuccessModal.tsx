@@ -66,7 +66,7 @@ export default function CreditSaleSuccessModal({
     /** WhatsApp deep-link for due reminder per SRS §6.11.1 */
     const displayName = result.customerName || customerName || "ক্রেতা";
     const whatsappReminderLink = result.whatsappReminderUrl ?? `https://wa.me/?text=${encodeURIComponent(
-        `আসসালামু আলাইকুম ${displayName}, আপনার বাকী ${formatTk(result.totalAmount)} টাকা (${result.invoiceNumber})। অনুগ্রহ করে শীঘ্রই পরিশোধ করুন। - ${businessInfo.name}`,
+        `আসসালামু আলাইকুম ${displayName}, আপনার বাকী ${formatTk(result.runningBalance ?? result.dueAmount ?? result.amountDue ?? result.totalAmount)} টাকা (${result.invoiceNumber})। অনুগ্রহ করে শীঘ্রই পরিশোধ করুন। - ${businessInfo.name}`,
     )}`;
 
     return (
@@ -104,7 +104,7 @@ export default function CreditSaleSuccessModal({
                         </span>
                     </div>
                     <p className="mt-1 text-xs text-amber-700">
-                        বাকী যোগ করা হয়েছে: <strong>{formatTk(result.totalAmount)}</strong>
+                        বাকী যোগ করা হয়েছে: <strong>{formatTk(result.dueAmount ?? result.amountDue ?? result.totalAmount)}</strong>
                     </p>
                 </div>
 

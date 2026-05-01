@@ -98,12 +98,16 @@ export function formatInvoiceText(
         lines.push(`পরিশোধ: নগদ ${tk(amountPaid > 0 ? amountPaid : sale.totalAmount)} ✅`);
     }
 
-    // Show total due if customer has previous outstanding
+    // Show total due for credit sales
     const runningBal = sale.runningBalance ?? 0;
     const thisDue = sale.dueAmount ?? amountDue ?? 0;
     if (isCredit && runningBal > thisDue) {
         lines.push(`আগের বাকী: ${tk(runningBal - thisDue)}`);
         lines.push(`সর্বমোট বাকী: ${tk(runningBal)}`);
+    } else if (isCredit && runningBal > 0 && runningBal === thisDue) {
+        lines.push(`মোট বাকী: ${tk(runningBal)}`);
+    } else if (isCredit) {
+        lines.push(`মোট বাকী: ${tk(thisDue)}`);
     }
 
     // Invoice note
