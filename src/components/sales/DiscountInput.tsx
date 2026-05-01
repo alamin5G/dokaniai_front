@@ -19,41 +19,46 @@ export default function DiscountInput({
     const t = useTranslations("shop.sales");
 
     return (
-        <div className="space-y-2">
-            <label className="text-xs font-bold uppercase tracking-wide text-on-surface-variant">
+        <div className="flex items-center gap-1.5">
+            {/* Label — compact, doesn't wrap */}
+            <span className="shrink-0 text-[11px] font-bold uppercase tracking-wide text-on-surface-variant whitespace-nowrap">
                 {t("cart.discount.label")}
-            </label>
-            <div className="flex gap-2 rounded-xl bg-surface-container-high p-1">
+            </span>
+
+            {/* Compact toggle pills */}
+            <div className="flex shrink-0 rounded-lg bg-surface-container-high p-0.5">
                 <button
                     type="button"
                     onClick={() => onMethodChange("FIXED")}
-                    className={`flex flex-1 items-center justify-center gap-2 rounded-lg py-2 font-bold transition-all ${method === "FIXED"
+                    title={t("cart.discount.fixed")}
+                    className={`flex items-center justify-center rounded-md px-2 py-1 text-xs font-bold transition-all ${method === "FIXED"
                             ? "bg-surface-container-lowest text-primary shadow-sm"
                             : "text-on-surface-variant hover:bg-surface-container-lowest/50"
                         }`}
                 >
-                    <span className="material-symbols-outlined text-sm">payments</span>
-                    {t("cart.discount.fixed")}
+                    <span className="text-sm">৳</span>
                 </button>
                 <button
                     type="button"
                     onClick={() => onMethodChange("PERCENTAGE")}
-                    className={`flex flex-1 items-center justify-center gap-2 rounded-lg py-2 font-bold transition-all ${method === "PERCENTAGE"
+                    title={t("cart.discount.percentage")}
+                    className={`flex items-center justify-center rounded-md px-2 py-1 text-xs font-bold transition-all ${method === "PERCENTAGE"
                             ? "bg-surface-container-lowest text-primary shadow-sm"
                             : "text-on-surface-variant hover:bg-surface-container-lowest/50"
                         }`}
                 >
-                    <span className="material-symbols-outlined text-sm">percent</span>
-                    {t("cart.discount.percentage")}
+                    <span className="text-sm">%</span>
                 </button>
             </div>
+
+            {/* Value input — fills remaining space */}
             <input
                 type="number"
                 min="0"
                 step={method === "PERCENTAGE" ? "0.1" : "1"}
                 value={value}
                 onChange={(e) => onValueChange(e.target.value)}
-                className="mt-2 w-full rounded-xl bg-surface-container-low py-2 px-4 text-center font-bold text-on-surface outline-none focus:ring-1 focus:ring-primary"
+                className="w-full min-w-0 rounded-lg bg-surface-container-low py-1 px-2.5 text-right text-sm font-bold text-on-surface outline-none focus:ring-1 focus:ring-primary"
                 placeholder={t("cart.discount.placeholder")}
             />
         </div>
