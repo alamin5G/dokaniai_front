@@ -117,33 +117,48 @@ export default function RegisterPage() {
       heading={t("heading")}
       subheading={t("subheading")}
     >
-      <div className="flex gap-2 p-1.5 bg-surface-container rounded-full mb-8 w-fit mx-auto md:mx-0">
-        <button
-          type="button"
-          onClick={() => { setTab("phone"); setFieldErrors({}); setErrorText(""); }}
-          className={`px-6 py-2.5 rounded-full font-bold shadow-sm text-sm transition-colors ${tab === "phone" ? "bg-surface-container-lowest text-primary" : "text-on-surface-variant hover:bg-surface-container-high"
-            }`}
-        >
-          {t("phoneTab")}
-        </button>
-        <button
-          type="button"
-          onClick={() => { setTab("email"); setFieldErrors({}); setErrorText(""); }}
-          className={`px-6 py-2.5 rounded-full font-bold shadow-sm text-sm transition-colors ${tab === "email" ? "bg-surface-container-lowest text-primary" : "text-on-surface-variant hover:bg-surface-container-high"
-            }`}
-        >
-          {t("emailTab")}
-        </button>
+      {/* Animated Tab Slider */}
+      <div className="flex p-1.5 bg-surface-container/80 backdrop-blur-sm rounded-2xl mb-8 w-fit mx-auto md:mx-0 border border-outline-variant/10">
+        <div className="relative flex">
+          {/* Sliding indicator */}
+          <div
+            className="absolute top-0 bottom-0 rounded-xl bg-surface-container-lowest shadow-md transition-all duration-300 ease-out"
+            style={{
+              width: tab === "phone" ? "50%" : "50%",
+              left: tab === "phone" ? "0%" : "50%",
+            }}
+          />
+          <button
+            type="button"
+            onClick={() => { setTab("phone"); setFieldErrors({}); setErrorText(""); }}
+            className={`relative z-10 px-6 py-2.5 rounded-xl font-bold text-sm transition-colors duration-300 ${tab === "phone" ? "text-primary" : "text-on-surface-variant/60 hover:text-on-surface-variant"}`}
+          >
+            <span className="flex items-center gap-2">
+              <span className="material-symbols-outlined text-lg">phone_iphone</span>
+              {t("phoneTab")}
+            </span>
+          </button>
+          <button
+            type="button"
+            onClick={() => { setTab("email"); setFieldErrors({}); setErrorText(""); }}
+            className={`relative z-10 px-6 py-2.5 rounded-xl font-bold text-sm transition-colors duration-300 ${tab === "email" ? "text-primary" : "text-on-surface-variant/60 hover:text-on-surface-variant"}`}
+          >
+            <span className="flex items-center gap-2">
+              <span className="material-symbols-outlined text-lg">mail</span>
+              {t("emailTab")}
+            </span>
+          </button>
+        </div>
       </div>
 
-      <form onSubmit={handleSubmit} className="space-y-6">
+      <form onSubmit={handleSubmit} className="space-y-5">
         <FormInput
           label={t("fullNameLabel")}
           type="text"
           placeholder={t("fullNamePlaceholder")}
-          icon="badge"
+          icon="person"
           value={fullName}
-          onChange={(e) => { setFullName(e.target.value); setFieldErrors((p) => { const n = {...p}; delete n.name; return n; }); }}
+          onChange={(e) => { setFullName(e.target.value); setFieldErrors((p) => { const n = { ...p }; delete n.name; return n; }); }}
           error={fieldErrors.name}
         />
 
@@ -153,9 +168,9 @@ export default function RegisterPage() {
             type="tel"
             prefixText={t("phonePrefix")}
             placeholder={t("phonePlaceholder")}
-            icon="call"
+            icon="phone_iphone"
             value={phone}
-            onChange={(e) => { setPhone(e.target.value); setFieldErrors((p) => { const n = {...p}; delete n.phone; return n; }); }}
+            onChange={(e) => { setPhone(e.target.value); setFieldErrors((p) => { const n = { ...p }; delete n.phone; return n; }); }}
             error={fieldErrors.phone}
           />
         ) : (
@@ -164,18 +179,18 @@ export default function RegisterPage() {
               label={t("emailLabel")}
               type="email"
               placeholder={t("emailPlaceholder")}
-              icon="email"
+              icon="mail"
               value={email}
-              onChange={(e) => { setEmail(e.target.value); setFieldErrors((p) => { const n = {...p}; delete n.email; return n; }); }}
+              onChange={(e) => { setEmail(e.target.value); setFieldErrors((p) => { const n = { ...p }; delete n.email; return n; }); }}
               error={fieldErrors.email}
             />
             <FormInput
               label={t("phoneLabel")}
               type="tel"
               placeholder={t("phonePlaceholder")}
-              icon="call"
+              icon="phone_iphone"
               value={phone}
-              onChange={(e) => { setPhone(e.target.value); setFieldErrors((p) => { const n = {...p}; delete n.phone; return n; }); }}
+              onChange={(e) => { setPhone(e.target.value); setFieldErrors((p) => { const n = { ...p }; delete n.phone; return n; }); }}
               error={fieldErrors.phone}
             />
           </>
@@ -187,7 +202,7 @@ export default function RegisterPage() {
           placeholder={t("referralCodePlaceholder")}
           icon="card_giftcard"
           value={referralCode}
-          onChange={(e) => { setReferralCode(e.target.value); setFieldErrors((p) => { const n = {...p}; delete n.referralCode; return n; }); }}
+          onChange={(e) => { setReferralCode(e.target.value); setFieldErrors((p) => { const n = { ...p }; delete n.referralCode; return n; }); }}
           error={fieldErrors.referralCode}
         />
 
@@ -196,20 +211,20 @@ export default function RegisterPage() {
             label={t("passwordLabel")}
             type="password"
             placeholder={t("passwordPlaceholder")}
-            icon="lock"
             value={password}
-            onChange={(e) => { setPassword(e.target.value); setFieldErrors((p) => { const n = {...p}; delete n.password; return n; }); }}
+            onChange={(e) => { setPassword(e.target.value); setFieldErrors((p) => { const n = { ...p }; delete n.password; return n; }); }}
             error={fieldErrors.password}
           />
         )}
 
-        <label className="flex items-start gap-4 p-4 rounded-[1rem] bg-surface-container-low cursor-pointer group">
+        {/* Terms checkbox - elegant design */}
+        <label className="flex items-start gap-3 p-4 rounded-2xl bg-surface-container/50 backdrop-blur-sm cursor-pointer group border border-outline-variant/5 hover:border-outline-variant/15 transition-colors">
           <div className="relative flex items-center mt-0.5">
             <input
               type="checkbox"
               checked={agreed}
               onChange={(e) => setAgreed(e.target.checked)}
-              className="peer h-5 w-5 rounded border-none bg-surface-container-highest text-primary focus:ring-offset-0 focus:ring-2 focus:ring-primary-fixed-dim cursor-pointer"
+              className="peer h-5 w-5 rounded-md border-2 border-outline-variant/30 bg-surface-container-lowest text-primary focus:ring-offset-0 focus:ring-2 focus:ring-primary/30 cursor-pointer transition-all checked:border-primary"
             />
           </div>
           <span className="text-sm text-on-surface-variant leading-relaxed select-none">
@@ -220,7 +235,12 @@ export default function RegisterPage() {
           </span>
         </label>
 
-        {errorText && <p className="text-error text-sm font-semibold">{errorText}</p>}
+        {errorText && (
+          <div className="flex items-center gap-2 p-3 rounded-xl bg-error/5 border border-error/10">
+            <span className="material-symbols-outlined text-error text-lg">error_circle</span>
+            <p className="text-error text-sm font-semibold">{errorText}</p>
+          </div>
+        )}
 
         <GradientButton type="submit" loading={isLoading}>
           <span>{tc("nextStep")}</span>
@@ -228,9 +248,13 @@ export default function RegisterPage() {
         </GradientButton>
       </form>
 
-      <div className="mt-8 pt-8 border-t border-outline-variant/20 text-center">
-        <p className="text-on-surface-variant">
-          {t("alreadyHaveAccount")} <Link href="/login" className="text-primary font-bold hover:underline">{t("loginHere")}</Link>
+      <div className="mt-8 pt-8 border-t border-outline-variant/10 text-center">
+        <p className="text-on-surface-variant text-sm">
+          {t("alreadyHaveAccount")}{" "}
+          <Link href="/login" className="text-primary font-bold hover:underline inline-flex items-center gap-1 group">
+            {t("loginHere")}
+            <span className="material-symbols-outlined text-sm group-hover:translate-x-0.5 transition-transform">arrow_forward</span>
+          </Link>
         </p>
       </div>
     </AuthLayout>

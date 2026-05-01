@@ -840,6 +840,8 @@
       "success": "সফল",
       "return": "রিটার্ন",
       "expense": "খরচ",
+      "duePayment": "বকেয়া পরিশোধ",
+      "dueAdjustment": "সমন্বয়",
       "noTransactions": "এখনো কোনো লেনদেন নেই"
     },
     "lowStock": {

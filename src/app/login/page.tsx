@@ -33,7 +33,6 @@ export default function LoginPage() {
 
   const [identifier, setIdentifier] = useState("");
   const [password, setPassword] = useState("");
-  const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [errorText, setErrorText] = useState("");
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
@@ -74,7 +73,6 @@ export default function LoginPage() {
       }
 
       if (role === "ADMIN" || role === "SUPER_ADMIN") {
-        // Admin — commit tokens immediately and redirect
         setTokens(tokens.accessToken, tokens.refreshToken, tokens.userId, tokens.status);
         setUserRole(role);
         router.push("/admin");
@@ -149,7 +147,6 @@ export default function LoginPage() {
     }
   };
 
-  // Wait for hydration, or redirect if authenticated
   if (!hydrated || isAuthenticated) {
     return null;
   }
@@ -159,65 +156,59 @@ export default function LoginPage() {
       heading={t("heading")}
       subheading={t("subheading")}
     >
-      <form onSubmit={handleLoginSubmit} className="space-y-6">
+      <form onSubmit={handleLoginSubmit} className="space-y-5">
         <FormInput
           label={t("identifierLabel")}
           type="text"
           placeholder={t("identifierPlaceholder")}
+          icon="account_circle"
           value={identifier}
-          onChange={(e) => { setIdentifier(e.target.value); setFieldErrors((p) => { const n = {...p}; delete n.identifier; return n; }); }}
+          onChange={(e) => { setIdentifier(e.target.value); setFieldErrors((p) => { const n = { ...p }; delete n.identifier; return n; }); }}
           error={fieldErrors.identifier}
         />
 
         <div className="space-y-1">
-          <div className="flex items-center justify-between">
-            <label className="block text-sm font-bold text-on-surface-variant flex-grow">{t("passwordLabel")}</label>
-            <Link href="/forgot-password" className="text-secondary font-bold text-sm tracking-wide hover:underline text-right shrink-0">
+          <div className="flex items-center justify-end -mb-2">
+            <Link href="/forgot-password" className="text-secondary text-xs font-bold tracking-wide hover:underline z-10 mr-4">
               {t("forgotPassword")}
             </Link>
           </div>
-          <div className="relative group">
-            <span className="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-on-surface-variant/50 group-focus-within:text-primary transition-colors text-xl" data-icon="lock">
-              lock
-            </span>
-            <input
-              type={showPassword ? "text" : "password"}
-              className="w-full bg-surface-container-low border-2 border-transparent focus:border-primary/20 focus:bg-surface-container-lowest rounded-xl py-3.5 pl-12 pr-12 text-on-surface placeholder:text-on-surface-variant/40 font-medium transition-all shadow-sm group-focus-within:shadow-md outline-none"
-              placeholder={t("passwordPlaceholder")}
-              value={password}
-              onChange={(e) => { setPassword(e.target.value); setFieldErrors((p) => { const n = {...p}; delete n.password; return n; }); }}
-            />
-            <button
-              type="button"
-              onClick={() => setShowPassword(!showPassword)}
-              className="absolute right-4 top-1/2 -translate-y-1/2 text-on-surface-variant/50 hover:text-on-surface-variant transition-colors"
-              tabIndex={-1}
-              aria-label={showPassword ? "Hide password" : "Show password"}
-            >
-              <span className="material-symbols-outlined text-xl">{showPassword ? "visibility_off" : "visibility"}</span>
-            </button>
-          </div>
-          {fieldErrors.password && <p className="text-sm text-error ml-1 font-semibold">{fieldErrors.password}</p>}
+          <FormInput
+            label={t("passwordLabel")}
+            type="password"
+            placeholder={t("passwordPlaceholder")}
+            value={password}
+            onChange={(e) => { setPassword(e.target.value); setFieldErrors((p) => { const n = { ...p }; delete n.password; return n; }); }}
+            error={fieldErrors.password}
+          />
         </div>
 
-        {errorText && <p className="text-error text-sm font-semibold text-center">{errorText}</p>}
+        {errorText && (
+          <div className="flex items-center gap-2 p-3 rounded-xl bg-error/5 border border-error/10">
+            <span className="material-symbols-outlined text-error text-lg">error_circle</span>
+            <p className="text-error text-sm font-semibold">{errorText}</p>
+          </div>
+        )}
 
         <GradientButton loading={isLoading} type="submit">
           <span>{t("submit")}</span>
-          <span className="material-symbols-outlined text-xl" data-icon="arrow_forward">arrow_forward</span>
+          <span className="material-symbols-outlined">arrow_forward</span>
         </GradientButton>
       </form>
 
       <div className="my-8 flex items-center gap-4">
-        <div className="h-[1px] flex-grow bg-outline-variant opacity-20"></div>
-        <span className="text-on-surface-variant text-xs font-bold uppercase tracking-widest">{tc("or")}</span>
-        <div className="h-[1px] flex-grow bg-outline-variant opacity-20"></div>
+        <div className="h-px flex-grow bg-gradient-to-r from-transparent via-outline-variant/20 to-transparent"></div>
+        <span className="text-on-surface-variant/50 text-xs font-bold uppercase tracking-widest">{tc("or")}</span>
+        <div className="h-px flex-grow bg-gradient-to-l from-transparent via-outline-variant/20 to-transparent"></div>
       </div>
 
       <div className="text-center">
-        <p className="text-on-surface-variant font-medium">
-          {t("newAccount")}
-          <Link href="/register" className="text-secondary font-bold hover:underline ml-1">{t("registerHere")}</Link>
+        <p className="text-on-surface-variant text-sm font-medium">
+          {t("newAccount")}{" "}
+          <Link href="/register" className="text-primary font-bold hover:underline inline-flex items-center gap-1 group">
+            {t("registerHere")}
+            <span className="material-symbols-outlined text-sm group-hover:translate-x-0.5 transition-transform">arrow_forward</span>
+          </Link>
         </p>
       </div>
     </AuthLayout>

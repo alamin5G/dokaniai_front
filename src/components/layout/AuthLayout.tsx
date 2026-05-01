@@ -17,15 +17,16 @@ export function AuthLayout({ children, heading, subheading }: AuthLayoutProps) {
 
   return (
     <main className="w-full max-w-[1200px] mx-auto grid md:grid-cols-12 items-center gap-8 md:gap-16 pt-8 md:pt-0 min-h-screen relative overflow-hidden">
-      {/* Decorative background blobs */}
-      <div className="absolute top-20 -left-32 w-72 h-72 bg-primary-container/10 rounded-full blur-3xl pointer-events-none" />
-      <div className="absolute -bottom-20 right-10 w-80 h-80 bg-secondary/5 rounded-full blur-3xl pointer-events-none" />
+      {/* Animated background blobs */}
+      <div className="absolute top-10 -left-40 w-96 h-96 bg-primary/5 rounded-full blur-[100px] pointer-events-none animate-pulse" />
+      <div className="absolute -bottom-32 right-0 w-[28rem] h-[28rem] bg-secondary/5 rounded-full blur-[120px] pointer-events-none animate-pulse" style={{ animationDuration: "4s" }} />
+      <div className="absolute top-1/2 left-1/3 w-64 h-64 bg-primary-container/5 rounded-full blur-[80px] pointer-events-none animate-pulse" style={{ animationDuration: "6s" }} />
 
       {/* Left Side: Editorial Branding */}
       <section className="md:col-span-5 hidden md:flex flex-col space-y-8 pl-8 animate-auth-fade-in-up">
         <div className="flex items-center gap-3">
-          <Link href="/" className="flex items-center gap-3 hover:opacity-80 transition-opacity">
-            <div className="w-12 h-12 bg-primary-container rounded-[1rem] flex items-center justify-center">
+          <Link href="/" className="flex items-center gap-3 hover:opacity-80 transition-opacity group/logo">
+            <div className="w-12 h-12 bg-gradient-to-br from-primary to-primary-container rounded-[1rem] flex items-center justify-center shadow-lg group-hover/logo:shadow-xl transition-shadow">
               <span className="material-symbols-outlined text-on-primary-container text-3xl" data-icon="book_2">book_2</span>
             </div>
             <h1 className="text-3xl font-extrabold tracking-tight text-primary font-headline">DokaniAI</h1>
@@ -46,9 +47,9 @@ export function AuthLayout({ children, heading, subheading }: AuthLayoutProps) {
             height={600}
           />
           {/* Gradient overlay */}
-          <div className="absolute inset-0 bg-gradient-to-t from-primary/50 via-primary/10 to-transparent" />
+          <div className="absolute inset-0 bg-gradient-to-t from-primary/60 via-primary/10 to-transparent" />
 
-          {/* Glass AI Overlay — matching home page hero style */}
+          {/* Glass AI Overlay */}
           <div className="absolute bottom-5 left-5 right-5 p-5 rounded-2xl border border-white/20 shadow-2xl transition-all duration-300 group-hover:translate-y-[-4px]"
             style={{
               background: "linear-gradient(135deg, rgba(0, 80, 58, 0.9) 0%, rgba(0, 106, 78, 0.8) 100%)",
@@ -89,7 +90,9 @@ export function AuthLayout({ children, heading, subheading }: AuthLayoutProps) {
         {/* Mobile Header Only */}
         <div className="md:hidden flex flex-col items-center mb-8 text-center pt-8">
           <Link href="/" className="flex flex-col items-center hover:opacity-80 transition-opacity">
-            <span className="material-symbols-outlined text-primary text-5xl mb-2" data-icon="auto_stories">auto_stories</span>
+            <div className="w-14 h-14 bg-gradient-to-br from-primary to-primary-container rounded-2xl flex items-center justify-center shadow-lg mb-3">
+              <span className="material-symbols-outlined text-on-primary-container text-3xl" data-icon="auto_stories">auto_stories</span>
+            </div>
             <h1 className="text-2xl font-black text-primary">DokaniAI</h1>
           </Link>
         </div>
@@ -100,20 +103,22 @@ export function AuthLayout({ children, heading, subheading }: AuthLayoutProps) {
         </div>
 
         {/* Auth Card */}
-        <div className="bg-surface-container-lowest rounded-[2rem] p-8 shadow-lg relative overflow-hidden border border-outline-variant/10">
-          {/* Decorative gradient top accent */}
+        <div className="bg-surface-container-lowest/95 backdrop-blur-xl rounded-[2rem] p-8 shadow-2xl relative overflow-hidden border border-outline-variant/10">
+          {/* Gradient top accent */}
           <div className="absolute top-0 left-0 right-0 h-1 rounded-t-[2rem]" style={{ background: "linear-gradient(90deg, #003727 0%, #00503a 40%, #0061a4 100%)" }} />
+          {/* Subtle corner glow */}
+          <div className="absolute -top-20 -right-20 w-40 h-40 bg-primary/5 rounded-full blur-3xl pointer-events-none" />
 
           <div className="mb-8">
             <h3 className="text-2xl font-bold text-on-surface mb-2">{heading}</h3>
-            <p className="text-on-surface-variant text-sm">{subheading}</p>
+            <p className="text-on-surface-variant text-sm leading-relaxed">{subheading}</p>
           </div>
 
           {children}
         </div>
       </section>
 
-      {/* AI Voice Assistant FAB (Global to layout) */}
+      {/* AI Voice Assistant FAB */}
       <button
         className="fixed bottom-6 right-6 w-16 h-16 rounded-full flex items-center justify-center shadow-2xl transition-all hover:scale-105 active:scale-95 group z-40"
         style={{ background: "linear-gradient(135deg, #0061a4 0%, #77b7ff 100%)" }}
