@@ -1,6 +1,7 @@
 "use client";
 
 import { useTranslations } from "next-intl";
+import { Banknote, Percent } from "lucide-react";
 import type { DiscountMethod } from "@/types/sale";
 
 interface DiscountInputProps {
@@ -31,7 +32,10 @@ export default function DiscountInput({
                         : "text-on-surface-variant hover:bg-surface-container-lowest/50"
                         }`}
                 >
-                    <span className="text-sm"> ৳</span>
+                    <span className="flex items-center gap-1 text-sm">
+                        <Banknote className="h-3.5 w-3.5" />
+                        <span>৳</span>
+                    </span>
                 </button>
                 <button
                     type="button"
@@ -42,7 +46,10 @@ export default function DiscountInput({
                         : "text-on-surface-variant hover:bg-surface-container-lowest/50"
                         }`}
                 >
-                    <span className="text-sm">%</span>
+                    <span className="flex items-center gap-1 text-sm">
+                        <Percent className="h-3.5 w-3.5" />
+                        <span>%</span>
+                    </span>
                 </button>
             </div>
 
