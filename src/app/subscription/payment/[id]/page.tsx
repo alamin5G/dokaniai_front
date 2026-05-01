@@ -205,6 +205,7 @@ export default function SubscriptionPaymentStatusPage() {
     }
     if (statusData?.status === "FAILED" || statusData?.status === "EXPIRED" || statusData?.status === "REJECTED") {
       sessionStorage.removeItem("payment_trx_submitted");
+      sessionStorage.removeItem("payment_checkout");
     }
   }, [statusData?.status]);
 

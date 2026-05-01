@@ -4,6 +4,7 @@ import { getCurrentUser, type CurrentUser } from "@/lib/userAccountApi";
 import { useAuthStore } from "@/store/authStore";
 import { useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
+import { createPortal } from "react-dom";
 import { useCallback, useEffect, useRef, useState } from "react";
 
 const AVATAR_COLORS = [
@@ -50,30 +51,52 @@ interface ConfirmDialogProps {
 }
 
 function ConfirmDialog({ open, message, confirmLabel, cancelLabel, onConfirm, onCancel }: ConfirmDialogProps) {
-  if (!open) return null;
-  return (
-    <div className="fixed inset-0 z-[60] flex items-center justify-center">
-      <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" onClick={onCancel} />
-      <div className="relative bg-surface-container-lowest rounded-2xl p-6 max-w-xs w-full mx-4 shadow-xl">
-        <p className="text-on-surface mb-5">{message}</p>
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  if (!open || !mounted) return null;
+
+  return createPortal(
+    <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4">
+      {/* Backdrop */}
+      <div
+        className="absolute inset-0 bg-black/50 backdrop-blur-sm animate-modal-backdrop-in"
+        onClick={onCancel}
+      />
+      {/* Dialog */}
+      <div className="relative bg-surface-container-lowest rounded-[1.5rem] p-6 max-w-sm w-full shadow-2xl animate-modal-content-in border border-outline-variant/20">
+        {/* Icon */}
+        <div className="flex justify-center mb-4">
+          <div className="w-14 h-14 rounded-full bg-error/10 flex items-center justify-center">
+            <IconLogout className="w-6 h-6 text-error" />
+          </div>
+        </div>
+        {/* Message */}
+        <p className="text-on-surface text-center text-lg font-semibold mb-6">{message}</p>
+        {/* Actions */}
         <div className="flex gap-3">
           <button
             type="button"
             onClick={onCancel}
-            className="flex-1 py-2.5 rounded-xl font-bold bg-surface-container-high text-on-surface transition-colors hover:bg-surface-container-highest"
+            className="flex-1 py-3 rounded-xl font-bold bg-surface-container-high text-on-surface transition-all hover:bg-surface-container-highest active:scale-[0.97]"
           >
             {cancelLabel}
           </button>
           <button
             type="button"
             onClick={onConfirm}
-            className="flex-1 py-2.5 rounded-xl font-bold text-white bg-error transition-colors hover:bg-error/90"
+            className="flex-1 py-3 rounded-xl font-bold text-white transition-all hover:opacity-90 active:scale-[0.97]"
+            style={{ background: "linear-gradient(135deg, #ba1a1a 0%, #dc2626 100%)" }}
           >
             {confirmLabel}
           </button>
         </div>
       </div>
-    </div>
+    </div>,
+    document.body
   );
 }
 

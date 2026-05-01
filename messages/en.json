@@ -518,7 +518,10 @@
     "brandHighlight": "Digital Ledger",
     "brandDescription": "Manage your shop's accounts safely and easily with modern technology.",
     "smartInsight": "Smart Insight",
-    "insightSample": "Your due amount has decreased by 12% compared to last week."
+    "insightSample": "Your due amount has decreased by 12% compared to last week.",
+    "trustFree": "Free to start",
+    "trustSecure": "Bank-grade security",
+    "trustSupport": "24/7 support"
   },
   "sessions": {
     "heading": "Active Sessions",
