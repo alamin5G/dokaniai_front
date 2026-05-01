@@ -837,6 +837,8 @@
       "success": "Success",
       "return": "Return",
       "expense": "Expense",
+      "duePayment": "Due Payment",
+      "dueAdjustment": "Adjustment",
       "noTransactions": "No transactions yet"
     },
     "lowStock": {

@@ -68,6 +68,44 @@ function IconBolt({ className = "w-5 h-5" }: { className?: string }) {
     );
 }
 
+function IconWallet({ className = "w-5 h-5" }: { className?: string }) {
+    return (
+        <svg
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+            strokeWidth={1.5}
+            stroke="currentColor"
+            className={className}
+        >
+            <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M21 12a2.25 2.25 0 0 0-2.25-2.25H15a3 3 0 1 1-6 0H5.25A2.25 2.25 0 0 0 3 12m18 0v6a2.25 2.25 0 0 1-2.25 2.25H5.25A2.25 2.25 0 0 1 3 18v-6m18 0V9M3 12V9m18 0a2.25 2.25 0 0 0-2.25-2.25H5.25A2.25 2.25 0 0 0 3 9m18 0V6a2.25 2.25 0 0 0-2.25-2.25H5.25A2.25 2.25 0 0 0 3 6v3"
+            />
+        </svg>
+    );
+}
+
+function IconTune({ className = "w-5 h-5" }: { className?: string }) {
+    return (
+        <svg
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+            strokeWidth={1.5}
+            stroke="currentColor"
+            className={className}
+        >
+            <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M10.5 6h9.75M10.5 6a1.5 1.5 0 1 1-3 0m3 0a1.5 1.5 0 1 0-3 0M3.75 6H7.5m3 12h9.75m-9.75 0a1.5 1.5 0 0 1-3 0m3 0a1.5 1.5 0 0 0-3 0m-3.75 0H7.5m9-6h3.75m-3.75 0a1.5 1.5 0 0 1-3 0m3 0a1.5 1.5 0 0 0-3 0m-9.75 0h9.75"
+            />
+        </svg>
+    );
+}
+
 // ---------------------------------------------------------------------------
 // Activity type config helper
 // ---------------------------------------------------------------------------
@@ -117,6 +155,26 @@ function getActivityStyle(type: string): ActivityStyle {
                 badgeKey: "expense",
                 badgeStyle: "bg-surface-container-highest text-on-surface-variant",
                 amountPrefix: "-",
+            };
+        case "DUE_PAYMENT":
+            return {
+                iconBg: "bg-green-100",
+                iconColor: "text-green-700",
+                icon: <IconWallet />,
+                amountColor: "text-green-700",
+                badgeKey: "duePayment",
+                badgeStyle: "bg-green-100 text-green-700",
+                amountPrefix: "+",
+            };
+        case "DUE_ADJUSTMENT":
+            return {
+                iconBg: "bg-amber-100",
+                iconColor: "text-amber-700",
+                icon: <IconTune />,
+                amountColor: "text-amber-700",
+                badgeKey: "dueAdjustment",
+                badgeStyle: "bg-amber-100 text-amber-700",
+                amountPrefix: "±",
             };
         default:
             return {
@@ -215,6 +273,10 @@ export default function RecentTransactions({ businessId }: RecentTransactionsPro
                 return t("return");
             case "expense":
                 return t("expense");
+            case "duePayment":
+                return t("duePayment");
+            case "dueAdjustment":
+                return t("dueAdjustment");
             default:
                 return badge;
         }
