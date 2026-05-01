@@ -19,21 +19,16 @@ export default function DiscountInput({
     const t = useTranslations("shop.sales");
 
     return (
-        <div className="flex items-center gap-1.5">
-            {/* Label — compact, doesn't wrap */}
-            <span className="shrink-0 text-[11px] font-bold uppercase tracking-wide text-on-surface-variant whitespace-nowrap">
-                {t("cart.discount.label")}
-            </span>
-
-            {/* Compact toggle pills */}
+        <div className="flex items-center gap-1.5 flex-nowrap">
+            {/* Compact toggle pills — ৳ / % */}
             <div className="flex shrink-0 rounded-lg bg-surface-container-high p-0.5">
                 <button
                     type="button"
                     onClick={() => onMethodChange("FIXED")}
                     title={t("cart.discount.fixed")}
                     className={`flex items-center justify-center rounded-md px-2 py-1 text-xs font-bold transition-all ${method === "FIXED"
-                            ? "bg-surface-container-lowest text-primary shadow-sm"
-                            : "text-on-surface-variant hover:bg-surface-container-lowest/50"
+                        ? "bg-surface-container-lowest text-primary shadow-sm"
+                        : "text-on-surface-variant hover:bg-surface-container-lowest/50"
                         }`}
                 >
                     <span className="text-sm">৳</span>
@@ -43,8 +38,8 @@ export default function DiscountInput({
                     onClick={() => onMethodChange("PERCENTAGE")}
                     title={t("cart.discount.percentage")}
                     className={`flex items-center justify-center rounded-md px-2 py-1 text-xs font-bold transition-all ${method === "PERCENTAGE"
-                            ? "bg-surface-container-lowest text-primary shadow-sm"
-                            : "text-on-surface-variant hover:bg-surface-container-lowest/50"
+                        ? "bg-surface-container-lowest text-primary shadow-sm"
+                        : "text-on-surface-variant hover:bg-surface-container-lowest/50"
                         }`}
                 >
                     <span className="text-sm">%</span>
