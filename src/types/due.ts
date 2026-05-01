@@ -121,6 +121,22 @@ export interface DueLedgerResponse {
     totalTransactions: number;
 }
 
+// ─── Unified Customer Ledger ─────────────────────────────
+
+export interface CustomerLedgerEntry {
+    id: string;
+    type: "SALE" | "BAKI" | "JOMA" | "ADJUSTMENT" | "RETURN" | "UNKNOWN";
+    invoiceNumber: string | null;
+    amount: number;
+    balanceAfter: number | null;
+    paymentMethod: string | null;
+    paymentStatus: string | null; // PAID, DUE, PARTIAL — only for SALE
+    description: string | null;
+    date: string;
+    referenceType: string | null;
+    referenceId: string | null;
+}
+
 // ─── Aged Dues ───────────────────────────────────────────
 
 export interface AgedDueItem {

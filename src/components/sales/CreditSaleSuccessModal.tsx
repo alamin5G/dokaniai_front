@@ -64,10 +64,14 @@ export default function CreditSaleSuccessModal({
     }
 
     /** WhatsApp deep-link for due reminder per SRS §6.11.1 */
+    const APP_URL = process.env.NEXT_PUBLIC_APP_URL || "https://dokaniai.com";
     const displayName = result.customerName || customerName || "ক্রেতা";
-    const whatsappReminderLink = result.whatsappReminderUrl ?? `https://wa.me/?text=${encodeURIComponent(
-        `আসসালামু আলাইকুম ${displayName}, আপনার বাকী ${formatTk(result.runningBalance ?? result.dueAmount ?? result.amountDue ?? result.totalAmount)} টাকা (${result.invoiceNumber})। অনুগ্রহ করে শীঘ্রই পরিশোধ করুন। - ${businessInfo.name}`,
-    )}`;
+    const dueAmount = formatTk(result.runningBalance ?? result.dueAmount ?? result.amountDue ?? result.totalAmount);
+    const paymentLink = result.customerId
+        ? `${APP_URL}/pay/${businessId}?c=${result.customerId}`
+        : "";
+    const reminderText = `আসসালামু আলাইকুম ${displayName}, আপনার বাকী ${dueAmount} টাকা (${result.invoiceNumber})। অনুগ্রহ করে শীঘ্রই পরিশোধ করুন।${paymentLink ? `\nপেমেন্ট লিঙ্ক: ${paymentLink}` : ""} - ${businessInfo.name}`;
+    const whatsappReminderLink = result.whatsappReminderUrl ?? `https://wa.me/?text=${encodeURIComponent(reminderText)}`;
 
     return (
         <div

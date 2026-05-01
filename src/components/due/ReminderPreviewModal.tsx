@@ -57,8 +57,9 @@ export default function ReminderPreviewModal({
     const loc = resolveLocale(locale);
 
     // Payment link for this customer
+    const APP_URL = process.env.NEXT_PUBLIC_APP_URL || "https://dokaniai.com";
     const paymentLink = useMemo(
-        () => `https://dokaniai.com/pay/${businessId}?c=${customer.customerId}`,
+        () => `${APP_URL}/pay/${businessId}?c=${customer.customerId}`,
         [businessId, customer.customerId]
     );
     const [includePaymentLink, setIncludePaymentLink] = useState(true);
@@ -237,16 +238,11 @@ export default function ReminderPreviewModal({
                     </div>
                 </div>
 
-                <div className="rounded-xl bg-primary-container/30 p-4 flex items-start gap-3">
-                    <span className="material-symbols-outlined text-primary mt-0.5">info</span>
-                    <div>
-                        <p className="text-sm font-bold text-on-surface">
-                            {t("reminder.mfsNumber")}
-                        </p>
-                        <p className="text-xs text-on-surface-variant mt-1">
-                            {t("reminder.mfsNumberHint")}
-                        </p>
-                    </div>
+                <div className="rounded-lg bg-primary-container/20 px-3 py-2 flex items-center gap-2">
+                    <span className="material-symbols-outlined text-primary text-sm">info</span>
+                    <p className="text-xs text-on-surface-variant">
+                        {t("reminder.mfsNumberHint")}
+                    </p>
                 </div>
 
                 <div className="flex items-center gap-3">
@@ -257,8 +253,8 @@ export default function ReminderPreviewModal({
                             if (!alreadySentToday) handlePreview();
                         }}
                         className={`flex-1 rounded-xl px-4 py-3 text-sm font-bold transition-colors ${!useCustom
-                                ? "bg-primary text-white"
-                                : "bg-surface-container text-on-surface-variant hover:bg-surface-container-high"
+                            ? "bg-primary text-white"
+                            : "bg-surface-container text-on-surface-variant hover:bg-surface-container-high"
                             }`}
                     >
                         <span className="flex items-center justify-center gap-1.5">
@@ -275,8 +271,8 @@ export default function ReminderPreviewModal({
                             setAiGenerated(false);
                         }}
                         className={`flex-1 rounded-xl px-4 py-3 text-sm font-bold transition-colors ${useCustom
-                                ? "bg-primary text-white"
-                                : "bg-surface-container text-on-surface-variant hover:bg-surface-container-high"
+                            ? "bg-primary text-white"
+                            : "bg-surface-container text-on-surface-variant hover:bg-surface-container-high"
                             }`}
                     >
                         {t("reminder.customMessage")}

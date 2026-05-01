@@ -12,6 +12,7 @@ import type {
     CustomerCreateRequest,
     CustomerUpdateRequest,
     CustomerDueSummary,
+    CustomerLedgerEntry,
     DueLedgerResponse,
     AgedDuesResponse,
     WhatsAppLink,
@@ -142,6 +143,16 @@ export async function getCustomerDueLedger(
         { params: { page, size } }
     );
     return unwrap<DueLedgerResponse>(data);
+}
+
+export async function getUnifiedCustomerLedger(
+    businessId: string,
+    customerId: string
+): Promise<CustomerLedgerEntry[]> {
+    const { data } = await apiClient.get(
+        `/businesses/${businessId}/due-transactions/customer/${customerId}/unified-ledger`
+    );
+    return unwrap<CustomerLedgerEntry[]>(data);
 }
 
 // ─── Aged Dues ───────────────────────────────────────────

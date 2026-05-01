@@ -1482,7 +1482,7 @@
           "label": "Add Discount",
           "fixed": "৳",
           "percentage": "%",
-          "placeholder": "Enter amount",
+          "placeholder": "Enter discount amount",
           "applied": "Discount ৳{amount}"
         },
         "vat": "VAT ({percent}%)",

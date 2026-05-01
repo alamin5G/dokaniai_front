@@ -8,6 +8,7 @@ import type {
     DueTransaction,
     DueTransactionType,
     DueLedgerResponse,
+    CustomerLedgerEntry,
 } from "@/types/due";
 import {
     getCustomersWithDue,
@@ -17,6 +18,7 @@ import {
     createJoma,
     createAdjustment,
     getCustomerDueLedger,
+    getUnifiedCustomerLedger,
     generateDueReminder,
 } from "@/lib/dueApi";
 import ReminderPreviewModal from "./ReminderPreviewModal";
@@ -111,6 +113,7 @@ export default function DueLedgerWorkspace({
     const [showCustomerForm, setShowCustomerForm] = useState(false);
     const [selectedCustomerId, setSelectedCustomerId] = useState<string | null>(null);
     const [ledgerData, setLedgerData] = useState<DueLedgerResponse | null>(null);
+    const [unifiedEntries, setUnifiedEntries] = useState<CustomerLedgerEntry[]>([]);
     const [txForm, setTxForm] = useState<TransactionFormState>(initialTxForm);
     const [custForm, setCustForm] = useState<CustomerFormState>(initialCustomerForm);
     const [isSubmitting, setIsSubmitting] = useState(false);
@@ -195,8 +198,12 @@ export default function DueLedgerWorkspace({
     const loadLedger = useCallback(
         async (customerId: string) => {
             try {
-                const data = await getCustomerDueLedger(businessId, customerId);
-                setLedgerData(data);
+                const [ledger, entries] = await Promise.all([
+                    getCustomerDueLedger(businessId, customerId),
+                    getUnifiedCustomerLedger(businessId, customerId),
+                ]);
+                setLedgerData(ledger);
+                setUnifiedEntries(entries);
                 setSelectedCustomerId(customerId);
             } catch {
                 setToast(t("messages.loadError"));
@@ -435,53 +442,148 @@ export default function DueLedgerWorkspace({
                     </div>
                 </div>
 
-                {/* Transaction History — card-based per due_ledger_workspace/code.html */}
-                <div className="bg-surface-container-low rounded-2xl p-8 flex-1">
-                    <h3 className="text-lg font-headline font-bold text-on-surface mb-6">{t("ledger.title")} <span className="text-sm font-normal text-on-surface-variant font-bengali ml-2">{t("ledger.subtitle")}</span></h3>
-                    <div className="flex flex-col gap-4">
-                        {filteredLedgerTransactions.length === 0 ? (
-                            <p className="py-8 text-center text-sm text-on-surface-variant">{t("ledger.empty")}</p>
-                        ) : (
-                            filteredLedgerTransactions.map((tx: DueTransaction) => {
-                                const isAutoMfs = tx.recordedVia === "AUTO_MFS";
-                                const isJoma = tx.type === "JOMA";
+                {/* ── Unified Timeline: Sales + Due Transactions ── */}
+                <div className="bg-surface-container-low rounded-2xl p-6 md:p-8 flex-1">
+                    <div className="flex items-center justify-between mb-6">
+                        <div>
+                            <h3 className="text-lg font-bold text-on-surface">{t("ledger.title")}</h3>
+                            <p className="text-sm text-on-surface-variant mt-0.5">{t("ledger.subtitle")}</p>
+                        </div>
+                        <span className="text-xs text-on-surface-variant bg-surface-container px-3 py-1 rounded-full">
+                            {unifiedEntries.length} {locale?.startsWith("bn") ? "টি এন্ট্রি" : "entries"}
+                        </span>
+                    </div>
+
+                    {unifiedEntries.length === 0 ? (
+                        <p className="py-8 text-center text-sm text-on-surface-variant">{t("ledger.empty")}</p>
+                    ) : (
+                        <div className="relative pl-8">
+                            {/* Vertical timeline line */}
+                            <div className="absolute left-3 top-2 bottom-2 w-0.5 bg-outline-variant/40" />
+
+                            {unifiedEntries.map((entry) => {
+                                const isSale = entry.type === "SALE";
+                                const isJoma = entry.type === "JOMA";
+                                const isReturn = entry.type === "RETURN";
+                                const isAdjustment = entry.type === "ADJUSTMENT";
+                                const isCredit = isSale || entry.type === "BAKI";
+                                const entryDate = new Date(entry.date);
+                                const dateStr = entryDate.toLocaleDateString(loc, {
+                                    day: "numeric",
+                                    month: "short",
+                                    year: "numeric",
+                                });
+                                const timeStr = entryDate.toLocaleTimeString(loc, {
+                                    hour: "2-digit",
+                                    minute: "2-digit",
+                                });
+
+                                // Icon + color by type
+                                let icon = "receipt_long";
+                                let dotColor = "bg-on-surface-variant";
+                                let iconBg = "bg-surface-container-low";
+                                let amountColor = "text-on-surface";
+                                let amountPrefix = "";
+                                let typeLabel: string = entry.type;
+
+                                if (isSale) {
+                                    icon = "shopping_cart";
+                                    dotColor = "bg-secondary";
+                                    iconBg = "bg-secondary-container";
+                                    amountColor = "text-secondary";
+                                    amountPrefix = "−";
+                                    typeLabel = entry.paymentStatus === "CASH"
+                                        ? (locale?.startsWith("bn") ? "ক্যাশ বিক্রয়" : "Cash Sale")
+                                        : entry.paymentStatus === "DUE"
+                                            ? (locale?.startsWith("bn") ? "বাকি বিক্রয়" : "Credit Sale")
+                                            : (locale?.startsWith("bn") ? "বিক্রয়" : "Sale");
+                                } else if (isJoma) {
+                                    icon = "account_balance_wallet";
+                                    dotColor = "bg-primary";
+                                    iconBg = "bg-primary-container";
+                                    amountColor = "text-primary";
+                                    amountPrefix = "+";
+                                    typeLabel = locale?.startsWith("bn") ? "জমা" : "Payment";
+                                } else if (entry.type === "BAKI") {
+                                    icon = "add_shopping_cart";
+                                    dotColor = "bg-error";
+                                    iconBg = "bg-error-container";
+                                    amountColor = "text-error";
+                                    amountPrefix = "−";
+                                    typeLabel = locale?.startsWith("bn") ? "বাকি" : "Due Added";
+                                } else if (isReturn) {
+                                    icon = "undo";
+                                    dotColor = "bg-tertiary";
+                                    iconBg = "bg-tertiary-container";
+                                    amountColor = "text-tertiary";
+                                    amountPrefix = "+";
+                                    typeLabel = locale?.startsWith("bn") ? "ফেরত" : "Return";
+                                } else if (isAdjustment) {
+                                    icon = "tune";
+                                    dotColor = "bg-on-surface-variant";
+                                    iconBg = "bg-surface-container-high";
+                                    amountColor = "text-on-surface";
+                                    amountPrefix = "±";
+                                    typeLabel = locale?.startsWith("bn") ? "সমন্বয়" : "Adjustment";
+                                }
+
                                 return (
-                                    <div key={tx.id} className={`rounded-xl p-5 relative overflow-hidden ${isAutoMfs ? "bg-primary-fixed/20 border-l-4 border-primary" : "bg-surface-container-lowest"}`}>
-                                        {isAutoMfs && <div className="absolute right-0 top-0 bottom-0 w-32 bg-gradient-to-l from-primary-fixed/40 to-transparent pointer-events-none" />}
-                                        <div className="flex justify-between items-center">
-                                            <div className="flex items-center gap-4">
-                                                <div className={`w-12 h-12 rounded-full ${isAutoMfs ? "bg-surface-container-lowest flex items-center justify-center text-primary shadow-sm" : "bg-surface-container-low flex items-center justify-center text-on-surface-variant"}`}>
-                                                    <span className="material-symbols-outlined" style={isAutoMfs ? { fontVariationSettings: "'FILL' 1" } : undefined}>
-                                                        {isJoma ? "account_balance_wallet" : "shopping_bag"}
-                                                    </span>
+                                    <div key={`${entry.type}-${entry.id}`} className="relative pb-6 last:pb-0">
+                                        {/* Timeline dot */}
+                                        <div className={`absolute -left-5 top-1 w-4 h-4 rounded-full ${dotColor} ring-4 ring-surface-container-low`} />
+
+                                        {/* Card */}
+                                        <div className="bg-surface-container-lowest rounded-xl p-4 shadow-sm hover:shadow-md transition-shadow">
+                                            <div className="flex items-start justify-between gap-3">
+                                                <div className="flex items-start gap-3 min-w-0">
+                                                    <div className={`w-10 h-10 rounded-lg ${iconBg} flex items-center justify-center shrink-0`}>
+                                                        <span className="material-symbols-outlined text-lg" style={{ fontVariationSettings: "'FILL' 1" }}>
+                                                            {icon}
+                                                        </span>
+                                                    </div>
+                                                    <div className="min-w-0">
+                                                        <div className="flex items-center gap-2 flex-wrap">
+                                                            <h4 className="font-semibold text-on-surface text-sm">
+                                                                {typeLabel}
+                                                            </h4>
+                                                            {entry.invoiceNumber && (
+                                                                <span className="text-[10px] px-2 py-0.5 rounded-full bg-surface-container-high text-on-surface-variant font-mono">
+                                                                    {entry.invoiceNumber}
+                                                                </span>
+                                                            )}
+                                                            {entry.paymentMethod && (
+                                                                <span className="text-[10px] px-2 py-0.5 rounded-full bg-surface-container text-on-surface-variant">
+                                                                    {entry.paymentMethod}
+                                                                </span>
+                                                            )}
+                                                        </div>
+                                                        {entry.description && (
+                                                            <p className="text-xs text-on-surface-variant mt-1 truncate max-w-xs">
+                                                                {entry.description}
+                                                            </p>
+                                                        )}
+                                                        <p className="text-[11px] text-on-surface-variant/70 mt-1">
+                                                            {dateStr} · {timeStr}
+                                                        </p>
+                                                    </div>
                                                 </div>
-                                                <div>
-                                                    <h4 className="font-headline font-semibold text-on-surface">
-                                                        {isAutoMfs ? t("autoMfs.title") : (tx.description || tx.type)}
-                                                        {isJoma && !isAutoMfs && <span className="text-on-surface-variant"> ({tx.type})</span>}
-                                                    </h4>
-                                                    <p className={`text-sm text-on-surface-variant mt-0.5 ${isAutoMfs ? "font-bengali" : ""}`}>
-                                                        {isAutoMfs
-                                                            ? `${tx.paymentMethod || "MFS"} ending · ${new Date(tx.date).toLocaleDateString(loc)}`
-                                                            : new Date(tx.date).toLocaleDateString(loc)
-                                                        }
+                                                <div className="text-right shrink-0">
+                                                    <p className={`font-bold text-base ${amountColor}`}>
+                                                        {amountPrefix}৳ {formatMoney(entry.amount)}
                                                     </p>
+                                                    {entry.balanceAfter !== null && entry.balanceAfter !== undefined && (
+                                                        <p className="text-[11px] text-on-surface-variant mt-0.5">
+                                                            {locale?.startsWith("bn") ? "ব্যালেন্স" : "Bal"}: ৳ {formatMoney(entry.balanceAfter)}
+                                                        </p>
+                                                    )}
                                                 </div>
-                                            </div>
-                                            <div className="text-right">
-                                                <p className={`font-headline font-bold text-lg ${isJoma ? "text-primary" : "text-error"}`}>
-                                                    {isJoma ? "+" : "−"} ৳ {formatMoney(tx.amount)}
-                                                </p>
-                                                <p className="font-body text-xs text-on-surface-variant mt-0.5">
-                                                    {isJoma ? t("ledger.paymentReceived") : t("ledger.creditAdded")}
-                                                </p>
                                             </div>
                                         </div>
                                     </div>
                                 );
-                            })
-                        )}
-                    </div>
+                            })}
+                        </div>
+                    )}
                 </div>
 
                 {/* Transaction Form Overlay */}

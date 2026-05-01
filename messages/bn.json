@@ -1480,7 +1480,7 @@
           "label": "ডিসকাউন্ট যোগ করুন",
           "fixed": "৳",
           "percentage": "%",
-          "placeholder": "পরিমাণ লিখুন",
+          "placeholder": "ডিসকাউন্টের পরিমাণ লিখুন",
           "applied": "ডিসকাউন্ট ৳{amount}"
         },
         "vat": "ভ্যাট ({percent}%)",
