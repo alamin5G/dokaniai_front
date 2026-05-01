@@ -3,6 +3,7 @@
 import { useEffect, useRef } from "react";
 import { useAuthStore } from "@/store/authStore";
 import { useSubscriptionStore } from "@/store/subscriptionStore";
+import { mutate } from "swr";
 
 /**
  * useSSE — Opens an SSE connection to the backend for real-time events.
@@ -41,8 +42,12 @@ export function useSSE() {
             const source = new EventSource(url);
             sourceRef.current = source;
 
+            // Track reconnect attempts for exponential backoff
+            let reconnectAttempts = 0;
+
             source.onopen = () => {
-                // Connection established
+                // Connection established — reset backoff counter
+                reconnectAttempts = 0;
             };
 
             source.onerror = () => {
@@ -50,6 +55,9 @@ export function useSSE() {
                 // close and retry after delay with a fresh token
                 source.close();
                 sourceRef.current = null;
+                reconnectAttempts++;
+                // Exponential backoff: 3s, 6s, 12s, 24s, max 60s
+                const delay = Math.min(3_000 * Math.pow(2, reconnectAttempts - 1), 60_000);
                 reconnectTimerRef.current = setTimeout(() => {
                     // Read fresh token from store on reconnect (token may have been refreshed)
                     const freshToken = useAuthStore.getState().accessToken;
@@ -57,7 +65,7 @@ export function useSSE() {
                     if (freshStatus === "AUTHENTICATED" && freshToken) {
                         connect(freshToken);
                     }
-                }, 3_000); // retry in 3s with fresh token check
+                }, delay);
             };
 
             // ─── Event Handlers ──────────────────────────────────────────
@@ -146,6 +154,23 @@ export function useSSE() {
                 try {
                     const data = JSON.parse(e.data);
                     window.dispatchEvent(new CustomEvent("sse:due-payment-status-changed", { detail: data }));
+
+                    // Invalidate all due-related SWR caches so UI refreshes
+                    // Pattern-based mutate: revalidate all keys containing these substrings
+                    mutate(
+                        (key: unknown) => {
+                            if (typeof key === "string") {
+                                return key.includes("/due-transactions") ||
+                                    key.includes("/customers") ||
+                                    key.includes("customers-with-due") ||
+                                    key.includes("/ledger") ||
+                                    key.includes("dashboard");
+                            }
+                            return false;
+                        },
+                        undefined,
+                        { revalidate: true }
+                    );
                 } catch {
                     // ignore malformed data
                 }

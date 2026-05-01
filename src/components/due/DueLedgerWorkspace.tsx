@@ -149,6 +149,7 @@ export default function DueLedgerWorkspace({
             list = list.filter(
                 (c) =>
                     c.customerName.toLowerCase().includes(q) ||
+                    (c.customerPhone ?? "").includes(q) ||
                     (c.currentBalance?.toString() ?? "").includes(q)
             );
         }
@@ -826,6 +827,18 @@ export default function DueLedgerWorkspace({
                                                     {priorityLabel(priority)}
                                                 </span>
                                             </div>
+                                            {customer.customerPhone && (
+                                                <p className="text-on-surface-variant text-sm flex items-center gap-1">
+                                                    <span className="material-symbols-outlined text-xs">phone</span>
+                                                    {customer.customerPhone}
+                                                </p>
+                                            )}
+                                            {customer.customerAddress && (
+                                                <p className="text-on-surface-variant text-xs flex items-center gap-1">
+                                                    <span className="material-symbols-outlined text-xs">location_on</span>
+                                                    {customer.customerAddress}
+                                                </p>
+                                            )}
                                             <p className="text-on-surface-variant text-sm flex items-center gap-1">
                                                 <span className="material-symbols-outlined text-xs">schedule</span>
                                                 {t("customerList.lastPayment")}{" "}

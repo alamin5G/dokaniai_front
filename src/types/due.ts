@@ -89,6 +89,8 @@ export interface CustomerUpdateRequest {
 export interface CustomerDueSummary {
     customerId: string;
     customerName: string;
+    customerPhone?: string | null;
+    customerAddress?: string | null;
     currentBalance: number;
     creditLimit: number | null;
     totalBakiCount: number;
