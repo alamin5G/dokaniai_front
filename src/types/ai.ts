@@ -188,6 +188,21 @@ export interface ParsedProduct {
     confidenceScore: number | null;
 }
 
+// ─── Streaming SSE Events ────────────────────────────────
+
+/** SSE event types received from /ai/chat/stream */
+export type SSEEventType = "meta" | "token" | "done" | "error";
+
+/** SSE meta event — carries conversationId */
+export interface SSEMetaEvent {
+    conversationId: string;
+}
+
+/** SSE error event */
+export interface SSEErrorEvent {
+    message: string;
+}
+
 // ─── Paged Results ───────────────────────────────────────
 
 export interface PagedConversations {
