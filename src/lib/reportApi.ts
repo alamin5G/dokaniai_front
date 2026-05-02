@@ -1,24 +1,15 @@
 /**
- * Report Module API Client
- * Aligned with backend: ReportController
+ * MIS Report API Client
  */
 
 import apiClient from "@/lib/api";
 import type {
-    DailySalesReport,
-    PeriodSalesReport,
-    ProductProfitReport,
-    NetProfitReport,
-    DueLedgerReport,
-    StockAlertReport,
-    DashboardSummary,
     CustomReport,
     CustomReportRequest,
-    ReportType,
-    ExpenseBreakdownReport,
+    DashboardSummary,
+    DssReportResponse,
+    MisReportResponse,
 } from "@/types/report";
-
-// ─── Internal helpers ────────────────────────────────────
 
 interface ApiSuccess<T> {
     success: boolean;
@@ -30,133 +21,89 @@ function unwrap<T>(response: ApiSuccess<T>): T {
     return response.data;
 }
 
-// ─── Reports ─────────────────────────────────────────────
-
-export async function getDailySalesReport(
+export async function getMisReport(
     businessId: string,
-    date?: string
-): Promise<DailySalesReport> {
-    const params: Record<string, string> = {};
-    if (date) params.date = date;
-    const { data } = await apiClient.get(
-        `/businesses/${businessId}/reports/daily`,
-        { params }
-    );
-    return unwrap<DailySalesReport>(data);
-}
-
-export async function getWeeklySalesReport(
-    businessId: string,
-    startDate?: string
-): Promise<PeriodSalesReport> {
-    const params: Record<string, string> = {};
-    if (startDate) params.startDate = startDate;
-    const { data } = await apiClient.get(
-        `/businesses/${businessId}/reports/weekly`,
-        { params }
-    );
-    return unwrap<PeriodSalesReport>(data);
-}
-
-export async function getMonthlySalesReport(
-    businessId: string,
-    month?: string
-): Promise<PeriodSalesReport> {
-    const params: Record<string, string> = {};
-    if (month) params.month = month;
-    const { data } = await apiClient.get(
-        `/businesses/${businessId}/reports/monthly`,
-        { params }
-    );
-    return unwrap<PeriodSalesReport>(data);
-}
-
-export async function getProductProfitReport(
-    businessId: string,
+    tab: string,
     startDate?: string,
     endDate?: string
-): Promise<ProductProfitReport> {
+): Promise<MisReportResponse> {
     const params: Record<string, string> = {};
     if (startDate) params.startDate = startDate;
     if (endDate) params.endDate = endDate;
     const { data } = await apiClient.get(
-        `/businesses/${businessId}/reports/products/profit`,
+        `/businesses/${businessId}/reports/mis/${tab}`,
         { params }
     );
-    return unwrap<ProductProfitReport>(data);
-}
-
-export async function getExpenseBreakdown(
-    businessId: string,
-    startDate?: string,
-    endDate?: string
-): Promise<ExpenseBreakdownReport> {
-    const params: Record<string, string> = {};
-    if (startDate) params.startDate = startDate;
-    if (endDate) params.endDate = endDate;
-    const { data } = await apiClient.get(
-        `/businesses/${businessId}/reports/expenses/breakdown`,
-        { params }
-    );
-    return unwrap<ExpenseBreakdownReport>(data);
-}
-
-export async function getNetProfitReport(
-    businessId: string,
-    startDate?: string,
-    endDate?: string
-): Promise<NetProfitReport> {
-    const params: Record<string, string> = {};
-    if (startDate) params.startDate = startDate;
-    if (endDate) params.endDate = endDate;
-    const { data } = await apiClient.get(
-        `/businesses/${businessId}/reports/net-profit`,
-        { params }
-    );
-    return unwrap<NetProfitReport>(data);
-}
-
-export async function getDueLedgerReport(
-    businessId: string,
-    customerId?: string
-): Promise<DueLedgerReport> {
-    const params: Record<string, string> = {};
-    if (customerId) params.customerId = customerId;
-    const { data } = await apiClient.get(
-        `/businesses/${businessId}/reports/due-ledger`,
-        { params }
-    );
-    return unwrap<DueLedgerReport>(data);
-}
-
-export async function getStockAlertReport(
-    businessId: string
-): Promise<StockAlertReport> {
-    const { data } = await apiClient.get(
-        `/businesses/${businessId}/reports/stock-alert`
-    );
-    return unwrap<StockAlertReport>(data);
+    return unwrap<MisReportResponse>(data);
 }
 
 export async function getDashboardSummary(
     businessId: string
 ): Promise<DashboardSummary> {
-    const { data } = await apiClient.get(
-        `/businesses/${businessId}/reports/dashboard`
-    );
-    return unwrap<DashboardSummary>(data);
+    const report = await getMisReport(businessId, "dashboard");
+    const byLabel = new Map(report.kpis.map((kpi) => [kpi.label, kpi.value]));
+    return {
+        todaySales: byLabel.get("Revenue") ?? 0,
+        todayProfit: byLabel.get("Net profit") ?? 0,
+        monthSales: byLabel.get("Revenue") ?? 0,
+        monthProfit: byLabel.get("Net profit") ?? 0,
+        lowStockItems: Number(report.metadata.stockRisk ?? 0),
+        reorderNeededItems: Number(report.metadata.stockRisk ?? 0),
+        totalDue: byLabel.get("Due exposure") ?? 0,
+        customersWithDue: 0,
+        topSellingToday: report.rows.map((row) => ({
+            productId: String(row.meta.productId ?? row.label),
+            productName: row.label,
+            quantitySold: Number(row.quantity ?? 0),
+            revenue: Number(row.amount ?? 0),
+        })),
+        recentActivities: [],
+    };
 }
 
-export async function exportReport(
+export async function getMisDssReport(
     businessId: string,
-    type: ReportType,
-    format: string = "pdf",
-    date?: string
-): Promise<Blob> {
-    const params: Record<string, string> = { type: type, format };
-    if (date) params.date = date;
+    startDate?: string,
+    endDate?: string
+): Promise<DssReportResponse> {
+    const params: Record<string, string> = {};
+    if (startDate) params.startDate = startDate;
+    if (endDate) params.endDate = endDate;
     const { data } = await apiClient.get(
-        `/businesses/${businessId}/reports/export`,
+        `/businesses/${businessId}/reports/mis/dss`,
+        { params }
+    );
+    return unwrap<DssReportResponse>(data);
+}
+
+export async function generateMisDssReport(
+    businessId: string,
+    startDate?: string,
+    endDate?: string
+): Promise<DssReportResponse> {
+    const params: Record<string, string> = {};
+    if (startDate) params.startDate = startDate;
+    if (endDate) params.endDate = endDate;
+    const { data } = await apiClient.post(
+        `/businesses/${businessId}/reports/mis/dss/generate`,
+        null,
+        { params }
+    );
+    return unwrap<DssReportResponse>(data);
+}
+
+export async function exportMisReport(
+    businessId: string,
+    tab: string,
+    format: string = "csv",
+    startDate?: string,
+    endDate?: string
+): Promise<Blob> {
+    const params: Record<string, string> = { tab, format };
+    if (startDate) params.startDate = startDate;
+    if (endDate) params.endDate = endDate;
+    const { data } = await apiClient.get(
+        `/businesses/${businessId}/reports/mis/export`,
         { params, responseType: "blob" }
     );
     return data as Blob;

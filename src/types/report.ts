@@ -141,6 +141,76 @@ export interface DashboardSummary {
     recentActivities: RecentActivity[];
 }
 
+export interface MisKpi {
+    label: string;
+    value: number;
+    unit: "BDT" | "COUNT" | "PERCENT" | string;
+    delta: number;
+    tone: "good" | "warning" | "danger" | "neutral" | string;
+}
+
+export interface MisTrendPoint {
+    label: string;
+    revenue: number;
+    profit: number;
+    expenses: number;
+    count: number;
+}
+
+export interface MisBreakdownItem {
+    label: string;
+    value: number;
+    percentage: number;
+    tone: string;
+}
+
+export interface MisTableRow {
+    label: string;
+    amount: number;
+    quantity: number;
+    metric: number;
+    meta: Record<string, unknown>;
+}
+
+export interface MisActionItem {
+    title: string;
+    message: string;
+    severity: "INFO" | "WARNING" | "CRITICAL" | string;
+    actionType: string;
+    expectedImpact: string;
+}
+
+export interface MisReportResponse {
+    reportType: string;
+    startDate: string;
+    endDate: string;
+    kpis: MisKpi[];
+    trend: MisTrendPoint[];
+    breakdown: MisBreakdownItem[];
+    rows: MisTableRow[];
+    actions: MisActionItem[];
+    metadata: Record<string, unknown>;
+}
+
+export interface DssReportResponse {
+    context: string;
+    insights: Array<{
+        id: string;
+        title: string;
+        message: string;
+        severity: string;
+        confidence: number;
+        isRead: boolean;
+        isActedUpon: boolean;
+        sourcePeriodStart?: string;
+        sourcePeriodEnd?: string;
+        priorityScore?: number;
+        createdAt: string;
+    }>;
+    actions: MisActionItem[];
+    metrics: Record<string, unknown>;
+}
+
 export interface CustomReport {
     title: string;
     columns: string[];

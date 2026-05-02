@@ -3344,8 +3344,10 @@
       },
       "dateRange": {
         "today": "Today",
+        "last7": "Last 7 Days",
         "thisWeek": "This Week",
         "thisMonth": "This Month",
+        "lastMonth": "Last Month",
         "last30Days": "Last 30 Days",
         "custom": "Custom",
         "startDate": "Start Date",

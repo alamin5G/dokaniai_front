@@ -3344,8 +3344,10 @@
       },
       "dateRange": {
         "today": "আজ",
+        "last7": "গত ৭ দিন",
         "thisWeek": "এই সপ্তাহ",
         "thisMonth": "এই মাস",
+        "lastMonth": "গত মাস",
         "last30Days": "গত ৩০ দিন",
         "custom": "কাস্টম",
         "startDate": "শুরু তারিখ",

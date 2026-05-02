@@ -99,15 +99,15 @@ export const swrKeys = {
 
     // Reports
     dashboardSummary: (businessId: string) =>
-        `/businesses/${businessId}/reports/dashboard`,
+        `/businesses/${businessId}/reports/mis/dashboard`,
     dailySalesReport: (businessId: string, date?: string) =>
-        `/businesses/${businessId}/reports/daily${paramsKey({ date })}`,
+        `/businesses/${businessId}/reports/mis/sales${paramsKey({ date })}`,
     weeklySalesReport: (businessId: string, startDate?: string) =>
-        `/businesses/${businessId}/reports/weekly${paramsKey({ startDate })}`,
+        `/businesses/${businessId}/reports/mis/sales${paramsKey({ startDate })}`,
     monthlySalesReport: (businessId: string, month?: string) =>
-        `/businesses/${businessId}/reports/monthly${paramsKey({ month })}`,
+        `/businesses/${businessId}/reports/mis/sales${paramsKey({ month })}`,
     stockAlertReport: (businessId: string) =>
-        `/businesses/${businessId}/reports/stock-alert`,
+        `/businesses/${businessId}/reports/mis/stock`,
 
     // Inventory
     inventoryLogs: (businessId: string, params?: Record<string, unknown>) =>
