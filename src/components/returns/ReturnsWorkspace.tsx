@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import type { ReactNode } from "react";
 import { useLocale, useTranslations } from "next-intl";
-import { createSaleReturn, getReturnStats, listSaleReturns } from "@/lib/saleReturnApi";
+import { createSaleReturn, getReturnStats, listSaleReturns, voidSaleReturn } from "@/lib/saleReturnApi";
 import { useSales } from "@/hooks/useSales";
 import type { Sale, SaleItem } from "@/types/sale";
 import type { ReturnStatsResponse, ReturnType, SaleReturn } from "@/types/saleReturn";
@@ -36,6 +36,11 @@ export default function ReturnsWorkspace({ businessId }: { businessId: string })
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [isLoadingReturns, setIsLoadingReturns] = useState(true);
     const [toast, setToast] = useState<string | null>(null);
+
+    // Void return state (FR-RETURN-05)
+    const [voidTarget, setVoidTarget] = useState<{ id: string; saleId: string } | null>(null);
+    const [voidReason, setVoidReason] = useState("");
+    const [isVoiding, setIsVoiding] = useState(false);
 
     const selectedSale = useMemo(
         () => sales.find((sale) => sale.id === selectedSaleId) ?? null,
@@ -109,6 +114,23 @@ export default function ReturnsWorkspace({ businessId }: { businessId: string })
 
     function itemLabel(item: SaleItem): string {
         return `${item.productNameSnapshot} (${item.quantity} x ৳${formatMoney(item.unitPrice)})`;
+    }
+
+    // ── Void return handler (FR-RETURN-05) ──
+    async function handleVoidReturn() {
+        if (!voidTarget) return;
+        setIsVoiding(true);
+        try {
+            await voidSaleReturn(businessId, voidTarget.id, voidReason || "No reason");
+            setToast(loc.startsWith("bn") ? "রিটার্ন বাতিল করা হয়েছে" : "Return voided successfully");
+            setVoidTarget(null);
+            setVoidReason("");
+            await Promise.all([loadReturnData(), mutateSales()]);
+        } catch {
+            setToast(loc.startsWith("bn") ? "বাতিল করতে সমস্যা হয়েছে" : "Failed to void return");
+        } finally {
+            setIsVoiding(false);
+        }
     }
 
     async function handleSubmit(event: React.FormEvent) {
@@ -315,27 +337,89 @@ export default function ReturnsWorkspace({ businessId }: { businessId: string })
                                 <th className="px-5 py-3">{t("table.quantity")}</th>
                                 <th className="px-5 py-3">{t("table.refund")}</th>
                                 <th className="px-5 py-3">{t("table.reason")}</th>
+                                <th className="px-5 py-3">{loc.startsWith("bn") ? "অ্যাকশন" : "Action"}</th>
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-surface-container">
                             {isLoadingReturns ? (
-                                <tr><td className="px-5 py-8 text-center text-on-surface-variant" colSpan={6}>Loading...</td></tr>
+                                <tr><td className="px-5 py-8 text-center text-on-surface-variant" colSpan={7}>Loading...</td></tr>
                             ) : returns.length === 0 ? (
-                                <tr><td className="px-5 py-8 text-center text-on-surface-variant" colSpan={6}>{t("pagination.noResults")}</td></tr>
+                                <tr><td className="px-5 py-8 text-center text-on-surface-variant" colSpan={7}>{t("pagination.noResults")}</td></tr>
                             ) : returns.map((ret) => (
-                                <tr key={ret.id}>
+                                <tr key={ret.id} className={ret.refundStatus === "VOIDED" ? "opacity-50 line-through" : ""}>
                                     <td className="px-5 py-3">{formatDate(ret.returnDate)}</td>
                                     <td className="px-5 py-3 font-mono text-xs">{ret.saleId.slice(0, 8)}</td>
                                     <td className="px-5 py-3">{t(`returnType.${ret.returnType}`)}</td>
                                     <td className="px-5 py-3">{formatMoney(ret.quantity)}</td>
                                     <td className="px-5 py-3 font-bold">৳{formatMoney(ret.refundAmount)}</td>
                                     <td className="px-5 py-3 max-w-[18rem] truncate">{ret.reason || "-"}</td>
+                                    <td className="px-5 py-3">
+                                        {ret.refundStatus !== "VOIDED" ? (
+                                            <button
+                                                type="button"
+                                                onClick={() => setVoidTarget({ id: ret.id, saleId: ret.saleId })}
+                                                className="rounded-lg px-3 py-1 text-xs font-bold text-red-600 hover:bg-red-50 transition-colors"
+                                            >
+                                                {loc.startsWith("bn") ? "বাতিল" : "Void"}
+                                            </button>
+                                        ) : (
+                                            <span className="text-xs font-bold text-on-surface-variant">
+                                                {loc.startsWith("bn") ? "বাতিলকৃত" : "VOIDED"}
+                                            </span>
+                                        )}
+                                    </td>
                                 </tr>
                             ))}
                         </tbody>
                     </table>
                 </div>
             </section>
+
+            {/* Void Return Confirmation Overlay */}
+            {voidTarget && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
+                    <div className="mx-4 w-full max-w-md rounded-2xl bg-white p-6 shadow-2xl">
+                        <h3 className="text-lg font-bold text-on-surface">
+                            ⚠️ {loc.startsWith("bn") ? "রিটার্ন বাতিল করতে চান?" : "Void this return?"}
+                        </h3>
+                        <p className="mt-2 text-sm text-on-surface-variant">
+                            {loc.startsWith("bn")
+                                ? "রিটার্নে যে স্টক ফিরে এসেছিল, সেটা আবার কেটে যাবে। এটি পূর্বাবস্থায় ফেরানো যাবে না।"
+                                : "Stock that was restored by this return will be deducted again. This cannot be undone."}
+                        </p>
+                        <label className="mt-4 block">
+                            <span className="mb-1 block text-xs font-bold text-on-surface-variant">
+                                {loc.startsWith("bn") ? "কারণ" : "Reason"}
+                            </span>
+                            <input
+                                value={voidReason}
+                                onChange={(e) => setVoidReason(e.target.value)}
+                                placeholder={loc.startsWith("bn") ? "বাতিলের কারণ লিখুন..." : "Enter reason..."}
+                                className="w-full rounded-xl bg-surface-container px-4 py-3 text-sm"
+                            />
+                        </label>
+                        <div className="mt-5 flex gap-3 justify-end">
+                            <button
+                                type="button"
+                                onClick={() => { setVoidTarget(null); setVoidReason(""); }}
+                                className="rounded-xl px-4 py-2 text-sm font-bold text-on-surface-variant hover:bg-surface-container transition-colors"
+                            >
+                                {loc.startsWith("bn") ? "না" : "Cancel"}
+                            </button>
+                            <button
+                                type="button"
+                                onClick={handleVoidReturn}
+                                disabled={isVoiding}
+                                className="rounded-xl bg-red-600 px-4 py-2 text-sm font-bold text-white hover:bg-red-700 disabled:opacity-50 transition-colors"
+                            >
+                                {isVoiding
+                                    ? (loc.startsWith("bn") ? "বাতিল হচ্ছে..." : "Voiding...")
+                                    : (loc.startsWith("bn") ? "হ্যাঁ, বাতিল করুন" : "Yes, Void")}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 }

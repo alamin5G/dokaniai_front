@@ -1002,6 +1002,7 @@
     "reports": "রিপোর্ট",
     "aiAssistant": "AI সহকারী",
     "subscription": "সাবস্ক্রিপশন",
+    "vendors": "ভেন্ডর",
     "settings": "সেটিংস",
     "newEntry": "নতুন এন্ট্রি",
     "allBusinesses": "সব ব্যবসা"
@@ -1446,7 +1447,8 @@
       "subtitle": "বিক্রি রেকর্ড করুন, কার্ট ম্যানেজ করুন, ডিসকাউন্ট প্রয়োগ করুন এবং লেনদেন সম্পন্ন করুন।",
       "tabs": {
         "newSale": "নতুন বিক্রয়",
-        "returns": "রিটার্ন"
+        "returns": "রিটার্ন",
+        "history": "বিক্রয় ইতিহাস"
       },
       "productSearch": "পণ্য খুঁজুন (চাল, ডাল, তেল...)",
       "scanner": "স্ক্যানার",
@@ -1517,7 +1519,8 @@
       "status": {
         "PAID": "পরিশোধিত",
         "PARTIAL": "আংশিক",
-        "DUE": "বাকী"
+        "DUE": "বাকী",
+        "CANCELLED": "বাতিল"
       },
       "voice": {
         "title": "AI কমান্ড",
@@ -1639,7 +1642,60 @@
         }
       },
       "loadingSuggestions": "সাজেশন লোড হচ্ছে...",
-      "frequentlyBought": "💡 একসাথে প্রায়ই কেনা হয়"
+      "frequentlyBought": "💡 একসাথে প্রায়ই কেনা হয়",
+      "history": {
+        "title": "বিক্রয় ইতিহাস",
+        "subtitle": "পূর্বের বিক্রয় দেখুন এবং প্রয়োজনে বাতিল করুন।",
+        "stats": {
+          "totalSales": "মোট বিক্রয়",
+          "currentPage": "পৃষ্ঠা"
+        },
+        "table": {
+          "date": "তারিখ",
+          "invoice": "ইনভয়েস",
+          "total": "মোট",
+          "payment": "পেমেন্ট",
+          "status": "স্ট্যাটাস",
+          "items": "আইটেম",
+          "action": "অ্যাকশন",
+          "empty": "কোনো বিক্রয় পাওয়া যায়নি।"
+        },
+        "payment": {
+          "CASH": "নগদ",
+          "BKASH": "বিকাশ",
+          "NAGAD": "নগদ",
+          "BANK": "ব্যাংক"
+        },
+        "status": {
+          "PAID": "পরিশোধিত",
+          "PARTIAL": "আংশিক",
+          "DUE": "বকেয়া",
+          "CANCELLED": "বাতিল"
+        },
+        "actions": {
+          "cancel": "বাতিল",
+          "cancelled": "বাতিল হয়েছে"
+        },
+        "pagination": {
+          "showing": "{total} এর মধ্যে {from}–{to} দেখাচ্ছে",
+          "previous": "আগে",
+          "next": "পরে"
+        },
+        "cancelOverlay": {
+          "title": "এই বিক্রয় বাতিল করবেন?",
+          "message": "ইনভয়েস #{invoice} — ৳{amount} বাতিল করা হবে। এই কাজ পূর্বাবস্থায় ফেরানো যাবে না।",
+          "reason": "কারণ",
+          "reasonPlaceholder": "বাতিলের কারণ লিখুন (ঐচ্ছিক)",
+          "close": "ফিরে যান",
+          "cancelling": "বাতিল হচ্ছে...",
+          "confirm": "হ্যাঁ, বিক্রয় বাতিল করুন"
+        },
+        "messages": {
+          "loadError": "বিক্রয় লোড করতে ব্যর্থ।",
+          "cancelSuccess": "বিক্রয় সফলভাবে বাতিল হয়েছে।",
+          "cancelError": "বিক্রয় বাতিল করতে ব্যর্থ।"
+        }
+      }
     },
     "expenses": {
       "dashboard": "ড্যাশবোর্ড",
@@ -1818,6 +1874,10 @@
         "dismiss": "বন্ধ করুন",
         "loading": "বিশ্লেষণ হচ্ছে...",
         "analyze": "বিশ্লেষণ করুন"
+      },
+      "tabs": {
+        "expenses": "খরচ",
+        "vendors": "ভেন্ডর"
       }
     },
     "discounts": {
@@ -4911,5 +4971,33 @@
     "TICKET_ASSIGNED": "টিকেট বরাদ্দ",
     "TICKET_OVERDUE": "টিকেট মেয়াদোত্তীর্ণ",
     "SUSPICIOUS_ACTIVITY": "সন্দেহজনক কার্যকলাপ"
+  },
+  "vendor": {
+    "title": "ভেন্ডর ম্যানেজমেন্ট",
+    "addVendor": "নতুন ভেন্ডর",
+    "searchPlaceholder": "ভেন্ডর খুঁজুন...",
+    "noResults": "কোনো ভেন্ডর পাওয়া যায়নি",
+    "emptyState": "কোনো ভেন্ডর যোগ করা হয়নি",
+    "active": "সক্রিয়",
+    "inactive": "নিষ্ক্রিয়",
+    "activate": "সক্রিয় করুন",
+    "deactivate": "নিষ্ক্রিয় করুন",
+    "edit": "সম্পাদনা",
+    "delete": "মুছুন",
+    "editVendor": "ভেন্ডর সম্পাদনা",
+    "nameLabel": "নাম *",
+    "namePlaceholder": "ভেন্ডরের নাম",
+    "phoneLabel": "ফোন",
+    "phonePlaceholder": "০১৭XXXXXXXX",
+    "addressLabel": "ঠিকানা",
+    "addressPlaceholder": "ঠিকানা",
+    "notesLabel": "নোট",
+    "notesPlaceholder": "অতিরিক্ত তথ্য",
+    "cancel": "বাতিল",
+    "saving": "সংরক্ষণ হচ্ছে...",
+    "save": "সংরক্ষণ",
+    "deleteTitle": "ভেন্ডর মুছুন",
+    "deleteConfirm": "আপনি কি {name} মুছতে চান?",
+    "deleting": "মুছছে..."
   }
 }

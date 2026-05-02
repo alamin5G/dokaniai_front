@@ -1001,6 +1001,7 @@
     "stockManagement": "Stock Management",
     "reports": "Reports",
     "aiAssistant": "AI Assistant",
+    "vendors": "Vendors",
     "subscription": "Subscription",
     "settings": "Settings",
     "newEntry": "New Entry",
@@ -1446,6 +1447,7 @@
       "subtitle": "Record sales, manage cart, apply discounts and complete transactions.",
       "tabs": {
         "newSale": "New Sale",
+        "history": "History",
         "returns": "Returns"
       },
       "productSearch": "Search products (rice, dal, oil...)",
@@ -1517,7 +1519,8 @@
       "status": {
         "PAID": "Paid",
         "PARTIAL": "Partial",
-        "DUE": "Due"
+        "DUE": "Due",
+        "CANCELLED": "Cancelled"
       },
       "voice": {
         "title": "AI Command",
@@ -1552,6 +1555,47 @@
         "loadError": "Failed to load products.",
         "saleCreated": "Sale recorded successfully.",
         "saleCancelled": "Sale cancelled."
+      },
+      "history": {
+        "title": "Sales History",
+        "subtitle": "View past sales and cancel if needed.",
+        "stats": {
+          "totalSales": "Total Sales",
+          "currentPage": "Page"
+        },
+        "table": {
+          "date": "Date",
+          "invoice": "Invoice",
+          "total": "Total",
+          "payment": "Payment",
+          "status": "Status",
+          "items": "Items",
+          "action": "Action",
+          "empty": "No sales found."
+        },
+        "actions": {
+          "cancel": "Cancel",
+          "cancelled": "Cancelled"
+        },
+        "cancelOverlay": {
+          "title": "Cancel this sale?",
+          "message": "Invoice {invoice} for ৳{amount} will be cancelled. Stock will be restored. This cannot be undone.",
+          "reason": "Reason",
+          "reasonPlaceholder": "Enter reason for cancellation...",
+          "close": "Go Back",
+          "confirm": "Yes, Cancel Sale",
+          "cancelling": "Cancelling..."
+        },
+        "messages": {
+          "loadError": "Failed to load sales.",
+          "cancelSuccess": "Sale cancelled successfully.",
+          "cancelError": "Failed to cancel sale."
+        },
+        "pagination": {
+          "showing": "Showing {from}–{to} of {total}",
+          "previous": "Previous",
+          "next": "Next"
+        }
       },
       "stockConflict": {
         "title": "Stock Conflict",
@@ -1818,6 +1862,10 @@
         "dismiss": "Dismiss",
         "loading": "Analyzing...",
         "analyze": "Analyze"
+      },
+      "tabs": {
+        "expenses": "Expenses",
+        "vendors": "Vendors"
       }
     },
     "discounts": {
@@ -4850,5 +4898,33 @@
     "TICKET_ASSIGNED": "Ticket Assigned",
     "TICKET_OVERDUE": "Ticket Overdue",
     "SUSPICIOUS_ACTIVITY": "Suspicious Activity"
+  },
+  "vendor": {
+    "title": "Vendor Management",
+    "addVendor": "Add Vendor",
+    "editVendor": "Edit Vendor",
+    "searchPlaceholder": "Search vendors...",
+    "emptyState": "No vendors added yet. Click 'Add Vendor' to get started.",
+    "noResults": "No vendors match your search.",
+    "nameLabel": "Name *",
+    "namePlaceholder": "Vendor name",
+    "phoneLabel": "Phone",
+    "phonePlaceholder": "01XXXXXXXXX",
+    "addressLabel": "Address",
+    "addressPlaceholder": "Address",
+    "notesLabel": "Notes",
+    "notesPlaceholder": "Additional info",
+    "active": "Active",
+    "inactive": "Inactive",
+    "activate": "Activate",
+    "deactivate": "Deactivate",
+    "edit": "Edit",
+    "delete": "Delete",
+    "save": "Save",
+    "saving": "Saving...",
+    "cancel": "Cancel",
+    "deleteTitle": "Delete Vendor",
+    "deleteConfirm": "Are you sure you want to delete \"{name}\"? This action cannot be undone.",
+    "deleting": "Deleting..."
   }
 }

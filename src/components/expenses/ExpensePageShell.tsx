@@ -2,26 +2,24 @@
 
 import { useTranslations } from "next-intl";
 import { useState } from "react";
-import SalesWorkspace from "./SalesWorkspace";
-import SalesHistoryWorkspace from "./SalesHistoryWorkspace";
-import ReturnsWorkspace from "@/components/returns/ReturnsWorkspace";
+import ExpenseWorkspace from "./ExpenseWorkspace";
+import VendorWorkspace from "@/components/vendor/VendorWorkspace";
 
-type TabKey = "sale" | "history" | "returns";
+type TabKey = "expenses" | "vendors";
 
-export default function SalesPageShell({
+export default function ExpensePageShell({
     businessId,
-    initialTab = "sale",
+    initialTab = "expenses",
 }: {
     businessId: string;
     initialTab?: TabKey;
 }) {
-    const t = useTranslations("shop.sales");
+    const t = useTranslations("shop.expenses");
     const [activeTab, setActiveTab] = useState<TabKey>(initialTab);
 
     const tabs: { key: TabKey; icon: string; label: string }[] = [
-        { key: "sale", icon: "receipt_long", label: t("tabs.newSale", { defaultValue: "New Sale" }) },
-        { key: "history", icon: "history", label: t("tabs.history", { defaultValue: "History" }) },
-        { key: "returns", icon: "undo", label: t("tabs.returns", { defaultValue: "Returns" }) },
+        { key: "expenses", icon: "receipt_long", label: t("tabs.expenses", { defaultValue: "Expenses" }) },
+        { key: "vendors", icon: "local_shipping", label: t("tabs.vendors", { defaultValue: "Vendors" }) },
     ];
 
     return (
@@ -44,9 +42,8 @@ export default function SalesPageShell({
             </div>
 
             {/* Tab Content */}
-            {activeTab === "sale" && <SalesWorkspace businessId={businessId} />}
-            {activeTab === "history" && <SalesHistoryWorkspace businessId={businessId} />}
-            {activeTab === "returns" && <ReturnsWorkspace businessId={businessId} />}
+            {activeTab === "expenses" && <ExpenseWorkspace businessId={businessId} />}
+            {activeTab === "vendors" && <VendorWorkspace businessId={businessId} />}
         </div>
     );
 }

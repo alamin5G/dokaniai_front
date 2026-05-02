@@ -16,7 +16,10 @@ export type PaymentStatus =
     // For sales.payment_status
     | "PAID"
     | "PARTIAL"
-    | "DUE";
+    | "DUE"
+    | "CANCELLED"
+    // For sale_returns.refund_status (voided return)
+    | "VOIDED";
 
 export type EntryMode = "MANUAL" | "TEXT_NLP" | "VOICE";
 

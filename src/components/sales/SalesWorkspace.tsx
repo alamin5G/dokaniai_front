@@ -244,7 +244,7 @@ export default function SalesWorkspace({
         setNotice(null);
     }
 
-    // Build sale request payload (shared between normal & force submit)
+    // Build sale request payload
     function buildSaleRequest(paymentMethod: PaymentMethod, customer?: CustomerResponse | null): SaleCreateRequest {
         const discounts: DiscountRequest[] =
             discountAmount > 0
