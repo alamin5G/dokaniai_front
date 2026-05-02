@@ -14,12 +14,15 @@ import {
     getCustomersWithDue,
     listCustomers,
     createCustomer,
+    updateCustomer,
     createBaki,
     createJoma,
     createAdjustment,
     getCustomerDueLedger,
     getUnifiedCustomerLedger,
+    getDueSummary,
     generateDueReminder,
+    voidDueTransaction,
 } from "@/lib/dueApi";
 import ReminderPreviewModal from "./ReminderPreviewModal";
 import PendingDuePaymentsPanel from "./PendingDuePaymentsPanel";
@@ -120,6 +123,17 @@ export default function DueLedgerWorkspace({
     const [toast, setToast] = useState<string | null>(null);
     const [reminderCustomer, setReminderCustomer] = useState<CustomerDueSummary | null>(null);
     const [showPendingPayments, setShowPendingPayments] = useState(false);
+    const [voidTarget, setVoidTarget] = useState<{ id: string; type: string } | null>(null);
+    const [voidReason, setVoidReason] = useState("");
+    const [isVoiding, setIsVoiding] = useState(false);
+
+    // Credit limit edit
+    const [editingCreditLimit, setEditingCreditLimit] = useState(false);
+    const [creditLimitInput, setCreditLimitInput] = useState("");
+    const [isSavingCreditLimit, setIsSavingCreditLimit] = useState(false);
+
+    // Per-customer stats (FR-DUE-11)
+    const [customerStats, setCustomerStats] = useState<CustomerDueSummary | null>(null);
 
     // ── Computed stats ──
     const totalDue = useMemo(
@@ -198,12 +212,14 @@ export default function DueLedgerWorkspace({
     const loadLedger = useCallback(
         async (customerId: string) => {
             try {
-                const [ledger, entries] = await Promise.all([
+                const [ledger, entries, stats] = await Promise.all([
                     getCustomerDueLedger(businessId, customerId),
                     getUnifiedCustomerLedger(businessId, customerId),
+                    getDueSummary(businessId, customerId).catch(() => null),
                 ]);
                 setLedgerData(ledger);
                 setUnifiedEntries(entries);
+                setCustomerStats(stats);
                 setSelectedCustomerId(customerId);
             } catch {
                 setToast(t("messages.loadError"));
@@ -211,6 +227,32 @@ export default function DueLedgerWorkspace({
         },
         [businessId, t]
     );
+
+    // ── Credit limit save handler (FR-DUE-14) ──
+    async function handleSaveCreditLimit() {
+        if (!selectedCustomerId) return;
+        setIsSavingCreditLimit(true);
+        try {
+            const newLimit = creditLimitInput ? parseFloat(creditLimitInput) : null;
+            await updateCustomer(businessId, selectedCustomerId, {
+                creditLimit: newLimit ?? undefined,
+            });
+            setEditingCreditLimit(false);
+            setCreditLimitInput("");
+            // Reload ledger to reflect updated credit limit
+            loadLedger(selectedCustomerId);
+            setToast(locale?.startsWith("bn") ? "ক্রেডিট লিমিট আপডেট হয়েছে" : "Credit limit updated");
+        } catch {
+            setToast(locale?.startsWith("bn") ? "আপডেট ব্যর্থ হয়েছে" : "Update failed");
+        } finally {
+            setIsSavingCreditLimit(false);
+        }
+    }
+
+    function startEditCreditLimit() {
+        setCreditLimitInput(ledgerData?.creditLimit?.toString() ?? "");
+        setEditingCreditLimit(true);
+    }
 
     useEffect(() => {
         if (initialCustomerId && !isLoading && !ledgerData) {
@@ -296,6 +338,23 @@ export default function DueLedgerWorkspace({
         const customer = customersWithDue.find((c) => c.customerId === customerId);
         if (customer) {
             setReminderCustomer(customer);
+        }
+    }
+
+    async function handleVoidTransaction() {
+        if (!voidTarget) return;
+        setIsVoiding(true);
+        try {
+            await voidDueTransaction(businessId, voidTarget.id, voidReason || "No reason");
+            setToast(locale?.startsWith("bn") ? "ট্রানজেকশন বাতিল হয়েছে" : "Transaction voided");
+            setVoidTarget(null);
+            setVoidReason("");
+            if (selectedCustomerId) loadLedger(selectedCustomerId);
+            loadData();
+        } catch {
+            setToast(locale?.startsWith("bn") ? "বাতিল করতে সমস্যা হয়েছে" : "Void failed");
+        } finally {
+            setIsVoiding(false);
         }
     }
 
@@ -415,13 +474,42 @@ export default function DueLedgerWorkspace({
                                         ৳ {formatMoney(ledgerData.currentBalance)}
                                     </strong>
                                 </span>
-                                {ledgerData.creditLimit && (
+                                {ledgerData.creditLimit ? (
                                     <span>
                                         {t("ledger.creditLimit")}:{" "}
-                                        <strong>৳ {formatMoney(ledgerData.creditLimit)}</strong>
+                                        <strong className={ledgerData.currentBalance >= ledgerData.creditLimit ? "text-red-500" : "text-primary"}>
+                                            ৳ {formatMoney(ledgerData.creditLimit)}
+                                        </strong>
+                                        {ledgerData.currentBalance >= ledgerData.creditLimit && (
+                                            <span className="ml-1 text-xs text-red-500">⚠️ {locale?.startsWith("bn") ? "লিমিট সর্বোচ্চ!" : "Limit reached!"}</span>
+                                        )}
+                                    </span>
+                                ) : (
+                                    <span className="text-on-surface-variant/60 italic">
+                                        {locale?.startsWith("bn") ? "ক্রেডিট লিমিট সেট নেই" : "No credit limit set"}
                                     </span>
                                 )}
+                                <button
+                                    onClick={startEditCreditLimit}
+                                    className="ml-2 text-xs text-primary hover:text-primary/80 underline font-medium"
+                                >
+                                    {locale?.startsWith("bn") ? "✏️ পরিবর্তন" : "✏️ Edit"}
+                                </button>
                             </div>
+                            {/* Credit limit progress bar */}
+                            {ledgerData.creditLimit && ledgerData.creditLimit > 0 && (
+                                <div className="mt-2 max-w-xs">
+                                    <div className="w-full bg-surface-container-high h-2 rounded-full overflow-hidden">
+                                        <div
+                                            className={`h-full transition-all duration-500 ${ledgerData.currentBalance >= ledgerData.creditLimit ? "bg-red-500" : ledgerData.currentBalance >= ledgerData.creditLimit * 0.8 ? "bg-yellow-500" : "bg-primary"}`}
+                                            style={{ width: `${Math.min(100, (ledgerData.currentBalance / ledgerData.creditLimit) * 100)}%` }}
+                                        />
+                                    </div>
+                                    <p className="text-[10px] text-on-surface-variant mt-0.5">
+                                        {Math.round((ledgerData.currentBalance / ledgerData.creditLimit) * 100)}% {locale?.startsWith("bn") ? "ব্যবহৃত" : "used"}
+                                    </p>
+                                </div>
+                            )}
                         </div>
                         <div className="flex gap-2">
                             <button
@@ -576,6 +664,15 @@ export default function DueLedgerWorkspace({
                                                             {locale?.startsWith("bn") ? "ব্যালেন্স" : "Bal"}: ৳ {formatMoney(entry.balanceAfter)}
                                                         </p>
                                                     )}
+                                                    {/* Void button for BAKI/JOMA/ADJUSTMENT entries */}
+                                                    {!isSale && !isReturn && (
+                                                        <button
+                                                            onClick={() => setVoidTarget({ id: entry.id, type: entry.type })}
+                                                            className="mt-1 text-[10px] text-red-400 hover:text-red-600 transition-colors underline"
+                                                        >
+                                                            {locale?.startsWith("bn") ? "বাতিল করুন" : "Void"}
+                                                        </button>
+                                                    )}
                                                 </div>
                                             </div>
                                         </div>
@@ -585,6 +682,150 @@ export default function DueLedgerWorkspace({
                         </div>
                     )}
                 </div>
+
+                {/* Void Transaction Confirmation Overlay */}
+                {voidTarget && (
+                    <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/50">
+                        <div className="mx-4 w-full max-w-xs rounded-2xl bg-white p-5 shadow-2xl">
+                            <h3 className="text-base font-bold text-red-600">
+                                ⚠️ {locale?.startsWith("bn") ? "ট্রানজেকশন বাতিল করতে চান?" : "Void this transaction?"}
+                            </h3>
+                            <p className="mt-1 text-xs text-gray-500">
+                                {locale?.startsWith("bn")
+                                    ? "এই বাতিলের পর ব্যালেন্স উল্টে যাবে। এটি পূর্বাবস্থায় ফেরানো যাবে না।"
+                                    : "The running balance will be reversed. This cannot be undone."}
+                            </p>
+                            <input
+                                type="text"
+                                value={voidReason}
+                                onChange={(e) => setVoidReason(e.target.value)}
+                                placeholder={locale?.startsWith("bn") ? "বাতিলের কারণ (ঐচ্ছিক)" : "Reason (optional)"}
+                                className="mt-3 w-full rounded-lg border border-gray-300 px-3 py-2 text-sm outline-none focus:border-red-400"
+                            />
+                            <div className="mt-3 flex gap-2">
+                                <button
+                                    onClick={() => { setVoidTarget(null); setVoidReason(""); }}
+                                    className="flex-1 rounded-lg bg-gray-100 py-2 text-sm font-semibold text-gray-600 hover:bg-gray-200"
+                                >
+                                    {locale?.startsWith("bn") ? "না" : "No"}
+                                </button>
+                                <button
+                                    onClick={handleVoidTransaction}
+                                    disabled={isVoiding}
+                                    className="flex-1 rounded-lg bg-red-600 py-2 text-sm font-semibold text-white hover:bg-red-700 disabled:opacity-50"
+                                >
+                                    {isVoiding
+                                        ? (locale?.startsWith("bn") ? "বাতিল হচ্ছে..." : "Voiding...")
+                                        : (locale?.startsWith("bn") ? "হ্যাঁ, বাতিল করুন" : "Yes, Void")}
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                )}
+
+                {/* Credit Limit Edit Overlay (FR-DUE-14) */}
+                {editingCreditLimit && (
+                    <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/50">
+                        <div className="mx-4 w-full max-w-xs rounded-2xl bg-white p-5 shadow-2xl">
+                            <h3 className="text-base font-bold text-on-surface">
+                                {locale?.startsWith("bn") ? "✏️ ক্রেডিট লিমিট সেট করুন" : "✏️ Set Credit Limit"}
+                            </h3>
+                            <p className="mt-1 text-xs text-gray-500">
+                                {locale?.startsWith("bn")
+                                    ? "এই কাস্টমারের সর্বোচ্চ বাকী সীমা নির্ধারণ করুন। ফাঁকা রাখলে লিমিট থাকবে না।"
+                                    : "Set the maximum due limit for this customer. Leave empty for no limit."}
+                            </p>
+                            <div className="mt-3 relative">
+                                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-sm text-on-surface-variant font-bold">৳</span>
+                                <input
+                                    type="number"
+                                    step="0.01"
+                                    min="0"
+                                    value={creditLimitInput}
+                                    onChange={(e) => setCreditLimitInput(e.target.value)}
+                                    placeholder={locale?.startsWith("bn") ? "যেমন: ৫০০০" : "e.g. 5000"}
+                                    className="w-full rounded-lg border border-gray-300 pl-8 pr-3 py-2.5 text-sm outline-none focus:border-primary"
+                                />
+                            </div>
+                            <div className="mt-3 flex gap-2">
+                                <button
+                                    onClick={() => { setEditingCreditLimit(false); setCreditLimitInput(""); }}
+                                    className="flex-1 rounded-lg bg-gray-100 py-2 text-sm font-semibold text-gray-600 hover:bg-gray-200"
+                                >
+                                    {locale?.startsWith("bn") ? "বাতিল" : "Cancel"}
+                                </button>
+                                <button
+                                    onClick={handleSaveCreditLimit}
+                                    disabled={isSavingCreditLimit}
+                                    className="flex-1 rounded-lg bg-primary py-2 text-sm font-semibold text-white hover:bg-primary/90 disabled:opacity-50"
+                                >
+                                    {isSavingCreditLimit
+                                        ? (locale?.startsWith("bn") ? "সংরক্ষণ..." : "Saving...")
+                                        : (locale?.startsWith("bn") ? "সংরক্ষণ করুন" : "Save")}
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                )}
+
+                {/* ── Per-Customer Stats Card (FR-DUE-11) ── */}
+                {customerStats && (
+                    <div className="bg-surface-container-low rounded-2xl p-5 shadow-sm">
+                        <div className="flex items-center gap-2 mb-4">
+                            <span className="material-symbols-outlined text-primary text-lg">analytics</span>
+                            <h3 className="text-sm font-bold text-on-surface">
+                                {locale?.startsWith("bn") ? "কাস্টমার পরিসংখ্যান" : "Customer Statistics"}
+                            </h3>
+                        </div>
+                        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                            <div className="bg-surface-container-lowest rounded-xl p-3 text-center">
+                                <p className="text-[10px] text-on-surface-variant uppercase tracking-wider font-bold">
+                                    {locale?.startsWith("bn") ? "মোট বাকী" : "Total Due"}
+                                </p>
+                                <p className="text-lg font-black text-error mt-1">
+                                    ৳ {formatMoney(customerStats.currentBalance)}
+                                </p>
+                            </div>
+                            <div className="bg-surface-container-lowest rounded-xl p-3 text-center">
+                                <p className="text-[10px] text-on-surface-variant uppercase tracking-wider font-bold">
+                                    {locale?.startsWith("bn") ? "মোট জমা" : "Total Paid"}
+                                </p>
+                                <p className="text-lg font-black text-primary mt-1">
+                                    ৳ {formatMoney(customerStats.totalJomaAmount)}
+                                </p>
+                            </div>
+                            <div className="bg-surface-container-lowest rounded-xl p-3 text-center">
+                                <p className="text-[10px] text-on-surface-variant uppercase tracking-wider font-bold">
+                                    {locale?.startsWith("bn") ? "ট্রানজেকশন" : "Transactions"}
+                                </p>
+                                <p className="text-lg font-black text-on-surface mt-1">
+                                    {customerStats.totalBakiCount + (customerStats.totalJomaCount ?? 0)}
+                                </p>
+                                <p className="text-[9px] text-on-surface-variant">
+                                    {customerStats.totalBakiCount} {locale?.startsWith("bn") ? "বাকি" : "baki"} / {customerStats.totalJomaCount ?? 0} {locale?.startsWith("bn") ? "জমা" : "joma"}
+                                </p>
+                            </div>
+                            <div className="bg-surface-container-lowest rounded-xl p-3 text-center">
+                                <p className="text-[10px] text-on-surface-variant uppercase tracking-wider font-bold">
+                                    {locale?.startsWith("bn") ? "গড় পেমেন্ট" : "Avg Payment"}
+                                </p>
+                                <p className="text-lg font-black text-secondary mt-1">
+                                    ৳ {customerStats.totalJomaCount && customerStats.totalJomaCount > 0
+                                        ? formatMoney(customerStats.totalJomaAmount / customerStats.totalJomaCount)
+                                        : "0"}
+                                </p>
+                            </div>
+                        </div>
+                        {customerStats.lastPaymentDate && (
+                            <p className="mt-3 text-[11px] text-on-surface-variant text-center">
+                                {locale?.startsWith("bn") ? "শেষ পেমেন্ট:" : "Last payment:"}{" "}
+                                {new Date(customerStats.lastPaymentDate).toLocaleDateString(loc, {
+                                    day: "numeric", month: "short", year: "numeric"
+                                })}
+                            </p>
+                        )}
+                    </div>
+                )}
 
                 {/* Transaction Form Overlay */}
                 {showTxForm && (

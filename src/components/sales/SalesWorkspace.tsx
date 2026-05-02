@@ -16,7 +16,6 @@ import { useSSEStockAlerts } from "@/hooks/useSSEStockAlerts";
 import { getBusinessSettings, getBusinessProfile, getBusinessLocation } from "@/lib/businessApi";
 import { useTranslations } from "next-intl";
 import { useEffect, useMemo, useState } from "react";
-import type { StockConflictDetail } from "@/components/sales/StockConflictModal";
 import type { SaleCreatedResponse } from "@/types/sale";
 import CashSaleSuccessModal from "@/components/sales/CashSaleSuccessModal";
 import CustomerPickerDialog from "@/components/sales/CustomerPickerDialog";
@@ -27,7 +26,6 @@ import type { InvoiceBusinessInfo } from "@/lib/invoiceShare";
 
 import ProductSelector from "./ProductSelector";
 import CartPanel from "./CartPanel";
-import StockConflictModal from "./StockConflictModal";
 
 export default function SalesWorkspace({
     businessId,
@@ -67,11 +65,6 @@ export default function SalesWorkspace({
     const [error, setError] = useState<string | null>(null);
     const [notice, setNotice] = useState<string | null>(null);
 
-    // Stock conflict
-    const [conflictOpen, setConflictOpen] = useState(false);
-    const [conflictDetail, setConflictDetail] = useState<StockConflictDetail | null>(null);
-    const [pendingRequest, setPendingRequest] = useState<SaleCreateRequest | null>(null);
-
     // Cash sale success modal
     const [cashSaleResult, setCashSaleResult] = useState<SaleCreatedResponse | null>(null);
 
@@ -90,7 +83,7 @@ export default function SalesWorkspace({
     const [creditSaleResult, setCreditSaleResult] = useState<SaleCreatedResponse | null>(null);
 
     // Sale mutations — SWR-backed with cache invalidation
-    const { submitCreate, submitForceCreate } = useSaleMutations(businessId);
+    const { submitCreate } = useSaleMutations(businessId);
 
     // §7.6.2: SSE-driven optimistic cache updates (no full DB re-fetch)
     useSSEStockAlerts(businessId);
@@ -317,71 +310,18 @@ export default function SalesWorkspace({
             }
             clearAll();
         } catch (submitError: unknown) {
-            // Check for 409 STOCK_CONFLICT from backend
-            const axiosErr = submitError as { response?: { status?: number; data?: { error?: { code?: string; message?: string; details?: StockConflictDetail } } } };
-            if (
-                axiosErr.response?.status === 409 &&
-                axiosErr.response?.data?.error?.code === "STOCK_CONFLICT" &&
-                axiosErr.response?.data?.error?.details
-            ) {
-                setConflictDetail(axiosErr.response.data.error.details);
-                setPendingRequest(buildSaleRequest(paymentMethod, customer));
-                setConflictOpen(true);
-            } else {
-                // Prefer server-provided error message over raw Axios string
-                const serverMessage = axiosErr.response?.data?.error?.message;
-                setError(
-                    serverMessage
-                        ? serverMessage
-                        : submitError instanceof Error
-                            ? submitError.message
-                            : t("cart.error"),
-                );
-            }
-        } finally {
-            setIsSubmitting(false);
-        }
-    }
-
-    // Conflict modal: user confirms force sale
-    async function handleConflictConfirm() {
-        if (!pendingRequest) return;
-        setConflictOpen(false);
-        setIsSubmitting(true);
-        setError(null);
-
-        try {
-            const sale = await submitForceCreate(pendingRequest);
-            setLastCartItems([...cartItems]);
-            if (pendingRequest.paymentMethod === "CASH") {
-                setCashSaleResult(sale);
-            } else {
-                setNotice(t("cart.success", { invoice: sale.invoiceNumber }));
-            }
-            clearAll();
-        } catch (submitError: unknown) {
-            const forceErr = submitError as { response?: { data?: { error?: { message?: string } } } };
-            const serverMsg = forceErr.response?.data?.error?.message;
+            const axiosErr = submitError as { response?: { status?: number; data?: { error?: { message?: string } } } };
+            const serverMessage = axiosErr.response?.data?.error?.message;
             setError(
-                serverMsg
-                    ? serverMsg
+                serverMessage
+                    ? serverMessage
                     : submitError instanceof Error
                         ? submitError.message
                         : t("cart.error"),
             );
         } finally {
             setIsSubmitting(false);
-            setPendingRequest(null);
-            setConflictDetail(null);
         }
-    }
-
-    // Conflict modal: user discards sale
-    function handleConflictDiscard() {
-        setConflictOpen(false);
-        setConflictDetail(null);
-        setPendingRequest(null);
-        setError(null);
     }
 
     // Business info for invoice sharing
@@ -439,15 +379,6 @@ export default function SalesWorkspace({
                 notice={notice}
                 businessId={businessId}
                 onAddSuggestion={handleAddSuggestion}
-            />
-
-            {/* Stock Conflict Modal */}
-            <StockConflictModal
-                open={conflictOpen}
-                onClose={handleConflictDiscard}
-                conflict={conflictDetail}
-                onConfirm={handleConflictConfirm}
-                onDiscard={handleConflictDiscard}
             />
 
             {/* Cash Sale: Customer Picker (optional — with Skip button) */}

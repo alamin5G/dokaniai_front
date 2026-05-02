@@ -4,7 +4,7 @@ import { useMemo, useState } from "react";
 import type { CartItem, SaleCreatedResponse } from "@/types/sale";
 import type { InvoiceBusinessInfo } from "@/lib/invoiceShare";
 import { formatInvoiceText, buildWhatsAppInvoiceLink } from "@/lib/invoiceShare";
-import { downloadInvoice } from "@/lib/saleApi";
+import { cancelSale, downloadInvoice } from "@/lib/saleApi";
 
 interface CreditSaleSuccessModalProps {
     result: SaleCreatedResponse;
@@ -43,6 +43,22 @@ export default function CreditSaleSuccessModal({
         [invoiceText, result.customerPhone],
     );
     const [downloadingPdf, setDownloadingPdf] = useState(false);
+    const [showCancelConfirm, setShowCancelConfirm] = useState(false);
+    const [cancelReason, setCancelReason] = useState("");
+    const [cancelling, setCancelling] = useState(false);
+
+    async function handleCancelSale() {
+        setCancelling(true);
+        try {
+            await cancelSale(businessId, result.id, cancelReason || undefined);
+            handleClose();
+        } catch (err) {
+            console.error("[CreditSaleModal] Cancel failed:", err);
+        } finally {
+            setCancelling(false);
+            setShowCancelConfirm(false);
+        }
+    }
 
     async function handlePdfDownload() {
         setDownloadingPdf(true);
@@ -223,6 +239,14 @@ export default function CreditSaleSuccessModal({
                         {downloadingPdf ? "ডাউনলোড হচ্ছে..." : "PDF ডাউনলোড"}
                     </button>
 
+                    {/* Cancel Sale Button */}
+                    <button
+                        onClick={() => setShowCancelConfirm(true)}
+                        className="w-full rounded-xl border border-red-200 bg-white py-2 text-sm font-semibold text-red-500 transition hover:bg-red-50 active:scale-[0.98]"
+                    >
+                        ❌ বিক্রি বাতিল করুন
+                    </button>
+
                     {/* Close button */}
                     <button
                         onClick={handleClose}
@@ -230,6 +254,42 @@ export default function CreditSaleSuccessModal({
                     >
                         ঠিক আছে
                     </button>
+
+                    {/* Cancel Confirmation Overlay */}
+                    {showCancelConfirm && (
+                        <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/50">
+                            <div className="mx-4 w-full max-w-xs rounded-2xl bg-white p-5 shadow-2xl">
+                                <h3 className="text-base font-bold text-red-600">
+                                    ⚠️ বিক্রি বাতিল করতে চান?
+                                </h3>
+                                <p className="mt-1 text-xs text-gray-500">
+                                    এই বিক্রির সব পণ্য স্টকে ফিরে যাবে এবং বাকী বাতিল হবে। এটি পূর্বাবস্থায় ফেরানো যাবে না।
+                                </p>
+                                <input
+                                    type="text"
+                                    value={cancelReason}
+                                    onChange={(e) => setCancelReason(e.target.value)}
+                                    placeholder="বাতিলের কারণ (ঐচ্ছিক)"
+                                    className="mt-3 w-full rounded-lg border border-gray-300 px-3 py-2 text-sm outline-none focus:border-red-400"
+                                />
+                                <div className="mt-3 flex gap-2">
+                                    <button
+                                        onClick={() => setShowCancelConfirm(false)}
+                                        className="flex-1 rounded-lg bg-gray-100 py-2 text-sm font-semibold text-gray-600 hover:bg-gray-200"
+                                    >
+                                        না, রাখুন
+                                    </button>
+                                    <button
+                                        onClick={handleCancelSale}
+                                        disabled={cancelling}
+                                        className="flex-1 rounded-lg bg-red-600 py-2 text-sm font-semibold text-white hover:bg-red-700 disabled:opacity-50"
+                                    >
+                                        {cancelling ? "বাতিল হচ্ছে..." : "হ্যাঁ, বাতিল করুন"}
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    )}
                 </div>
             </div>
         </div>
