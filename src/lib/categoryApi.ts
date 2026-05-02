@@ -35,12 +35,6 @@ function normalizeBusinessType(value: string): string {
   return normalized || 'OTHER';
 }
 
-export interface SearchCategoryPage {
-  content: CategoryResponse[];
-  number: number;
-  last: boolean;
-}
-
 function unwrap<T>(response: { data: ApiSuccess<T> }): T {
   return response.data.data;
 }
@@ -63,18 +57,6 @@ export async function getCategoryTree(businessType?: string): Promise<CategoryRe
     `/categories/tree${params}`,
   );
   return unwrap(response);
-}
-
-export async function searchCategoriesByBusinessType(
-  businessType: string,
-  q: string,
-  page = 0,
-  size = 50,
-): Promise<SearchCategoryPage> {
-  const response = await apiClient.get<ApiSuccess<Paged<CategoryResponse>>>(
-    `/categories/search/by-business-type?businessType=${encodeURIComponent(businessType)}&q=${encodeURIComponent(q)}&page=${page}&size=${size}`,
-  );
-  return response.data.data;
 }
 
 export async function getPendingCategoryRequests(page = 0, size = 20): Promise<{ content: CategoryRequestResponse[]; totalPages: number }> {
@@ -222,13 +204,6 @@ export async function confirmCategoryRequest(requestId: string): Promise<Categor
 
 export async function cancelCategoryRequest(requestId: string): Promise<void> {
   await apiClient.delete(`/category-requests/${encodeURIComponent(requestId)}`);
-}
-
-export async function getMyCategoryRequests(): Promise<CategoryRequestResponse[]> {
-  const response = await apiClient.get<ApiSuccess<CategoryRequestResponse[]>>(
-    `/category-requests/my-requests`,
-  );
-  return unwrap(response);
 }
 
 export async function getBusinessCategoryRequests(businessId: string): Promise<CategoryRequestResponse[]> {
