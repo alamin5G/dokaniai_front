@@ -205,6 +205,9 @@ export interface DssReportResponse {
         sourcePeriodStart?: string;
         sourcePeriodEnd?: string;
         priorityScore?: number;
+        aiModel?: string;
+        tokenInput?: number;
+        tokenOutput?: number;
         createdAt: string;
     }>;
     actions: MisActionItem[];

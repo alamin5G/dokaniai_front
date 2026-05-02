@@ -45,6 +45,14 @@ export interface AIInsight {
     actionSuggested: string | null;
     actionData: AIInsightActionData | null;
     isRead: boolean;
+    isActedUpon?: boolean;
+    sourcePeriodStart?: string | null;
+    sourcePeriodEnd?: string | null;
+    sourceMetricsHash?: string | null;
+    priorityScore?: number | null;
+    aiModel?: string | null;
+    tokenInput?: number | null;
+    tokenOutput?: number | null;
     createdAt: string;
     validUntil: string | null;
 }

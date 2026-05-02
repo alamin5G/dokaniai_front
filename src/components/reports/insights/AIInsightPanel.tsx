@@ -12,18 +12,9 @@ import {
     generateProfitOptimization,
     generateSeasonalTrends,
     generateMorningBriefing,
+    generateReturnAnalysis,
 } from "@/lib/aiInsightsApi";
 import type { AIInsight } from "@/types/aiInsight";
-
-interface InsightData {
-    summary: string;
-    recommendations: string[];
-    trends: {
-        revenueChange: number | null;
-        profitChange: number | null;
-        expenseChange: number | null;
-    };
-}
 
 interface InsightCardConfig {
     key: string;
@@ -81,6 +72,11 @@ const INSIGHT_CARDS: InsightCardConfig[] = [
         icon: "calendar_month",
         generateFn: generateSeasonalTrends,
         feature: "forecasting",
+    },
+    {
+        key: "returnAnalysis",
+        icon: "assignment_return",
+        generateFn: generateReturnAnalysis,
     },
 ];
 
@@ -209,6 +205,31 @@ export default function AIInsightPanel({ businessId }: { businessId: string }) {
                                 {activeInsight.message}
                             </p>
                         </div>
+
+                        {(activeInsight.aiModel || activeInsight.tokenInput || activeInsight.tokenOutput || activeInsight.sourcePeriodStart) && (
+                            <div className="grid gap-2 rounded-xl border border-outline-variant/30 bg-surface-container-low p-4 text-xs text-on-surface-variant sm:grid-cols-2">
+                                {activeInsight.aiModel && (
+                                    <div>
+                                        <span className="font-semibold text-on-surface">Model:</span> {activeInsight.aiModel}
+                                    </div>
+                                )}
+                                {(activeInsight.tokenInput || activeInsight.tokenOutput) && (
+                                    <div>
+                                        <span className="font-semibold text-on-surface">Tokens:</span> in {activeInsight.tokenInput ?? 0} / out {activeInsight.tokenOutput ?? 0}
+                                    </div>
+                                )}
+                                {activeInsight.sourcePeriodStart && (
+                                    <div>
+                                        <span className="font-semibold text-on-surface">Source:</span> {new Date(activeInsight.sourcePeriodStart).toLocaleDateString()} {activeInsight.sourcePeriodEnd ? `- ${new Date(activeInsight.sourcePeriodEnd).toLocaleDateString()}` : ""}
+                                    </div>
+                                )}
+                                {activeInsight.priorityScore != null && (
+                                    <div>
+                                        <span className="font-semibold text-on-surface">Priority:</span> {activeInsight.priorityScore}
+                                    </div>
+                                )}
+                            </div>
+                        )}
 
                         {/* Action Suggested */}
                         {activeInsight.actionSuggested && (

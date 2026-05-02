@@ -2,6 +2,22 @@
 
 import { useLocale, useTranslations } from "next-intl";
 import { useCallback, useEffect, useMemo, useState } from "react";
+import {
+    Area,
+    Bar,
+    BarChart,
+    CartesianGrid,
+    Cell,
+    ComposedChart,
+    Legend,
+    Line,
+    Pie,
+    PieChart,
+    ResponsiveContainer,
+    Tooltip,
+    XAxis,
+    YAxis,
+} from "recharts";
 import type { DssReportResponse, MisKpi, MisReportResponse } from "@/types/report";
 import { exportMisReport, generateMisDssReport, getMisDssReport, getMisReport } from "@/lib/reportApi";
 import { trackReportView } from "@/lib/activityTracker";
@@ -304,7 +320,7 @@ function MisReportPanel({
     formatMoney: (v: number | null | undefined) => string;
     formatPct: (v: number | null | undefined) => string;
 }) {
-    const maxTrend = Math.max(1, ...report.trend.map((point) => Math.max(point.revenue ?? 0, point.profit ?? 0, point.expenses ?? 0)));
+    const comparison = (report.metadata.comparison ?? {}) as Record<string, unknown>;
 
     return (
         <section className="space-y-4">
@@ -316,55 +332,163 @@ function MisReportPanel({
 
             <div className="grid grid-cols-1 gap-4 xl:grid-cols-3">
                 {report.trend.length > 0 && (
-                    <div className="rounded-2xl bg-surface-container-lowest p-4 shadow-sm xl:col-span-2">
-                        <div className="mb-3 flex items-center gap-2 text-sm font-bold text-on-surface">
-                            <span className="material-symbols-outlined text-base text-primary">monitoring</span>
-                            MIS Trend
-                        </div>
-                        <div className="flex h-44 items-end gap-2 overflow-x-auto">
-                            {report.trend.map((point) => (
-                                <div key={point.label} className="flex min-w-12 flex-1 flex-col items-center gap-2">
-                                    <div className="flex h-32 w-full items-end gap-1">
-                                        <div className="w-full rounded-t bg-primary" style={{ height: `${Math.max(4, (point.revenue / maxTrend) * 100)}%` }} />
-                                        <div className="w-full rounded-t bg-tertiary" style={{ height: `${Math.max(4, (point.profit / maxTrend) * 100)}%` }} />
-                                        <div className="w-full rounded-t bg-error" style={{ height: `${Math.max(4, (point.expenses / maxTrend) * 100)}%` }} />
-                                    </div>
-                                    <span className="max-w-16 truncate text-[11px] text-on-surface-variant">{point.label}</span>
-                                </div>
-                            ))}
-                        </div>
-                    </div>
+                    <BiTrendChart report={report} formatMoney={formatMoney} />
                 )}
 
                 <ActionQueue actions={report.actions} />
             </div>
 
+            {Object.keys(comparison).length > 0 && (
+                <ComparisonStrip comparison={comparison} formatPct={formatPct} />
+            )}
+
             {(report.breakdown.length > 0 || report.rows.length > 0) && (
                 <div className="grid grid-cols-1 gap-4 xl:grid-cols-2">
                     {report.breakdown.length > 0 && (
-                        <div className="rounded-2xl bg-surface-container-lowest p-4 shadow-sm">
-                            <div className="mb-3 text-sm font-bold text-on-surface">Breakdown</div>
-                            <div className="space-y-3">
-                                {report.breakdown.slice(0, 8).map((item) => (
-                                    <div key={`${item.label}-${item.value}`}>
-                                        <div className="mb-1 flex justify-between text-xs">
-                                            <span className="font-medium text-on-surface">{item.label}</span>
-                                            <span className="text-on-surface-variant">{formatPct(item.percentage)}</span>
-                                        </div>
-                                        <div className="h-2 overflow-hidden rounded-full bg-surface-container">
-                                            <div className="h-full rounded-full bg-primary" style={{ width: `${Math.min(100, Math.max(2, item.percentage))}%` }} />
-                                        </div>
-                                    </div>
-                                ))}
-                            </div>
-                        </div>
+                        <BreakdownChart report={report} formatMoney={formatMoney} />
                     )}
                     {report.rows.length > 0 && (
                         <DetailTable report={report} formatMoney={formatMoney} />
                     )}
                 </div>
             )}
+
+            <MetadataIntelligence report={report} formatMoney={formatMoney} formatPct={formatPct} />
         </section>
+    );
+}
+
+function BiTrendChart({
+    report,
+    formatMoney,
+}: {
+    report: MisReportResponse;
+    formatMoney: (v: number | null | undefined) => string;
+}) {
+    return (
+        <div className="rounded-2xl bg-surface-container-lowest p-4 shadow-sm xl:col-span-2">
+            <div className="mb-3 flex items-center gap-2 text-sm font-bold text-on-surface">
+                <span className="material-symbols-outlined text-base text-primary">monitoring</span>
+                MIS Trend
+            </div>
+            <div className="h-64">
+                <ResponsiveContainer width="100%" height="100%">
+                    <ComposedChart data={report.trend} margin={{ top: 8, right: 12, left: 0, bottom: 0 }}>
+                        <CartesianGrid strokeDasharray="3 3" opacity={0.25} />
+                        <XAxis dataKey="label" tick={{ fontSize: 11 }} minTickGap={18} />
+                        <YAxis tick={{ fontSize: 11 }} width={48} />
+                        <Tooltip formatter={(value) => `৳${formatMoney(Number(value))}`} />
+                        <Legend wrapperStyle={{ fontSize: 12 }} />
+                        <Area type="monotone" dataKey="revenue" name="Revenue" fill="#2563eb" stroke="#2563eb" fillOpacity={0.16} />
+                        <Bar dataKey="expenses" name="Expenses" fill="#dc2626" radius={[4, 4, 0, 0]} />
+                        <Line type="monotone" dataKey="profit" name="Profit" stroke="#059669" strokeWidth={2.5} dot={false} />
+                    </ComposedChart>
+                </ResponsiveContainer>
+            </div>
+        </div>
+    );
+}
+
+function BreakdownChart({
+    report,
+    formatMoney,
+}: {
+    report: MisReportResponse;
+    formatMoney: (v: number | null | undefined) => string;
+}) {
+    const colors = ["#2563eb", "#059669", "#d97706", "#dc2626", "#7c3aed", "#0891b2", "#4b5563", "#be123c"];
+    return (
+        <div className="rounded-2xl bg-surface-container-lowest p-4 shadow-sm">
+            <div className="mb-3 text-sm font-bold text-on-surface">Breakdown</div>
+            <div className="h-64">
+                <ResponsiveContainer width="100%" height="100%">
+                    {report.breakdown.length <= 5 ? (
+                        <PieChart>
+                            <Pie data={report.breakdown} dataKey="value" nameKey="label" innerRadius={52} outerRadius={88} paddingAngle={2}>
+                                {report.breakdown.map((_, index) => (
+                                    <Cell key={index} fill={colors[index % colors.length]} />
+                                ))}
+                            </Pie>
+                            <Tooltip formatter={(value) => `৳${formatMoney(Number(value))}`} />
+                            <Legend wrapperStyle={{ fontSize: 12 }} />
+                        </PieChart>
+                    ) : (
+                        <BarChart data={report.breakdown.slice(0, 8)} layout="vertical" margin={{ top: 4, right: 8, left: 20, bottom: 4 }}>
+                            <CartesianGrid strokeDasharray="3 3" opacity={0.25} />
+                            <XAxis type="number" tick={{ fontSize: 11 }} />
+                            <YAxis dataKey="label" type="category" width={92} tick={{ fontSize: 11 }} />
+                            <Tooltip formatter={(value) => `৳${formatMoney(Number(value))}`} />
+                            <Bar dataKey="value" fill="#2563eb" radius={[0, 5, 5, 0]} />
+                        </BarChart>
+                    )}
+                </ResponsiveContainer>
+            </div>
+        </div>
+    );
+}
+
+function ComparisonStrip({
+    comparison,
+    formatPct,
+}: {
+    comparison: Record<string, unknown>;
+    formatPct: (v: number | null | undefined) => string;
+}) {
+    return (
+        <div className="grid grid-cols-1 gap-3 md:grid-cols-3">
+            {Object.entries(comparison).slice(0, 6).map(([key, value]) => {
+                const numeric = Number(value ?? 0);
+                return (
+                    <div key={key} className="rounded-2xl bg-surface-container-lowest p-4 shadow-sm">
+                        <p className="text-xs font-bold uppercase text-on-surface-variant">{humanizeKey(key)}</p>
+                        <p className={`mt-1 text-xl font-black ${numeric < 0 ? "text-error" : "text-primary"}`}>
+                            {numeric > 0 ? "+" : ""}{formatPct(numeric)}
+                        </p>
+                    </div>
+                );
+            })}
+        </div>
+    );
+}
+
+function MetadataIntelligence({
+    report,
+    formatMoney,
+    formatPct,
+}: {
+    report: MisReportResponse;
+    formatMoney: (v: number | null | undefined) => string;
+    formatPct: (v: number | null | undefined) => string;
+}) {
+    const items: Array<{ title: string; rows: Array<Record<string, unknown>> }> = [];
+    const metadata = report.metadata;
+
+    if (Array.isArray(metadata.profitBridge)) items.push({ title: "Profit Bridge", rows: metadata.profitBridge as Array<Record<string, unknown>> });
+    if (Array.isArray(metadata.spikes)) items.push({ title: "Expense Spikes", rows: metadata.spikes as Array<Record<string, unknown>> });
+    if (Array.isArray(metadata.slowStock)) items.push({ title: "Slow Stock", rows: metadata.slowStock as Array<Record<string, unknown>> });
+    if (Array.isArray(metadata.agingBuckets)) items.push({ title: "Due Aging", rows: metadata.agingBuckets as Array<Record<string, unknown>> });
+    if (Array.isArray(metadata.fixedVariable)) items.push({ title: "Fixed vs Variable", rows: metadata.fixedVariable as Array<Record<string, unknown>> });
+
+    if (items.length === 0) return null;
+
+    return (
+        <div className="grid grid-cols-1 gap-4 xl:grid-cols-2">
+            {items.slice(0, 4).map((section) => (
+                <div key={section.title} className="rounded-2xl bg-surface-container-lowest p-4 shadow-sm">
+                    <p className="mb-3 text-sm font-bold text-on-surface">{section.title}</p>
+                    <div className="space-y-2">
+                        {section.rows.slice(0, 6).map((row, index) => (
+                            <div key={index} className="flex items-center justify-between gap-3 rounded-xl bg-surface-container px-3 py-2">
+                                <span className="truncate text-sm font-medium text-on-surface">{String(row.label ?? row.category ?? row.productName ?? row.type ?? "Item")}</span>
+                                <span className="whitespace-nowrap text-xs font-bold text-on-surface-variant">
+                                    {formatMetadataValue(row, formatMoney, formatPct)}
+                                </span>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            ))}
+        </div>
     );
 }
 
@@ -444,6 +568,31 @@ function DetailTable({
     );
 }
 
+function humanizeKey(key: string): string {
+    return key
+        .replace(/([A-Z])/g, " $1")
+        .replace(/^./, (char) => char.toUpperCase());
+}
+
+function formatMetadataValue(
+    row: Record<string, unknown>,
+    formatMoney: (v: number | null | undefined) => string,
+    formatPct: (v: number | null | undefined) => string,
+): string {
+    const value = row.value ?? row.current ?? row.stockQty ?? row.daysOfStock ?? row.spikePercent;
+    const numeric = Number(value ?? 0);
+    if ("spikePercent" in row || "margin" in row) {
+        return formatPct(numeric);
+    }
+    if ("daysOfStock" in row) {
+        return `${numeric.toFixed(1)} days`;
+    }
+    if ("stockQty" in row || "soldQty" in row) {
+        return numeric.toLocaleString();
+    }
+    return `৳${formatMoney(numeric)}`;
+}
+
 function DssDecisionBoard({
     report,
     onGenerate,
@@ -455,8 +604,16 @@ function DssDecisionBoard({
 }) {
     const generatedCount = Number(report.metrics.monthlyGenerated ?? report.insights.length);
     const available = Boolean(report.metrics.generationAvailable) && generatedCount < 2;
+    const generationFailed = Boolean(report.metrics.generationFailed);
     const day = new Date().getDate();
-    const nextWindowText = day < 14 ? "Available after day 13" : generatedCount >= 2 ? "Monthly limit reached" : "Generate fresh DSS";
+    const slotGenerated = Boolean(report.metrics.slotGenerated);
+    const nextWindowText = day < 14
+        ? "Available after day 13"
+        : slotGenerated
+            ? "This slot is generated"
+            : generatedCount >= 2
+                ? "Monthly limit reached"
+                : "Generate fresh DSS";
 
     return (
         <section className="rounded-2xl bg-surface-container-lowest p-5 shadow-sm">
@@ -478,6 +635,11 @@ function DssDecisionBoard({
                 <div className="rounded-xl bg-surface-container p-4 lg:col-span-2">
                     <p className="mb-2 text-xs font-bold uppercase text-on-surface-variant">RAG Context</p>
                     <p className="text-sm leading-6 text-on-surface">{report.context}</p>
+                    {generationFailed && (
+                        <p className="mt-3 rounded-lg bg-error-container px-3 py-2 text-xs font-medium text-on-error-container">
+                            AI generation failed. Deterministic MIS actions are still available.
+                        </p>
+                    )}
                 </div>
                 <ActionQueue actions={report.actions} />
             </div>
@@ -491,6 +653,11 @@ function DssDecisionBoard({
                                 <span className="text-xs font-bold text-primary">{Math.round((insight.confidence ?? 0) * 100)}%</span>
                             </div>
                             <p className="mt-2 line-clamp-3 text-sm text-on-surface-variant">{insight.message}</p>
+                            {(insight.aiModel || insight.tokenInput || insight.tokenOutput) && (
+                                <p className="mt-2 text-[11px] text-on-surface-variant">
+                                    {insight.aiModel ?? "AI"} · in {insight.tokenInput ?? 0} / out {insight.tokenOutput ?? 0}
+                                </p>
+                            )}
                         </div>
                     ))}
                 </div>

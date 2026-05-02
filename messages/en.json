@@ -3445,6 +3445,10 @@
           "seasonalTrends": {
             "title": "Seasonal Trends",
             "description": "Discover seasonal patterns and plan your inventory accordingly"
+          },
+          "returnAnalysis": {
+            "title": "Return Analysis",
+            "description": "Find refund loss, return reasons, and prevention actions"
           }
         }
       },
