@@ -86,6 +86,19 @@ export async function deleteConversation(conversationId: string): Promise<void> 
     await apiClient.delete(`/ai/conversations/${conversationId}`);
 }
 
+// ─── AI Quick Query Endpoint ─────────────────────────────
+
+export async function sendQuickQuery(
+    key: string,
+    businessId: string,
+): Promise<AIResponse> {
+    const response = await apiClient.post<ApiSuccess<AIResponse>>(
+        "/ai/quick-query",
+        { key, businessId },
+    );
+    return unwrap(response);
+}
+
 // ─── AI Parse & Execute Endpoints ────────────────────────
 
 export async function parseText(request: AIParseRequest): Promise<ParsedAction> {

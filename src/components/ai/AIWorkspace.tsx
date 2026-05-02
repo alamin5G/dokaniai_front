@@ -13,6 +13,7 @@ import type {
 } from "@/types/ai";
 import {
     sendChatMessage,
+    sendQuickQuery,
     getConversations,
     getConversation,
     deleteConversation,
@@ -285,6 +286,74 @@ function ChatTab({ businessId, isDailyLimitReached, maxAiTokensPerQuery }: {
         }
     }, [input, isSending, businessId, activeConvId, typingMessageId, t]);
 
+    const handleQuickQuery = useCallback(async (key: string, displayText: string) => {
+        if (isSending) return;
+        setIsSending(true);
+
+        // Add optimistic user message with the Bengali display text
+        const optimisticUser: AIMessage = {
+            id: `temp-${Date.now()}`,
+            conversationId: activeConvId ?? "",
+            role: "USER",
+            content: displayText,
+            actionType: null,
+            structuredOutput: null,
+            confidenceScore: null,
+            createdAt: new Date().toISOString(),
+        };
+        const typingId = `typing-${Date.now()}`;
+        setMessages((prev) => [...prev, optimisticUser]);
+        setTypingMessageId(typingId);
+        setMessages((prev) => [...prev, {
+            id: typingId,
+            conversationId: activeConvId ?? "",
+            role: "ASSISTANT",
+            content: "",
+            actionType: null,
+            structuredOutput: null,
+            confidenceScore: null,
+            createdAt: new Date().toISOString(),
+        }]);
+
+        try {
+            const response = await sendQuickQuery(key, businessId);
+
+            if (!activeConvId && response.conversationId) {
+                setActiveConvId(response.conversationId);
+            }
+
+            setTypingMessageId(null);
+            const aiMessage: AIMessage = {
+                id: response.messageId,
+                conversationId: response.conversationId,
+                role: "ASSISTANT",
+                content: response.content,
+                actionType: response.actionType,
+                structuredOutput: response.structuredOutput,
+                confidenceScore: response.confidenceScore,
+                createdAt: new Date().toISOString(),
+            };
+            setMessages((prev) => [...prev.filter((m) => m.id !== typingMessageId), aiMessage]);
+        } catch {
+            setTypingMessageId(null);
+            setMessages((prev) => [
+                ...prev.filter((m) => m.id !== typingMessageId),
+                {
+                    id: `error-${Date.now()}`,
+                    conversationId: activeConvId ?? "",
+                    role: "ASSISTANT",
+                    content: t("chat.error"),
+                    actionType: null,
+                    structuredOutput: null,
+                    confidenceScore: null,
+                    createdAt: new Date().toISOString(),
+                },
+            ]);
+        } finally {
+            setIsSending(false);
+        }
+    }, [isSending, businessId, activeConvId, typingMessageId, t]);
+
     const handleNewChat = useCallback(() => {
         setActiveConvId(null);
         setMessages([]);
@@ -428,10 +497,9 @@ function ChatTab({ businessId, isDailyLimitReached, maxAiTokensPerQuery }: {
                         ].map((qq) => (
                             <button
                                 key={qq.key}
-                                onClick={() => {
-                                    setInput(qq.bn);
-                                }}
-                                className="whitespace-nowrap rounded-full bg-primary-container/30 px-3 py-1.5 text-xs font-medium text-primary hover:bg-primary-container transition-colors"
+                                onClick={() => handleQuickQuery(qq.key, qq.bn)}
+                                disabled={isSending || isDailyLimitReached}
+                                className="whitespace-nowrap rounded-full bg-primary-container/30 px-3 py-1.5 text-xs font-medium text-primary hover:bg-primary-container transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                             >
                                 {qq.bn}
                             </button>
