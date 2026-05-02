@@ -1,5 +1,6 @@
 "use client";
 
+import apiClient from "@/lib/api";
 import { getCurrentUser, type CurrentUser } from "@/lib/userAccountApi";
 import { useAuthStore } from "@/store/authStore";
 import { useTranslations } from "next-intl";
@@ -177,8 +178,13 @@ export default function UserProfileSection({ variant = "header" }: UserProfileSe
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  const handleLogout = useCallback(() => {
+  const handleLogout = useCallback(async () => {
     setShowLogoutConfirm(false);
+    try {
+      await apiClient.post("/auth/logout");
+    } catch {
+      // Ignore — clear tokens locally even if server call fails
+    }
     useAuthStore.getState().clearTokens();
     router.replace("/login");
   }, [router]);

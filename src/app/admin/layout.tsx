@@ -1,5 +1,6 @@
 "use client";
 
+import apiClient from "@/lib/api";
 import { useAuthStore } from "@/store/authStore";
 import { useRouter, usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -73,7 +74,11 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                         <span className="text-sm font-medium">Admin Dashboard</span>
                     </button>
                     <button
-                        onClick={() => { clearTokens(); router.push("/login"); }}
+                        onClick={async () => {
+                            try { await apiClient.post("/auth/logout"); } catch { /* ignore */ }
+                            clearTokens();
+                            router.push("/login");
+                        }}
                         className="flex items-center gap-3 px-4 py-3 rounded-xl text-on-surface-variant hover:bg-surface-container-low transition-colors w-full"
                     >
                         <span className="material-symbols-outlined">logout</span>
