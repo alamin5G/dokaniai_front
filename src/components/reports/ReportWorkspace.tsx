@@ -227,7 +227,7 @@ export default function ReportWorkspace({ businessId }: { businessId: string }) 
             )}
 
             {!isLoading && !error && activeTab !== "advanced" && report && (
-                <MisReportPanel report={report} formatMoney={formatMoney} formatPct={formatPct} />
+                <MisReportPanel report={report} formatMoney={formatMoney} formatPct={formatPct} t={t} />
             )}
 
             {!isLoading && !error && activeTab === "advanced" && (
@@ -315,10 +315,12 @@ function MisReportPanel({
     report,
     formatMoney,
     formatPct,
+    t,
 }: {
     report: MisReportResponse;
     formatMoney: (v: number | null | undefined) => string;
     formatPct: (v: number | null | undefined) => string;
+    t: (key: string) => string;
 }) {
     const comparison = (report.metadata.comparison ?? {}) as Record<string, unknown>;
 
@@ -326,34 +328,34 @@ function MisReportPanel({
         <section className="space-y-4">
             <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
                 {report.kpis.map((kpi) => (
-                    <MisKpiCard key={`${report.reportType}-${kpi.label}`} kpi={kpi} formatMoney={formatMoney} formatPct={formatPct} />
+                    <MisKpiCard key={`${report.reportType}-${kpi.label}`} kpi={kpi} formatMoney={formatMoney} formatPct={formatPct} t={t} />
                 ))}
             </div>
 
             <div className="grid grid-cols-1 gap-4 xl:grid-cols-3">
                 {report.trend.length > 0 && (
-                    <BiTrendChart report={report} formatMoney={formatMoney} />
+                    <BiTrendChart report={report} formatMoney={formatMoney} t={t} />
                 )}
 
-                <ActionQueue actions={report.actions} />
+                <ActionQueue actions={report.actions} t={t} />
             </div>
 
             {Object.keys(comparison).length > 0 && (
-                <ComparisonStrip comparison={comparison} formatPct={formatPct} />
+                <ComparisonStrip comparison={comparison} formatPct={formatPct} t={t} />
             )}
 
             {(report.breakdown.length > 0 || report.rows.length > 0) && (
                 <div className="grid grid-cols-1 gap-4 xl:grid-cols-2">
                     {report.breakdown.length > 0 && (
-                        <BreakdownChart report={report} formatMoney={formatMoney} />
+                        <BreakdownChart report={report} formatMoney={formatMoney} t={t} />
                     )}
                     {report.rows.length > 0 && (
-                        <DetailTable report={report} formatMoney={formatMoney} />
+                        <DetailTable report={report} formatMoney={formatMoney} t={t} />
                     )}
                 </div>
             )}
 
-            <MetadataIntelligence report={report} formatMoney={formatMoney} formatPct={formatPct} />
+            <MetadataIntelligence report={report} formatMoney={formatMoney} formatPct={formatPct} t={t} />
         </section>
     );
 }
@@ -361,15 +363,17 @@ function MisReportPanel({
 function BiTrendChart({
     report,
     formatMoney,
+    t,
 }: {
     report: MisReportResponse;
     formatMoney: (v: number | null | undefined) => string;
+    t: (key: string) => string;
 }) {
     return (
         <div className="rounded-2xl bg-surface-container-lowest p-4 shadow-sm xl:col-span-2">
             <div className="mb-3 flex items-center gap-2 text-sm font-bold text-on-surface">
                 <span className="material-symbols-outlined text-base text-primary">monitoring</span>
-                MIS Trend
+                {t("mis.trend")}
             </div>
             <div className="h-64">
                 <ResponsiveContainer width="100%" height="100%">
@@ -379,9 +383,9 @@ function BiTrendChart({
                         <YAxis tick={{ fontSize: 11 }} width={48} />
                         <Tooltip formatter={(value) => `৳${formatMoney(Number(value))}`} />
                         <Legend wrapperStyle={{ fontSize: 12 }} />
-                        <Area type="monotone" dataKey="revenue" name="Revenue" fill="#2563eb" stroke="#2563eb" fillOpacity={0.16} />
-                        <Bar dataKey="expenses" name="Expenses" fill="#dc2626" radius={[4, 4, 0, 0]} />
-                        <Line type="monotone" dataKey="profit" name="Profit" stroke="#059669" strokeWidth={2.5} dot={false} />
+                        <Area type="monotone" dataKey="revenue" name={t("charts.revenue")} fill="#2563eb" stroke="#2563eb" fillOpacity={0.16} />
+                        <Bar dataKey="expenses" name={t("charts.expenses")} fill="#dc2626" radius={[4, 4, 0, 0]} />
+                        <Line type="monotone" dataKey="profit" name={t("charts.profit")} stroke="#059669" strokeWidth={2.5} dot={false} />
                     </ComposedChart>
                 </ResponsiveContainer>
             </div>
@@ -392,14 +396,16 @@ function BiTrendChart({
 function BreakdownChart({
     report,
     formatMoney,
+    t,
 }: {
     report: MisReportResponse;
     formatMoney: (v: number | null | undefined) => string;
+    t: (key: string) => string;
 }) {
     const colors = ["#2563eb", "#059669", "#d97706", "#dc2626", "#7c3aed", "#0891b2", "#4b5563", "#be123c"];
     return (
         <div className="rounded-2xl bg-surface-container-lowest p-4 shadow-sm">
-            <div className="mb-3 text-sm font-bold text-on-surface">Breakdown</div>
+            <div className="mb-3 text-sm font-bold text-on-surface">{t("mis.breakdown")}</div>
             <div className="h-64">
                 <ResponsiveContainer width="100%" height="100%">
                     {report.breakdown.length <= 5 ? (
@@ -430,9 +436,11 @@ function BreakdownChart({
 function ComparisonStrip({
     comparison,
     formatPct,
+    t,
 }: {
     comparison: Record<string, unknown>;
     formatPct: (v: number | null | undefined) => string;
+    t: (key: string) => string;
 }) {
     return (
         <div className="grid grid-cols-1 gap-3 md:grid-cols-3">
@@ -440,7 +448,7 @@ function ComparisonStrip({
                 const numeric = Number(value ?? 0);
                 return (
                     <div key={key} className="rounded-2xl bg-surface-container-lowest p-4 shadow-sm">
-                        <p className="text-xs font-bold uppercase text-on-surface-variant">{humanizeKey(key)}</p>
+                        <p className="text-xs font-bold uppercase text-on-surface-variant">{translateReportKey(key, t)}</p>
                         <p className={`mt-1 text-xl font-black ${numeric < 0 ? "text-error" : "text-primary"}`}>
                             {numeric > 0 ? "+" : ""}{formatPct(numeric)}
                         </p>
@@ -455,19 +463,21 @@ function MetadataIntelligence({
     report,
     formatMoney,
     formatPct,
+    t,
 }: {
     report: MisReportResponse;
     formatMoney: (v: number | null | undefined) => string;
     formatPct: (v: number | null | undefined) => string;
+    t: (key: string) => string;
 }) {
     const items: Array<{ title: string; rows: Array<Record<string, unknown>> }> = [];
     const metadata = report.metadata;
 
-    if (Array.isArray(metadata.profitBridge)) items.push({ title: "Profit Bridge", rows: metadata.profitBridge as Array<Record<string, unknown>> });
-    if (Array.isArray(metadata.spikes)) items.push({ title: "Expense Spikes", rows: metadata.spikes as Array<Record<string, unknown>> });
-    if (Array.isArray(metadata.slowStock)) items.push({ title: "Slow Stock", rows: metadata.slowStock as Array<Record<string, unknown>> });
-    if (Array.isArray(metadata.agingBuckets)) items.push({ title: "Due Aging", rows: metadata.agingBuckets as Array<Record<string, unknown>> });
-    if (Array.isArray(metadata.fixedVariable)) items.push({ title: "Fixed vs Variable", rows: metadata.fixedVariable as Array<Record<string, unknown>> });
+    if (Array.isArray(metadata.profitBridge)) items.push({ title: t("mis.profitBridge"), rows: metadata.profitBridge as Array<Record<string, unknown>> });
+    if (Array.isArray(metadata.spikes)) items.push({ title: t("mis.expenseSpikes"), rows: metadata.spikes as Array<Record<string, unknown>> });
+    if (Array.isArray(metadata.slowStock)) items.push({ title: t("mis.slowStock"), rows: metadata.slowStock as Array<Record<string, unknown>> });
+    if (Array.isArray(metadata.agingBuckets)) items.push({ title: t("mis.dueAging"), rows: metadata.agingBuckets as Array<Record<string, unknown>> });
+    if (Array.isArray(metadata.fixedVariable)) items.push({ title: t("mis.fixedVariable"), rows: metadata.fixedVariable as Array<Record<string, unknown>> });
 
     if (items.length === 0) return null;
 
@@ -479,7 +489,7 @@ function MetadataIntelligence({
                     <div className="space-y-2">
                         {section.rows.slice(0, 6).map((row, index) => (
                             <div key={index} className="flex items-center justify-between gap-3 rounded-xl bg-surface-container px-3 py-2">
-                                <span className="truncate text-sm font-medium text-on-surface">{String(row.label ?? row.category ?? row.productName ?? row.type ?? "Item")}</span>
+                                <span className="truncate text-sm font-medium text-on-surface">{String(row.label ?? row.category ?? row.productName ?? row.type ?? t("mis.item"))}</span>
                                 <span className="whitespace-nowrap text-xs font-bold text-on-surface-variant">
                                     {formatMetadataValue(row, formatMoney, formatPct)}
                                 </span>
@@ -496,30 +506,32 @@ function MisKpiCard({
     kpi,
     formatMoney,
     formatPct,
+    t,
 }: {
     kpi: MisKpi;
     formatMoney: (v: number | null | undefined) => string;
     formatPct: (v: number | null | undefined) => string;
+    t: (key: string) => string;
 }) {
     const toneClass = kpi.tone === "danger" ? "text-error" : kpi.tone === "warning" ? "text-tertiary" : kpi.tone === "good" ? "text-primary" : "text-on-surface";
     const value = kpi.unit === "BDT" ? `৳${formatMoney(kpi.value)}` : kpi.unit === "PERCENT" ? formatPct(kpi.value) : formatMoney(kpi.value);
     return (
         <div className="rounded-2xl bg-surface-container-lowest p-4 shadow-sm">
-            <p className="text-xs font-medium uppercase text-on-surface-variant">{kpi.label}</p>
+            <p className="text-xs font-medium uppercase text-on-surface-variant">{translateReportKey(kpi.label, t)}</p>
             <p className={`mt-2 text-2xl font-black ${toneClass}`}>{value}</p>
         </div>
     );
 }
 
-function ActionQueue({ actions }: { actions: MisReportResponse["actions"] }) {
+function ActionQueue({ actions, t }: { actions: MisReportResponse["actions"]; t: (key: string) => string }) {
     return (
         <div className="rounded-2xl bg-surface-container-lowest p-4 shadow-sm">
             <div className="mb-3 flex items-center gap-2 text-sm font-bold text-on-surface">
                 <span className="material-symbols-outlined text-base text-primary">task_alt</span>
-                Action Queue
+                {t("mis.actionQueue")}
             </div>
             <div className="space-y-3">
-                {actions.length === 0 && <p className="text-sm text-on-surface-variant">No critical action for this period.</p>}
+                {actions.length === 0 && <p className="text-sm text-on-surface-variant">{t("mis.noCriticalAction")}</p>}
                 {actions.slice(0, 4).map((action) => (
                     <div key={`${action.actionType}-${action.title}`} className="border-l-4 border-primary pl-3">
                         <p className="text-sm font-bold text-on-surface">{action.title}</p>
@@ -535,21 +547,23 @@ function ActionQueue({ actions }: { actions: MisReportResponse["actions"] }) {
 function DetailTable({
     report,
     formatMoney,
+    t,
 }: {
     report: MisReportResponse;
     formatMoney: (v: number | null | undefined) => string;
+    t: (key: string) => string;
 }) {
     return (
         <div className="overflow-hidden rounded-2xl bg-surface-container-lowest shadow-sm">
-            <div className="border-b border-outline-variant p-4 text-sm font-bold text-on-surface">Top Details</div>
+            <div className="border-b border-outline-variant p-4 text-sm font-bold text-on-surface">{t("mis.topDetails")}</div>
             <div className="max-h-72 overflow-auto">
                 <table className="w-full text-left text-sm">
                     <thead className="sticky top-0 bg-surface-container text-xs text-on-surface-variant">
                         <tr>
-                            <th className="px-4 py-2">Name</th>
-                            <th className="px-4 py-2 text-right">Amount</th>
-                            <th className="px-4 py-2 text-right">Qty</th>
-                            <th className="px-4 py-2 text-right">Metric</th>
+                            <th className="px-4 py-2">{t("mis.name")}</th>
+                            <th className="px-4 py-2 text-right">{t("charts.amount")}</th>
+                            <th className="px-4 py-2 text-right">{t("sales.quantity")}</th>
+                            <th className="px-4 py-2 text-right">{t("mis.metric")}</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -574,6 +588,47 @@ function humanizeKey(key: string): string {
         .replace(/^./, (char) => char.toUpperCase());
 }
 
+function normalizeKey(key: string): string {
+    return key
+        .replace(/([a-z])([A-Z])/g, "$1_$2")
+        .replace(/[^a-zA-Z0-9]+/g, "_")
+        .replace(/^_+|_+$/g, "")
+        .toLowerCase();
+}
+
+function translateReportKey(key: string, t: (key: string) => string): string {
+    const normalized = normalizeKey(key);
+    const map: Record<string, string> = {
+        revenue: "charts.revenue",
+        total_revenue: "sales.totalRevenue",
+        sales: "tabs.sales",
+        total_sales: "sales.totalSales",
+        profit: "charts.profit",
+        total_profit: "profit.totalProfit",
+        gross_profit: "profit.grossProfit",
+        net_profit: "profit.netProfit",
+        expenses: "charts.expenses",
+        total_expenses: "profit.totalExpenses",
+        expense_delta: "mis.expenseDelta",
+        profit_delta: "mis.profitDelta",
+        revenue_delta: "mis.revenueDelta",
+        discount: "tabs.discounts",
+        discounts: "tabs.discounts",
+        returns: "tabs.returns",
+        due: "tabs.due",
+        stock: "tabs.stock",
+        margin: "profit.margin",
+        quantity: "sales.quantity",
+        count: "expenses.count",
+        amount: "charts.amount",
+        collection_rate: "mis.collectionRate",
+        low_stock_risk: "mis.lowStockRisk",
+        business_health_score: "mis.businessHealthScore",
+    };
+    const translationKey = map[normalized];
+    return translationKey ? t(translationKey) : humanizeKey(key);
+}
+
 function formatMetadataValue(
     row: Record<string, unknown>,
     formatMoney: (v: number | null | undefined) => string,
@@ -585,7 +640,7 @@ function formatMetadataValue(
         return formatPct(numeric);
     }
     if ("daysOfStock" in row) {
-        return `${numeric.toFixed(1)} days`;
+        return `${numeric.toFixed(1)}d`;
     }
     if ("stockQty" in row || "soldQty" in row) {
         return numeric.toLocaleString();
@@ -602,46 +657,47 @@ function DssDecisionBoard({
     onGenerate: () => void;
     isGenerating: boolean;
 }) {
+    const t = useTranslations("shop.reports");
     const generatedCount = Number(report.metrics.monthlyGenerated ?? report.insights.length);
     const available = Boolean(report.metrics.generationAvailable) && generatedCount < 2;
     const generationFailed = Boolean(report.metrics.generationFailed);
     const day = new Date().getDate();
     const slotGenerated = Boolean(report.metrics.slotGenerated);
     const nextWindowText = day < 14
-        ? "Available after day 13"
+        ? t("dss.availableAfterDay13")
         : slotGenerated
-            ? "This slot is generated"
+            ? t("dss.slotGenerated")
             : generatedCount >= 2
-                ? "Monthly limit reached"
-                : "Generate fresh DSS";
+                ? t("dss.monthlyLimitReached")
+                : t("dss.generateFresh");
 
     return (
         <section className="rounded-2xl bg-surface-container-lowest p-5 shadow-sm">
             <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
                 <div>
-                    <h3 className="text-lg font-black text-on-surface">DSS Decision Board</h3>
-                    <p className="text-sm text-on-surface-variant">Business-scoped MIS context; AI generation is capped at 2/month.</p>
+                    <h3 className="text-lg font-black text-on-surface">{t("dss.title")}</h3>
+                    <p className="text-sm text-on-surface-variant">{t("dss.subtitle")}</p>
                 </div>
                 <button
                     onClick={onGenerate}
                     disabled={!available || isGenerating}
                     className={`rounded-xl px-4 py-2 text-sm font-bold transition-colors ${available ? "bg-primary text-on-primary hover:bg-primary/90" : "bg-surface-container text-on-surface-variant"}`}
                 >
-                    {isGenerating ? "Generating..." : nextWindowText}
+                    {isGenerating ? t("dss.generating") : nextWindowText}
                 </button>
             </div>
 
             <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
                 <div className="rounded-xl bg-surface-container p-4 lg:col-span-2">
-                    <p className="mb-2 text-xs font-bold uppercase text-on-surface-variant">RAG Context</p>
+                    <p className="mb-2 text-xs font-bold uppercase text-on-surface-variant">{t("dss.ragContext")}</p>
                     <p className="text-sm leading-6 text-on-surface">{report.context}</p>
                     {generationFailed && (
                         <p className="mt-3 rounded-lg bg-error-container px-3 py-2 text-xs font-medium text-on-error-container">
-                            AI generation failed. Deterministic MIS actions are still available.
+                            {t("dss.generationFailed")}
                         </p>
                     )}
                 </div>
-                <ActionQueue actions={report.actions} />
+                <ActionQueue actions={report.actions} t={t} />
             </div>
 
             {report.insights.length > 0 && (
@@ -652,10 +708,10 @@ function DssDecisionBoard({
                                 <p className="font-bold text-on-surface">{insight.title}</p>
                                 <span className="text-xs font-bold text-primary">{Math.round((insight.confidence ?? 0) * 100)}%</span>
                             </div>
-                            <p className="mt-2 line-clamp-3 text-sm text-on-surface-variant">{insight.message}</p>
+                            <p className="mt-2 line-clamp-3 text-sm text-on-surface-variant">{extractAiSummary(insight.message)}</p>
                             {(insight.aiModel || insight.tokenInput || insight.tokenOutput) && (
                                 <p className="mt-2 text-[11px] text-on-surface-variant">
-                                    {insight.aiModel ?? "AI"} · in {insight.tokenInput ?? 0} / out {insight.tokenOutput ?? 0}
+                                    {insight.aiModel ?? t("insights.ai")} · {t("insights.inputTokens")} {insight.tokenInput ?? 0} / {t("insights.outputTokens")} {insight.tokenOutput ?? 0}
                                 </p>
                             )}
                         </div>
@@ -664,4 +720,26 @@ function DssDecisionBoard({
             )}
         </section>
     );
+}
+
+function extractAiSummary(message: string): string {
+    const trimmed = message.trim();
+    if (!trimmed.startsWith("{") && !trimmed.startsWith("```")) {
+        return message;
+    }
+    try {
+        const json = trimmed
+            .replace(/^```json\s*/i, "")
+            .replace(/^```\s*/i, "")
+            .replace(/```$/i, "")
+            .trim();
+        const parsed = JSON.parse(json) as Record<string, unknown>;
+        const primary = parsed.briefing ?? parsed.summary ?? parsed.message ?? parsed.analysis;
+        if (primary != null) {
+            return String(primary);
+        }
+    } catch {
+        return message;
+    }
+    return message;
 }

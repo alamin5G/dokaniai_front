@@ -201,31 +201,29 @@ export default function AIInsightPanel({ businessId }: { businessId: string }) {
 
                         {/* Message */}
                         <div className="rounded-xl bg-surface-container p-4">
-                            <p className="text-sm text-on-surface leading-relaxed whitespace-pre-line">
-                                {activeInsight.message}
-                            </p>
+                            <StructuredAiMessage content={activeInsight.message} />
                         </div>
 
                         {(activeInsight.aiModel || activeInsight.tokenInput || activeInsight.tokenOutput || activeInsight.sourcePeriodStart) && (
                             <div className="grid gap-2 rounded-xl border border-outline-variant/30 bg-surface-container-low p-4 text-xs text-on-surface-variant sm:grid-cols-2">
                                 {activeInsight.aiModel && (
                                     <div>
-                                        <span className="font-semibold text-on-surface">Model:</span> {activeInsight.aiModel}
+                                        <span className="font-semibold text-on-surface">{t("insights.model")}:</span> {activeInsight.aiModel}
                                     </div>
                                 )}
                                 {(activeInsight.tokenInput || activeInsight.tokenOutput) && (
                                     <div>
-                                        <span className="font-semibold text-on-surface">Tokens:</span> in {activeInsight.tokenInput ?? 0} / out {activeInsight.tokenOutput ?? 0}
+                                        <span className="font-semibold text-on-surface">{t("insights.tokens")}:</span> {t("insights.inputTokens")} {activeInsight.tokenInput ?? 0} / {t("insights.outputTokens")} {activeInsight.tokenOutput ?? 0}
                                     </div>
                                 )}
                                 {activeInsight.sourcePeriodStart && (
                                     <div>
-                                        <span className="font-semibold text-on-surface">Source:</span> {new Date(activeInsight.sourcePeriodStart).toLocaleDateString()} {activeInsight.sourcePeriodEnd ? `- ${new Date(activeInsight.sourcePeriodEnd).toLocaleDateString()}` : ""}
+                                        <span className="font-semibold text-on-surface">{t("insights.source")}:</span> {new Date(activeInsight.sourcePeriodStart).toLocaleDateString()} {activeInsight.sourcePeriodEnd ? `- ${new Date(activeInsight.sourcePeriodEnd).toLocaleDateString()}` : ""}
                                     </div>
                                 )}
                                 {activeInsight.priorityScore != null && (
                                     <div>
-                                        <span className="font-semibold text-on-surface">Priority:</span> {activeInsight.priorityScore}
+                                        <span className="font-semibold text-on-surface">{t("insights.priority")}:</span> {activeInsight.priorityScore}
                                     </div>
                                 )}
                             </div>
@@ -248,4 +246,148 @@ export default function AIInsightPanel({ businessId }: { businessId: string }) {
             )}
         </div>
     );
+}
+
+function StructuredAiMessage({ content }: { content: string }) {
+    const t = useTranslations("shop.reports");
+    const parsed = parseAiJson(content);
+
+    if (!parsed || typeof parsed !== "object" || Array.isArray(parsed)) {
+        return <p className="text-sm text-on-surface leading-relaxed whitespace-pre-line">{content}</p>;
+    }
+
+    const entries = Object.entries(parsed as Record<string, unknown>);
+    const primaryText = pickPrimaryText(parsed as Record<string, unknown>);
+    const advice = Array.isArray((parsed as Record<string, unknown>).advice)
+        ? ((parsed as Record<string, unknown>).advice as unknown[])
+        : [];
+
+    return (
+        <div className="space-y-4">
+            {primaryText != null && (
+                <div className="rounded-lg bg-surface-container-low px-3 py-2">
+                    <p className="text-sm leading-relaxed text-on-surface">{String(primaryText)}</p>
+                </div>
+            )}
+
+            {advice.length > 0 && (
+                <div className="space-y-2">
+                    <p className="text-xs font-bold uppercase text-on-surface-variant">{t("insights.structuredAdvice")}</p>
+                    {advice.map((item, index) => (
+                        <StructuredAdviceCard key={index} item={item} />
+                    ))}
+                </div>
+            )}
+
+            {entries
+                .filter(([key]) => !["briefing", "summary", "message", "analysis", "advice"].includes(key))
+                .map(([key, value]) => (
+                    <StructuredValue key={key} label={translateAiKey(key, t)} value={value} />
+                ))}
+        </div>
+    );
+}
+
+function StructuredAdviceCard({ item }: { item: unknown }) {
+    const t = useTranslations("shop.reports");
+    if (!item || typeof item !== "object" || Array.isArray(item)) {
+        return <p className="rounded-lg bg-surface-container-low px-3 py-2 text-sm text-on-surface">{String(item)}</p>;
+    }
+    const record = item as Record<string, unknown>;
+    return (
+        <div className="rounded-xl border border-outline-variant/30 bg-surface-container-low p-3">
+            <div className="mb-2 flex flex-wrap items-center gap-2">
+                {record.priority != null && (
+                    <span className="rounded-full bg-primary-container px-2 py-0.5 text-[11px] font-bold text-on-primary-container">
+                        {t("insights.priority")}: {String(record.priority)}
+                    </span>
+                )}
+                {record.risk != null && (
+                    <span className="rounded-full bg-tertiary-container px-2 py-0.5 text-[11px] font-bold text-on-tertiary-container">
+                        {t("insights.risk")}: {String(record.risk)}
+                    </span>
+                )}
+            </div>
+            {record.next_action != null && (
+                <p className="text-sm font-medium text-on-surface">{String(record.next_action)}</p>
+            )}
+            {Object.entries(record)
+                .filter(([key]) => !["priority", "risk", "next_action"].includes(key))
+                .map(([key, value]) => (
+                    <p key={key} className="mt-1 text-xs text-on-surface-variant">
+                        <span className="font-semibold">{translateAiKey(key, t)}:</span> {String(value)}
+                    </p>
+                ))}
+        </div>
+    );
+}
+
+function StructuredValue({ label, value }: { label: string; value: unknown }) {
+    if (Array.isArray(value)) {
+        return (
+            <div>
+                <p className="mb-2 text-xs font-bold uppercase text-on-surface-variant">{label}</p>
+                <div className="space-y-2">
+                    {value.map((item, index) => (
+                        <StructuredAdviceCard key={index} item={item} />
+                    ))}
+                </div>
+            </div>
+        );
+    }
+    if (value && typeof value === "object") {
+        return (
+            <div className="rounded-xl bg-surface-container-low p-3">
+                <p className="mb-2 text-xs font-bold uppercase text-on-surface-variant">{label}</p>
+                {Object.entries(value as Record<string, unknown>).map(([key, itemValue]) => (
+                    <p key={key} className="text-xs text-on-surface-variant">
+                        <span className="font-semibold text-on-surface">{key}:</span> {String(itemValue)}
+                    </p>
+                ))}
+            </div>
+        );
+    }
+    return (
+        <p className="text-sm text-on-surface">
+            <span className="font-semibold">{label}:</span> {String(value)}
+        </p>
+    );
+}
+
+function parseAiJson(content: string): unknown | null {
+    const trimmed = content.trim();
+    if (!trimmed.startsWith("{") && !trimmed.startsWith("```")) {
+        return null;
+    }
+    const json = trimmed
+        .replace(/^```json\s*/i, "")
+        .replace(/^```\s*/i, "")
+        .replace(/```$/i, "")
+        .trim();
+    try {
+        return JSON.parse(json);
+    } catch {
+        return null;
+    }
+}
+
+function pickPrimaryText(record: Record<string, unknown>): unknown {
+    return record.briefing ?? record.summary ?? record.message ?? record.analysis ?? null;
+}
+
+function translateAiKey(key: string, t: (key: string) => string): string {
+    const map: Record<string, string> = {
+        briefing: "insights.briefing",
+        summary: "insights.summary",
+        advice: "insights.structuredAdvice",
+        priority: "insights.priority",
+        risk: "insights.risk",
+        next_action: "insights.nextAction",
+        expected_impact: "insights.expectedImpact",
+        health_score: "insights.healthScore",
+        findings: "insights.findings",
+        recommendations: "insights.recommendations",
+        prediction: "insights.prediction",
+    };
+    return map[key] ? t(map[key]) : key.replace(/_/g, " ");
 }
