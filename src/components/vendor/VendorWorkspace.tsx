@@ -6,7 +6,6 @@ import {
     listVendors,
     createVendor,
     updateVendor,
-    deleteVendor,
     toggleVendorActive,
 } from "@/lib/vendorApi";
 import type { Vendor, VendorRequest } from "@/types/vendor";
@@ -43,10 +42,6 @@ export default function VendorWorkspace({ businessId }: VendorWorkspaceProps) {
     const [editingVendor, setEditingVendor] = useState<Vendor | null>(null);
     const [form, setForm] = useState<VendorRequest>({ name: "", phone: "", address: "", notes: "", isActive: true });
     const [submitting, setSubmitting] = useState(false);
-
-    // delete overlay
-    const [deleteTarget, setDeleteTarget] = useState<Vendor | null>(null);
-    const [deleting, setDeleting] = useState(false);
 
     // ---- fetch ----
     const fetchVendors = useCallback(async () => {
@@ -111,20 +106,6 @@ export default function VendorWorkspace({ businessId }: VendorWorkspaceProps) {
             /* toast later */
         } finally {
             setSubmitting(false);
-        }
-    }
-
-    async function handleDelete() {
-        if (!deleteTarget) return;
-        try {
-            setDeleting(true);
-            await deleteVendor(businessId, deleteTarget.id);
-            setDeleteTarget(null);
-            await fetchVendors();
-        } catch {
-            /* toast later */
-        } finally {
-            setDeleting(false);
         }
     }
 
@@ -241,13 +222,6 @@ export default function VendorWorkspace({ businessId }: VendorWorkspaceProps) {
                                 >
                                     <span className="material-symbols-outlined text-[20px]">edit</span>
                                 </button>
-                                <button
-                                    onClick={() => setDeleteTarget(v)}
-                                    title={isBn ? "মুছুন" : t("delete")}
-                                    className="rounded-lg p-2 text-sm text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors"
-                                >
-                                    <span className="material-symbols-outlined text-[20px]">delete</span>
-                                </button>
                             </div>
                         </div>
                     ))}
@@ -354,41 +328,6 @@ export default function VendorWorkspace({ businessId }: VendorWorkspaceProps) {
                 </div>
             )}
 
-            {/* ---- Delete Confirmation Overlay ---- */}
-            {deleteTarget && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
-                    <div className="w-full max-w-sm rounded-xl bg-white p-6 shadow-xl dark:bg-gray-800">
-                        <div className="flex items-center gap-3 text-red-600">
-                            <span className="material-symbols-outlined text-[28px]">warning</span>
-                            <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
-                                {isBn ? "ভেন্ডর মুছুন" : t("deleteTitle")}
-                            </h2>
-                        </div>
-                        <p className="mt-3 text-sm text-gray-600 dark:text-gray-400">
-                            {isBn
-                                ? `"${deleteTarget.name}" মুছে ফেলতে চান? এই কাজটি পূর্বাবস্থায় ফেরানো যাবে না।`
-                                : t("deleteConfirm", { name: deleteTarget.name })}
-                        </p>
-                        <div className="flex justify-end gap-2 mt-5">
-                            <button
-                                onClick={() => setDeleteTarget(null)}
-                                className="rounded-lg border border-gray-200 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-700"
-                            >
-                                {isBn ? "বাতিল" : t("cancel")}
-                            </button>
-                            <button
-                                onClick={handleDelete}
-                                disabled={deleting}
-                                className="rounded-lg bg-red-600 px-4 py-2 text-sm font-medium text-white hover:bg-red-700 disabled:opacity-50 transition-colors"
-                            >
-                                {deleting
-                                    ? (isBn ? "মুছছে..." : t("deleting"))
-                                    : (isBn ? "মুছুন" : t("delete"))}
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            )}
         </div>
     );
 }
