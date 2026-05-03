@@ -53,7 +53,7 @@ export default function VendorWorkspace({ businessId }: VendorWorkspaceProps) {
         try {
             setLoading(true);
             const data = await listVendors(businessId);
-            setVendors(data);
+            setVendors(Array.isArray(data) ? data : []);
         } catch {
             /* toast later */
         } finally {
@@ -63,6 +63,13 @@ export default function VendorWorkspace({ businessId }: VendorWorkspaceProps) {
 
     useEffect(() => {
         fetchVendors();
+    }, [fetchVendors]);
+
+    // ---- SSE auto-refresh ----
+    useEffect(() => {
+        const handler = () => fetchVendors();
+        window.addEventListener("sse:vendor-changed", handler);
+        return () => window.removeEventListener("sse:vendor-changed", handler);
     }, [fetchVendors]);
 
     // ---- filtered ----
@@ -192,8 +199,8 @@ export default function VendorWorkspace({ businessId }: VendorWorkspaceProps) {
                                     </span>
                                     <span
                                         className={`inline-flex items-center rounded-full px-2 py-0.5 text-[10px] font-medium ${v.isActive
-                                                ? "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400"
-                                                : "bg-gray-100 text-gray-500 dark:bg-gray-700 dark:text-gray-400"
+                                            ? "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400"
+                                            : "bg-gray-100 text-gray-500 dark:bg-gray-700 dark:text-gray-400"
                                             }`}
                                     >
                                         {v.isActive
@@ -219,8 +226,8 @@ export default function VendorWorkspace({ businessId }: VendorWorkspaceProps) {
                                     onClick={() => handleToggle(v)}
                                     title={v.isActive ? (isBn ? "নিষ্ক্রিয় করুন" : t("deactivate")) : (isBn ? "সক্রিয় করুন" : t("activate"))}
                                     className={`rounded-lg p-2 text-sm transition-colors ${v.isActive
-                                            ? "text-amber-600 hover:bg-amber-50 dark:hover:bg-amber-900/20"
-                                            : "text-green-600 hover:bg-green-50 dark:hover:bg-green-900/20"
+                                        ? "text-amber-600 hover:bg-amber-50 dark:hover:bg-amber-900/20"
+                                        : "text-green-600 hover:bg-green-50 dark:hover:bg-green-900/20"
                                         }`}
                                 >
                                     <span className="material-symbols-outlined text-[20px]">

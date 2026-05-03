@@ -3,7 +3,7 @@
  * Aligned with backend: VendorController
  */
 import apiClient from "@/lib/api";
-import type { Vendor, VendorRequest } from "@/types/vendor";
+import type { Vendor, VendorRequest, VendorListResponse } from "@/types/vendor";
 
 interface ApiSuccess<T> {
     success: boolean;
@@ -17,10 +17,11 @@ function unwrap<T>(response: { data: ApiSuccess<T> }): T {
 
 /** List all vendors for a business */
 export async function listVendors(businessId: string): Promise<Vendor[]> {
-    const response = await apiClient.get<ApiSuccess<Vendor[]>>(
+    const response = await apiClient.get<ApiSuccess<VendorListResponse>>(
         `/businesses/${businessId}/vendors`,
     );
-    return unwrap(response);
+    const page = unwrap(response);
+    return page.content;
 }
 
 /** Get a single vendor */

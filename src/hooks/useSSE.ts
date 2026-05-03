@@ -218,6 +218,12 @@ export function useSSE() {
                 }
             });
 
+            // ─── Vendor Events ──────────────────────────────────────────
+
+            source.addEventListener("VENDOR_CHANGED", () => {
+                window.dispatchEvent(new CustomEvent("sse:vendor-changed"));
+            });
+
             // ─── Due Payment Events ──────────────────────────────────────
 
             source.addEventListener("DUE_PAYMENT_STATUS_CHANGED", (e) => {
