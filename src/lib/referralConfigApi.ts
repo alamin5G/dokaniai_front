@@ -7,6 +7,7 @@ export interface ReferralConfig {
     referredDiscountType: string;
     referredDiscountValue: number;
     maxReferralsPerMonth: number | null;
+    maxReferralsTotal: number;
     isActive: boolean;
     couponValidityDays: number;
     updatedBy: string | null;
@@ -20,6 +21,7 @@ export interface ReferralConfigUpdateRequest {
     referredDiscountType?: string;
     referredDiscountValue?: number;
     maxReferralsPerMonth?: number | null;
+    maxReferralsTotal?: number;
     isActive?: boolean;
     couponValidityDays?: number;
 }

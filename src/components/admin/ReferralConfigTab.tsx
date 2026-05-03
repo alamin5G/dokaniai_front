@@ -22,6 +22,7 @@ export default function ReferralConfigTab() {
     const [referredDiscountType, setReferredDiscountType] = useState("DISCOUNT_PERCENT");
     const [referredDiscountValue, setReferredDiscountValue] = useState(50);
     const [maxReferralsPerMonth, setMaxReferralsPerMonth] = useState(10);
+    const [maxReferralsTotal, setMaxReferralsTotal] = useState(10);
     const [couponValidityDays, setCouponValidityDays] = useState(90);
 
     const loadConfig = useCallback(async () => {
@@ -35,6 +36,7 @@ export default function ReferralConfigTab() {
             setReferredDiscountType(cfg.referredDiscountType);
             setReferredDiscountValue(cfg.referredDiscountValue);
             setMaxReferralsPerMonth(cfg.maxReferralsPerMonth ?? 10);
+            setMaxReferralsTotal(cfg.maxReferralsTotal ?? 10);
             setCouponValidityDays(cfg.couponValidityDays ?? 90);
         } catch {
             setNotice("Failed to load referral config");
@@ -58,6 +60,7 @@ export default function ReferralConfigTab() {
                 referredDiscountType,
                 referredDiscountValue,
                 maxReferralsPerMonth,
+                maxReferralsTotal,
                 couponValidityDays,
             };
             const updated = await referralConfigApi.updateReferralConfig(request);
@@ -175,6 +178,21 @@ export default function ReferralConfigTab() {
                         onChange={(e) => setMaxReferralsPerMonth(Number(e.target.value))}
                         className="w-full max-w-xs rounded-[0.75rem] bg-surface-container-highest px-4 py-2.5 text-sm text-on-surface"
                     />
+                </div>
+
+                {/* Lifetime Total Cap */}
+                <div className="space-y-2">
+                    <label className="block text-sm font-medium text-on-surface-variant">{t("totalCap")}</label>
+                    <input
+                        type="number"
+                        min={1}
+                        value={maxReferralsTotal}
+                        onChange={(e) => setMaxReferralsTotal(Number(e.target.value))}
+                        className="w-full max-w-xs rounded-[0.75rem] bg-surface-container-highest px-4 py-2.5 text-sm text-on-surface"
+                    />
+                    <p className="text-xs text-on-surface-variant">
+                        {t("totalCapHint")}
+                    </p>
                 </div>
 
                 {/* Coupon Validity Days */}

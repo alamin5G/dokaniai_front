@@ -118,6 +118,7 @@ export interface ReferralStatus {
   totalReferrals: number;
   pendingRewardCount: number;
   rewardDays: number;
+  maxReferralsTotal: number;
   referredDiscountType: string | null;
   referredDiscountValue: number | null;
 }

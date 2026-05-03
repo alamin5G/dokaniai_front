@@ -4184,6 +4184,8 @@
       "referrerReward": "Referrer Reward",
       "referredDiscount": "Referred User Discount",
       "monthlyCap": "Monthly Cap",
+      "totalCap": "Lifetime Total Cap",
+      "totalCapHint": "Maximum total referrals an account can ever have. Prevents indefinite plan extension.",
       "freeDays": "Free Days",
       "discountPercent": "Discount %",
       "flatAmount": "Flat Amount (BDT)",

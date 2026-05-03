@@ -96,14 +96,26 @@ export default function ReferralCodeCard({ referralStatus: externalStatus }: Ref
                     </div>
                 </div>
 
-                {/* Total referrals */}
+                {/* Total referrals with cap */}
                 <div className="rounded-xl bg-surface-container px-4 py-3">
                     <p className="text-[10px] font-bold text-on-surface-variant uppercase tracking-wider">
                         {isBn ? "মোট রেফারেল" : "Total Referrals"}
                     </p>
                     <p className="text-sm font-bold text-on-surface mt-1">
-                        {status.totalReferrals}
+                        {status.totalReferrals} / {status.maxReferralsTotal}
                     </p>
+                    {/* Cap progress bar */}
+                    <div className="mt-1.5 h-1.5 w-full rounded-full bg-outline-variant/20 overflow-hidden">
+                        <div
+                            className="h-full rounded-full bg-primary transition-all duration-300"
+                            style={{ width: `${Math.min((status.totalReferrals / status.maxReferralsTotal) * 100, 100)}%` }}
+                        />
+                    </div>
+                    {status.totalReferrals >= status.maxReferralsTotal && (
+                        <p className="text-[10px] text-error font-semibold mt-1">
+                            {isBn ? "সর্বোচ্চ সীমায় পৌঁছেছে" : "Max limit reached"}
+                        </p>
+                    )}
                 </div>
 
                 {/* Earned credits */}
