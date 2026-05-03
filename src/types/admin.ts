@@ -324,3 +324,31 @@ export interface AdminNotificationFilters {
     page?: number;
     size?: number;
 }
+
+// ─── Dashboard Analytics ─────────────────────────────────────────────────────
+
+/** Matches AdminRevenueTrendResponse.java */
+export interface RevenueTrendData {
+    dataPoints: Array<{ date: string; revenue: number; transactionCount: number }>;
+    totalRevenue: number;
+    averageDailyRevenue: number;
+}
+
+/** Matches AdminUserGrowthResponse.java */
+export interface UserGrowthData {
+    dataPoints: Array<{ date: string; newUsers: number; cumulativeTotal: number }>;
+    totalUsers: number;
+    newUsersInPeriod: number;
+}
+
+/** Matches AdminAiTokenStatsResponse.java */
+export interface AiTokenStats {
+    dailyUsage: Array<{ date: string; inputTokens: number; outputTokens: number; requestCount: number }>;
+    byModelBreakdown: Record<string, { model: string; inputTokens: number; outputTokens: number; requestCount: number }>;
+    byTypeBreakdown: Record<string, { type: string; inputTokens: number; outputTokens: number; requestCount: number }>;
+    bySourceBreakdown: Record<string, { source: string; inputTokens: number; outputTokens: number; requestCount: number }>;
+    totalInputTokens: number;
+    totalOutputTokens: number;
+    totalTokensMonth: number;
+    estimatedCostBdt: number;
+}

@@ -3684,14 +3684,53 @@
       "planFeatures": "Plan Features"
     },
     "planFeatures": {
-      "title": "Plan Feature Toggles",
-      "subtitle": "Enable or disable AI features per subscription plan.",
+      "title": "Dynamic Plan Features",
+      "subtitle": "Manage feature availability, limits, and quotas from the backend feature matrix.",
       "colPlan": "Plan",
+      "colFeature": "Feature",
+      "colType": "Type",
+      "colEnabled": "Enabled",
+      "colLimit": "Limit",
+      "colReset": "Reset",
+      "colAction": "Action",
       "aiInsights": "AI Insights",
       "customerAnalytics": "Customer Analytics",
       "forecasting": "Forecasting",
       "noPlans": "No plans found.",
-      "infoNote": "Changes take effect immediately. Disabled features will be hidden from users on that plan."
+      "infoNote": "Changes take effect immediately. Backend Redis caches are evicted when a feature config is updated.",
+      "plansCount": "{count, plural, one {# plan} other {# plans}}",
+      "featuresCount": "{count, plural, one {# feature} other {# features}}",
+      "searchPlaceholder": "Search features",
+      "allCategories": "All categories",
+      "allTypes": "All types",
+      "refresh": "Refresh",
+      "save": "Save",
+      "saving": "Saving",
+      "toggleFeature": "Toggle feature",
+      "unlimited": "Unlimited",
+      "none": "None",
+      "loadFailed": "Could not load feature matrix.",
+      "saveFailed": "Could not save feature config.",
+      "invalidLimit": "Limit must be a whole number.",
+      "catalogTitle": "Feature Catalog",
+      "catalogSubtitle": "Create and maintain canonical features before assigning them to plans.",
+      "createFeature": "Create Feature",
+      "editFeature": "Edit Feature",
+      "featureKey": "feature_key",
+      "nameEn": "English name",
+      "nameBn": "Bangla name",
+      "description": "Description",
+      "category": "Category",
+      "icon": "Icon name",
+      "displayOrder": "Order",
+      "publicFeature": "Show publicly",
+      "activeFeature": "Active",
+      "edit": "Edit",
+      "activate": "Activate",
+      "deactivate": "Deactivate",
+      "reset": "Reset",
+      "catalogRequired": "Key, English name, Bangla name, and category are required.",
+      "catalogSaveFailed": "Could not save feature catalog item."
     },
     "dashboard": {
       "error": "Failed to load system statistics.",
@@ -4928,5 +4967,78 @@
     "deleteTitle": "Delete Vendor",
     "deleteConfirm": "Are you sure you want to delete \"{name}\"? This action cannot be undone.",
     "deleting": "Deleting..."
+  },
+  "AdminDashboard": {
+    "title": "Admin Dashboard",
+    "subtitle": "Here's what's happening across DokaniAI today",
+    "refresh": "Refresh",
+    "export": "Export CSV",
+    "loading": "Loading…",
+    "header": {
+      "greeting": "Good morning, Admin",
+      "greetingAfternoon": "Good afternoon, Admin",
+      "greetingEvening": "Good evening, Admin",
+      "subtitle": "Here's what's happening across DokaniAI today",
+      "refresh": "Refresh",
+      "refreshing": "Loading..."
+    },
+    "kpi": {
+      "totalUsers": "Total Users",
+      "activeBusinesses": "Active Businesses",
+      "monthlyRevenue": "Monthly Revenue",
+      "totalProducts": "Total Products",
+      "totalSales": "Total Sales",
+      "pendingTickets": "Pending Tickets",
+      "activeSubscriptions": "Active Subscriptions",
+      "referralCodes": "Referral Codes",
+      "showMore": "Show More",
+      "showLess": "Show Less"
+    },
+    "charts": {
+      "revenueTrend": "Revenue Trend",
+      "subscriptionBreakdown": "Subscription Breakdown",
+      "planRevenue": "Revenue by Plan",
+      "paymentPipeline": "Payment Pipeline",
+      "userGrowth": "User Growth",
+      "aiTokenUsage": "AI Token Usage",
+      "revenueError": "Revenue chart failed to load",
+      "referralHealth": "Referral Code Health"
+    },
+    "activity": {
+      "title": "Recent Activity"
+    },
+    "actions": {
+      "title": "Quick Actions",
+      "manageUsers": "Manage Users",
+      "subscriptions": "Subscriptions",
+      "supportTickets": "Support Tickets",
+      "payments": "Payments",
+      "referralConfig": "Referral Config",
+      "notifications": "Notifications"
+    },
+    "ticketStatus": {
+      "title": "Ticket Status",
+      "open": "Open",
+      "inProgress": "In Progress",
+      "resolved": "Resolved",
+      "total": "Total"
+    },
+    "audit": {
+      "title": "Audit Highlights",
+      "user": "User",
+      "action": "Action",
+      "resource": "Resource",
+      "time": "Time",
+      "noData": "No recent audit activity"
+    },
+    "mobile": {
+      "tabs": {
+        "overview": "Overview",
+        "revenue": "Revenue",
+        "payments": "Payments",
+        "ai": "AI & Referral",
+        "activity": "Activity"
+      }
+    }
   }
 }

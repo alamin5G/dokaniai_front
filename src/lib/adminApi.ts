@@ -22,6 +22,9 @@ import type {
     PagedUsers,
     ReferralEventsParams,
     ReferralStats,
+    RevenueTrendData,
+    UserGrowthData,
+    AiTokenStats,
     SuspendUserRequest,
     SystemStats,
     TicketResponseRequest,
@@ -352,6 +355,7 @@ export interface AdminPlan {
     maxQueryCharacters: number;
     conversationHistoryTurns: number;
     features: Record<string, boolean> | null;
+    featureConfigs?: AdminPlanFeature[];
     isActive: boolean;
     highlight: boolean;
     badge: string | null;
@@ -359,8 +363,108 @@ export interface AdminPlan {
     updatedAt: string;
 }
 
+export type FeatureType = "BOOLEAN" | "LIMIT" | "QUOTA";
+export type QuotaResetPeriod = "DAILY" | "WEEKLY" | "MONTHLY" | "NEVER";
+
+export interface AdminFeature {
+    id: string;
+    key: string;
+    nameEn: string | null;
+    nameBn: string | null;
+    description: string | null;
+    category: string | null;
+    icon: string | null;
+    type: FeatureType;
+    displayOrder: number | null;
+    isPublic: boolean;
+    isActive: boolean;
+}
+
+export interface AdminPlanFeature {
+    planFeatureId: string | null;
+    planId: string;
+    planName: string | null;
+    tierLevel: number | null;
+    featureId: string;
+    featureKey: string;
+    nameEn: string | null;
+    nameBn: string | null;
+    category: string | null;
+    type: FeatureType;
+    enabled: boolean;
+    limitValue: number | null;
+    resetPeriod: QuotaResetPeriod | null;
+    publicFeature: boolean | null;
+    activeFeature: boolean | null;
+    displayOrder: number | null;
+}
+
+export interface AdminPlanFeatureMatrix {
+    planId: string;
+    planName: string;
+    displayNameEn: string | null;
+    displayNameBn: string | null;
+    tierLevel: number | null;
+    features: AdminPlanFeature[];
+}
+
+export interface UpdatePlanFeaturePayload {
+    enabled: boolean;
+    limitValue?: number | null;
+    resetPeriod?: QuotaResetPeriod | null;
+}
+
+export interface FeatureUpsertPayload {
+    key: string;
+    nameEn: string;
+    nameBn: string;
+    description?: string | null;
+    category: string;
+    icon?: string | null;
+    type: FeatureType;
+    displayOrder?: number | null;
+    isPublic?: boolean | null;
+    isActive?: boolean | null;
+}
+
 export async function getPlans(): Promise<AdminPlan[]> {
     const { data } = await apiClient.get("/admin/plans");
+    return data.data;
+}
+
+export async function getFeatureCatalog(): Promise<AdminFeature[]> {
+    const { data } = await apiClient.get("/admin/features");
+    return data.data;
+}
+
+export async function createFeature(payload: FeatureUpsertPayload): Promise<AdminFeature> {
+    const { data } = await apiClient.post("/admin/features", payload);
+    return data.data;
+}
+
+export async function updateFeature(featureId: string, payload: FeatureUpsertPayload): Promise<AdminFeature> {
+    const { data } = await apiClient.put(`/admin/features/${featureId}`, payload);
+    return data.data;
+}
+
+export async function setFeatureActive(featureId: string, active: boolean): Promise<AdminFeature> {
+    const { data } = await apiClient.patch(`/admin/features/${featureId}/active`, null, {
+        params: { active },
+    });
+    return data.data;
+}
+
+export async function getPlanFeatureMatrix(): Promise<AdminPlanFeatureMatrix[]> {
+    const { data } = await apiClient.get("/admin/plans/feature-matrix");
+    return data.data;
+}
+
+export async function updatePlanFeatureConfig(
+    planName: string,
+    featureKey: string,
+    payload: UpdatePlanFeaturePayload,
+): Promise<AdminPlanFeature> {
+    const { data } = await apiClient.put(`/admin/plans/${planName}/features/${featureKey}`, payload);
     return data.data;
 }
 
@@ -406,4 +510,34 @@ export async function markAllAdminNotificationsRead(): Promise<void> {
 
 export async function dismissAdminNotification(id: number): Promise<void> {
     await apiClient.put(`/admin/notifications/${id}/dismiss`);
+}
+
+// ─── Dashboard Analytics ─────────────────────────────────────────────────────
+
+/** Convert frontend TimeRange to backend range param */
+function toRangeParam(range: string): string {
+    const map: Record<string, string> = { "7D": "7d", "30D": "30d", "90D": "90d", "1Y": "90d" };
+    return map[range] ?? "7d";
+}
+
+export async function getDashboardRevenueTrend(range: string): Promise<RevenueTrendData> {
+    const { data } = await apiClient.get(`/admin/dashboard/revenue-trend?range=${toRangeParam(range)}`);
+    return data.data;
+}
+
+export async function getDashboardUserGrowth(range: string): Promise<UserGrowthData> {
+    const { data } = await apiClient.get(`/admin/dashboard/user-growth?range=${toRangeParam(range)}`);
+    return data.data;
+}
+
+export async function getDashboardAiTokenStats(range: string): Promise<AiTokenStats> {
+    const { data } = await apiClient.get(`/admin/dashboard/ai-token-stats?range=${toRangeParam(range)}`);
+    return data.data;
+}
+
+export async function exportDashboardCsv(range: string): Promise<Blob> {
+    const { data } = await apiClient.get(`/admin/dashboard/export?range=${toRangeParam(range)}`, {
+        responseType: "blob",
+    });
+    return data;
 }
