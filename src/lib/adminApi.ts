@@ -427,8 +427,31 @@ export interface FeatureUpsertPayload {
     isActive?: boolean | null;
 }
 
+export interface PlanUpdatePayload {
+    priceBdt: number;
+    annualPriceBdt?: number | null;
+    durationDays: number;
+    gracePeriodDays?: number | null;
+    maxBusinesses?: number | null;
+    maxProductsPerBusiness?: number | null;
+    aiQueriesPerDay?: number | null;
+    maxAiTokensPerQuery?: number | null;
+    maxQueryCharacters?: number | null;
+    conversationHistoryTurns?: number | null;
+    isActive?: boolean | null;
+    highlight?: boolean | null;
+    badge?: string | null;
+    displayNameBn?: string | null;
+    displayNameEn?: string | null;
+}
+
 export async function getPlans(): Promise<AdminPlan[]> {
     const { data } = await apiClient.get("/admin/plans");
+    return data.data;
+}
+
+export async function updatePlan(planId: string, payload: PlanUpdatePayload): Promise<AdminPlan> {
+    const { data } = await apiClient.put(`/admin/plans/${planId}`, payload);
     return data.data;
 }
 

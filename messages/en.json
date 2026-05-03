@@ -2792,8 +2792,8 @@
           "provision": {
             "title": "5.1 Invoice Provision",
             "p1": "Digital invoices are generated automatically for every payment.",
-            "p2": "Invoices are available in Settings → Billing History.",
-            "p3": "You can download invoices as PDF."
+            "p2": "Invoices are available in Account → Subscription → Billing History.",
+            "p3": "If an email exists, the invoice is sent by email; otherwise an SMS notification is sent. You can also download the invoice as PDF."
           },
           "content": {
             "title": "5.2 Invoice Content",
@@ -2900,8 +2900,8 @@
           "calc": {
             "title": "8.1 Refund Formula"
           },
-          "formula": "Refund = (Plan Price ÷ 30) × Days Remaining",
-          "example": "Example: Pro plan (৳399) used for 10 days → Refund = (399 ÷ 30) × 20 = ৳266",
+          "formula": "Unused-day credit = (Current plan price ÷ total billing-period days) × days remaining",
+          "example": "Example: Pro plan (৳399) used for 10 days → Credit = (399 ÷ 30) × 20 = ৳266; on upgrade, this credit is deducted from the target plan price.",
           "deductible": {
             "title": "8.2 Deductible Items",
             "p1": "Free trial usage value (if applicable)",
@@ -3778,7 +3778,18 @@
       "deactivate": "Deactivate",
       "reset": "Reset",
       "catalogRequired": "Key, English name, Bangla name, and category are required.",
-      "catalogSaveFailed": "Could not save feature catalog item."
+      "catalogSaveFailed": "Could not save feature catalog item.",
+      "selectedPlanTitle": "Selected Plan Editor",
+      "selectedPlanSubtitle": "Choose a plan, then update grouped feature toggles, limits, and quotas.",
+      "planPricingTitle": "Plan Pricing",
+      "monthlyPrice": "Monthly price",
+      "annualPrice": "Annual price",
+      "durationDays": "Duration days",
+      "badge": "Badge",
+      "highlightPlan": "Highlight plan",
+      "savePlanPricing": "Save pricing",
+      "invalidPlanPricing": "Plan pricing values are invalid.",
+      "planPricingSaveFailed": "Could not save plan pricing."
     },
     "dashboard": {
       "error": "Failed to load system statistics.",

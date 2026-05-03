@@ -1,7 +1,7 @@
 "use client";
 // ---------------------------------------------------------------------------
 // MfsProviderSelector — Shared MFS provider selection cards
-// Used by: SubscriptionWorkspace, Due Payment Page
+// Used by: SubscriptionControlCenter, Due Payment Page
 // ---------------------------------------------------------------------------
 import type { MfsType } from "@/types/subscription";
 import { MFS_LABELS, MFS_THEMES } from "@/lib/mfsPaymentUtils";

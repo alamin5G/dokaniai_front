@@ -1,6 +1,6 @@
 // ---------------------------------------------------------------------------
 // usePaymentStatusPoller — Shared hook for payment status polling + SSE
-// Used by: SubscriptionWorkspace, Due Payment Page
+// Used by: SubscriptionControlCenter, Due Payment Page
 // ---------------------------------------------------------------------------
 import { useState, useEffect, useCallback, useRef } from "react";
 

@@ -5,7 +5,7 @@ import { useTranslations } from "next-intl";
 
 const QUICK_ACTIONS = [
     { href: "/admin?tab=users", icon: "👤", labelKey: "actions.manageUsers" },
-    { href: "/admin?tab=subscription", icon: "📦", labelKey: "actions.subscriptions" },
+    { href: "/admin/plan-features", icon: "📦", labelKey: "actions.subscriptions" },
     { href: "/admin?tab=tickets", icon: "🎫", labelKey: "actions.supportTickets" },
     { href: "/admin?tab=payments", icon: "💳", labelKey: "actions.payments" },
     { href: "/admin?tab=referral", icon: "🔗", labelKey: "actions.referralConfig" },

@@ -8,6 +8,7 @@ import type {
   MfsType,
   PaymentInitializeResponse,
   PaymentIntentStatusResponse,
+  PaymentHistoryItem,
   Plan,
   PlanLimits,
   PublicCoupon,
@@ -230,10 +231,10 @@ export async function clearPendingPlan(): Promise<void> {
   await apiClient.delete("/subscriptions/pending-plan");
 }
 
-export async function getUpgradeProration(planId: string): Promise<UpgradeProrationResponse> {
+export async function getUpgradeProration(planId: string, billingCycle?: "MONTHLY" | "ANNUAL"): Promise<UpgradeProrationResponse> {
   const response = await apiClient.get<ApiSuccess<UpgradeProrationResponse>>(
     "/subscriptions/upgrade-proration",
-    { params: { planId } },
+    { params: { planId, billingCycle } },
   );
   return unwrap(response);
 }
@@ -245,4 +246,14 @@ export async function getPublicCoupons(): Promise<PublicCoupon[]> {
   } catch {
     return [];
   }
+}
+
+export async function getPaymentHistory(): Promise<PaymentHistoryItem[]> {
+  const response = await apiClient.get<ApiSuccess<PaymentHistoryItem[]>>("/payments/history");
+  return unwrap(response);
+}
+
+export async function downloadPaymentInvoice(paymentId: string): Promise<Blob> {
+  const response = await apiClient.get(`/payments/${paymentId}/invoice`, { responseType: "blob" });
+  return response.data as Blob;
 }

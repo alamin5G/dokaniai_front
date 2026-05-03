@@ -11,6 +11,14 @@ export interface DisplayFeatureItem {
 export interface FeatureMatrixRow {
   key: string;
   label: string;
+  category: string | null;
+  type: PlanFeatureConfig["type"];
+}
+
+export interface FeatureMatrixSection {
+  key: "core" | "premium" | "ai" | "limits" | "other";
+  title: string;
+  rows: FeatureMatrixRow[];
 }
 
 export const PROJECT_FEATURE_HIGHLIGHTS = [
@@ -59,6 +67,22 @@ const FEATURE_LABELS_EN: Record<string, string> = {
   max_ai_tokens_per_query: "AI tokens per query",
   max_query_characters: "Query characters",
   conversation_history_turns: "Conversation history",
+  products_sales: "Products & Sales",
+  expense_tracking: "Expense Tracking",
+  basic_reports: "Basic Reports",
+  due_management: "Due Ledger",
+  discount_management: "Discount",
+  voice_entry: "Voice Input",
+  text_nlp: "Text NLP",
+  whatsapp_reminder: "WhatsApp Reminder",
+  smart_notifications: "Smart AI Notifications",
+  support_ticket: "Support Ticket",
+  advanced_reports: "Advanced Reports",
+  pdf_export: "PDF Export",
+  bulk_import: "Bulk Import",
+  priority_support: "Priority Support",
+  data_export: "Data Export",
+  api_access: "API Access",
 };
 
 const FEATURE_LABELS_BN: Record<string, string> = {
@@ -68,7 +92,57 @@ const FEATURE_LABELS_BN: Record<string, string> = {
   max_ai_tokens_per_query: "AI টোকেন/কুয়েরি",
   max_query_characters: "কুয়েরি অক্ষর",
   conversation_history_turns: "কনভারসেশন হিস্টোরি",
+  products_sales: "পণ্য ও বিক্রয়",
+  expense_tracking: "খরচ ট্র্যাকিং",
+  basic_reports: "বেসিক রিপোর্ট",
+  due_management: "বাকী খাতা",
+  discount_management: "ডিসকাউন্ট",
+  voice_entry: "ভয়েস ইনপুট",
+  text_nlp: "টেক্সট NLP",
+  whatsapp_reminder: "WhatsApp রিমাইন্ডার",
+  smart_notifications: "স্মার্ট AI নোটিফিকেশন",
+  support_ticket: "সাপোর্ট টিকেট",
+  advanced_reports: "অ্যাডভান্সড রিপোর্ট",
+  pdf_export: "PDF এক্সপোর্ট",
+  bulk_import: "বাল্ক ইম্পোর্ট",
+  priority_support: "প্রায়োরিটি সাপোর্ট",
+  data_export: "ডেটা এক্সপোর্ট",
+  api_access: "API অ্যাক্সেস",
 };
+
+const CORE_FEATURE_KEYS = [
+  "products_sales",
+  "expense_tracking",
+  "basic_reports",
+  "due_management",
+  "discount_management",
+  "voice_entry",
+  "text_nlp",
+  "whatsapp_reminder",
+  "smart_notifications",
+  "support_ticket",
+];
+
+const PREMIUM_FEATURE_KEYS = [
+  "advanced_reports",
+  "pdf_export",
+  "bulk_import",
+  "priority_support",
+  "data_export",
+  "api_access",
+];
+
+const AI_LIMIT_KEYS = [
+  "ai_queries_per_day",
+  "max_ai_tokens_per_query",
+  "max_query_characters",
+  "conversation_history_turns",
+];
+
+const LIMIT_KEYS = [
+  "max_businesses",
+  "max_products_per_business",
+];
 
 function fallbackLabel(key: string, isBn: boolean) {
   const map = isBn ? FEATURE_LABELS_BN : FEATURE_LABELS_EN;
@@ -124,20 +198,68 @@ export function getPlanFeatureItems(plan: Plan, isBn: boolean, maxItems?: number
 }
 
 export function getFeatureMatrixRows(plans: Plan[], isBn: boolean): FeatureMatrixRow[] {
-  const rows = new Map<string, FeatureMatrixRow>();
+  const rows = new Map<string, FeatureMatrixRow & { order: number }>();
   for (const plan of plans) {
     for (const feature of plan.featureConfigs ?? []) {
       if (feature.activeFeature === false || feature.publicFeature === false) continue;
       const label = (isBn ? feature.nameBn : feature.nameEn) || fallbackLabel(feature.featureKey, isBn);
-      rows.set(feature.featureKey, { key: feature.featureKey, label });
+      rows.set(feature.featureKey, {
+        key: feature.featureKey,
+        label,
+        category: feature.category,
+        type: feature.type,
+        order: feature.displayOrder ?? 0,
+      });
     }
   }
 
   if (rows.size === 0) {
-    for (const item of getLegacyFeatureRows(isBn)) rows.set(item.key, item);
+    for (const item of getLegacyFeatureRows(isBn)) rows.set(item.key, { ...item, order: 0 });
   }
 
-  return Array.from(rows.values()).sort((a, b) => a.label.localeCompare(b.label));
+  return Array.from(rows.values())
+    .sort((a, b) => a.order - b.order || a.label.localeCompare(b.label))
+    .map((row) => ({
+      key: row.key,
+      label: row.label,
+      category: row.category,
+      type: row.type,
+    }));
+}
+
+export function getFeatureMatrixSections(plans: Plan[], isBn: boolean): FeatureMatrixSection[] {
+  const rows = getFeatureMatrixRows(plans, isBn);
+  const consumed = new Set<string>();
+
+  function take(keys: string[], titleBn: string, titleEn: string, sectionKey: FeatureMatrixSection["key"]) {
+    const sectionRows = keys
+      .map((key) => rows.find((row) => row.key === key))
+      .filter((row): row is FeatureMatrixRow => Boolean(row));
+    sectionRows.forEach((row) => consumed.add(row.key));
+    return {
+      key: sectionKey,
+      title: isBn ? titleBn : titleEn,
+      rows: sectionRows,
+    };
+  }
+
+  const sections: FeatureMatrixSection[] = [
+    take(CORE_FEATURE_KEYS, "সকল প্ল্যানে পাওয়া যায়", "Available on All Plans", "core"),
+    take(PREMIUM_FEATURE_KEYS, "প্রিমিয়াম ফিচার", "Premium Features", "premium"),
+    take(AI_LIMIT_KEYS, "AI কুয়েরি ও AI সীমা", "AI Queries and Limits", "ai"),
+    take(LIMIT_KEYS, "অন্যান্য সীমা", "Other Limits", "limits"),
+  ];
+
+  const remaining = rows.filter((row) => !consumed.has(row.key));
+  if (remaining.length > 0) {
+    sections.push({
+      key: "other",
+      title: isBn ? "অন্যান্য ফিচার" : "Other Features",
+      rows: remaining,
+    });
+  }
+
+  return sections.filter((section) => section.rows.length > 0);
 }
 
 export function getPlanFeatureCell(plan: Plan, featureKey: string, isBn: boolean) {
@@ -214,5 +336,13 @@ function getLegacyFeatureRows(isBn: boolean): FeatureMatrixRow[] {
     "priority_support",
     "data_export",
     "api_access",
-  ].map((key) => ({ key, label: fallbackLabel(key, isBn) }));
+    "ai_queries_per_day",
+    "max_businesses",
+    "max_products_per_business",
+  ].map((key) => ({
+    key,
+    label: fallbackLabel(key, isBn),
+    category: key.startsWith("ai_") ? "AI" : null,
+    type: LIMIT_KEYS.includes(key) ? "LIMIT" : key.startsWith("ai_") ? "QUOTA" : "BOOLEAN",
+  }));
 }

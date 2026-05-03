@@ -57,6 +57,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                         <SidebarLink href="/admin/users" icon="group" label="Users" />
                         <SidebarLink href="/admin/payments" icon="payments" label="Payments" />
                         <SidebarLink href="/admin/coupons" icon="confirmation_number" label="Coupons" />
+                        <SidebarLink href="/admin/plan-features" icon="tune" label="Plan Features" />
                         <CategorySubNav />
                         <SidebarLink href="/admin/referrals" icon="share" label="Referrals" />
                         <SidebarLink href="/admin/support" icon="support_agent" label="Support" />
@@ -194,4 +195,3 @@ function CategorySubNav() {
         </div>
     );
 }
-

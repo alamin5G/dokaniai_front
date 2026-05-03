@@ -6,12 +6,13 @@
  * Shows the user's referral code (with copy), stats, reward info,
  * and a link to the full referral page for sharing.
  *
- * Used in: SubscriptionWorkspace, Profile page.
+ * Used in: SubscriptionControlCenter, Profile page.
  */
 
 import Link from "next/link";
 import { useLocale } from "next-intl";
 import { useCallback, useEffect, useState } from "react";
+import { Check, Copy, Share2 } from "lucide-react";
 import { getReferralStatus } from "@/lib/subscriptionApi";
 import type { ReferralStatus } from "@/types/subscription";
 
@@ -46,12 +47,13 @@ export default function ReferralCodeCard({ referralStatus: externalStatus }: Ref
     }, [externalStatus]);
 
     const handleCopy = useCallback(async () => {
-        if (!status?.referralCode) return;
+        const referralCode = status?.referralCode;
+        if (!referralCode) return;
         try {
-            await navigator.clipboard.writeText(status.referralCode);
+            await navigator.clipboard.writeText(referralCode);
         } catch {
             const ta = document.createElement("textarea");
-            ta.value = status.referralCode;
+            ta.value = referralCode;
             document.body.appendChild(ta);
             ta.select();
             document.execCommand("copy");
@@ -59,102 +61,78 @@ export default function ReferralCodeCard({ referralStatus: externalStatus }: Ref
         }
         setCopied(true);
         setTimeout(() => setCopied(false), 2000);
-    }, [status?.referralCode]);
+    }, [status]);
 
     if (!status) return null;
 
+    const progress = status.maxReferralsTotal > 0
+        ? Math.min((status.totalReferrals / status.maxReferralsTotal) * 100, 100)
+        : 0;
+
     return (
-        <section className="rounded-[1.5rem] border border-outline-variant/30 bg-surface p-5 space-y-4">
-            <h2 className="text-lg font-semibold text-on-surface">
+        <section className="rounded-lg border border-outline-variant/30 bg-surface p-5">
+            <p className="text-xs font-bold uppercase text-primary">{isBn ? "রেফারেল" : "Referral"}</p>
+            <h2 className="mt-1 text-lg font-bold text-on-surface">
                 {isBn ? "রেফারেল প্রোগ্রাম" : "Referral Program"}
             </h2>
 
-            <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-                {/* Referral code */}
-                <div className="rounded-xl bg-surface-container px-4 py-3">
-                    <p className="text-[10px] font-bold text-on-surface-variant uppercase tracking-wider">
-                        {isBn ? "আপনার রেফারেল কোড" : "Your Referral Code"}
-                    </p>
-                    <div className="flex items-center gap-2 mt-1">
-                        <p className="text-sm font-black text-primary font-mono tracking-widest">
-                            {status.referralCode ?? "—"}
-                        </p>
-                        {status.referralCode && (
-                            <button
-                                type="button"
-                                onClick={handleCopy}
-                                className="inline-flex items-center gap-1 rounded-lg px-2 py-1 text-[10px] font-semibold transition bg-primary/10 text-primary hover:bg-primary/20"
-                            >
-                                <span className="material-symbols-outlined text-sm">
-                                    {copied ? "check" : "content_copy"}
-                                </span>
-                                {copied
-                                    ? (isBn ? "কপি হয়েছে" : "Copied")
-                                    : (isBn ? "কপি" : "Copy")}
-                            </button>
-                        )}
-                    </div>
-                </div>
-
-                {/* Total referrals with cap */}
-                <div className="rounded-xl bg-surface-container px-4 py-3">
-                    <p className="text-[10px] font-bold text-on-surface-variant uppercase tracking-wider">
-                        {isBn ? "মোট রেফারেল" : "Total Referrals"}
-                    </p>
-                    <p className="text-sm font-bold text-on-surface mt-1">
-                        {status.totalReferrals} / {status.maxReferralsTotal}
-                    </p>
-                    {/* Cap progress bar */}
-                    <div className="mt-1.5 h-1.5 w-full rounded-full bg-outline-variant/20 overflow-hidden">
-                        <div
-                            className="h-full rounded-full bg-primary transition-all duration-300"
-                            style={{ width: `${Math.min((status.totalReferrals / status.maxReferralsTotal) * 100, 100)}%` }}
-                        />
-                    </div>
-                    {status.totalReferrals >= status.maxReferralsTotal && (
-                        <p className="text-[10px] text-error font-semibold mt-1">
-                            {isBn ? "সর্বোচ্চ সীমায় পৌঁছেছে" : "Max limit reached"}
-                        </p>
+            <div className="mt-4 rounded-lg bg-surface-container p-4">
+                <p className="text-[10px] font-bold uppercase text-on-surface-variant">
+                    {isBn ? "আপনার কোড" : "Your code"}
+                </p>
+                <div className="mt-2 flex items-center gap-2">
+                    <code className="min-w-0 flex-1 rounded-md bg-surface px-3 py-2 font-mono text-base font-black tracking-widest text-primary">
+                        {status.referralCode ?? "—"}
+                    </code>
+                    {status.referralCode && (
+                        <button
+                            type="button"
+                            onClick={handleCopy}
+                            aria-label={isBn ? "রেফারেল কোড কপি করুন" : "Copy referral code"}
+                            className="inline-flex h-10 w-10 items-center justify-center rounded-md bg-primary text-on-primary transition hover:bg-primary/90"
+                        >
+                            {copied ? <Check size={17} /> : <Copy size={17} />}
+                        </button>
                     )}
                 </div>
-
-                {/* Earned credits */}
-                <div className="rounded-xl bg-surface-container px-4 py-3">
-                    <p className="text-[10px] font-bold text-on-surface-variant uppercase tracking-wider">
-                        {isBn ? "অর্জিত ক্রেডিট" : "Earned Credits"}
+                {copied && (
+                    <p className="mt-2 text-xs font-semibold text-emerald-600">
+                        {isBn ? "কোড কপি হয়েছে।" : "Code copied."}
                     </p>
-                    <p className="text-sm font-bold text-on-surface mt-1">
-                        {status.earnedCredits} {isBn ? "দিন" : "days"}
-                    </p>
-                </div>
-
-                {/* Pending rewards */}
-                <div className="rounded-xl bg-surface-container px-4 py-3">
-                    <p className="text-[10px] font-bold text-on-surface-variant uppercase tracking-wider">
-                        {isBn ? "অপেক্ষমাণ পুরস্কার" : "Pending Rewards"}
-                    </p>
-                    <p className="text-sm font-bold text-on-surface mt-1">
-                        {status.pendingRewardCount}
-                    </p>
-                </div>
+                )}
             </div>
 
-            {/* Referral reward info */}
+            <div className="mt-4 divide-y divide-outline-variant/30 rounded-lg border border-outline-variant/30">
+                {[
+                    [isBn ? "মোট রেফারেল" : "Total referrals", `${status.totalReferrals} / ${status.maxReferralsTotal}`],
+                    [isBn ? "অর্জিত ক্রেডিট" : "Earned credit", `${status.earnedCredits} ${isBn ? "দিন" : "days"}`],
+                    [isBn ? "অপেক্ষমাণ পুরস্কার" : "Pending rewards", status.pendingRewardCount.toString()],
+                ].map(([label, value]) => (
+                    <div key={label} className="flex items-center justify-between gap-3 px-4 py-3">
+                        <span className="text-sm text-on-surface-variant">{label}</span>
+                        <span className="text-sm font-bold text-on-surface">{value}</span>
+                    </div>
+                ))}
+            </div>
+
+            <div className="mt-3 h-2 overflow-hidden rounded-full bg-outline-variant/20">
+                <div className="h-full rounded-full bg-primary transition-all duration-300" style={{ width: `${progress}%` }} />
+            </div>
+
             {status.rewardDays > 0 && (
-                <p className="text-xs text-on-surface-variant">
+                <p className="mt-3 text-xs leading-5 text-on-surface-variant">
                     {isBn
-                        ? `প্রতিটি সফল রেফারেলে ${status.rewardDays} দিনের ফ্রি সাবস্ক্রিপশন পাবেন।`
-                        : `Earn ${status.rewardDays} free subscription days for each successful referral.`}
+                        ? `প্রতিটি সফল রেফারেলে ${status.rewardDays} দিনের ফ্রি সাবস্ক্রিপশন যোগ হবে।`
+                        : `Each successful referral adds ${status.rewardDays} free subscription days.`}
                 </p>
             )}
 
-            {/* Share & earn — link to full referral page */}
             <Link
                 href="/account/referral"
-                className="inline-flex items-center gap-2 rounded-xl bg-primary px-5 py-2.5 text-sm font-semibold text-on-primary transition hover:bg-primary/90"
+                className="mt-4 inline-flex w-full items-center justify-center gap-2 rounded-md bg-primary px-4 py-3 text-sm font-bold text-on-primary transition hover:bg-primary/90"
             >
-                <span className="material-symbols-outlined text-lg">share</span>
-                {isBn ? "শেয়ার করে আয় করুন" : "Share & Earn"}
+                <Share2 size={16} />
+                {isBn ? "রেফারেল শেয়ার করুন" : "Share referral"}
             </Link>
         </section>
     );

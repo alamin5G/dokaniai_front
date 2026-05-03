@@ -1,7 +1,7 @@
 "use client";
 // ---------------------------------------------------------------------------
 // TrxIdInput — Shared TrxID input with per-provider validation
-// Used by: SubscriptionWorkspace, Due Payment Page
+// Used by: SubscriptionControlCenter, Due Payment Page
 // ---------------------------------------------------------------------------
 import type { MfsType } from "@/types/subscription";
 import { getTrxHint, getTrxMaxLength, validateTrxId } from "@/lib/mfsPaymentUtils";

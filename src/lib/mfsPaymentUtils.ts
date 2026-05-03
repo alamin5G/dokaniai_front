@@ -1,6 +1,6 @@
 // ---------------------------------------------------------------------------
 // Shared MFS Payment Utilities
-// Used by: SubscriptionWorkspace, Due Payment Page
+// Used by: SubscriptionControlCenter, Due Payment Page
 // ---------------------------------------------------------------------------
 import type { MfsType } from "@/types/subscription";
 

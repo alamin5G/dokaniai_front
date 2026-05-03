@@ -167,6 +167,20 @@ export interface UpgradeProrationResponse {
   upgradeAmount: number;
 }
 
+export interface PaymentHistoryItem {
+  id: string;
+  subscriptionId: string | null;
+  paymentType: "NEW" | "RENEWAL" | "UPGRADE" | "DOWNGRADE" | "REFUND";
+  amountBdt: number;
+  method: "BKASH" | "NAGAD" | "ROCKET" | "MANUAL" | "CARD" | "BANK_TRANSFER" | string;
+  status: "PENDING" | "COMPLETED" | "FAILED" | "REFUNDED" | "CANCELLED" | string;
+  transactionId: string | null;
+  merchantRef: string | null;
+  paidAt: string | null;
+  createdAt: string;
+  invoiceDownloadUrl: string;
+}
+
 export interface PublicCoupon {
   id: string;
   code: string;

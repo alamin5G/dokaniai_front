@@ -2,7 +2,7 @@
 
 import { getCurrentSubscription } from "@/lib/subscriptionApi";
 import { rememberPendingUpgrade } from "@/lib/authFlow";
-import { getFeatureMatrixRows, getPlanFeatureCell } from "@/lib/planFeatureDisplay";
+import { getFeatureMatrixSections, getPlanFeatureCell } from "@/lib/planFeatureDisplay";
 import { PlanFeatureList } from "@/components/subscription/PlanFeatureList";
 import type { Plan, Subscription } from "@/types/subscription";
 import { useRouter } from "next/navigation";
@@ -78,6 +78,10 @@ function formatPlanPrice(plan: Plan, billingAnnual: boolean, s: (key: string) =>
   return plan.priceBdt === 0 ? s("pricing.free") : `৳${formatPrice(plan.priceBdt)}`;
 }
 
+function supportsAnnualBilling(plan: Plan): boolean {
+  return plan.annualPriceBdt != null && !plan.isTrial && plan.priceBdt > 0 && !isEnterprisePlan(plan);
+}
+
 function calcAnnualDiscountPercent(plan: Plan): number | null {
   if (plan.annualPriceBdt == null || plan.priceBdt <= 0 || plan.isTrial) return null;
   const monthlyAnnualized = plan.priceBdt * 12;
@@ -104,6 +108,17 @@ function actionLabel(plan: Plan, action: PlanAction, isAuthenticated: boolean, s
 
 function getProductsLabel(plan: Plan, s: (key: string) => string): string | number {
   return plan.maxProductsPerBusiness == null ? s("pricing.unlimited") : plan.maxProductsPerBusiness;
+}
+
+function renderMatrixCell(value: string, isBn: boolean) {
+  const normalized = value.trim().toLowerCase();
+  if (["yes", "হ্যাঁ"].includes(normalized)) {
+    return <span className="text-lg font-bold text-emerald-600">✓</span>;
+  }
+  if (["no", "না"].includes(normalized)) {
+    return <span className="text-lg font-bold text-on-surface-variant/45">✗</span>;
+  }
+  return <span className="font-medium text-on-surface">{value || (isBn ? "নেই" : "None")}</span>;
 }
 
 function getEnterpriseContactHref(email: string, subject: string): string {
@@ -202,10 +217,14 @@ export function PricingSection() {
   }, [plans, currentSubscription]);
 
   const orderedPlans = useMemo(() => [...plans].sort((a, b) => a.tierLevel - b.tierLevel), [plans]);
+  const visiblePlans = useMemo(
+    () => billingAnnual ? orderedPlans.filter((plan) => !plan.isTrial) : orderedPlans,
+    [billingAnnual, orderedPlans],
+  );
 
-  const featureRows = useMemo(() => getFeatureMatrixRows(orderedPlans, isBn), [isBn, orderedPlans]);
+  const featureSections = useMemo(() => getFeatureMatrixSections(visiblePlans, isBn), [isBn, visiblePlans]);
 
-  const hasAnyAnnualPrice = useMemo(() => plans.some((p) => p.annualPriceBdt != null && !p.isTrial && p.priceBdt > 0), [plans]);
+  const hasAnyAnnualPrice = useMemo(() => plans.some(supportsAnnualBilling), [plans]);
 
   const handlePlanAction = (plan: Plan, action: PlanAction) => {
     if (isEnterprisePlan(plan)) {
@@ -225,7 +244,7 @@ export function PricingSection() {
       return;
     }
 
-    const billingParam = billingAnnual && plan.annualPriceBdt != null ? "&billing=ANNUAL" : "";
+    const billingParam = billingAnnual && supportsAnnualBilling(plan) ? "&billing=ANNUAL" : "";
     const targetPath = action === "DOWNGRADE"
       ? `/subscription/downgrade?plan=${encodeURIComponent(plan.id)}`
       : `/subscription/upgrade?plan=${encodeURIComponent(plan.id)}${billingParam}`;
@@ -270,39 +289,43 @@ export function PricingSection() {
         </div>
 
         {/* Billing Cycle Toggle */}
-        {hasAnyAnnualPrice && (
-          <div className="flex items-center justify-center mb-10">
-            <div className="inline-flex items-center rounded-full bg-surface-container-low p-1 gap-1">
-              <button
-                type="button"
-                onClick={() => setBillingAnnual(false)}
-                className={`px-5 py-2 rounded-full text-sm font-semibold transition-all ${!billingAnnual
-                  ? "bg-primary text-on-primary shadow-sm"
-                  : "text-on-surface-variant hover:text-on-surface"
-                  }`}
-              >
-                {t("monthly")}
-              </button>
-              <button
-                type="button"
-                onClick={() => setBillingAnnual(true)}
-                className={`px-5 py-2 rounded-full text-sm font-semibold transition-all inline-flex items-center gap-1.5 ${billingAnnual
-                  ? "bg-primary text-on-primary shadow-sm"
-                  : "text-on-surface-variant hover:text-on-surface"
-                  }`}
-              >
-                {t("annual")}
-                <span className="text-xs bg-secondary text-on-secondary px-2 py-0.5 rounded-full">
-                  {t("annualDiscount")}
-                </span>
-              </button>
-            </div>
+        <div className="mb-10 flex flex-col items-center justify-center gap-2">
+          <div className="inline-flex items-center gap-1 rounded-full bg-surface-container-low p-1">
+            <button
+              type="button"
+              onClick={() => setBillingAnnual(false)}
+              className={`rounded-full px-5 py-2 text-sm font-semibold transition-all ${!billingAnnual
+                ? "bg-primary text-on-primary shadow-sm"
+                : "text-on-surface-variant hover:text-on-surface"
+                }`}
+            >
+              {t("monthly")}
+            </button>
+            <button
+              type="button"
+              onClick={() => setBillingAnnual(true)}
+              disabled={!hasAnyAnnualPrice}
+              className={`inline-flex items-center gap-1.5 rounded-full px-5 py-2 text-sm font-semibold transition-all ${billingAnnual
+                ? "bg-primary text-on-primary shadow-sm"
+                : "text-on-surface-variant hover:text-on-surface"
+                } ${!hasAnyAnnualPrice ? "cursor-not-allowed opacity-50" : ""}`}
+            >
+              {t("annual")}
+              <span className="rounded-full bg-secondary px-2 py-0.5 text-xs text-on-secondary">
+                {t("annualDiscount")}
+              </span>
+            </button>
           </div>
-        )}
+          {!hasAnyAnnualPrice && (
+            <p className="text-xs text-on-surface-variant">
+              {isBn ? "বার্ষিক মূল্য অ্যাডমিন প্ল্যান সেটিংসে সেট করলে এখানে সক্রিয় হবে।" : "Annual prices activate here after admin sets annual pricing."}
+            </p>
+          )}
+        </div>
 
         {/* Bento-style Pricing Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-16">
-          {orderedPlans.map((plan, index) => {
+          {visiblePlans.map((plan, index) => {
             const isHighlighted = plan.highlight === true;
             const isEnterprise = isEnterprisePlan(plan);
             const action = resolvePlanAction(currentPlan, plan, isAuthenticated);
@@ -312,11 +335,11 @@ export function PricingSection() {
             // Bento layout offsets
             const offsetClass =
               index === 1 ? "translate-y-4" :
-                index === orderedPlans.length - 1 && orderedPlans.length >= 5 ? "translate-y-6" : "";
+                index === visiblePlans.length - 1 && visiblePlans.length >= 5 ? "translate-y-6" : "";
 
             // Grid placement for 5+ plans
             const gridPlacement =
-              orderedPlans.length >= 5
+              visiblePlans.length >= 5
                 ? index === 3
                   ? "lg:col-start-1 lg:row-start-2"
                   : index === 4
@@ -334,7 +357,7 @@ export function PricingSection() {
                   }`}
               >
                 {/* Best Choice Badge */}
-                {isHighlighted && (
+                {(plan.badge || isHighlighted) && (
                   <div className="absolute top-0 right-0 p-4">
                     <span className="bg-secondary-container text-on-secondary-container px-3 py-1 rounded-full text-xs font-bold">
                       {plan.badge || t("bestChoice")}
@@ -373,7 +396,7 @@ export function PricingSection() {
                         {" "}{formatPlanDuration(plan, billingAnnual, t, s)}
                       </span>
                     )}
-                    {billingAnnual && !isEnterprise && annualDiscount != null && (
+                    {billingAnnual && !isEnterprise && supportsAnnualBilling(plan) && annualDiscount != null && (
                       <span className="ml-2 text-xs bg-secondary-container text-on-secondary-container px-2 py-0.5 rounded-full font-semibold">
                         {t("savePercent", { percent: annualDiscount })}
                       </span>
@@ -434,7 +457,7 @@ export function PricingSection() {
                 </tr>
               </thead>
               <tbody>
-                {orderedPlans.map((plan) => {
+                {visiblePlans.map((plan) => {
                   const action = resolvePlanAction(currentPlan, plan, isAuthenticated);
                   const durationText = isEnterprisePlan(plan)
                     ? t("quickReference.yearly")
@@ -473,34 +496,45 @@ export function PricingSection() {
           </div>
         </div>
 
-        <div className="mt-8 rounded-[1.5rem] border border-outline-variant/30 bg-surface p-5">
-          <h3 className="text-lg font-bold text-on-surface mb-4">{t("featureMatrix.title")}</h3>
-          <div className="overflow-x-auto">
-            <table data-testid="feature-matrix-table" className="min-w-full text-sm">
-              <thead>
-                <tr className="text-left border-b border-outline-variant/30 text-on-surface-variant">
-                  <th className="px-3 py-2 font-semibold">{t("featureMatrix.columns.feature")}</th>
-                  {orderedPlans.map((plan) => (
-                    <th key={`feature-col-${plan.id}`} className="px-3 py-2 font-semibold text-center">
-                      {plan.displayNameBn}
-                    </th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody>
-                {featureRows.map((row) => (
-                  <tr key={row.key} className="border-b border-outline-variant/20 last:border-none">
-                    <td className="px-3 py-2 font-medium">{row.label}</td>
-                    {orderedPlans.map((plan) => (
-                      <td key={`${row.key}-${plan.id}`} className="px-3 py-2 text-center">
-                        {getPlanFeatureCell(plan, row.key, isBn)}
-                      </td>
+        <div className="mt-8 space-y-6">
+          <h3 className="text-lg font-bold text-on-surface">{t("featureMatrix.title")}</h3>
+          {featureSections.map((section) => (
+            <div key={section.key} className="rounded-[1rem] border border-outline-variant/30 bg-surface p-5">
+              <h4 className="mb-4 text-sm font-bold uppercase tracking-wide text-on-surface-variant">
+                {section.title}
+              </h4>
+              <div className="overflow-x-auto">
+                <table data-testid={`feature-matrix-${section.key}`} className="min-w-[720px] w-full text-sm">
+                  <thead>
+                    <tr className="border-b border-outline-variant/30 text-left text-on-surface-variant">
+                      <th className="sticky left-0 z-10 bg-surface px-3 py-2 font-semibold">
+                        {t("featureMatrix.columns.feature")}
+                      </th>
+                      {visiblePlans.map((plan) => (
+                        <th key={`feature-col-${section.key}-${plan.id}`} className="px-3 py-2 text-center font-semibold">
+                          {isBn ? plan.displayNameBn : plan.displayNameEn}
+                        </th>
+                      ))}
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {section.rows.map((row) => (
+                      <tr key={row.key} className="border-b border-outline-variant/20 last:border-none">
+                        <td className="sticky left-0 z-10 bg-surface px-3 py-2 font-medium text-on-surface">
+                          {row.label}
+                        </td>
+                        {visiblePlans.map((plan) => (
+                          <td key={`${section.key}-${row.key}-${plan.id}`} className="px-3 py-2 text-center">
+                            {renderMatrixCell(getPlanFeatureCell(plan, row.key, isBn), isBn)}
+                          </td>
+                        ))}
+                      </tr>
                     ))}
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          ))}
         </div>
       </div>
     </section>

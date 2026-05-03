@@ -2,9 +2,9 @@
 
 import { useTranslations } from "next-intl";
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { Pencil, Plus, RotateCcw, Save, Search } from "lucide-react";
+import { Pencil, Plus, RotateCcw, Save } from "lucide-react";
 import * as adminApi from "@/lib/adminApi";
-import type { AdminFeature, AdminPlanFeature, AdminPlanFeatureMatrix, FeatureType, QuotaResetPeriod } from "@/lib/adminApi";
+import type { AdminFeature, AdminPlan, AdminPlanFeature, AdminPlanFeatureMatrix, FeatureType, QuotaResetPeriod } from "@/lib/adminApi";
 
 type EditableFeatureState = {
     enabled: boolean;
@@ -24,6 +24,15 @@ type FeatureFormState = {
     displayOrder: string;
     isPublic: boolean;
     isActive: boolean;
+};
+
+type PlanPricingDraft = {
+    priceBdt: string;
+    annualPriceBdt: string;
+    durationDays: string;
+    isActive: boolean;
+    highlight: boolean;
+    badge: string;
 };
 
 const RESET_PERIODS: QuotaResetPeriod[] = ["DAILY", "WEEKLY", "MONTHLY", "NEVER"];
@@ -54,10 +63,6 @@ function stateKey(planName: string, featureKey: string) {
     return `${planName}:${featureKey}`;
 }
 
-function normalizeSearch(value: string) {
-    return value.trim().toLowerCase();
-}
-
 function featureLabel(feature: AdminPlanFeature) {
     return feature.nameEn || feature.nameBn || feature.featureKey;
 }
@@ -68,30 +73,44 @@ function typeBadgeClass(type: FeatureType) {
     return "bg-amber-50 text-amber-700 border-amber-200";
 }
 
+function toPlanPricingDraft(plan: AdminPlan): PlanPricingDraft {
+    return {
+        priceBdt: String(plan.priceBdt ?? 0),
+        annualPriceBdt: plan.annualPriceBdt == null ? "" : String(plan.annualPriceBdt),
+        durationDays: String(plan.durationDays ?? 30),
+        isActive: Boolean(plan.isActive),
+        highlight: Boolean(plan.highlight),
+        badge: plan.badge ?? "",
+    };
+}
+
 export default function PlanFeaturesTab() {
     const t = useTranslations("admin.planFeatures");
     const [matrix, setMatrix] = useState<AdminPlanFeatureMatrix[]>([]);
     const [catalog, setCatalog] = useState<AdminFeature[]>([]);
+    const [plans, setPlans] = useState<AdminPlan[]>([]);
     const [featureForm, setFeatureForm] = useState<FeatureFormState>(EMPTY_FEATURE_FORM);
     const [drafts, setDrafts] = useState<Record<string, EditableFeatureState>>({});
+    const [pricingDrafts, setPricingDrafts] = useState<Record<string, PlanPricingDraft>>({});
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState<string | null>(null);
     const [savingFeature, setSavingFeature] = useState(false);
+    const [savingPlan, setSavingPlan] = useState(false);
     const [error, setError] = useState<string | null>(null);
-    const [search, setSearch] = useState("");
-    const [category, setCategory] = useState<string>("ALL");
-    const [type, setType] = useState<FeatureType | "ALL">("ALL");
+    const [selectedPlanName, setSelectedPlanName] = useState<string>("");
 
     const loadMatrix = useCallback(async () => {
         setLoading(true);
         setError(null);
         try {
-            const [result, features] = await Promise.all([
+            const [result, features, adminPlans] = await Promise.all([
                 adminApi.getPlanFeatureMatrix(),
                 adminApi.getFeatureCatalog(),
+                adminApi.getPlans(),
             ]);
             setMatrix(result);
             setCatalog(features);
+            setPlans(adminPlans);
             const nextDrafts: Record<string, EditableFeatureState> = {};
             for (const plan of result) {
                 for (const feature of plan.features) {
@@ -99,6 +118,11 @@ export default function PlanFeaturesTab() {
                 }
             }
             setDrafts(nextDrafts);
+            const nextPricingDrafts: Record<string, PlanPricingDraft> = {};
+            for (const plan of adminPlans) {
+                nextPricingDrafts[plan.name] = toPlanPricingDraft(plan);
+            }
+            setPricingDrafts(nextPricingDrafts);
         } catch {
             setError(t("loadFailed"));
         } finally {
@@ -110,31 +134,11 @@ export default function PlanFeaturesTab() {
         loadMatrix();
     }, [loadMatrix]);
 
-    const categories = useMemo(() => {
-        const values = new Set<string>();
-        for (const plan of matrix) {
-            for (const feature of plan.features) {
-                if (feature.category) values.add(feature.category);
-            }
+    useEffect(() => {
+        if (!selectedPlanName && matrix.length > 0) {
+            setSelectedPlanName(matrix[0].planName);
         }
-        return Array.from(values).sort();
-    }, [matrix]);
-
-    const filteredMatrix = useMemo(() => {
-        const query = normalizeSearch(search);
-        return matrix
-            .map((plan) => ({
-                ...plan,
-                features: plan.features.filter((feature) => {
-                    const matchesCategory = category === "ALL" || feature.category === category;
-                    const matchesType = type === "ALL" || feature.type === type;
-                    const label = `${feature.featureKey} ${feature.nameEn ?? ""} ${feature.nameBn ?? ""}`.toLowerCase();
-                    const matchesSearch = !query || label.includes(query);
-                    return matchesCategory && matchesType && matchesSearch;
-                }),
-            }))
-            .filter((plan) => plan.features.length > 0);
-    }, [category, matrix, search, type]);
+    }, [matrix, selectedPlanName]);
 
     const totalFeatures = useMemo(() => {
         const keys = new Set<string>();
@@ -142,12 +146,47 @@ export default function PlanFeaturesTab() {
         return keys.size;
     }, [matrix]);
 
+    const selectedPlan = useMemo(
+        () => matrix.find((plan) => plan.planName === selectedPlanName) ?? matrix[0] ?? null,
+        [matrix, selectedPlanName],
+    );
+
+    const selectedPlanDetails = useMemo(
+        () => plans.find((plan) => plan.name === selectedPlan?.planName) ?? null,
+        [plans, selectedPlan],
+    );
+
+    const selectedPlanFeatureGroups = useMemo(() => {
+        if (!selectedPlan) return [];
+        const groups = new Map<string, AdminPlanFeature[]>();
+        for (const feature of selectedPlan.features) {
+            const groupKey = feature.category || "OTHER";
+            groups.set(groupKey, [...(groups.get(groupKey) ?? []), feature]);
+        }
+        return Array.from(groups.entries())
+            .sort(([a], [b]) => a.localeCompare(b))
+            .map(([groupKey, features]) => ({
+                groupKey,
+                features: features.sort((a, b) => featureLabel(a).localeCompare(featureLabel(b))),
+            }));
+    }, [selectedPlan]);
+
     function updateDraft(planName: string, featureKey: string, patch: Partial<EditableFeatureState>) {
         const key = stateKey(planName, featureKey);
         setDrafts((prev) => ({
             ...prev,
             [key]: {
                 ...prev[key],
+                ...patch,
+            },
+        }));
+    }
+
+    function updatePricingDraft(planName: string, patch: Partial<PlanPricingDraft>) {
+        setPricingDrafts((prev) => ({
+            ...prev,
+            [planName]: {
+                ...prev[planName],
                 ...patch,
             },
         }));
@@ -199,6 +238,52 @@ export default function PlanFeaturesTab() {
             setError(t("saveFailed"));
         } finally {
             setSaving(null);
+        }
+    }
+
+    async function savePlanPricing() {
+        if (!selectedPlanDetails) return;
+        const draft = pricingDrafts[selectedPlanDetails.name];
+        if (!draft) return;
+
+        const priceBdt = Number(draft.priceBdt);
+        const annualPriceBdt = draft.annualPriceBdt.trim() === "" ? null : Number(draft.annualPriceBdt);
+        const durationDays = Number(draft.durationDays);
+
+        if (!Number.isFinite(priceBdt) || priceBdt < 0 || !Number.isFinite(durationDays) || !Number.isInteger(durationDays) || durationDays < 1) {
+            setError(t("invalidPlanPricing"));
+            return;
+        }
+        if (annualPriceBdt != null && (!Number.isFinite(annualPriceBdt) || annualPriceBdt < 0)) {
+            setError(t("invalidPlanPricing"));
+            return;
+        }
+
+        setSavingPlan(true);
+        setError(null);
+        try {
+            await adminApi.updatePlan(selectedPlanDetails.id, {
+                priceBdt,
+                annualPriceBdt,
+                durationDays,
+                gracePeriodDays: selectedPlanDetails.gracePeriodDays,
+                maxBusinesses: selectedPlanDetails.maxBusinesses,
+                maxProductsPerBusiness: selectedPlanDetails.maxProductsPerBusiness,
+                aiQueriesPerDay: selectedPlanDetails.aiQueriesPerDay,
+                maxAiTokensPerQuery: selectedPlanDetails.maxAiTokensPerQuery,
+                maxQueryCharacters: selectedPlanDetails.maxQueryCharacters,
+                conversationHistoryTurns: selectedPlanDetails.conversationHistoryTurns,
+                isActive: draft.isActive,
+                highlight: draft.highlight,
+                badge: draft.badge.trim() || null,
+                displayNameBn: selectedPlanDetails.displayNameBn,
+                displayNameEn: selectedPlanDetails.displayNameEn,
+            });
+            await loadMatrix();
+        } catch {
+            setError(t("planPricingSaveFailed"));
+        } finally {
+            setSavingPlan(false);
         }
     }
 
@@ -295,38 +380,7 @@ export default function PlanFeaturesTab() {
                     </div>
                 </div>
 
-                <div className="grid gap-3 md:grid-cols-[minmax(220px,1fr)_160px_140px_auto]">
-                    <label className="relative">
-                        <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-on-surface-variant" />
-                        <input
-                            value={search}
-                            onChange={(event) => setSearch(event.target.value)}
-                            placeholder={t("searchPlaceholder")}
-                            className="h-10 w-full rounded-lg border border-outline-variant/60 bg-surface-container-lowest pl-9 pr-3 text-sm text-on-surface outline-none focus:border-primary"
-                        />
-                    </label>
-                    <select
-                        value={category}
-                        onChange={(event) => setCategory(event.target.value)}
-                        className="h-10 rounded-lg border border-outline-variant/60 bg-surface-container-lowest px-3 text-sm text-on-surface outline-none focus:border-primary"
-                    >
-                        <option value="ALL">{t("allCategories")}</option>
-                        {categories.map((item) => (
-                            <option key={item} value={item}>
-                                {item}
-                            </option>
-                        ))}
-                    </select>
-                    <select
-                        value={type}
-                        onChange={(event) => setType(event.target.value as FeatureType | "ALL")}
-                        className="h-10 rounded-lg border border-outline-variant/60 bg-surface-container-lowest px-3 text-sm text-on-surface outline-none focus:border-primary"
-                    >
-                        <option value="ALL">{t("allTypes")}</option>
-                        <option value="BOOLEAN">BOOLEAN</option>
-                        <option value="LIMIT">LIMIT</option>
-                        <option value="QUOTA">QUOTA</option>
-                    </select>
+                <div>
                     <button
                         type="button"
                         onClick={loadMatrix}
@@ -341,6 +395,179 @@ export default function PlanFeaturesTab() {
             {error && (
                 <div className="rounded-lg border border-error/30 bg-error/10 px-4 py-3 text-sm text-error">
                     {error}
+                </div>
+            )}
+
+            {selectedPlan && (
+                <div className="rounded-lg border border-outline-variant/30 bg-surface-container-lowest p-4">
+                    <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+                        <div>
+                            <h3 className="text-sm font-bold text-on-surface">{t("selectedPlanTitle")}</h3>
+                            <p className="text-xs text-on-surface-variant">{t("selectedPlanSubtitle")}</p>
+                        </div>
+                        <div className="flex gap-2 overflow-x-auto pb-1">
+                            {matrix.map((plan) => (
+                                <button
+                                    key={plan.planName}
+                                    type="button"
+                                    onClick={() => setSelectedPlanName(plan.planName)}
+                                    className={`whitespace-nowrap rounded-full border px-4 py-2 text-sm font-semibold transition-colors ${selectedPlan.planName === plan.planName
+                                        ? "border-primary bg-primary text-on-primary"
+                                        : "border-outline-variant/50 bg-surface-container-low text-on-surface-variant hover:text-on-surface"
+                                        }`}
+                                >
+                                    {plan.displayNameEn || plan.displayNameBn || plan.planName}
+                                </button>
+                            ))}
+                        </div>
+                    </div>
+
+                    {selectedPlanDetails && pricingDrafts[selectedPlanDetails.name] && (
+                        <div className="mt-5 rounded-lg border border-outline-variant/25 bg-surface p-4">
+                            <h4 className="mb-3 text-xs font-bold uppercase tracking-wide text-on-surface-variant">
+                                {t("planPricingTitle")}
+                            </h4>
+                            <div className="grid gap-3 md:grid-cols-[repeat(4,minmax(120px,1fr))_auto] md:items-end">
+                                <label className="grid gap-1 text-xs font-medium text-on-surface-variant">
+                                    {t("monthlyPrice")}
+                                    <input
+                                        type="number"
+                                        min={0}
+                                        value={pricingDrafts[selectedPlanDetails.name].priceBdt}
+                                        onChange={(event) => updatePricingDraft(selectedPlanDetails.name, { priceBdt: event.target.value })}
+                                        className="h-10 rounded-lg border border-outline-variant/60 bg-surface-container-lowest px-3 text-sm text-on-surface outline-none focus:border-primary"
+                                    />
+                                </label>
+                                <label className="grid gap-1 text-xs font-medium text-on-surface-variant">
+                                    {t("annualPrice")}
+                                    <input
+                                        type="number"
+                                        min={0}
+                                        value={pricingDrafts[selectedPlanDetails.name].annualPriceBdt}
+                                        onChange={(event) => updatePricingDraft(selectedPlanDetails.name, { annualPriceBdt: event.target.value })}
+                                        placeholder={t("none")}
+                                        className="h-10 rounded-lg border border-outline-variant/60 bg-surface-container-lowest px-3 text-sm text-on-surface outline-none focus:border-primary"
+                                    />
+                                </label>
+                                <label className="grid gap-1 text-xs font-medium text-on-surface-variant">
+                                    {t("durationDays")}
+                                    <input
+                                        type="number"
+                                        min={1}
+                                        value={pricingDrafts[selectedPlanDetails.name].durationDays}
+                                        onChange={(event) => updatePricingDraft(selectedPlanDetails.name, { durationDays: event.target.value })}
+                                        className="h-10 rounded-lg border border-outline-variant/60 bg-surface-container-lowest px-3 text-sm text-on-surface outline-none focus:border-primary"
+                                    />
+                                </label>
+                                <label className="grid gap-1 text-xs font-medium text-on-surface-variant">
+                                    {t("badge")}
+                                    <input
+                                        value={pricingDrafts[selectedPlanDetails.name].badge}
+                                        onChange={(event) => updatePricingDraft(selectedPlanDetails.name, { badge: event.target.value })}
+                                        placeholder={t("badge")}
+                                        className="h-10 rounded-lg border border-outline-variant/60 bg-surface-container-lowest px-3 text-sm text-on-surface outline-none focus:border-primary"
+                                    />
+                                </label>
+                                <button
+                                    type="button"
+                                    onClick={() => void savePlanPricing()}
+                                    disabled={savingPlan}
+                                    className="inline-flex h-10 items-center justify-center gap-2 rounded-lg bg-primary px-4 text-sm font-medium text-on-primary disabled:opacity-50"
+                                >
+                                    <Save className="h-4 w-4" />
+                                    {savingPlan ? t("saving") : t("savePlanPricing")}
+                                </button>
+                            </div>
+                            <div className="mt-3 flex flex-wrap gap-4 text-sm text-on-surface">
+                                <label className="inline-flex items-center gap-2">
+                                    <input
+                                        type="checkbox"
+                                        checked={pricingDrafts[selectedPlanDetails.name].isActive}
+                                        onChange={(event) => updatePricingDraft(selectedPlanDetails.name, { isActive: event.target.checked })}
+                                    />
+                                    {t("activeFeature")}
+                                </label>
+                                <label className="inline-flex items-center gap-2">
+                                    <input
+                                        type="checkbox"
+                                        checked={pricingDrafts[selectedPlanDetails.name].highlight}
+                                        onChange={(event) => updatePricingDraft(selectedPlanDetails.name, { highlight: event.target.checked })}
+                                    />
+                                    {t("highlightPlan")}
+                                </label>
+                            </div>
+                        </div>
+                    )}
+
+                    <div className="mt-5 grid gap-4 xl:grid-cols-2">
+                        {selectedPlanFeatureGroups.map((group) => (
+                            <section key={group.groupKey} className="rounded-lg border border-outline-variant/25 bg-surface p-4">
+                                <h4 className="mb-3 text-xs font-bold uppercase tracking-wide text-on-surface-variant">
+                                    {group.groupKey}
+                                </h4>
+                                <div className="space-y-3">
+                                    {group.features.map((feature) => {
+                                        const key = stateKey(selectedPlan.planName, feature.featureKey);
+                                        const draft = drafts[key] ?? toEditableState(feature);
+                                        const changed = hasChanged(selectedPlan.planName, feature);
+                                        const isBoolean = feature.type === "BOOLEAN";
+                                        const isSaving = saving === key;
+
+                                        return (
+                                            <div key={key} className="grid gap-3 rounded-md border border-outline-variant/20 p-3 md:grid-cols-[minmax(180px,1fr)_auto_140px_150px_auto] md:items-center">
+                                                <div>
+                                                    <p className="text-sm font-semibold text-on-surface">{featureLabel(feature)}</p>
+                                                    <p className="font-mono text-xs text-on-surface-variant">{feature.featureKey}</p>
+                                                </div>
+                                                <button
+                                                    type="button"
+                                                    onClick={() => updateDraft(selectedPlan.planName, feature.featureKey, { enabled: !draft.enabled })}
+                                                    className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 ${draft.enabled ? "bg-primary" : "bg-surface-container-high"}`}
+                                                    aria-label={t("toggleFeature")}
+                                                >
+                                                    <span
+                                                        className={`inline-block h-4 w-4 transform rounded-full bg-white shadow transition-transform ${draft.enabled ? "translate-x-6" : "translate-x-1"}`}
+                                                    />
+                                                </button>
+                                                <input
+                                                    type="number"
+                                                    inputMode="numeric"
+                                                    step={1}
+                                                    value={draft.limitValue}
+                                                    disabled={isBoolean}
+                                                    onChange={(event) => updateDraft(selectedPlan.planName, feature.featureKey, { limitValue: event.target.value })}
+                                                    placeholder={isBoolean ? "-" : t("unlimited")}
+                                                    className="h-9 rounded-md border border-outline-variant/60 bg-surface-container-lowest px-3 text-sm text-on-surface outline-none disabled:bg-surface-container-low disabled:text-on-surface-variant focus:border-primary"
+                                                />
+                                                <select
+                                                    value={draft.resetPeriod}
+                                                    disabled={feature.type !== "QUOTA"}
+                                                    onChange={(event) => updateDraft(selectedPlan.planName, feature.featureKey, { resetPeriod: event.target.value as QuotaResetPeriod | "" })}
+                                                    className="h-9 rounded-md border border-outline-variant/60 bg-surface-container-lowest px-3 text-sm text-on-surface outline-none disabled:bg-surface-container-low disabled:text-on-surface-variant focus:border-primary"
+                                                >
+                                                    <option value="">{t("none")}</option>
+                                                    {RESET_PERIODS.map((period) => (
+                                                        <option key={period} value={period}>
+                                                            {period}
+                                                        </option>
+                                                    ))}
+                                                </select>
+                                                <button
+                                                    type="button"
+                                                    onClick={() => saveFeature(selectedPlan.planName, feature)}
+                                                    disabled={!changed || isSaving}
+                                                    className="inline-flex h-9 items-center justify-center gap-2 rounded-md bg-primary px-3 text-sm font-medium text-on-primary transition disabled:cursor-not-allowed disabled:bg-surface-container-high disabled:text-on-surface-variant"
+                                                >
+                                                    <Save className="h-4 w-4" />
+                                                    {isSaving ? t("saving") : t("save")}
+                                                </button>
+                                            </div>
+                                        );
+                                    })}
+                                </div>
+                            </section>
+                        ))}
+                    </div>
                 </div>
             )}
 
@@ -498,126 +725,6 @@ export default function PlanFeaturesTab() {
                             </button>
                         </div>
                     </div>
-                </div>
-            </div>
-
-            <div className="overflow-hidden rounded-lg border border-outline-variant/30 bg-surface-container-lowest">
-                <div className="overflow-x-auto">
-                    <table className="min-w-[1120px] w-full text-left">
-                        <thead className="bg-surface-container-low text-xs font-bold uppercase tracking-wide text-on-surface-variant">
-                            <tr>
-                                <th className="w-[210px] px-4 py-3">{t("colPlan")}</th>
-                                <th className="w-[280px] px-4 py-3">{t("colFeature")}</th>
-                                <th className="w-[120px] px-4 py-3">{t("colType")}</th>
-                                <th className="w-[110px] px-4 py-3">{t("colEnabled")}</th>
-                                <th className="w-[150px] px-4 py-3">{t("colLimit")}</th>
-                                <th className="w-[160px] px-4 py-3">{t("colReset")}</th>
-                                <th className="w-[120px] px-4 py-3 text-right">{t("colAction")}</th>
-                            </tr>
-                        </thead>
-                        <tbody className="divide-y divide-outline-variant/20">
-                            {filteredMatrix.length === 0 ? (
-                                <tr>
-                                    <td colSpan={7} className="px-4 py-12 text-center text-sm text-on-surface-variant">
-                                        {t("noPlans")}
-                                    </td>
-                                </tr>
-                            ) : (
-                                filteredMatrix.map((plan) =>
-                                    plan.features.map((feature, featureIndex) => {
-                                        const key = stateKey(plan.planName, feature.featureKey);
-                                        const draft = drafts[key] ?? toEditableState(feature);
-                                        const changed = hasChanged(plan.planName, feature);
-                                        const isBoolean = feature.type === "BOOLEAN";
-                                        const isSaving = saving === key;
-
-                                        return (
-                                            <tr key={key} className="hover:bg-surface-container-low/60">
-                                                <td className="px-4 py-3 align-top">
-                                                    {featureIndex === 0 && (
-                                                        <div>
-                                                            <p className="font-semibold text-on-surface">
-                                                                {plan.displayNameEn || plan.displayNameBn || plan.planName}
-                                                            </p>
-                                                            <p className="text-xs text-on-surface-variant">
-                                                                {plan.planName} · Tier {plan.tierLevel ?? "-"}
-                                                            </p>
-                                                        </div>
-                                                    )}
-                                                </td>
-                                                <td className="px-4 py-3">
-                                                    <div>
-                                                        <p className="font-medium text-on-surface">{featureLabel(feature)}</p>
-                                                        <p className="mt-0.5 font-mono text-xs text-on-surface-variant">
-                                                            {feature.featureKey}
-                                                        </p>
-                                                        {feature.category && (
-                                                            <p className="mt-1 text-xs text-on-surface-variant">{feature.category}</p>
-                                                        )}
-                                                    </div>
-                                                </td>
-                                                <td className="px-4 py-3">
-                                                    <span className={`inline-flex rounded-full border px-2.5 py-1 text-xs font-semibold ${typeBadgeClass(feature.type)}`}>
-                                                        {feature.type}
-                                                    </span>
-                                                </td>
-                                                <td className="px-4 py-3">
-                                                    <button
-                                                        type="button"
-                                                        onClick={() => updateDraft(plan.planName, feature.featureKey, { enabled: !draft.enabled })}
-                                                        className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 ${draft.enabled ? "bg-primary" : "bg-surface-container-high"}`}
-                                                        aria-label={t("toggleFeature")}
-                                                    >
-                                                        <span
-                                                            className={`inline-block h-4 w-4 transform rounded-full bg-white shadow transition-transform ${draft.enabled ? "translate-x-6" : "translate-x-1"}`}
-                                                        />
-                                                    </button>
-                                                </td>
-                                                <td className="px-4 py-3">
-                                                    <input
-                                                        type="number"
-                                                        inputMode="numeric"
-                                                        step={1}
-                                                        value={draft.limitValue}
-                                                        disabled={isBoolean}
-                                                        onChange={(event) => updateDraft(plan.planName, feature.featureKey, { limitValue: event.target.value })}
-                                                        placeholder={isBoolean ? "-" : t("unlimited")}
-                                                        className="h-9 w-full rounded-md border border-outline-variant/60 bg-surface-container-lowest px-3 text-sm text-on-surface outline-none disabled:bg-surface-container-low disabled:text-on-surface-variant focus:border-primary"
-                                                    />
-                                                </td>
-                                                <td className="px-4 py-3">
-                                                    <select
-                                                        value={draft.resetPeriod}
-                                                        disabled={feature.type !== "QUOTA"}
-                                                        onChange={(event) => updateDraft(plan.planName, feature.featureKey, { resetPeriod: event.target.value as QuotaResetPeriod | "" })}
-                                                        className="h-9 w-full rounded-md border border-outline-variant/60 bg-surface-container-lowest px-3 text-sm text-on-surface outline-none disabled:bg-surface-container-low disabled:text-on-surface-variant focus:border-primary"
-                                                    >
-                                                        <option value="">{t("none")}</option>
-                                                        {RESET_PERIODS.map((period) => (
-                                                            <option key={period} value={period}>
-                                                                {period}
-                                                            </option>
-                                                        ))}
-                                                    </select>
-                                                </td>
-                                                <td className="px-4 py-3 text-right">
-                                                    <button
-                                                        type="button"
-                                                        onClick={() => saveFeature(plan.planName, feature)}
-                                                        disabled={!changed || isSaving}
-                                                        className="inline-flex h-9 items-center justify-center gap-2 rounded-md bg-primary px-3 text-sm font-medium text-on-primary transition disabled:cursor-not-allowed disabled:bg-surface-container-high disabled:text-on-surface-variant"
-                                                    >
-                                                        <Save className="h-4 w-4" />
-                                                        {isSaving ? t("saving") : t("save")}
-                                                    </button>
-                                                </td>
-                                            </tr>
-                                        );
-                                    }),
-                                )
-                            )}
-                        </tbody>
-                    </table>
                 </div>
             </div>
 
