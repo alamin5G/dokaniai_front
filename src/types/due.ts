@@ -137,6 +137,31 @@ export interface CustomerLedgerEntry {
     referenceId: string | null;
 }
 
+// ─── Unified Customer History ────────────────────────────
+
+export interface HistoryEntry {
+    type: "CASH_PURCHASE" | "CREDIT_PURCHASE" | "PAYMENT" | "ADJUSTMENT";
+    referenceId: string;
+    invoiceNumber: string | null;
+    amount: number;
+    description: string | null;
+    paymentMethod: string | null;
+    paymentStatus: string | null;
+    balanceAfter: number | null;
+    date: string;
+}
+
+export interface CustomerUnifiedHistory {
+    customerId: string;
+    name: string;
+    phone: string | null;
+    address: string | null;
+    runningBalance: number;
+    totalPurchased: number;
+    totalPaid: number;
+    timeline: HistoryEntry[];
+}
+
 // ─── Aged Dues ───────────────────────────────────────────
 
 export interface AgedDueItem {

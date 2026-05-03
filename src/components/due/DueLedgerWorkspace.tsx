@@ -9,6 +9,7 @@ import type {
     DueTransactionType,
     DueLedgerResponse,
     CustomerLedgerEntry,
+    CustomerUnifiedHistory,
 } from "@/types/due";
 import {
     getCustomersWithDue,
@@ -20,6 +21,7 @@ import {
     createAdjustment,
     getCustomerDueLedger,
     getUnifiedCustomerLedger,
+    getCustomerUnifiedHistory,
     getDueSummary,
     generateDueReminder,
     voidDueTransaction,
@@ -127,6 +129,12 @@ export default function DueLedgerWorkspace({
     const [voidReason, setVoidReason] = useState("");
     const [isVoiding, setIsVoiding] = useState(false);
 
+    // Tab state: "due" | "noDue"
+    const [customerTab, setCustomerTab] = useState<"due" | "noDue">("due");
+
+    // Unified history for detail view
+    const [unifiedHistory, setUnifiedHistory] = useState<CustomerUnifiedHistory | null>(null);
+
     // Credit limit edit
     const [editingCreditLimit, setEditingCreditLimit] = useState(false);
     const [creditLimitInput, setCreditLimitInput] = useState("");
@@ -158,7 +166,7 @@ export default function DueLedgerWorkspace({
         [customersWithDue]
     );
 
-    // ── Filtered list ──
+    // ── Filtered list (Due tab) ──
     const filteredCustomers = useMemo(() => {
         let list = customersWithDue;
         if (searchQuery.trim()) {
@@ -175,6 +183,19 @@ export default function DueLedgerWorkspace({
         }
         return list;
     }, [customersWithDue, searchQuery, filterPriority]);
+
+    // ── No Due customers ──
+    const noDueCustomers = useMemo(() => {
+        const noDue = allCustomers.filter((c) => (c.runningBalance ?? 0) <= 0);
+        if (!searchQuery.trim()) return noDue;
+        const q = searchQuery.toLowerCase();
+        return noDue.filter(
+            (c) =>
+                c.name.toLowerCase().includes(q) ||
+                (c.phone ?? "").includes(q) ||
+                (c.address ?? "").toLowerCase().includes(q)
+        );
+    }, [allCustomers, searchQuery]);
 
     // ── Filtered ledger transactions ──
     const filteredLedgerTransactions = useMemo(() => {
@@ -212,14 +233,16 @@ export default function DueLedgerWorkspace({
     const loadLedger = useCallback(
         async (customerId: string) => {
             try {
-                const [ledger, entries, stats] = await Promise.all([
+                const [ledger, entries, stats, history] = await Promise.all([
                     getCustomerDueLedger(businessId, customerId),
                     getUnifiedCustomerLedger(businessId, customerId),
                     getDueSummary(businessId, customerId).catch(() => null),
+                    getCustomerUnifiedHistory(businessId, customerId).catch(() => null),
                 ]);
                 setLedgerData(ledger);
                 setUnifiedEntries(entries);
                 setCustomerStats(stats);
+                setUnifiedHistory(history);
                 setSelectedCustomerId(customerId);
             } catch {
                 setToast(t("messages.loadError"));
@@ -508,6 +531,33 @@ export default function DueLedgerWorkspace({
                                     <p className="text-[10px] text-on-surface-variant mt-0.5">
                                         {Math.round((ledgerData.currentBalance / ledgerData.creditLimit) * 100)}% {locale?.startsWith("bn") ? "ব্যবহৃত" : "used"}
                                     </p>
+                                </div>
+                            )}
+                            {/* Unified History Summary */}
+                            {unifiedHistory && (
+                                <div className="mt-3 flex gap-4 text-xs text-on-surface-variant">
+                                    <span className="flex items-center gap-1">
+                                        <span className="material-symbols-outlined text-sm text-secondary">shopping_cart</span>
+                                        {locale?.startsWith("bn") ? "মোট ক্রয়:" : "Total Purchased:"}
+                                        <strong className="text-on-surface">৳ {formatMoney(unifiedHistory.totalPurchased)}</strong>
+                                    </span>
+                                    <span className="flex items-center gap-1">
+                                        <span className="material-symbols-outlined text-sm text-primary">account_balance_wallet</span>
+                                        {locale?.startsWith("bn") ? "মোট জমা:" : "Total Paid:"}
+                                        <strong className="text-primary">৳ {formatMoney(unifiedHistory.totalPaid)}</strong>
+                                    </span>
+                                    {unifiedHistory.phone && (
+                                        <span className="flex items-center gap-1">
+                                            <span className="material-symbols-outlined text-sm">phone</span>
+                                            {unifiedHistory.phone}
+                                        </span>
+                                    )}
+                                    {unifiedHistory.address && (
+                                        <span className="flex items-center gap-1">
+                                            <span className="material-symbols-outlined text-sm">location_on</span>
+                                            {unifiedHistory.address}
+                                        </span>
+                                    )}
                                 </div>
                             )}
                         </div>
@@ -997,6 +1047,30 @@ export default function DueLedgerWorkspace({
                 </button>
             </div>
 
+            {/* ── Tab Bar: Due / No Due ── */}
+            <div className="flex gap-1 bg-surface-container rounded-full p-1 max-w-xs">
+                <button
+                    onClick={() => setCustomerTab("due")}
+                    className={`flex-1 rounded-full px-5 py-2 text-sm font-bold transition-colors ${customerTab === "due"
+                        ? "bg-primary text-white shadow-sm"
+                        : "text-on-surface-variant hover:bg-surface-container-high"
+                        }`}
+                >
+                    {locale?.startsWith("bn") ? "বাকি" : "Due"}
+                    <span className="ml-1.5 text-xs opacity-80">({customersWithDue.length})</span>
+                </button>
+                <button
+                    onClick={() => setCustomerTab("noDue")}
+                    className={`flex-1 rounded-full px-5 py-2 text-sm font-bold transition-colors ${customerTab === "noDue"
+                        ? "bg-secondary text-white shadow-sm"
+                        : "text-on-surface-variant hover:bg-surface-container-high"
+                        }`}
+                >
+                    {locale?.startsWith("bn") ? "বাকি নেই" : "No Due"}
+                    <span className="ml-1.5 text-xs opacity-80">({noDueCustomers.length})</span>
+                </button>
+            </div>
+
             {/* ── Stats Bento Grid ── */}
             <section className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 {/* Total Due — 2 columns */}
@@ -1075,19 +1149,72 @@ export default function DueLedgerWorkspace({
                 </section>
             )}
 
-            {/* ── Customer Due List ── */}
+            {/* ── Customer List (tab-based) ── */}
             <section className="space-y-6">
-                <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
-                    <div>
-                        <h4 className="text-2xl font-bold text-primary">{t("customerList.title")}</h4>
-                        <p className="text-on-surface-variant">{t("customerList.subtitle")}</p>
-                    </div>
-                    <div className="flex items-center gap-3">
-                        {/* Search */}
+                {customerTab === "due" && (
+                    <>
+                        <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+                            <div>
+                                <h4 className="text-2xl font-bold text-primary">{t("customerList.title")}</h4>
+                                <p className="text-on-surface-variant">{t("customerList.subtitle")}</p>
+                            </div>
+                            <div className="flex items-center gap-3">
+                                {/* Search */}
+                                <div className="flex items-center gap-2 rounded-full bg-surface-container px-4 py-2">
+                                    <span className="material-symbols-outlined text-on-surface-variant text-lg">
+                                        search
+                                    </span>
+                                    <input
+                                        type="text"
+                                        value={searchQuery}
+                                        onChange={(e) => setSearchQuery(e.target.value)}
+                                        className="bg-transparent border-none focus:ring-0 text-sm w-32 xl:w-48 outline-none"
+                                        placeholder={t("transactionForm.searchCustomer")}
+                                    />
+                                </div>
+                                {/* Filter chips */}
+                                <div className="flex gap-1">
+                                    {(["all", "urgent", "regular", "new"] as const).map((f) => (
+                                        <button
+                                            key={f}
+                                            onClick={() => setFilterPriority(f)}
+                                            className={`rounded-full px-3 py-1.5 text-xs font-bold transition-colors ${filterPriority === f
+                                                ? "bg-primary text-white"
+                                                : "bg-surface-container text-on-surface-variant hover:bg-surface-container-high"
+                                                }`}
+                                        >
+                                            {t(`filter.${f}`)}
+                                        </button>
+                                    ))}
+                                    <button
+                                        onClick={() => setFilterAutoMfs((f) => !f)}
+                                        className={`flex items-center gap-1 rounded-full px-3 py-1.5 text-xs font-bold transition-colors ${filterAutoMfs
+                                            ? "bg-blue-600 text-white"
+                                            : "bg-surface-container text-on-surface-variant hover:bg-surface-container-high"
+                                            }`}
+                                    >
+                                        <span className="material-symbols-outlined text-xs">sync</span>
+                                        {t("autoMfs.filter")}
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </>)}
+
+                {customerTab === "noDue" && (
+                    <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+                        <div>
+                            <h4 className="text-2xl font-bold text-secondary">
+                                {locale?.startsWith("bn") ? "বাকি নেই এমন কাস্টমার" : "Customers with No Due"}
+                            </h4>
+                            <p className="text-on-surface-variant">
+                                {locale?.startsWith("bn")
+                                    ? "যেসব কাস্টমারের বর্তমানে কোনো বাকি নেই — ক্লিক করে পুরো ইতিহাস দেখুন"
+                                    : "Customers with zero balance — click to view full purchase history"}
+                            </p>
+                        </div>
                         <div className="flex items-center gap-2 rounded-full bg-surface-container px-4 py-2">
-                            <span className="material-symbols-outlined text-on-surface-variant text-lg">
-                                search
-                            </span>
+                            <span className="material-symbols-outlined text-on-surface-variant text-lg">search</span>
                             <input
                                 type="text"
                                 value={searchQuery}
@@ -1096,154 +1223,90 @@ export default function DueLedgerWorkspace({
                                 placeholder={t("transactionForm.searchCustomer")}
                             />
                         </div>
-                        {/* Filter chips */}
-                        <div className="flex gap-1">
-                            {(["all", "urgent", "regular", "new"] as const).map((f) => (
-                                <button
-                                    key={f}
-                                    onClick={() => setFilterPriority(f)}
-                                    className={`rounded-full px-3 py-1.5 text-xs font-bold transition-colors ${filterPriority === f
-                                        ? "bg-primary text-white"
-                                        : "bg-surface-container text-on-surface-variant hover:bg-surface-container-high"
-                                        }`}
-                                >
-                                    {t(`filter.${f}`)}
-                                </button>
-                            ))}
-                            <button
-                                onClick={() => setFilterAutoMfs((f) => !f)}
-                                className={`flex items-center gap-1 rounded-full px-3 py-1.5 text-xs font-bold transition-colors ${filterAutoMfs
-                                    ? "bg-blue-600 text-white"
-                                    : "bg-surface-container text-on-surface-variant hover:bg-surface-container-high"
-                                    }`}
-                            >
-                                <span className="material-symbols-outlined text-xs">sync</span>
-                                {t("autoMfs.filter")}
-                            </button>
-                        </div>
                     </div>
-                </div>
+                )}
 
-                {/* Customer cards */}
-                <div className="space-y-4">
-                    {isLoading ? (
-                        <div className="flex items-center justify-center py-20">
-                            <span className="material-symbols-outlined animate-spin text-primary">
-                                progress_activity
-                            </span>
-                        </div>
-                    ) : error ? (
-                        <div className="rounded-2xl bg-error-container p-6 text-center text-on-error-container">
-                            {error}
-                        </div>
-                    ) : filteredCustomers.length === 0 ? (
-                        <div className="rounded-2xl bg-surface-container-lowest p-12 text-center text-on-surface-variant">
-                            {t("customerList.empty")}
-                        </div>
-                    ) : (
-                        filteredCustomers.map((customer) => {
-                            const priority = getCustomerPriority(customer);
-                            const days = daysSincePayment(customer.lastPaymentDate);
-                            const reminderDays = daysSincePayment(customer.lastReminderSentAt ?? null);
-
-                            return (
-                                <div
-                                    key={customer.customerId}
-                                    className="bg-surface-container-lowest p-6 rounded-2xl flex flex-col md:flex-row justify-between items-start md:items-center gap-6 shadow-sm hover:shadow-md transition-shadow group"
-                                >
-                                    {/* Left: Avatar + Info */}
-                                    <div
-                                        className="flex items-center gap-4 flex-1 cursor-pointer"
-                                        onClick={() => loadLedger(customer.customerId)}
-                                    >
-                                        <div className="w-16 h-16 rounded-full bg-primary-container flex items-center justify-center text-on-primary-container text-xl font-bold shrink-0">
-                                            {customer.customerName.charAt(0).toUpperCase()}
-                                        </div>
-                                        <div className="space-y-1">
-                                            <div className="flex items-center gap-2">
-                                                <h5 className="text-xl font-bold text-on-surface">
-                                                    {customer.customerName}
-                                                </h5>
-                                                <span
-                                                    className={`text-[10px] px-2 py-0.5 rounded-full font-bold uppercase tracking-wider ${priorityBadge(priority)}`}
-                                                >
-                                                    {priorityLabel(priority)}
-                                                </span>
+                {/* Customer cards — Due tab */}
+                {customerTab === "due" && (
+                    <div className="space-y-4">
+                        {isLoading ? (
+                            <div className="flex items-center justify-center py-20">
+                                <span className="material-symbols-outlined animate-spin text-primary">progress_activity</span>
+                            </div>
+                        ) : error ? (
+                            <div className="rounded-2xl bg-error-container p-6 text-center text-on-error-container">{error}</div>
+                        ) : filteredCustomers.length === 0 ? (
+                            <div className="rounded-2xl bg-surface-container-lowest p-12 text-center text-on-surface-variant">{t("customerList.empty")}</div>
+                        ) : (
+                            filteredCustomers.map((customer) => {
+                                const priority = getCustomerPriority(customer);
+                                const days = daysSincePayment(customer.lastPaymentDate);
+                                const reminderDays = daysSincePayment(customer.lastReminderSentAt ?? null);
+                                return (
+                                    <div key={customer.customerId} className="bg-surface-container-lowest p-6 rounded-2xl flex flex-col md:flex-row justify-between items-start md:items-center gap-6 shadow-sm hover:shadow-md transition-shadow group">
+                                        <div className="flex items-center gap-4 flex-1 cursor-pointer" onClick={() => loadLedger(customer.customerId)}>
+                                            <div className="w-16 h-16 rounded-full bg-primary-container flex items-center justify-center text-on-primary-container text-xl font-bold shrink-0">{customer.customerName.charAt(0).toUpperCase()}</div>
+                                            <div className="space-y-1">
+                                                <div className="flex items-center gap-2">
+                                                    <h5 className="text-xl font-bold text-on-surface">{customer.customerName}</h5>
+                                                    <span className={`text-[10px] px-2 py-0.5 rounded-full font-bold uppercase tracking-wider ${priorityBadge(priority)}`}>{priorityLabel(priority)}</span>
+                                                </div>
+                                                {customer.customerPhone && <p className="text-on-surface-variant text-sm flex items-center gap-1"><span className="material-symbols-outlined text-xs">phone</span>{customer.customerPhone}</p>}
+                                                {customer.customerAddress && <p className="text-on-surface-variant text-xs flex items-center gap-1"><span className="material-symbols-outlined text-xs">location_on</span>{customer.customerAddress}</p>}
+                                                <p className="text-on-surface-variant text-sm flex items-center gap-1"><span className="material-symbols-outlined text-xs">schedule</span>{t("customerList.lastPayment")} {days === null ? t("customerList.never") : `${days} ${t("customerList.daysAgo")}`}</p>
+                                                {reminderDays !== null && <p className="text-on-surface-variant text-xs flex items-center gap-1"><span className="material-symbols-outlined text-xs">mark_chat_read</span>{t("customerList.lastReminder")} {reminderDays === 0 ? t("customerList.today") : `${reminderDays} ${t("customerList.daysAgo")}`}</p>}
                                             </div>
-                                            {customer.customerPhone && (
-                                                <p className="text-on-surface-variant text-sm flex items-center gap-1">
-                                                    <span className="material-symbols-outlined text-xs">phone</span>
-                                                    {customer.customerPhone}
-                                                </p>
-                                            )}
-                                            {customer.customerAddress && (
-                                                <p className="text-on-surface-variant text-xs flex items-center gap-1">
-                                                    <span className="material-symbols-outlined text-xs">location_on</span>
-                                                    {customer.customerAddress}
-                                                </p>
-                                            )}
-                                            <p className="text-on-surface-variant text-sm flex items-center gap-1">
-                                                <span className="material-symbols-outlined text-xs">schedule</span>
-                                                {t("customerList.lastPayment")}{" "}
-                                                {days === null
-                                                    ? t("customerList.never")
-                                                    : `${days} ${t("customerList.daysAgo")}`}
-                                            </p>
-                                            {reminderDays !== null && (
-                                                <p className="text-on-surface-variant text-xs flex items-center gap-1">
-                                                    <span className="material-symbols-outlined text-xs">mark_chat_read</span>
-                                                    {t("customerList.lastReminder")}{" "}
-                                                    {reminderDays === 0
-                                                        ? t("customerList.today")
-                                                        : `${reminderDays} ${t("customerList.daysAgo")}`}
-                                                </p>
-                                            )}
+                                        </div>
+                                        <div className="flex flex-col md:items-end flex-1">
+                                            <p className="text-sm text-on-surface-variant font-medium">{t("customerList.totalDue")}</p>
+                                            <p className={`text-2xl font-black tracking-tight ${dueAmountColor(priority)}`}>৳ {formatMoney(customer.currentBalance)}</p>
+                                        </div>
+                                        <div className="flex gap-2 w-full md:w-auto">
+                                            <button onClick={() => openTxForm("BAKI", customer.customerId)} className="flex-1 md:flex-none bg-surface-container-highest text-on-surface-variant px-5 py-4 rounded-xl font-bold flex items-center justify-center gap-2 group-hover:bg-primary group-hover:text-white transition-colors"><span className="material-symbols-outlined">add_circle</span>{t("customerList.addBaki")}</button>
+                                            <button onClick={() => openTxForm("JOMA", customer.customerId)} className="flex-1 md:flex-none bg-primary text-white px-5 py-4 rounded-xl font-bold flex items-center justify-center gap-2 hover:bg-primary/90 transition-colors"><span className="material-symbols-outlined">payments</span>{t("customerList.collectPayment")}</button>
+                                            <button onClick={() => handleOpenReminder(customer.customerId)} className="bg-[#25D366] text-white p-4 rounded-xl flex items-center justify-center hover:shadow-lg hover:scale-105 transition-all" title={t("customerList.whatsappReminder")}><svg className="w-6 h-6 fill-current" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L0 24l6.335-1.662c1.72.937 3.659 1.432 5.628 1.433h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z" /></svg></button>
                                         </div>
                                     </div>
+                                );
+                            })
+                        )}
+                    </div>
+                )}
 
-                                    {/* Middle: Due amount */}
-                                    <div className="flex flex-col md:items-end flex-1">
-                                        <p className="text-sm text-on-surface-variant font-medium">
-                                            {t("customerList.totalDue")}
-                                        </p>
-                                        <p
-                                            className={`text-2xl font-black tracking-tight ${dueAmountColor(priority)}`}
-                                        >
-                                            ৳ {formatMoney(customer.currentBalance)}
-                                        </p>
+                {/* Customer cards — No Due tab */}
+                {customerTab === "noDue" && (
+                    <div className="space-y-4">
+                        {isLoading ? (
+                            <div className="flex items-center justify-center py-20">
+                                <span className="material-symbols-outlined animate-spin text-secondary">progress_activity</span>
+                            </div>
+                        ) : noDueCustomers.length === 0 ? (
+                            <div className="rounded-2xl bg-surface-container-lowest p-12 text-center text-on-surface-variant">
+                                {locale?.startsWith("bn") ? "কোনো কাস্টমার পাওয়া যায়নি" : "No customers found"}
+                            </div>
+                        ) : (
+                            noDueCustomers.map((customer) => (
+                                <div key={customer.id} className="bg-surface-container-lowest p-5 rounded-2xl flex flex-col md:flex-row justify-between items-start md:items-center gap-4 shadow-sm hover:shadow-md transition-shadow cursor-pointer group" onClick={() => loadLedger(customer.id)}>
+                                    <div className="flex items-center gap-4 flex-1">
+                                        <div className="w-14 h-14 rounded-full bg-secondary-container flex items-center justify-center text-on-secondary-container text-lg font-bold shrink-0">{customer.name.charAt(0).toUpperCase()}</div>
+                                        <div className="space-y-1">
+                                            <h5 className="text-lg font-bold text-on-surface">{customer.name}</h5>
+                                            {customer.phone && <p className="text-on-surface-variant text-sm flex items-center gap-1"><span className="material-symbols-outlined text-xs">phone</span>{customer.phone}</p>}
+                                            {customer.address && <p className="text-on-surface-variant text-xs flex items-center gap-1"><span className="material-symbols-outlined text-xs">location_on</span>{customer.address}</p>}
+                                            {customer.lastTransactionAt && <p className="text-on-surface-variant text-xs flex items-center gap-1"><span className="material-symbols-outlined text-xs">schedule</span>{new Date(customer.lastTransactionAt).toLocaleDateString(loc, { day: "numeric", month: "short", year: "numeric" })}</p>}
+                                        </div>
                                     </div>
-
-                                    {/* Right: Actions */}
-                                    <div className="flex gap-2 w-full md:w-auto">
-                                        <button
-                                            onClick={() => openTxForm("BAKI", customer.customerId)}
-                                            className="flex-1 md:flex-none bg-surface-container-highest text-on-surface-variant px-5 py-4 rounded-xl font-bold flex items-center justify-center gap-2 group-hover:bg-primary group-hover:text-white transition-colors"
-                                        >
-                                            <span className="material-symbols-outlined">add_circle</span>
-                                            {t("customerList.addBaki")}
-                                        </button>
-                                        <button
-                                            onClick={() => openTxForm("JOMA", customer.customerId)}
-                                            className="flex-1 md:flex-none bg-primary text-white px-5 py-4 rounded-xl font-bold flex items-center justify-center gap-2 hover:bg-primary/90 transition-colors"
-                                        >
-                                            <span className="material-symbols-outlined">payments</span>
-                                            {t("customerList.collectPayment")}
-                                        </button>
-                                        <button
-                                            onClick={() => handleOpenReminder(customer.customerId)}
-                                            className="bg-[#25D366] text-white p-4 rounded-xl flex items-center justify-center hover:shadow-lg hover:scale-105 transition-all"
-                                            title={t("customerList.whatsappReminder")}
-                                        >
-                                            <svg className="w-6 h-6 fill-current" viewBox="0 0 24 24">
-                                                <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L0 24l6.335-1.662c1.72.937 3.659 1.432 5.628 1.433h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z" />
-                                            </svg>
-                                        </button>
+                                    <div className="flex items-center gap-2">
+                                        <span className="text-xs px-3 py-1 rounded-full bg-secondary-container text-on-secondary-container font-bold">
+                                            {locale?.startsWith("bn") ? "✓ বাকি পরিষ্কার" : "✓ Clear"}
+                                        </span>
+                                        <span className="material-symbols-outlined text-on-surface-variant group-hover:text-secondary transition-colors">chevron_right</span>
                                     </div>
                                 </div>
-                            );
-                        })
-                    )}
-                </div>
+                            ))
+                        )}
+                    </div>
+                )}
             </section>
 
             {/* ── Transaction Form Overlay ── */}

@@ -1,8 +1,9 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useLocale, useTranslations } from "next-intl";
 import { cancelSale, listSales } from "@/lib/saleApi";
+import InvoicePreviewModal from "@/components/sales/InvoicePreviewModal";
 import type { Sale, PaymentMethod, PaymentStatus } from "@/types/sale";
 
 function resolveLocale(locale?: string): string {
@@ -29,6 +30,8 @@ const STATUS_BADGE: Record<string, { label: string; cls: string }> = {
     CANCELLED: { label: "Cancelled", cls: "bg-red-100 text-red-800" },
 };
 
+type PayFilter = "ALL" | "CASH" | "CREDIT";
+
 export default function SalesHistoryWorkspace({ businessId }: { businessId: string }) {
     const t = useTranslations("shop.sales.history");
     const locale = useLocale();
@@ -42,15 +45,28 @@ export default function SalesHistoryWorkspace({ businessId }: { businessId: stri
     const [isLoading, setIsLoading] = useState(true);
     const [toast, setToast] = useState<string | null>(null);
 
+    // Search & filter state
+    const [searchQuery, setSearchQuery] = useState("");
+    const [payFilter, setPayFilter] = useState<PayFilter>("ALL");
+    const searchTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+
     // Cancel overlay state
     const [cancelTarget, setCancelTarget] = useState<Sale | null>(null);
     const [cancelReason, setCancelReason] = useState("");
     const [isCancelling, setIsCancelling] = useState(false);
 
+    // Invoice preview state
+    const [previewSale, setPreviewSale] = useState<Sale | null>(null);
+
     const loadSales = useCallback(async () => {
         setIsLoading(true);
         try {
-            const result = await listSales(businessId, { page, size: PAGE_SIZE });
+            const result = await listSales(businessId, {
+                page,
+                size: PAGE_SIZE,
+                search: searchQuery || undefined,
+                paymentMethod: payFilter !== "ALL" ? payFilter : undefined,
+            });
             setSales(result.content);
             setTotalPages(result.totalPages);
             setTotalElements(result.totalElements);
@@ -59,7 +75,7 @@ export default function SalesHistoryWorkspace({ businessId }: { businessId: stri
         } finally {
             setIsLoading(false);
         }
-    }, [businessId, page, t]);
+    }, [businessId, page, searchQuery, payFilter, t]);
 
     useEffect(() => {
         void loadSales();
@@ -70,6 +86,20 @@ export default function SalesHistoryWorkspace({ businessId }: { businessId: stri
         const timer = setTimeout(() => setToast(null), 3500);
         return () => clearTimeout(timer);
     }, [toast]);
+
+    // Debounced search
+    function handleSearchChange(value: string) {
+        if (searchTimer.current) clearTimeout(searchTimer.current);
+        searchTimer.current = setTimeout(() => {
+            setSearchQuery(value);
+            setPage(0);
+        }, 400);
+    }
+
+    function handlePayFilter(filter: PayFilter) {
+        setPayFilter(filter);
+        setPage(0);
+    }
 
     function formatMoney(value: number | null | undefined): string {
         return moneyFmt.format(value ?? 0);
@@ -123,6 +153,12 @@ export default function SalesHistoryWorkspace({ businessId }: { businessId: stri
     const canGoPrev = page > 0;
     const canGoNext = page < totalPages - 1;
 
+    const PAY_FILTERS: { key: PayFilter; label: string }[] = [
+        { key: "ALL", label: t("filters.all", { defaultValue: "All" }) },
+        { key: "CASH", label: t("filters.cash", { defaultValue: "Cash" }) },
+        { key: "CREDIT", label: t("filters.credit", { defaultValue: "Credit" }) },
+    ];
+
     return (
         <div className="space-y-6">
             {toast && (
@@ -139,6 +175,34 @@ export default function SalesHistoryWorkspace({ businessId }: { businessId: stri
                     {t("subtitle", { defaultValue: "View past sales and cancel if needed." })}
                 </p>
             </header>
+
+            {/* Search & Filters */}
+            <section className="space-y-3">
+                <div className="relative">
+                    <span className="absolute left-4 top-1/2 -translate-y-1/2 text-on-surface-variant text-sm">🔍</span>
+                    <input
+                        type="text"
+                        placeholder={t("search.placeholder", { defaultValue: "Search invoice, customer, phone..." })}
+                        onChange={(e) => handleSearchChange(e.target.value)}
+                        className="w-full rounded-xl bg-surface-container-lowest py-3 pl-10 pr-4 text-sm shadow-sm placeholder:text-on-surface-variant/60 focus:outline-none focus:ring-2 focus:ring-primary/30"
+                    />
+                </div>
+                <div className="flex flex-wrap gap-2">
+                    {PAY_FILTERS.map((f) => (
+                        <button
+                            key={f.key}
+                            type="button"
+                            onClick={() => handlePayFilter(f.key)}
+                            className={`rounded-full px-4 py-1.5 text-xs font-bold transition-colors ${payFilter === f.key
+                                ? "bg-primary text-white"
+                                : "bg-surface-container text-on-surface-variant hover:bg-surface-container-high"
+                                }`}
+                        >
+                            {f.label}
+                        </button>
+                    ))}
+                </div>
+            </section>
 
             {/* Stats */}
             <section className="grid grid-cols-2 gap-4 lg:grid-cols-4">
@@ -160,6 +224,7 @@ export default function SalesHistoryWorkspace({ businessId }: { businessId: stri
                             <tr>
                                 <th className="px-5 py-3">{t("table.date", { defaultValue: "Date" })}</th>
                                 <th className="px-5 py-3">{t("table.invoice", { defaultValue: "Invoice" })}</th>
+                                <th className="px-5 py-3">{t("table.customer", { defaultValue: "Customer" })}</th>
                                 <th className="px-5 py-3">{t("table.total", { defaultValue: "Total" })}</th>
                                 <th className="px-5 py-3">{t("table.payment", { defaultValue: "Payment" })}</th>
                                 <th className="px-5 py-3">{t("table.status", { defaultValue: "Status" })}</th>
@@ -170,13 +235,13 @@ export default function SalesHistoryWorkspace({ businessId }: { businessId: stri
                         <tbody className="divide-y divide-surface-container">
                             {isLoading ? (
                                 <tr>
-                                    <td className="px-5 py-8 text-center text-on-surface-variant" colSpan={7}>
+                                    <td className="px-5 py-8 text-center text-on-surface-variant" colSpan={8}>
                                         Loading...
                                     </td>
                                 </tr>
                             ) : sales.length === 0 ? (
                                 <tr>
-                                    <td className="px-5 py-8 text-center text-on-surface-variant" colSpan={7}>
+                                    <td className="px-5 py-8 text-center text-on-surface-variant" colSpan={8}>
                                         {t("table.empty", { defaultValue: "No sales found." })}
                                     </td>
                                 </tr>
@@ -195,6 +260,18 @@ export default function SalesHistoryWorkspace({ businessId }: { businessId: stri
                                             <td className="px-5 py-3 font-mono text-xs">
                                                 {sale.invoiceNumber}
                                             </td>
+                                            <td className="px-5 py-3 text-xs">
+                                                {sale.customerName ? (
+                                                    <div>
+                                                        <span className="font-medium text-primary">{sale.customerName}</span>
+                                                        {sale.customerPhone && (
+                                                            <span className="block text-[10px] text-on-surface-variant">{sale.customerPhone}</span>
+                                                        )}
+                                                    </div>
+                                                ) : (
+                                                    <span className="text-on-surface-variant">🚶 Walk-in</span>
+                                                )}
+                                            </td>
                                             <td className="px-5 py-3 font-bold">৳{formatMoney(sale.totalAmount)}</td>
                                             <td className="px-5 py-3">{getPaymentLabel(sale.paymentMethod)}</td>
                                             <td className="px-5 py-3">
@@ -208,19 +285,25 @@ export default function SalesHistoryWorkspace({ businessId }: { businessId: stri
                                                 {sale.items?.length ?? 0}
                                             </td>
                                             <td className="px-5 py-3">
-                                                {!isCancelled ? (
+                                                <div className="flex items-center gap-2">
                                                     <button
                                                         type="button"
-                                                        onClick={() => setCancelTarget(sale)}
-                                                        className="rounded-lg px-3 py-1 text-xs font-bold text-red-600 hover:bg-red-50 transition-colors"
+                                                        onClick={() => setPreviewSale(sale)}
+                                                        className="rounded-lg px-2 py-1 text-xs font-bold text-primary hover:bg-primary/10 transition-colors"
+                                                        title="View Invoice"
                                                     >
-                                                        {t("actions.cancel", { defaultValue: "Cancel" })}
+                                                        📄
                                                     </button>
-                                                ) : (
-                                                    <span className="text-xs font-bold text-on-surface-variant">
-                                                        {t("actions.cancelled", { defaultValue: "Cancelled" })}
-                                                    </span>
-                                                )}
+                                                    {!isCancelled && (
+                                                        <button
+                                                            type="button"
+                                                            onClick={() => setCancelTarget(sale)}
+                                                            className="rounded-lg px-2 py-1 text-xs font-bold text-red-600 hover:bg-red-50 transition-colors"
+                                                        >
+                                                            ✕
+                                                        </button>
+                                                    )}
+                                                </div>
                                             </td>
                                         </tr>
                                     );
@@ -260,6 +343,15 @@ export default function SalesHistoryWorkspace({ businessId }: { businessId: stri
                     </div>
                 )}
             </section>
+
+            {/* Invoice Preview Modal */}
+            {previewSale && (
+                <InvoicePreviewModal
+                    businessId={businessId}
+                    sale={previewSale}
+                    onClose={() => setPreviewSale(null)}
+                />
+            )}
 
             {/* Cancel Sale Confirmation Overlay */}
             {cancelTarget && (

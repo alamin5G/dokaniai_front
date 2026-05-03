@@ -80,6 +80,8 @@ export interface Sale {
     id: string;
     businessId: string;
     customerId: string | null;
+    customerName: string | null;
+    customerPhone: string | null;
     invoiceNumber: string;
     subtotal: number;
     totalDiscount: number;

@@ -27,6 +27,8 @@ function unwrap<T>(response: { data: ApiSuccess<T> }): T {
 export interface ListSalesParams {
     page?: number;
     size?: number;
+    search?: string;
+    paymentMethod?: string;
     startDate?: string;
     endDate?: string;
     customerId?: string;

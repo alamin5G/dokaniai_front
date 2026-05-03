@@ -13,6 +13,7 @@ import type {
     CustomerUpdateRequest,
     CustomerDueSummary,
     CustomerLedgerEntry,
+    CustomerUnifiedHistory,
     DueLedgerResponse,
     AgedDuesResponse,
     WhatsAppLink,
@@ -153,6 +154,18 @@ export async function getUnifiedCustomerLedger(
         `/businesses/${businessId}/due-transactions/customer/${customerId}/unified-ledger`
     );
     return unwrap<CustomerLedgerEntry[]>(data);
+}
+
+// ─── Unified Customer History ────────────────────────────
+
+export async function getCustomerUnifiedHistory(
+    businessId: string,
+    customerId: string
+): Promise<CustomerUnifiedHistory> {
+    const { data } = await apiClient.get(
+        `/businesses/${businessId}/customers/${customerId}/unified-history`
+    );
+    return unwrap<CustomerUnifiedHistory>(data);
 }
 
 // ─── Aged Dues ───────────────────────────────────────────
