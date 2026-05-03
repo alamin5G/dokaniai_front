@@ -5122,6 +5122,9 @@
       "paymentPipeline": "পেমেন্ট পাইপলাইন",
       "userGrowth": "ব্যবহারকারী বৃদ্ধি",
       "aiTokenUsage": "এআই টোকেন ব্যবহার",
+      "ticketStatus": "টিকেট স্ট্যাটাস",
+      "subscriptionDistribution": "প্ল্যান বিতরণ",
+      "noData": "কোনো ডেটা নেই",
       "revenueError": "রেভিনিউ চার্ট লোড করা যায়নি",
       "referralHealth": "রেফারেল কোড স্বাস্থ্য"
     },

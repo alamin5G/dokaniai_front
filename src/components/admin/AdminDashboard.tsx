@@ -165,7 +165,10 @@ export default function AdminDashboard() {
                                         data={aiTokenStats}
                                         loading={loadingStates.aiTokens}
                                     />
-                                    <ReferralHealthDonut />
+                                    <ReferralHealthDonut
+                                        referralStats={referralStats}
+                                        loading={loading}
+                                    />
                                 </div>
                             ),
                         },
@@ -175,7 +178,11 @@ export default function AdminDashboard() {
                             icon: <span className="material-symbols-outlined text-sm">feed</span>,
                             content: (
                                 <div className="space-y-4">
-                                    <PlatformActivityFeed />
+                                    <PlatformActivityFeed
+                                        notifications={notifications}
+                                        auditSummary={auditSummary}
+                                        loading={loadingStates.activity}
+                                    />
                                     <AuditHighlightsTable
                                         auditSummary={auditSummary}
                                         loading={loading}
@@ -232,12 +239,19 @@ export default function AdminDashboard() {
                             data={aiTokenStats}
                             loading={loadingStates.aiTokens}
                         />
-                        <ReferralHealthDonut />
+                        <ReferralHealthDonut
+                            referralStats={referralStats}
+                            loading={loading}
+                        />
                     </section>
 
                     {/* ─── Bottom Row: Activity + Audit + Quick Actions ─── */}
                     <section className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
-                        <PlatformActivityFeed />
+                        <PlatformActivityFeed
+                            notifications={notifications}
+                            auditSummary={auditSummary}
+                            loading={loadingStates.activity}
+                        />
                         <AuditHighlightsTable
                             auditSummary={auditSummary}
                             loading={loading}

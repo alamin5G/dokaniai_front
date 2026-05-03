@@ -5049,6 +5049,9 @@
       "paymentPipeline": "Payment Pipeline",
       "userGrowth": "User Growth",
       "aiTokenUsage": "AI Token Usage",
+      "ticketStatus": "Ticket Status",
+      "subscriptionDistribution": "Plan Distribution",
+      "noData": "No data available",
       "revenueError": "Revenue chart failed to load",
       "referralHealth": "Referral Code Health"
     },
