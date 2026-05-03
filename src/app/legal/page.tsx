@@ -28,7 +28,7 @@ export default function LegalHubPage() {
                 </div>
 
                 {/* Document Cards */}
-                <div className="grid md:grid-cols-2 gap-8">
+                <div className="grid md:grid-cols-3 gap-8">
                     {/* Terms of Service Card */}
                     <Link
                         href="/legal/terms"
@@ -68,6 +68,30 @@ export default function LegalHubPage() {
                         </h2>
                         <p className="text-on-surface-variant leading-relaxed mb-6">
                             {t("hub.privacyDesc")}
+                        </p>
+                        <span className="inline-flex items-center gap-2 text-primary font-bold text-sm group-hover:gap-3 transition-all">
+                            {t("hub.readMore")}
+                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                            </svg>
+                        </span>
+                    </Link>
+
+                    {/* Payment Policy Card */}
+                    <Link
+                        href="/legal/payment"
+                        className="group bg-surface-container-lowest rounded-3xl p-8 border border-outline-variant/10 hover:shadow-xl hover:translate-y-[-4px] transition-all duration-300"
+                    >
+                        <div className="w-14 h-14 bg-primary/10 rounded-2xl flex items-center justify-center mb-6">
+                            <svg className="w-7 h-7 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
+                            </svg>
+                        </div>
+                        <h2 className="text-xl font-bold text-on-surface font-headline mb-3 group-hover:text-primary transition-colors">
+                            {t("hub.paymentTitle")}
+                        </h2>
+                        <p className="text-on-surface-variant leading-relaxed mb-6">
+                            {t("hub.paymentDesc")}
                         </p>
                         <span className="inline-flex items-center gap-2 text-primary font-bold text-sm group-hover:gap-3 transition-all">
                             {t("hub.readMore")}

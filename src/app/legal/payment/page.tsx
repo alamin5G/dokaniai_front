@@ -1,7 +1,12 @@
 "use client";
 
 import Link from "next/link";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
+import { useEffect, useState } from "react";
+import axios from "axios";
+import type { Plan } from "@/types/subscription";
+
+const PUBLIC_PLANS_URL = `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:8082/api/v1"}/subscriptions/plans`;
 
 /* ─── Shared sub-components ─── */
 
@@ -72,6 +77,78 @@ function StepCard({ number, title, desc }: { number: string; title: string; desc
 
 export default function PaymentPolicyPage() {
     const t = useTranslations("shop.legal");
+    const s = useTranslations("subscription");
+    const locale = useLocale();
+    const isBn = locale.startsWith("bn");
+
+    /* ─── Dynamic plan data ─── */
+    const [plans, setPlans] = useState<Plan[]>([]);
+    const [plansLoading, setPlansLoading] = useState(true);
+
+    useEffect(() => {
+        let cancelled = false;
+        const loadPlans = async () => {
+            try {
+                const { data } = await axios.get(PUBLIC_PLANS_URL, {
+                    headers: { "Accept-Language": typeof navigator !== "undefined" ? navigator.language : "en" },
+                });
+                if (cancelled) return;
+                const active: Plan[] = (data?.data ?? [])
+                    .filter((p: Plan) => p.isActive)
+                    .sort((a: Plan, b: Plan) => a.tierLevel - b.tierLevel);
+                setPlans(active);
+            } catch {
+                // Silently fail — table will show loading skeleton
+            } finally {
+                if (!cancelled) setPlansLoading(false);
+            }
+        };
+        void loadPlans();
+        return () => { cancelled = true; };
+    }, []);
+
+    function isEnterprisePlan(plan: Plan): boolean {
+        return plan.customPricing === true || plan.name === "ENTERPRISE";
+    }
+
+    function formatBdt(value: number): string {
+        return `৳${new Intl.NumberFormat("bn-BD").format(value)}`;
+    }
+
+    function getPlanPrice(plan: Plan): string {
+        if (isEnterprisePlan(plan)) return s("pricing.customPrice");
+        if (plan.priceBdt === 0) return s("pricing.free");
+        return formatBdt(plan.priceBdt);
+    }
+
+    function getPlanPeriod(plan: Plan): string {
+        if (isEnterprisePlan(plan)) return t("payment.plans.yearly");
+        if (plan.durationDays % 30 === 0 && plan.durationDays < 365) {
+            const months = Math.max(1, Math.round(plan.durationDays / 30));
+            return `${months} ${s("pricing.month")}`;
+        }
+        return `${plan.durationDays} ${isBn ? "দিন" : "days"}`;
+    }
+
+    function getPlanName(plan: Plan): string {
+        return isBn ? plan.displayNameBn : plan.displayNameEn;
+    }
+
+    function getProductsLabel(plan: Plan): string | number {
+        return plan.maxProductsPerBusiness == null || plan.maxProductsPerBusiness === 0
+            ? s("pricing.unlimited")
+            : plan.maxProductsPerBusiness;
+    }
+
+    function getAiLabel(plan: Plan): string | number {
+        return plan.aiQueriesPerDay == null || plan.aiQueriesPerDay === 0
+            ? s("pricing.unlimited")
+            : plan.aiQueriesPerDay;
+    }
+
+    function getBizLabel(plan: Plan): string | number {
+        return plan.maxBusinesses === 0 ? "∞" : plan.maxBusinesses;
+    }
 
     return (
         <div className="min-h-screen bg-background text-on-background font-body selection:bg-primary-fixed overflow-x-hidden">
@@ -158,7 +235,7 @@ export default function PaymentPolicyPage() {
                     <Para>{t("payment.general.system.desc")}</Para>
 
                     <SubTitle>{t("payment.general.plans.title")}</SubTitle>
-                    {/* Plan Table */}
+                    {/* Plan Table — Dynamic from API */}
                     <div className="overflow-x-auto rounded-xl border border-black/10">
                         <table className="w-full text-sm">
                             <thead>
@@ -172,23 +249,38 @@ export default function PaymentPolicyPage() {
                                 </tr>
                             </thead>
                             <tbody className="divide-y divide-black/5">
-                                {[
-                                    { plan: "payment.plans.ft1", price: "৳0", period: "payment.plans.ft1Period", biz: "1", prod: "10", ai: "5" },
-                                    { plan: "payment.plans.ft2", price: "৳0", period: "payment.plans.ft2Period", biz: "2", prod: "20", ai: "5" },
-                                    { plan: "payment.plans.basic", price: "৳149", period: "payment.plans.monthly", biz: "1", prod: "100", ai: "25" },
-                                    { plan: "payment.plans.pro", price: "৳399", period: "payment.plans.monthly", biz: "3", prod: "200", ai: "75" },
-                                    { plan: "payment.plans.plus", price: "৳899", period: "payment.plans.monthly", biz: "7", prod: "payment.plans.unlimited", ai: "300" },
-                                    { plan: "payment.plans.enterprise", price: "payment.plans.custom", period: "payment.plans.yearly", biz: "∞", prod: "∞", ai: "∞" },
-                                ].map((row, i) => (
-                                    <tr key={i} className={i % 2 === 0 ? "bg-white" : "bg-primary/[0.02]"}>
-                                        <td className="p-3 font-semibold text-on-surface">{t(row.plan)}</td>
-                                        <td className="p-3 text-on-surface-variant">{row.price}</td>
-                                        <td className="p-3 text-on-surface-variant">{t(row.period)}</td>
-                                        <td className="p-3 text-center text-on-surface-variant">{row.biz}</td>
-                                        <td className="p-3 text-center text-on-surface-variant">{row.prod}</td>
-                                        <td className="p-3 text-center text-on-surface-variant">{row.ai}</td>
+                                {plansLoading ? (
+                                    /* Loading skeleton */
+                                    Array.from({ length: 6 }).map((_, i) => (
+                                        <tr key={`skeleton-${i}`} className={i % 2 === 0 ? "bg-white" : "bg-primary/[0.02]"}>
+                                            <td className="p-3"><div className="h-4 bg-primary/10 rounded animate-pulse w-24" /></td>
+                                            <td className="p-3"><div className="h-4 bg-primary/10 rounded animate-pulse w-16" /></td>
+                                            <td className="p-3"><div className="h-4 bg-primary/10 rounded animate-pulse w-14" /></td>
+                                            <td className="p-3 text-center"><div className="h-4 bg-primary/10 rounded animate-pulse w-8 mx-auto" /></td>
+                                            <td className="p-3 text-center"><div className="h-4 bg-primary/10 rounded animate-pulse w-10 mx-auto" /></td>
+                                            <td className="p-3 text-center"><div className="h-4 bg-primary/10 rounded animate-pulse w-8 mx-auto" /></td>
+                                        </tr>
+                                    ))
+                                ) : plans.length > 0 ? (
+                                    /* Dynamic plan rows from API */
+                                    plans.map((plan, i) => (
+                                        <tr key={plan.id} className={i % 2 === 0 ? "bg-white" : "bg-primary/[0.02]"}>
+                                            <td className="p-3 font-semibold text-on-surface">{getPlanName(plan)}</td>
+                                            <td className="p-3 text-on-surface-variant">{getPlanPrice(plan)}</td>
+                                            <td className="p-3 text-on-surface-variant">{getPlanPeriod(plan)}</td>
+                                            <td className="p-3 text-center text-on-surface-variant">{getBizLabel(plan)}</td>
+                                            <td className="p-3 text-center text-on-surface-variant">{getProductsLabel(plan)}</td>
+                                            <td className="p-3 text-center text-on-surface-variant">{getAiLabel(plan)}</td>
+                                        </tr>
+                                    ))
+                                ) : (
+                                    /* Fallback: no plans loaded */
+                                    <tr>
+                                        <td colSpan={6} className="p-6 text-center text-on-surface-variant text-sm">
+                                            {isBn ? "প্ল্যান তথ্য লোড করা যায়নি। দয়া করে পরে আবার চেষ্টা করুন।" : "Could not load plan data. Please try again later."}
+                                        </td>
                                     </tr>
-                                ))}
+                                )}
                             </tbody>
                         </table>
                     </div>
@@ -199,6 +291,10 @@ export default function PaymentPolicyPage() {
                         t("payment.general.plans.note3"),
                         t("payment.general.plans.note4"),
                     ]} />
+
+                    <InfoBox variant="warning">
+                        <p className="text-sm">{t("payment.general.plans.dynamicPricing")}</p>
+                    </InfoBox>
 
                     {/* 2. Payment Methods */}
                     <SectionTitle>{t("payment.methods.title")}</SectionTitle>
@@ -373,6 +469,21 @@ export default function PaymentPolicyPage() {
                         t("payment.invoice.tax.p1"),
                         t("payment.invoice.tax.p2"),
                         t("payment.invoice.tax.p3"),
+                    ]} />
+
+                    <SubTitle>{t("payment.invoice.history.title")}</SubTitle>
+                    <BulletList items={[
+                        t("payment.invoice.history.p1"),
+                        t("payment.invoice.history.p2"),
+                        t("payment.invoice.history.p3"),
+                        t("payment.invoice.history.p4"),
+                    ]} />
+
+                    <SubTitle>{t("payment.invoice.pdf.title")}</SubTitle>
+                    <BulletList items={[
+                        t("payment.invoice.pdf.p1"),
+                        t("payment.invoice.pdf.p2"),
+                        t("payment.invoice.pdf.p3"),
                     ]} />
 
                     {/* ═══════ PART 2: REFUND POLICY ═══════ */}

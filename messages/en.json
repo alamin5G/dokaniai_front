@@ -2217,6 +2217,8 @@
         "copyright": "All rights reserved."
       },
       "hub": {
+        "paymentTitle": "Payment & Refund Policy",
+        "paymentDesc": "Subscription plans, billing cycles, payment methods, refund eligibility, invoices, and billing history.",
         "termsTitle": "Terms of Service",
         "termsDesc": "Read our terms of service including account management, subscription details, AI features, liability, and dispute resolution.",
         "privacyTitle": "Privacy Policy",
@@ -2635,6 +2637,7 @@
             "title": "1.2 Subscription Plans",
             "note1": "Free Trial plans are available once per device and phone number.",
             "note2": "All paid plans are billed monthly unless stated otherwise.",
+            "dynamicPricing": "⚠️ Prices shown above are subject to change. Admin may update plan pricing in real-time. The price at the time of payment confirmation will apply.",
             "note3": "AI command limits reset daily at 12:00 AM (Bangladesh Time).",
             "note4": "Enterprise plan requires custom contract — contact support@dokaniai.com."
           }
