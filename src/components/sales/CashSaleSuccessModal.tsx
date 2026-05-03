@@ -91,9 +91,9 @@ export default function CashSaleSuccessModal({
             >
                 {/* ── Success Header ── */}
                 <div className="mb-4 text-center">
-                    <div className="mx-auto mb-2 flex h-14 w-14 items-center justify-center rounded-full bg-green-100">
+                    <div className="mx-auto mb-2 flex h-14 w-14 items-center justify-center rounded-full bg-[#e6e9e5]">
                         <svg
-                            className="h-8 w-8 text-green-600"
+                            className="h-8 w-8 text-[#276a52]"
                             fill="none"
                             viewBox="0 0 24 24"
                             stroke="currentColor"
@@ -113,7 +113,7 @@ export default function CashSaleSuccessModal({
                         ইনভয়েস: {result.invoiceNumber}
                     </p>
                     {customerName && (
-                        <p className="mt-0.5 text-xs text-green-700 font-medium">
+                        <p className="mt-0.5 text-xs text-[#00503a] font-medium">
                             🧑 {customerName}
                         </p>
                     )}
@@ -139,7 +139,7 @@ export default function CashSaleSuccessModal({
                     <Row
                         label="লাভ"
                         value={formatTk(result.profit)}
-                        className={result.profit >= 0 ? "text-green-700" : "text-red-600"}
+                        className={result.profit >= 0 ? "text-[#00503a]" : "text-red-600"}
                     />
                 </div>
 
@@ -202,7 +202,7 @@ export default function CashSaleSuccessModal({
                 {/* ── Close Button ── */}
                 <button
                     onClick={handleClose}
-                    className="mt-2 w-full rounded-xl bg-green-600 py-2.5 text-sm font-semibold text-white transition hover:bg-green-700 active:scale-[0.98]"
+                    className="mt-2 w-full rounded-xl bg-[#00503a] py-2.5 text-sm font-semibold text-white transition hover:bg-[#003727] active:scale-[0.98]"
                 >
                     ঠিক আছে
                 </button>

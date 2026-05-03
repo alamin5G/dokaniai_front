@@ -172,7 +172,7 @@ export default function CreditSaleSuccessModal({
                     <Row
                         label="লাভ"
                         value={formatTk(result.profit)}
-                        className={result.profit >= 0 ? "text-green-700" : "text-red-600"}
+                        className={result.profit >= 0 ? "text-[#00503a]" : "text-red-600"}
                     />
                 </div>
 

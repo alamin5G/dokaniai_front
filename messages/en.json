@@ -2809,6 +2809,19 @@
             "p1": "All prices include applicable VAT.",
             "p2": "DokaniAI is registered under Bangladesh tax laws.",
             "p3": "Tax invoices available upon request for business accounting."
+          },
+          "history": {
+            "title": "5.4 Billing History & Past Payments",
+            "p1": "You can view all past payments under Account → Subscription → Billing History.",
+            "p2": "Each entry shows: plan name, amount, payment date, MFS provider, and status (verified / pending / failed).",
+            "p3": "You can download the invoice for any completed payment as a PDF file.",
+            "p4": "Billing history is retained for the lifetime of your account."
+          },
+          "pdf": {
+            "title": "5.5 PDF Invoice Download",
+            "p1": "Every verified payment generates a downloadable PDF invoice.",
+            "p2": "PDF invoices include: business details, plan information, payment breakdown, and DokaniAI merchant seal.",
+            "p3": "PDF invoices are suitable for business accounting and tax filing purposes."
           }
         },
         "refund": {
