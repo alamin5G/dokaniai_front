@@ -1,7 +1,9 @@
 "use client";
 
 import ReferralCodeCard from "@/components/account/ReferralCodeCard";
+import { PlanFeatureList } from "@/components/subscription/PlanFeatureList";
 import { FormInput } from "@/components/ui/FormPrimitives";
+import { getCurrentSubscription } from "@/lib/subscriptionApi";
 import {
   changePassword,
   getCurrentUser,
@@ -11,11 +13,14 @@ import {
   verifyEmailChange,
   verifyPhoneChange,
 } from "@/lib/userAccountApi";
-import { useTranslations } from "next-intl";
+import type { Subscription } from "@/types/subscription";
+import { useLocale, useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
 
 export default function AccountProfilePage() {
   const t = useTranslations("profilePage");
+  const locale = useLocale();
+  const isBn = locale.startsWith("bn");
 
   const [loading, setLoading] = useState(true);
   const [savingProfile, setSavingProfile] = useState(false);
@@ -30,6 +35,7 @@ export default function AccountProfilePage() {
   const [phone, setPhone] = useState("");
   const [role, setRole] = useState("");
   const [status, setStatus] = useState("");
+  const [subscription, setSubscription] = useState<Subscription | null>(null);
 
   const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
@@ -47,12 +53,16 @@ export default function AccountProfilePage() {
     const load = async () => {
       setLoading(true);
       try {
-        const user = await getCurrentUser();
+        const [user, currentSubscription] = await Promise.all([
+          getCurrentUser(),
+          getCurrentSubscription().catch(() => null),
+        ]);
         setName(user.name ?? "");
         setEmail(user.email ?? "");
         setPhone(user.phone ?? "");
         setRole(user.role ?? "");
         setStatus(user.status ?? "");
+        setSubscription(currentSubscription);
       } catch (e) {
         setError(e instanceof Error ? e.message : "Profile load failed");
       } finally {
@@ -211,6 +221,25 @@ export default function AccountProfilePage() {
 
       {notice ? <div className="rounded-xl bg-emerald-50 px-4 py-3 text-emerald-700">{notice}</div> : null}
       {error ? <div className="rounded-xl bg-rose-50 px-4 py-3 text-rose-700">{error}</div> : null}
+
+      {subscription?.plan ? (
+        <section className="rounded-[1.5rem] border border-outline-variant/30 bg-surface p-6 space-y-4">
+          <div className="flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between">
+            <div>
+              <h2 className="text-lg font-semibold text-on-surface">
+                {isBn ? "আপনার সাবস্ক্রিপশন ফিচার" : "Your Subscription Features"}
+              </h2>
+              <p className="text-sm text-on-surface-variant">
+                {isBn ? subscription.plan.displayNameBn : subscription.plan.displayNameEn}
+              </p>
+            </div>
+            <span className="w-fit rounded-full bg-primary/10 px-3 py-1 text-xs font-bold text-primary">
+              {subscription.billingCycle === "ANNUAL" ? (isBn ? "বার্ষিক" : "Annual") : (isBn ? "মাসিক" : "Monthly")}
+            </span>
+          </div>
+          <PlanFeatureList plan={subscription.plan} isBn={isBn} maxItems={8} />
+        </section>
+      ) : null}
 
       <section className="rounded-[1.5rem] border border-outline-variant/30 bg-surface p-6 space-y-4">
         <h2 className="text-lg font-semibold text-on-surface">{t("basicInfo")}</h2>

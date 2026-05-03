@@ -26,6 +26,8 @@ export interface Plan {
   priceBdt: number;
   annualPriceBdt: number | null;
   durationDays: number;
+  gracePeriodDays?: number | null;
+  dataRetentionDays?: number | null;
   maxBusinesses: number;
   maxProductsPerBusiness: number | null;
   aiQueriesPerDay: number | null;
@@ -33,24 +35,54 @@ export interface Plan {
   conversationHistoryTurns: number;
   maxQueryCharacters: number;
   features: Record<string, boolean> | null;
+  featureConfigs?: PlanFeatureConfig[];
   isTrial: boolean;
   isActive: boolean;
   customPricing?: boolean;
   highlight?: boolean;
   badge?: string | null;
+  createdAt?: string;
+  updatedAt?: string;
+}
+
+export type FeatureType = "BOOLEAN" | "LIMIT" | "QUOTA";
+export type QuotaResetPeriod = "DAILY" | "WEEKLY" | "MONTHLY" | "NEVER";
+
+export interface PlanFeatureConfig {
+  planFeatureId: string | null;
+  planId: string;
+  planName: string | null;
+  tierLevel: number | null;
+  featureId: string;
+  featureKey: string;
+  nameEn: string | null;
+  nameBn: string | null;
+  category: string | null;
+  type: FeatureType;
+  enabled: boolean;
+  limitValue: number | null;
+  resetPeriod: QuotaResetPeriod | null;
+  publicFeature: boolean | null;
+  activeFeature: boolean | null;
+  displayOrder: number | null;
 }
 
 export interface Subscription {
   id: string;
   userId: string;
   planId: string;
+  plan?: Plan | null;
   status: SubscriptionStatus;
   currentPeriodStart: string;
   currentPeriodEnd: string;
+  cancelledAt?: string | null;
   cancelAtPeriodEnd: boolean;
   billingCycle?: "MONTHLY" | "ANNUAL";
   downgradeScheduledTo?: string | null;
   downgradeScheduledAt?: string | null;
+  remainingDays?: number;
+  createdAt?: string;
+  updatedAt?: string;
 }
 
 export interface PlanLimits {

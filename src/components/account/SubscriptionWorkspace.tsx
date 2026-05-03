@@ -1,6 +1,7 @@
 "use client";
 
 import ReferralCodeCard from "@/components/account/ReferralCodeCard";
+import { PlanFeatureList } from "@/components/subscription/PlanFeatureList";
 import { FormInput } from "@/components/ui/FormPrimitives";
 import {
   applyCoupon,
@@ -32,7 +33,6 @@ import type {
   PublicCoupon,
   ReferralStatus,
   Subscription,
-  SubscriptionStatus,
 } from "@/types/subscription";
 import { useLocale } from "next-intl";
 import { useCallback, useEffect, useMemo, useState } from "react";
@@ -817,40 +817,8 @@ export default function SubscriptionPage() {
                       </p>
                     )}
 
-                    {/* Features list */}
-                    <div className="mt-3 space-y-1">
-                      <p className="text-xs text-on-surface-variant flex items-center gap-1.5">
-                        <span className="material-symbols-outlined text-[14px] text-primary">storefront</span>
-                        {plan.maxBusinesses === -1
-                          ? (isBn ? "আনলিমিটেড ব্যবসা" : "Unlimited businesses")
-                          : `${isBn ? "সর্বোচ্চ" : "Up to"} ${plan.maxBusinesses} ${isBn ? "টি ব্যবসা" : "businesses"}`}
-                      </p>
-                      {plan.maxProductsPerBusiness !== null && (
-                        <p className="text-xs text-on-surface-variant flex items-center gap-1.5">
-                          <span className="material-symbols-outlined text-[14px] text-primary">inventory_2</span>
-                          {plan.maxProductsPerBusiness === -1
-                            ? (isBn ? "আনলিমিটেড পণ্য" : "Unlimited products")
-                            : `${isBn ? "প্রতি ব্যবসায়" : "Per business"} ${plan.maxProductsPerBusiness} ${isBn ? "টি পণ্য" : "products"}`}
-                        </p>
-                      )}
-                      {plan.aiQueriesPerDay !== null && (
-                        <p className="text-xs text-on-surface-variant flex items-center gap-1.5">
-                          <span className="material-symbols-outlined text-[14px] text-primary">psychology</span>
-                          {plan.aiQueriesPerDay === -1
-                            ? (isBn ? "আনলিমিটেড AI কুয়েরি" : "Unlimited AI queries")
-                            : `${plan.aiQueriesPerDay} ${isBn ? "AI কুয়েরি/দিন" : "AI queries/day"}`}
-                        </p>
-                      )}
-                      {plan.features && Object.entries(plan.features)
-                        .filter(([key]) => plan.features![key])
-                        .slice(0, 3)
-                        .map(([key]) => (
-                          <p key={key} className="text-xs text-on-surface-variant flex items-center gap-1.5">
-                            <span className="material-symbols-outlined text-[14px] text-primary">check</span>
-                            {key.replace(/([A-Z])/g, " $1").trim()}
-                          </p>
-                        ))
-                      }
+                    <div className="mt-3">
+                      <PlanFeatureList plan={plan} isBn={isBn} maxItems={4} compact />
                     </div>
                   </button>
                 );

@@ -1,10 +1,12 @@
 "use client";
 
-import { getAvailablePlans, getCurrentSubscription } from "@/lib/subscriptionApi";
+import { getCurrentSubscription } from "@/lib/subscriptionApi";
 import { rememberPendingUpgrade } from "@/lib/authFlow";
+import { getFeatureMatrixRows, getPlanFeatureCell } from "@/lib/planFeatureDisplay";
+import { PlanFeatureList } from "@/components/subscription/PlanFeatureList";
 import type { Plan, Subscription } from "@/types/subscription";
 import { useRouter } from "next/navigation";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { useEffect, useMemo, useState, useSyncExternalStore } from "react";
 import axios from "axios";
 
@@ -13,30 +15,6 @@ const PUBLIC_PLANS_URL = `${process.env.NEXT_PUBLIC_API_URL || "http://localhost
 
 function formatPrice(value: number): string {
   return new Intl.NumberFormat("bn-BD").format(value);
-}
-
-const FEATURE_ALIASES: Record<string, string[]> = {
-  products_sales: ["products_sales"],
-  expense_tracking: ["expense_tracking"],
-  basic_reports: ["basic_reports"],
-  due_management: ["due_management", "dueManagement"],
-  discount_management: ["discount_management", "discountManagement"],
-  voice_entry: ["voice_entry", "voice_input", "voiceInput"],
-  whatsapp_reminder: ["whatsapp_reminder", "whatsappReminder"],
-  advanced_reports: ["advanced_reports", "advanced_analytics", "advancedReports", "advancedAnalytics"],
-  pdf_export: ["pdf_export", "pdfExport"],
-  bulk_import: ["bulk_import", "bulkImport"],
-  priority_support: ["priority_support", "prioritySupport"],
-  data_export: ["data_export", "dataExport"],
-  api_access: ["api_access", "apiAccess"],
-};
-
-function hasFeature(plan: Plan, featureKey: string): boolean {
-  const featureMap = plan.features;
-  if (!featureMap) return false;
-
-  const keys = FEATURE_ALIASES[featureKey] ?? [featureKey];
-  return keys.some((key) => featureMap[key] === true);
 }
 
 type PlanAction = "LOGIN" | "CURRENT" | "UPGRADE" | "DOWNGRADE" | "OFFER_ONLY";
@@ -154,6 +132,8 @@ function hasAccessToken(): boolean {
 export function PricingSection() {
   const t = useTranslations("home.pricing");
   const s = useTranslations("subscription");
+  const locale = useLocale();
+  const isBn = locale.startsWith("bn");
   const router = useRouter();
 
   const [plans, setPlans] = useState<Plan[]>([]);
@@ -223,34 +203,14 @@ export function PricingSection() {
 
   const orderedPlans = useMemo(() => [...plans].sort((a, b) => a.tierLevel - b.tierLevel), [plans]);
 
-  const featureRows = useMemo(
-    () => [
-      { key: "products_sales", label: t("featureMatrix.rows.productsSales") },
-      { key: "expense_tracking", label: t("featureMatrix.rows.expenseTracking") },
-      { key: "basic_reports", label: t("featureMatrix.rows.basicReports") },
-      { key: "due_management", label: t("featureMatrix.rows.dueManagement") },
-      { key: "discount_management", label: t("featureMatrix.rows.discountManagement") },
-      { key: "voice_entry", label: t("featureMatrix.rows.voiceInput") },
-      { key: "text_nlp", label: t("featureMatrix.rows.textNlp") },
-      { key: "whatsapp_reminder", label: t("featureMatrix.rows.whatsappReminder") },
-      { key: "smart_notifications", label: t("featureMatrix.rows.smartNotifications") },
-      { key: "email_support", label: t("featureMatrix.rows.emailSupport") },
-      { key: "advanced_reports", label: t("featureMatrix.rows.advancedReports") },
-      { key: "pdf_export", label: t("featureMatrix.rows.pdfExport") },
-      { key: "bulk_import", label: t("featureMatrix.rows.bulkImport") },
-      { key: "priority_support", label: t("featureMatrix.rows.prioritySupport") },
-      { key: "data_export", label: t("featureMatrix.rows.dataExport") },
-      { key: "api_access", label: t("featureMatrix.rows.apiAccess") },
-    ],
-    [t],
-  );
+  const featureRows = useMemo(() => getFeatureMatrixRows(orderedPlans, isBn), [isBn, orderedPlans]);
 
   const hasAnyAnnualPrice = useMemo(() => plans.some((p) => p.annualPriceBdt != null && !p.isTrial && p.priceBdt > 0), [plans]);
 
   const handlePlanAction = (plan: Plan, action: PlanAction) => {
     if (isEnterprisePlan(plan)) {
       if (typeof window !== "undefined") {
-        window.location.href = getEnterpriseContactHref(s("pricing.enterpriseEmail"), s("pricing.enterpriseEmailSubject"));
+        window.location.assign(getEnterpriseContactHref(s("pricing.enterpriseEmail"), s("pricing.enterpriseEmailSubject")));
       }
       return;
     }
@@ -426,29 +386,7 @@ export function PricingSection() {
                       {t("enterpriseDescription")}
                     </p>
                   ) : (
-                    <ul className="space-y-4">
-                      <li className="flex items-center gap-3 text-sm">
-                        <span className={`material-symbols-outlined ${isHighlighted ? "text-inverse-primary" : "text-primary"} scale-75`}>
-                          check_circle
-                        </span>
-                        {s("pricing.maxBusinesses")}: {plan.maxBusinesses === 0 ? s("pricing.unlimited") : plan.maxBusinesses}
-                      </li>
-                      <li className="flex items-center gap-3 text-sm">
-                        <span className={`material-symbols-outlined ${isHighlighted ? "text-inverse-primary" : "text-primary"} scale-75`}>
-                          check_circle
-                        </span>
-                        {s("pricing.maxProducts")}: {getProductsLabel(plan, s)}
-                      </li>
-                      <li className="flex items-center gap-3 text-sm">
-                        <span
-                          className={`material-symbols-outlined ${isHighlighted ? "text-inverse-primary" : "text-primary"} scale-75`}
-                          style={isHighlighted ? { fontVariationSettings: "'FILL' 1" } : undefined}
-                        >
-                          {isHighlighted ? "auto_awesome" : "check_circle"}
-                        </span>
-                        {s("pricing.aiPerDay")}: {plan.aiQueriesPerDay ?? s("pricing.unlimited")}
-                      </li>
-                    </ul>
+                    <PlanFeatureList plan={plan} isBn={isBn} maxItems={5} compact inverted={isHighlighted} />
                   )}
                 </div>
 
@@ -555,19 +493,11 @@ export function PricingSection() {
                     <td className="px-3 py-2 font-medium">{row.label}</td>
                     {orderedPlans.map((plan) => (
                       <td key={`${row.key}-${plan.id}`} className="px-3 py-2 text-center">
-                        {hasFeature(plan, row.key) ? t("featureMatrix.included") : t("featureMatrix.excluded")}
+                        {getPlanFeatureCell(plan, row.key, isBn)}
                       </td>
                     ))}
                   </tr>
                 ))}
-                <tr className="border-b border-outline-variant/20 last:border-none">
-                  <td className="px-3 py-2 font-medium">{t("featureMatrix.rows.aiQueries")}</td>
-                  {orderedPlans.map((plan) => (
-                    <td key={`ai-${plan.id}`} className="px-3 py-2 text-center">
-                      {plan.aiQueriesPerDay == null ? s("pricing.unlimited") : `${plan.aiQueriesPerDay}/${t("quickReference.days")}`}
-                    </td>
-                  ))}
-                </tr>
               </tbody>
             </table>
           </div>

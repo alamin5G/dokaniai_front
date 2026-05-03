@@ -14,6 +14,7 @@ import {
   getPendingUpgradePlan,
   setRedirectAfterLogin,
 } from "@/lib/authFlow";
+import { PlanFeatureList } from "@/components/subscription/PlanFeatureList";
 import type { AppliedCoupon, MfsType, Plan, ReferralStatus, Subscription } from "@/types/subscription";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useLocale, useTranslations } from "next-intl";
@@ -32,26 +33,6 @@ function formatPrice(value: number, locale: string): string {
 
 function getPlanDisplayName(plan: Plan, isBn: boolean): string {
   return isBn ? plan.displayNameBn : plan.displayNameEn;
-}
-
-function getFeatureList(plan: Plan, isBn: boolean): { icon: string; label: string }[] {
-  const features: { icon: string; label: string }[] = [];
-  if (plan.maxBusinesses > 0) {
-    features.push({ icon: "store", label: isBn ? `সর্বোচ্চ ব্যবসা: ${formatPrice(plan.maxBusinesses, isBn ? "bn-BD" : "en-US")}` : `Max businesses: ${plan.maxBusinesses}` });
-  }
-  if (plan.maxProductsPerBusiness != null) {
-    const val = plan.maxProductsPerBusiness === -1
-      ? (isBn ? "আনলিমিটেড" : "Unlimited")
-      : formatPrice(plan.maxProductsPerBusiness, isBn ? "bn-BD" : "en-US");
-    features.push({ icon: "inventory_2", label: isBn ? `প্রতি ব্যবসায় পণ্য: ${val}` : `Products/business: ${val}` });
-  }
-  if (plan.aiQueriesPerDay != null) {
-    const val = plan.aiQueriesPerDay === -1
-      ? (isBn ? "আনলিমিটেড" : "Unlimited")
-      : formatPrice(plan.aiQueriesPerDay, isBn ? "bn-BD" : "en-US");
-    features.push({ icon: "auto_awesome", label: isBn ? `AI/দিন: ${val}` : `AI/day: ${val}` });
-  }
-  return features;
 }
 
 function SubscriptionUpgradeContent() {
@@ -103,7 +84,6 @@ function SubscriptionUpgradeContent() {
   useEffect(() => {
     if (typeof window === "undefined") { setRedirectChecked(true); return; }
     try {
-      const trxSubmitted = sessionStorage.getItem("payment_trx_submitted");
       const checkoutRaw = sessionStorage.getItem("payment_checkout");
       if (checkoutRaw) {
         const checkout = JSON.parse(checkoutRaw);
@@ -155,7 +135,7 @@ function SubscriptionUpgradeContent() {
     };
     void loadData();
     return () => { cancelled = true; };
-  }, [isBn, searchParams]);
+  }, [isBn, searchParams, t]);
 
   const selectedPlan = useMemo(() => plans.find((p) => p.id === selectedPlanId) ?? null, [plans, selectedPlanId]);
   const currentPlan = useMemo(() => plans.find((p) => p.id === currentSubscription?.planId) ?? null, [plans, currentSubscription?.planId]);
@@ -440,22 +420,7 @@ function SubscriptionUpgradeContent() {
                 <h3 className="text-base font-semibold text-[#191c1a] mb-4">
                   {isBn ? "এই প্ল্যানে যা যা পাবেন:" : "Everything in this plan:"}
                 </h3>
-                <ul className="space-y-3">
-                  {getFeatureList(selectedPlan, isBn).map((feat, i) => (
-                    <li key={i} className="flex items-start gap-3">
-                      <span className="material-symbols-outlined text-[#003727] mt-0.5 text-[20px]" style={{ fontVariationSettings: "'FILL' 1" }}>{feat.icon}</span>
-                      <span className="text-[#404944]">{feat.label}</span>
-                    </li>
-                  ))}
-                  {selectedPlan.features && Object.entries(selectedPlan.features).map(([key, val]) =>
-                    val ? (
-                      <li key={key} className="flex items-start gap-3">
-                        <span className="material-symbols-outlined text-[#003727] mt-0.5 text-[20px]" style={{ fontVariationSettings: "'FILL' 1" }}>check_circle</span>
-                        <span className="text-[#404944]">{key.replace(/_/g, " ").replace(/\b\w/g, c => c.toUpperCase())}</span>
-                      </li>
-                    ) : null
-                  )}
-                </ul>
+                <PlanFeatureList plan={selectedPlan} isBn={isBn} />
               </div>
             )}
 
