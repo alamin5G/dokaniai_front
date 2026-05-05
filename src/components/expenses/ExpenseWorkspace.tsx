@@ -14,6 +14,7 @@ import type {
 } from "@/types/expense";
 import {
     createExpense,
+    createExpenseCategory,
     createVendor,
     deleteExpense,
     getActiveVendors,
@@ -40,6 +41,22 @@ function toIsoDate(dateStr: string | undefined): string | undefined {
     return new Date(dateStr + "T00:00:00").toISOString();
 }
 
+function normalizeBanglaDigits(value: string): string {
+    const digits: Record<string, string> = {
+        "০": "0",
+        "১": "1",
+        "২": "2",
+        "৩": "3",
+        "৪": "4",
+        "৫": "5",
+        "৬": "6",
+        "৭": "7",
+        "৮": "8",
+        "৯": "9",
+    };
+    return value.replace(/[০-৯]/g, (digit) => digits[digit] ?? digit);
+}
+
 /** Extract user-friendly error message; prefers backend i18n message, falls back to localized default */
 function extractErrorMessage(err: unknown, fallback: string): string {
     if (axios.isAxiosError(err)) {
@@ -58,6 +75,8 @@ interface FormState {
     paymentMethod: string;
     vendorId: string;
     vendorName: string;
+    expenseType: "FIXED" | "VARIABLE";
+    isRecurring: boolean;
 }
 
 const initialFormState: FormState = {
@@ -69,6 +88,8 @@ const initialFormState: FormState = {
     paymentMethod: "CASH",
     vendorId: "",
     vendorName: "",
+    expenseType: "VARIABLE",
+    isRecurring: false,
 };
 
 function toFormState(expense: Expense): FormState {
@@ -81,6 +102,8 @@ function toFormState(expense: Expense): FormState {
         paymentMethod: expense.paymentMethod ?? "CASH",
         vendorId: expense.vendorId ?? "",
         vendorName: expense.vendorName ?? "",
+        expenseType: expense.expenseType ?? "VARIABLE",
+        isRecurring: expense.isRecurring,
     };
 }
 
@@ -121,6 +144,8 @@ export default function ExpenseWorkspace({
     const [notice, setNotice] = useState<string | null>(null);
     const [searchInput, setSearchInput] = useState("");
     const [filterCategory, setFilterCategory] = useState("");
+    const [filterStartDate, setFilterStartDate] = useState("");
+    const [filterEndDate, setFilterEndDate] = useState("");
     const [page, setPage] = useState(0);
     const [totalPages, setTotalPages] = useState(1);
     const [totalElements, setTotalElements] = useState(0);
@@ -133,6 +158,8 @@ export default function ExpenseWorkspace({
     const [editingExpense, setEditingExpense] = useState<Expense | null>(null);
     const [form, setForm] = useState<FormState>(initialFormState);
     const [newVendorName, setNewVendorName] = useState("");
+    const [newCategoryName, setNewCategoryName] = useState("");
+    const [newCategoryNameBn, setNewCategoryNameBn] = useState("");
 
     // Category search (for dropdown filtering)
     const [categorySearch, setCategorySearch] = useState("");
@@ -198,6 +225,8 @@ export default function ExpenseWorkspace({
                 page,
                 size: 12,
                 category: filterCategory || undefined,
+                startDate: toIsoDate(filterStartDate),
+                endDate: toIsoDate(filterEndDate),
             });
             setExpenses(response.content);
             setTotalPages(Math.max(response.totalPages, 1));
@@ -207,7 +236,7 @@ export default function ExpenseWorkspace({
         } finally {
             setIsLoading(false);
         }
-    }, [businessId, page, filterCategory, t]);
+    }, [businessId, page, filterCategory, filterStartDate, filterEndDate, t]);
 
     useEffect(() => {
         void loadExpenses();
@@ -285,6 +314,8 @@ export default function ExpenseWorkspace({
         setEditingExpense(null);
         setForm(initialFormState);
         setNewVendorName("");
+        setNewCategoryName("");
+        setNewCategoryNameBn("");
         setCategorySearch("");
         setCategoryDropdownOpen(false);
     }
@@ -315,6 +346,26 @@ export default function ExpenseWorkspace({
         }
     }
 
+    async function handleCreateCategory() {
+        const name = newCategoryName.trim().toUpperCase().replace(/\s+/g, "_");
+        if (!name) return;
+
+        setError(null);
+        try {
+            const category = await createExpenseCategory(businessId, {
+                name,
+                nameBn: newCategoryNameBn.trim() || undefined,
+            });
+            setCategories((current) => [...current, category].sort((a, b) => a.displayName.localeCompare(b.displayName)));
+            setForm((current) => ({ ...current, category: category.name, customCategoryName: "" }));
+            setNewCategoryName("");
+            setNewCategoryNameBn("");
+            setCategoryDropdownOpen(false);
+        } catch (createError) {
+            setError(extractErrorMessage(createError, t("messages.saveError")));
+        }
+    }
+
     async function handleSubmit(event: FormEvent<HTMLFormElement>) {
         event.preventDefault();
         setIsSubmitting(true);
@@ -326,12 +377,14 @@ export default function ExpenseWorkspace({
                 const payload: ExpenseUpdateRequest = {
                     category: form.category,
                     customCategoryName: form.category === "CUSTOM" ? form.customCategoryName : undefined,
-                    amount: Number(form.amount),
+                    amount: Number(normalizeBanglaDigits(form.amount)),
                     description: form.description || undefined,
                     expenseDate: toIsoDate(form.expenseDate),
                     paymentMethod: form.paymentMethod || undefined,
                     vendorId: form.vendorId || null,
                     vendorName: form.vendorId ? undefined : form.vendorName,
+                    expenseType: form.expenseType,
+                    isRecurring: form.isRecurring,
                 };
                 await updateExpense(businessId, editingExpense.id, payload);
                 setNotice(t("messages.updated"));
@@ -339,12 +392,14 @@ export default function ExpenseWorkspace({
                 const payload: ExpenseCreateRequest = {
                     category: form.category,
                     customCategoryName: form.category === "CUSTOM" ? form.customCategoryName : undefined,
-                    amount: Number(form.amount),
+                    amount: Number(normalizeBanglaDigits(form.amount)),
                     description: form.description || undefined,
                     expenseDate: toIsoDate(form.expenseDate),
                     paymentMethod: form.paymentMethod || undefined,
                     vendorId: form.vendorId || undefined,
                     vendorName: form.vendorId ? undefined : form.vendorName || undefined,
+                    expenseType: form.expenseType,
+                    isRecurring: form.isRecurring,
                     recordedVia: "MANUAL",
                 };
                 await createExpense(businessId, payload);
@@ -479,6 +534,24 @@ export default function ExpenseWorkspace({
                                         <option key={cat.id} value={cat.name}>{cat.displayName}</option>
                                     ))}
                                 </select>
+                                <label className="sr-only" htmlFor="expense-start-date">Start date</label>
+                                <input
+                                    id="expense-start-date"
+                                    type="date"
+                                    value={filterStartDate}
+                                    onChange={(e) => { setFilterStartDate(e.target.value); setPage(0); }}
+                                    className="rounded-full bg-surface px-4 py-3 text-sm font-medium text-on-surface outline-none"
+                                    aria-label="Start date"
+                                />
+                                <label className="sr-only" htmlFor="expense-end-date">End date</label>
+                                <input
+                                    id="expense-end-date"
+                                    type="date"
+                                    value={filterEndDate}
+                                    onChange={(e) => { setFilterEndDate(e.target.value); setPage(0); }}
+                                    className="rounded-full bg-surface px-4 py-3 text-sm font-medium text-on-surface outline-none"
+                                    aria-label="End date"
+                                />
                             </div>
                         </div>
 
@@ -509,6 +582,18 @@ export default function ExpenseWorkspace({
                                                     <p className="font-semibold text-on-surface">
                                                         {expense.description || expense.customCategoryName || expense.category}
                                                     </p>
+                                                    <div className="mt-2 flex flex-wrap gap-2">
+                                                        {expense.isRecurring ? (
+                                                            <span className="rounded-full bg-primary-fixed px-2.5 py-1 text-[11px] font-bold text-primary">
+                                                                Recurring
+                                                            </span>
+                                                        ) : null}
+                                                        {expense.expenseType ? (
+                                                            <span className="rounded-full bg-surface-container px-2.5 py-1 text-[11px] font-semibold text-on-surface-variant">
+                                                                {expense.expenseType}
+                                                            </span>
+                                                        ) : null}
+                                                    </div>
                                                 </td>
                                                 <td className="px-6 py-5">
                                                     <span className="rounded-full bg-surface-container-high px-3 py-1 text-xs font-semibold text-on-surface-variant">
@@ -677,15 +762,42 @@ export default function ExpenseWorkspace({
                                 </label>
                             ) : null}
 
+                            <div className="rounded-[20px] bg-surface-container-lowest p-4">
+                                <p className="text-sm font-semibold text-on-surface">{t("form.category")}</p>
+                                <div className="mt-3 grid gap-2 sm:grid-cols-2">
+                                    <input
+                                        value={newCategoryName}
+                                        onChange={(e) => setNewCategoryName(e.target.value)}
+                                        className="rounded-[16px] bg-surface-container-highest px-4 py-3 text-sm text-on-surface outline-none"
+                                        placeholder="MARKETING"
+                                        aria-label="New category name"
+                                    />
+                                    <input
+                                        value={newCategoryNameBn}
+                                        onChange={(e) => setNewCategoryNameBn(e.target.value)}
+                                        className="rounded-[16px] bg-surface-container-highest px-4 py-3 text-sm text-on-surface outline-none"
+                                        placeholder="মার্কেটিং"
+                                        aria-label="New category Bangla name"
+                                    />
+                                </div>
+                                <button
+                                    type="button"
+                                    onClick={handleCreateCategory}
+                                    disabled={!newCategoryName.trim()}
+                                    className="mt-3 rounded-full bg-surface-container-high px-4 py-2 text-xs font-semibold text-primary transition hover:bg-primary-fixed disabled:cursor-not-allowed disabled:opacity-50"
+                                >
+                                    Create Category
+                                </button>
+                            </div>
+
                             {/* Amount */}
                             <label className="block">
                                 <span className="mb-2 block text-sm font-medium text-on-surface">{t("form.amount")}</span>
                                 <input
-                                    type="number"
-                                    min="0"
-                                    step="0.01"
+                                    type="text"
+                                    inputMode="decimal"
                                     value={form.amount}
-                                    onChange={(e) => updateForm("amount", e.target.value)}
+                                    onChange={(e) => updateForm("amount", normalizeBanglaDigits(e.target.value))}
                                     required
                                     className="w-full rounded-[20px] bg-surface-container-highest px-4 py-3 text-sm text-on-surface outline-none"
                                     placeholder={t("form.amountPlaceholder")}
@@ -787,6 +899,29 @@ export default function ExpenseWorkspace({
                                         </button>
                                     ))}
                                 </div>
+                            </div>
+
+                            <div className="grid gap-3 sm:grid-cols-2">
+                                <label className="block">
+                                    <span className="mb-2 block text-sm font-medium text-on-surface">{t("form.expenseType")}</span>
+                                    <select
+                                        value={form.expenseType}
+                                        onChange={(e) => updateForm("expenseType", e.target.value as FormState["expenseType"])}
+                                        className="w-full rounded-[20px] bg-surface-container-highest px-4 py-3 text-sm text-on-surface outline-none"
+                                    >
+                                        <option value="VARIABLE">{t("form.expenseTypeVariable")}</option>
+                                        <option value="FIXED">{t("form.expenseTypeFixed")}</option>
+                                    </select>
+                                </label>
+                                <label className="flex items-center gap-3 rounded-[20px] bg-surface-container-highest px-4 py-3 text-sm font-medium text-on-surface">
+                                    <input
+                                        type="checkbox"
+                                        checked={form.isRecurring}
+                                        onChange={(e) => updateForm("isRecurring", e.target.checked)}
+                                        className="h-4 w-4"
+                                    />
+                                    {t("form.isRecurring")}
+                                </label>
                             </div>
 
                             {/* Submit */}
