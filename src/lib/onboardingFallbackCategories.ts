@@ -15,6 +15,10 @@ const FALLBACK_CATEGORY_PREVIEW: Record<string, string[]> = {
   JEWELLERY: ["সোনা", "রূপা", "ডায়মন্ড", "ইমিটেশন"],
   PRINTING: ["অফিস প্রিন্ট", "ফটোকপি", "লামিনেশন", "বাইন্ডিং"],
   OTHER: ["সাধারণ", "সেবা", "খুচরা", "বিবিধ"],
+  RICE_SHOP: ["মিনিকেট চাল", "কালিজিরা চাল", "পারবোলেড চাল", "লাল চাল"],
+  FERTILIZER_SEED: ["সার", "বীজ", "কীটনাশক", "কৃষি সরঞ্জাম"],
+  SHOE_STORE: ["পুরুষ জুতা", "মহিলা জুতা", "স্পোর্টস শু", "চপ্পল-স্যান্ডেল"],
+  COMPUTER_SHOP: ["ল্যাপটপ", "ডেস্কটপ", "এক্সেসরিজ", "প্রিন্টার"],
 };
 
 export function getFallbackCategoryPreview(businessType?: string | null): string[] {

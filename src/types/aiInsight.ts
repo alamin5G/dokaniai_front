@@ -17,7 +17,8 @@ export type AIInsightType =
     | "PROFIT_OPTIMIZATION"
     | "SEASONAL_TRENDS"
     | "MORNING_BRIEFING"
-    | "RETURN_ANALYSIS";
+    | "RETURN_ANALYSIS"
+    | "RESTOCK_INSIGHT";
 export type AIInsightSeverity = "INFO" | "WARNING" | "CRITICAL";
 export type AIInsightEntityType = "PRODUCT" | "EXPENSE" | "BUSINESS" | "SALE";
 export type AIConfidenceLevel = "HIGH" | "MEDIUM" | "LOW";

@@ -617,6 +617,10 @@
       "bookshop": "Bookshop",
       "jewellery": "Jewellery",
       "printing": "Printing",
+      "riceShop": "Rice Shop",
+      "fertilizerSeed": "Fertilizer & Seed",
+      "shoeStore": "Shoe Store",
+      "computerShop": "Computer Shop",
       "other": "Other"
     },
     "settings": {

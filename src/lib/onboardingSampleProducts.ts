@@ -86,6 +86,26 @@ export const SAMPLE_PRODUCTS_BY_BUSINESS_TYPE: Readonly<Record<string, ReadonlyA
         { name: "পণ্য ২", price: "150" },
         { name: "পণ্য ৩", price: "200" },
     ],
+    RICE_SHOP: [
+        { name: "মিনিকেট চাল", price: "85" },
+        { name: "কালিজিরা চাল", price: "120" },
+        { name: "পারবোলেড চাল", price: "65" },
+    ],
+    FERTILIZER_SEED: [
+        { name: "ইউরিয়া সার", price: "450" },
+        { name: "ডিএপি সার", price: "800" },
+        { name: "ধানের বীজ", price: "300" },
+    ],
+    SHOE_STORE: [
+        { name: "স্পোর্টস শু", price: "1200" },
+        { name: "চপ্পল", price: "250" },
+        { name: "লেদার শু", price: "2200" },
+    ],
+    COMPUTER_SHOP: [
+        { name: "মাউস", price: "350" },
+        { name: "কিবোর্ড", price: "800" },
+        { name: "ওয়েবক্যাম", price: "1500" },
+    ],
 };
 
 export function getSampleProductsByBusinessType(type?: string): OnboardingSampleProduct[] {

@@ -5,7 +5,6 @@ import { useLocale, useTranslations } from "next-intl";
 import type { Product, ProductStatsResponse } from "@/types/product";
 import type { StockPrediction } from "@/types/restockIntelligence";
 import type { AIInsight } from "@/types/aiInsight";
-import { useUrgentPredictions } from "@/hooks/useRestockIntelligence";
 import { useBusinessStockPredictions } from "@/hooks/useProductPredictions";
 import StockPredictionBanner from "./StockPredictionBanner";
 
@@ -47,18 +46,13 @@ export default function ProductSidebar({
     const locale = useLocale();
     const loc = resolveLocale(locale);
 
-    // Legacy Redis-backed predictions (kept for backward compatibility)
-    const { predictions: legacyPredictions } = useUrgentPredictions(businessId ?? null);
-
-    // New DB-persisted AI insights
+    // All predictions now come from DB-persisted AI insights
     const { predictions: dbPredictions } = useBusinessStockPredictions(businessId ?? null);
 
-    // Merge: prefer DB predictions, fall back to legacy
-    const mergedPredictions = useMemo<StockPrediction[]>(() => {
-        const dbConverted = dbPredictions.map(aiInsightToStockPrediction);
-        if (dbConverted.length > 0) return dbConverted;
-        return legacyPredictions;
-    }, [dbPredictions, legacyPredictions]);
+    const mergedPredictions = useMemo<StockPrediction[]>(
+        () => dbPredictions.map(aiInsightToStockPrediction),
+        [dbPredictions],
+    );
 
     const qtyFormatter = new Intl.NumberFormat(loc, {
         maximumFractionDigits: 3,

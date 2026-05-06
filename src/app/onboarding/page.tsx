@@ -58,6 +58,10 @@ const BUSINESS_TYPES: OnboardingBusinessTypeOption[] = [
     { value: "BOOKSHOP", labelKey: "bookshop" },
     { value: "JEWELLERY", labelKey: "jewellery" },
     { value: "PRINTING", labelKey: "printing" },
+    { value: "RICE_SHOP", labelKey: "riceShop" },
+    { value: "FERTILIZER_SEED", labelKey: "fertilizerSeed" },
+    { value: "SHOE_STORE", labelKey: "shoeStore" },
+    { value: "COMPUTER_SHOP", labelKey: "computerShop" },
     { value: "OTHER", labelKey: "other" },
 ] as const;
 
@@ -333,6 +337,10 @@ const TYPE_ICONS: Record<string, () => React.JSX.Element> = {
     BOOKSHOP: IconBook,
     JEWELLERY: IconGem,
     PRINTING: IconPrinter,
+    RICE_SHOP: IconStore,
+    FERTILIZER_SEED: IconWrench,
+    SHOE_STORE: IconShirt,
+    COMPUTER_SHOP: IconDevicePhone,
     OTHER: IconBox,
 };
 

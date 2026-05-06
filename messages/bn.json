@@ -617,6 +617,10 @@
       "bookshop": "বইয়ের দোকান",
       "jewellery": "গহনার দোকান",
       "printing": "প্রিন্টিং",
+      "riceShop": "চালের দোকান",
+      "fertilizerSeed": "সার ও বীজের দোকান",
+      "shoeStore": "জুতার দোকান",
+      "computerShop": "কম্পিউটার শপ",
       "other": "অন্যান্য"
     },
     "settings": {
